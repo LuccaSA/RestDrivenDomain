@@ -1,0 +1,16 @@
+﻿using RDD.Infra;
+using RDD.Infra.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RDD.Samples.MultiEfContexts.BoundedContextA.Services
+{
+	public class UsersService : RestService<User, IUser, int>
+	{
+		public UsersService(IStorageService storage, IExecutionContext execution)
+			: base(storage, execution) { }
+	}
+}
