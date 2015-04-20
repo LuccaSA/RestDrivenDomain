@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra
 {
-	public interface IAppInstanceService
+	public interface IAppInstancesService
 	{
 		IAppInstance GetInstanceByTag<IEntity>(string tag);
 		IAppInstance GetInstanceById<IEntity>(int appInstanceID);

@@ -55,9 +55,8 @@
     <Compile Include="Helpers\PredicateBuilderHelper.cs" />
     <Compile Include="IRestService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\RestService.public.cs" />
-    <Compile Include="Services\RestService.cs" />
-    <Compile Include="Services\RestService.queryable.cs" />
+    <Compile Include="Services\RestDomainService.cs" />
+    <Compile Include="Services\RestDomainService.queryable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RDD.Core.Infra\RDD.Infra.csproj">

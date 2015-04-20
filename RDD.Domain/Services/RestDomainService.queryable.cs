@@ -13,9 +13,8 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain.Services
 {
-	public partial class RestService<TEntity, IEntity, TKey> : IRestService<TEntity, IEntity, TKey>
-		where TEntity : class, IEntity, new()
-		where IEntity : IEntityBase<TKey>
+	public abstract partial class RestDomainService<TEntity, TKey> : IRestDomainService<TEntity, TKey>
+		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
 		public virtual IQueryable<TEntity> OrderByDefault(IQueryable<TEntity> entities)
@@ -175,7 +174,7 @@ namespace RDD.Domain.Services
 
 		private Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, string field, object value)
 		{
-			var type = typeof(IEntity);
+			var type = typeof(TEntity);
 			var parameter = Expression.Parameter(type, "entity");
 			PropertyInfo property;
 			var expression = BuildBinaryExpressionRecursive(binaryOperator, parameter, field, value, out property);

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RDD.Infra.Models.Querying;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -125,6 +126,48 @@ namespace RDD.Infra
 			{
 				return T.GetGenericArguments().FirstOrDefault();
 			}
+		}
+		public static object CastEnumerableIntoStrongType(Type propertyType, IEnumerable<object> elements)
+		{
+			//ON part d'une List<T> fortement typée
+			var listConstructorParamType = typeof(List<>).MakeGenericType(propertyType.GetListOrArrayElementType());
+
+			var properTypeParamList = (IList)Activator.CreateInstance(listConstructorParamType);
+
+			foreach (var element in elements)
+			{
+				properTypeParamList.Add(element);
+			}
+
+			if (propertyType.IsArray)
+			{
+				return ((dynamic)properTypeParamList).ToArray();
+			}
+
+			var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+			if (genericTypeDefinition == typeof(IEnumerable<>))
+			{
+				return properTypeParamList;
+			}
+			if (genericTypeDefinition == typeof(ICollection<>))
+			{
+				return properTypeParamList;
+			}
+			if (genericTypeDefinition == typeof(HashSet<>))
+			{
+				return properTypeParamList;
+			}
+			if (genericTypeDefinition == typeof(List<>))
+			{
+				return properTypeParamList;
+			}
+			if (genericTypeDefinition == typeof(RestCollection<,>))
+			{
+				var apiCollectionConstructor = propertyType.GetConstructor(new Type[] { });
+
+				return apiCollectionConstructor.Invoke(new object[] { });
+			}
+			throw new Exception(String.Format("Unhandled enumerable type {0}", propertyType.Name));
 		}
 	}
 }

@@ -69,9 +69,8 @@ namespace RDD.Domain.Helpers
 		/// /api/users?manager.id=2&departement.id=4,5 devient manager.id == 2 AND ( department.id == 4 OR department.id == 5 )
 		/// </summary>
 		/// <returns></returns>
-		public Expression<Func<TEntity, bool>> GetEntityPredicate<TEntity, IEntity, TKey>(IRestService<TEntity, IEntity, TKey> service)
-			where TEntity : class, IEntity, new()
-			where IEntity : IEntityBase<TKey>
+		public Expression<Func<TEntity, bool>> GetEntityPredicate<TEntity, TKey>(IRestDomainService<TEntity, TKey> service)
+			where TEntity : class, IEntityBase<TKey>
 			where TKey : IEquatable<TKey>
 		{
 			var feed = PredicateBuilder.True<TEntity>();
@@ -92,9 +91,8 @@ namespace RDD.Domain.Helpers
 			return feed.Expand();
 		}
 
-		private Expression<Func<TEntity, bool>> ToEntityExpression<TEntity, IEntity, TKey>(IRestService<TEntity, IEntity, TKey> service, Filter filter, object value)
-			where TEntity : class, IEntity, new()
-			where IEntity : IEntityBase<TKey>
+		private Expression<Func<TEntity, bool>> ToEntityExpression<TEntity, TKey>(IRestDomainService<TEntity, TKey> service, Filter filter, object value)
+			where TEntity : class, IEntityBase<TKey>
 			where TKey : IEquatable<TKey>
 		{
 			var field = filter.Field;

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RDD.Core.Samples.MultiEfContexts.BoundedContextA.Models
+namespace RDD.Samples.MultiEfContexts.SharedKernel.Models
 {
 	public class Application : EntityBase<Application, string>, IApplication
 	{

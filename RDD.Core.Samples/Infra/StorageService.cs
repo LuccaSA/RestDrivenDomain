@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RDD.Samples.Common
+namespace RDD.Samples.Infra
 {
-	public class EntityContext : IStorageService, IDisposable
+	public class StorageService : IStorageService, IDisposable
 	{
 		public Dictionary<Type, IList> Cache { get; private set; }
 
-		public EntityContext()
+		public StorageService()
 		{
 			Cache = new Dictionary<Type, IList>();
 		}

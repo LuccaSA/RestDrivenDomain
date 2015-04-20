@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain
 {
-	public interface IRestService<TEntity, IEntity, TKey> : IRestService<IEntity, TKey>
-		where TEntity : class, IEntity, new()
-		where IEntity : IEntityBase<TKey>
+	public interface IRestDomainService<TEntity, TKey> : IRestService<TEntity, TKey>
+		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
 		void Create(TEntity entity);

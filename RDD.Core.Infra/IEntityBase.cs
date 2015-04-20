@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra
 {
-	public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey>
-			where TKey : IEquatable<TKey> { }
-
 	public interface IEntityBase : IPrimaryKey
 	{
 		string Name { get; set; }
@@ -17,4 +14,7 @@ namespace RDD.Infra
 		void Validate(IStorageService storage);
 		ICollection<Operation> Operations { get; set; }
 	}
+	public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey>
+			where TKey : IEquatable<TKey> { }
+
 }

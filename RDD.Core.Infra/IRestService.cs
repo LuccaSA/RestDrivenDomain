@@ -19,21 +19,21 @@ namespace RDD.Infra
 		object TryGetById(object id, HttpVerb verb = HttpVerb.GET);
 	}
 
-	public interface IRestService<IEntity, TKey> : IRestService
-		where IEntity : IEntityBase<TKey>
+	public interface IRestService<TEntity, TKey> : IRestService
+		where TEntity : IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		IEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET);
-		IEntity GetById(TKey id, Query<IEntity> query, HttpVerb verb = HttpVerb.GET);
-		ICollection<IEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
-		ICollection<IEntity> GetByIds(ISet<TKey> ids, Query<IEntity> query, HttpVerb verb = HttpVerb.GET);
-		List<IEntity> GetAll();
-		IEnumerable<IEntity> Get(Expression<Func<IEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
-		RestCollection<IEntity, TKey> Get(Query<IEntity> query, HttpVerb verb = HttpVerb.GET);
-		IEntity Create(object datas);
-		IEntity Create(PostedData datas);
-		IEntity Update(TKey id, PostedData datas);
-		IEntity Update(TKey id, object datas);
+		TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET);
+		TEntity GetById(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		ICollection<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
+		ICollection<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		List<TEntity> GetAll();
+		IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
+		RestCollection<TEntity, TKey> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		TEntity Create(object datas);
+		TEntity Create(PostedData datas);
+		TEntity Update(TKey id, PostedData datas);
+		TEntity Update(TKey id, object datas);
 		void Delete(TKey id);
 	}
 }

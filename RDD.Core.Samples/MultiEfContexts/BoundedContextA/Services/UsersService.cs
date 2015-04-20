@@ -1,4 +1,5 @@
-﻿using RDD.Domain.Services;
+﻿using RDD.Samples.MultiEfContexts.SharedKernel.Services;
+using RDD.Domain.Services;
 using RDD.Infra;
 using RDD.Infra.Services;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Samples.MultiEfContexts.BoundedContextA.Services
 {
-	public class UsersService : RestService<User, IUser, int>
+	public class UsersService : SampleRestService<User, int>
 	{
 		public UsersService(IStorageService storage, IExecutionContext execution)
 			: base(storage, execution) { }

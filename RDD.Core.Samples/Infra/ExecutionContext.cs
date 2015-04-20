@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RDD.Samples.Common
+namespace RDD.Samples.Infra
 {
 	public class ExecutionContext : IExecutionContext
 	{

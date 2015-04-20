@@ -6,8 +6,8 @@
     <ProjectGuid>{89444142-9C67-4E79-9261-63C1090699D1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RDD.Core.Infra</RootNamespace>
-    <AssemblyName>RDD.Core.Infra</AssemblyName>
+    <RootNamespace>RDD.Infra</RootNamespace>
+    <AssemblyName>RDD.Infra</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -75,6 +75,7 @@
     <Compile Include="Extensions\Enumerable.extensions.cs" />
     <Compile Include="Extensions\String.exenstions.cs" />
     <Compile Include="Helpers\ExpressionManipulationHelper.cs" />
+    <Compile Include="Helpers\PatchEntityHelper.cs" />
     <Compile Include="Helpers\PostedDataHelper.cs" />
     <Compile Include="IAppInstance.cs" />
     <Compile Include="IAppInstanceService.cs" />

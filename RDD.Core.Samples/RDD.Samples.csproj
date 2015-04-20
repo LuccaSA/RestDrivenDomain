@@ -6,8 +6,8 @@
     <ProjectGuid>{3AD8EAFD-FF60-4039-9EB2-79AC93F2BD45}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RDD.Core.Samples</RootNamespace>
-    <AssemblyName>RDD.Core.Samples</AssemblyName>
+    <RootNamespace>RDD.Samples</RootNamespace>
+    <AssemblyName>RDD.Samples</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -62,12 +62,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\EntityContext.cs" />
-    <Compile Include="Common\ExecutionContext.cs" />
+    <Compile Include="MultiEfContexts\SharedKernel\IApplicationsService.cs" />
+    <Compile Include="Infra\StorageService.cs" />
+    <Compile Include="Infra\ExecutionContext.cs" />
     <Compile Include="MultiEfContexts\BoundedContextA\IUser.cs" />
-    <Compile Include="MultiEfContexts\BoundedContextA\Models\AppInstance.cs" />
-    <Compile Include="MultiEfContexts\BoundedContextA\Models\Application.cs" />
+    <Compile Include="MultiEfContexts\BoundedContextA\Models\UserApplication.cs" />
+    <Compile Include="MultiEfContexts\SharedKernel\Models\AppInstance.cs" />
+    <Compile Include="MultiEfContexts\SharedKernel\Models\Application.cs" />
     <Compile Include="MultiEfContexts\BoundedContextA\Models\User.cs" />
+    <Compile Include="MultiEfContexts\SharedKernel\Services\SampleRestService.cs" />
+    <Compile Include="MultiEfContexts\SharedKernel\Services\AppInstancesService.cs" />
+    <Compile Include="MultiEfContexts\SharedKernel\Services\ApplicationsService.cs" />
     <Compile Include="MultiEfContexts\BoundedContextA\Services\UsersService.cs" />
     <Compile Include="MultiEfContexts\Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
