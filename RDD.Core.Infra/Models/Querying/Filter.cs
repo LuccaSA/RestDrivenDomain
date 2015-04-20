@@ -28,9 +28,9 @@ namespace RDD.Infra.Models.Querying
 
 		public string Field { get; set; }
 		public FilterOperand Type { get; set; }
-		public List<string> Values { get; set; }
+		public List<object> Values { get; set; }
 
-		internal static List<Filter> ParseOperations<T>(PostedData datas)
+		public static List<Filter> ParseOperations<T>(PostedData datas)
 		{
 			var prefix = "operations.";
 			var keys = datas.Keys.Where(k => k.StartsWith(prefix));
@@ -89,7 +89,7 @@ namespace RDD.Infra.Models.Querying
 				}
 
 				var helper = new PostedDataHelper();
-				List<string> values = data.values.Select(v => v.value).ToList();
+				List<object> values = data.values.Select(v => helper.TryConvert(v, typeof(T), key)).ToList();
 
 				//cas spécial pour between et until
 				if (type == FilterOperand.Between)

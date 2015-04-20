@@ -54,8 +54,8 @@
   <ItemGroup>
     <Compile Include="Helpers\PredicateBuilderHelper.cs" />
     <Compile Include="IRestService.cs" />
-    <Compile Include="Models\Querying\Query.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\RestService.public.cs" />
     <Compile Include="Services\RestService.cs" />
     <Compile Include="Services\RestService.queryable.cs" />
   </ItemGroup>
@@ -68,6 +68,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Querying\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

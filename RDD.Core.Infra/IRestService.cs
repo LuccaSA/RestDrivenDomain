@@ -24,13 +24,12 @@ namespace RDD.Infra
 		where TKey : IEquatable<TKey>
 	{
 		IEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET);
-		IEntity GetById(TKey id, Query query, HttpVerb verb = HttpVerb.GET);
+		IEntity GetById(TKey id, Query<IEntity> query, HttpVerb verb = HttpVerb.GET);
 		ICollection<IEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
-		ICollection<IEntity> GetByIds(ISet<TKey> ids, Query query, HttpVerb verb = HttpVerb.GET);
+		ICollection<IEntity> GetByIds(ISet<TKey> ids, Query<IEntity> query, HttpVerb verb = HttpVerb.GET);
 		List<IEntity> GetAll();
 		IEnumerable<IEntity> Get(Expression<Func<IEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
-		IEnumerable<IEntity> Get(Expression<Func<IEntity, bool>> filter, Field fields, HttpVerb verb = HttpVerb.GET);
-		RestCollection<IEntity, TKey> Get(Query query, HttpVerb verb = HttpVerb.GET);
+		RestCollection<IEntity, TKey> Get(Query<IEntity> query, HttpVerb verb = HttpVerb.GET);
 		IEntity Create(object datas);
 		IEntity Create(PostedData datas);
 		IEntity Update(TKey id, PostedData datas);

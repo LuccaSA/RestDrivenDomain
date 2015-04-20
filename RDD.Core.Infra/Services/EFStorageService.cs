@@ -129,21 +129,6 @@ namespace RDD.Infra.Services
 		{
 			return _dbContext.Database.ExecuteSqlCommand(script).ToString();
 		}
-
-		public void Refresh(object obj)
-		{
-			var ctx = ((IObjectContextAdapter)_dbContext).ObjectContext;
-			ctx.Refresh(System.Data.Entity.Objects.RefreshMode.ClientWins, obj);
-		}
-
-		public EntityState State(object entity)
-		{
-			return _dbContext.Entry(entity).State;
-		}
-		public void State(object entity, EntityState state)
-		{
-			_dbContext.Entry(entity).State = state;
-		}
 		public void Dispose()
 		{
 			_dbContext.Dispose();

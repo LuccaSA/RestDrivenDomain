@@ -65,6 +65,8 @@
     <Compile Include="Common\EntityContext.cs" />
     <Compile Include="Common\ExecutionContext.cs" />
     <Compile Include="MultiEfContexts\BoundedContextA\IUser.cs" />
+    <Compile Include="MultiEfContexts\BoundedContextA\Models\AppInstance.cs" />
+    <Compile Include="MultiEfContexts\BoundedContextA\Models\Application.cs" />
     <Compile Include="MultiEfContexts\BoundedContextA\Models\User.cs" />
     <Compile Include="MultiEfContexts\BoundedContextA\Services\UsersService.cs" />
     <Compile Include="MultiEfContexts\Main.cs" />

@@ -46,9 +46,10 @@ namespace RDD.Infra.Models.Querying
 		type
 	}
 
-	public class Query
+	public class Query<T>
 	{
 		public List<OrderBy> OrderBys { get; set; }
+		public Expression<Func<T, bool>> ExpressionFilters { get; set; }
 		public ICollection<Filter> Filters { get; set; }
 		public Field Fields { get; set; }
 		public Options Options { get; set; }
@@ -69,7 +70,7 @@ namespace RDD.Infra.Models.Querying
 			SetIncludeFromFields(isCollectionCall);
 		}
 
-		public virtual Query Parse(IWebContext webContext, bool isCollectionCall = true)
+		public Query<T> Parse(IWebContext webContext, bool isCollectionCall = true)
 		{
 			//On transforme la queryString en PostedData pour que ce soit plus simple à manipuler ensuite
 			var parameters = PostedData.ParseDictionary(webContext.GetQueryNameValuePairs().ToDictionary(K => K.Key.ToLower(), K => K.Value));
@@ -127,7 +128,70 @@ namespace RDD.Infra.Models.Querying
 				Options.withPaging = true;
 			}
 
+			SetIncludeFromFields(isCollectionCall);
+
 			return this;
+		}
+
+		void SetIncludeFromFields(bool isCollectionCall)
+		{
+			RecursiveInclude(Fields, typeof(T), new string[] { });
+		}
+
+		void RecursiveInclude(Field field, Type entityType, string[] propertyTree)
+		{
+			var propertyPath = "";
+			if (propertyTree.Any())
+			{
+				propertyPath = String.Join(".", propertyTree) + ".";
+			}
+
+			foreach (var key in field.Keys)
+			{
+				var property = GetPropertyFromKey(entityType, key);
+
+				if (property != null)
+				{
+					if (IsIncludeCandidate(property))
+					{
+						var propertyType = property.PropertyType.GetListOrArrayElementType(); //ICollection<LegalEntity> => LegalEntity
+
+						//On regarde si y'a pas des subs qui sont eux mêmes des EntityBase
+						if (field[key].subs.Keys.Any(sub =>
+						{
+							var subProperty = GetPropertyFromKey(propertyType, sub);
+							if (subProperty != null)
+							{
+								return IsIncludeCandidate(subProperty);
+							}
+							return false;
+						}))
+						{
+							RecursiveInclude(field[key], propertyType, propertyTree.Concat(new string[] { property.Name }).ToArray());
+						}
+						else //Si on est au bout d'une branche, on joue le Include
+						{
+							IncludeProperty(propertyPath, property);
+						}
+					}
+				}
+			}
+		}
+
+		protected virtual void IncludeProperty(string propertyPath, PropertyInfo property)
+		{
+			Includes.Add(propertyPath + property.Name);
+		}
+
+		private static PropertyInfo GetPropertyFromKey(Type type, string key)
+		{
+			return type.GetProperties().Where(p => p.Name.ToLower() == key).FirstOrDefault();
+		}
+
+		protected virtual bool IsIncludeCandidate(PropertyInfo property)
+		{
+			return property.PropertyType.IsSubclassOfInterface(typeof(IIncludable))
+						|| (property.PropertyType.IsGenericType && property.PropertyType.GetGenericArguments()[0].IsSubclassOfInterface(typeof(IIncludable)));
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra.Helpers
 {
-	public class ExpressionManipulationService
+	public class ExpressionManipulationHelper
 	{
 		// Utile pour les types créés à partir de Group By d'un autre type
 		public static Expression<Func<TOut, bool>> ApplyExpressionToParameterType<TIn, TOut>(Expression<Func<TIn, bool>> original)

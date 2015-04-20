@@ -1,4 +1,5 @@
-﻿using RDD.Infra.Helpers;
+﻿using RDD.Infra;
+using RDD.Infra.Helpers;
 using RDD.Infra.Models.Exceptions;
 using RDD.Infra.Models.Querying;
 using RDD.Infra.Models.Utils;
@@ -174,7 +175,7 @@ namespace RDD.Domain.Services
 
 		private Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, string field, object value)
 		{
-			var type = typeof(TEntity);
+			var type = typeof(IEntity);
 			var parameter = Expression.Parameter(type, "entity");
 			PropertyInfo property;
 			var expression = BuildBinaryExpressionRecursive(binaryOperator, parameter, field, value, out property);
@@ -210,7 +211,7 @@ namespace RDD.Domain.Services
 
 				PropertyInfo accessProperty;
 				var accessCollectionExpression = NestedPropertyAccessor(parameter.Type, parameter, collectionAccessorField, out accessProperty);
-				return ExpressionManipulationService.BuildAny(collectionType, accessCollectionExpression, anyExpression);
+				return ExpressionManipulationHelper.BuildAny(collectionType, accessCollectionExpression, anyExpression);
 			}
 			else
 			{

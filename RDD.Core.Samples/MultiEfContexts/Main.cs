@@ -4,6 +4,9 @@ using RDD.Infra.Providers;
 using RDD.Samples.MultiEfContexts.BoundedContextA;
 using RDD.Samples.MultiEfContexts.BoundedContextA.Services;
 using RDD.Samples.Common;
+using RDD.Infra;
+using RDD.Domain.Services;
+using RDD.Core.Samples.MultiEfContexts.BoundedContextA.Models;
 
 namespace RDD.Samples.MultiEfContexts
 {
@@ -17,6 +20,8 @@ namespace RDD.Samples.MultiEfContexts
 			{
 				using (var storage = new EntityContext())
 				{
+					RestServiceProvider.Register<IApplication, string>((storage_, execution_) => new RestService<AppInstance, IAppInstance, int>(storage_, execution_));
+					RestServiceProvider.Register<IAppInstance, int>((storage_, execution_) => new RestService<AppInstance, IAppInstance, int>(storage_, execution_));
 					RestServiceProvider.Register<IUser, int>((storage_, execution_) => new UsersService(storage_, execution_));
 
 					var userA = new User { Id = 1, FirstName = "Jean", LastName = "Dupont" };
