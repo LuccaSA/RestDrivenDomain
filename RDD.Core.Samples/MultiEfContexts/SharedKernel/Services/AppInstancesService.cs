@@ -16,10 +16,11 @@ namespace RDD.Samples.MultiEfContexts.SharedKernel.Services
 {
 	public class AppInstancesService : SampleRestService<AppInstance, int>, IAppInstancesService
 	{
+		public AppInstancesService(IStorageService storage, IExecutionContext execution)
+			: base(storage, execution, null) { }
+
 		public AppInstancesService(IStorageService storage, IExecutionContext execution, string appTag = "")
-			: base(storage, execution, appTag)
-		{
-		}
+			: base(storage, execution, null, appTag) { }
 
 		protected override IAppInstance GetAppInstanceByTag(string appTag) { return Set().Where(i => i.ApplicationID == "ADMIN").FirstOrDefault(); }
 		protected override IAppInstance GetAppInstanceById(int appInstanceID) { return Set().Where(i => i.ApplicationID == "ADMIN").FirstOrDefault(); }

@@ -11,6 +11,7 @@ using RDD.Samples.MultiEfContexts.SharedKernel.Services;
 using RDD.Infra;
 using RDD.Samples.MultiEfContexts.BoundedContextA.Models;
 using RDD.Samples.MultiEfContexts.SharedKernel;
+using Microsoft.Practices.Unity;
 
 namespace RDD.Samples.MultiEfContexts
 {
@@ -24,19 +25,24 @@ namespace RDD.Samples.MultiEfContexts
 			{
 				using (var storage = new StorageService())
 				{
-					RestServiceProvider.Register<Application, string>((storage_, execution_, appTag_) => new ApplicationsService(storage_, execution_));
-					RestServiceProvider.Register<AppInstance, int>((storage_, execution_, appTag_) => new AppInstancesService(storage_, execution_));
-					RestServiceProvider.Register<User, int>((storage_, execution_, appTag_) => new UsersService(storage_, execution_));
+					var unity = new UnityContainer();
+
+					unity.RegisterType<IApplicationsService, ApplicationsService>(new InjectionConstructor(storage, execution));
+					unity.RegisterType<IAppInstancesService, AppInstancesService>(new InjectionConstructor(storage, execution));
+
+					var appInstances = (RestDomainService<AppInstance, int>)unity.Resolve<IAppInstancesService>();
+
+					unity.RegisterType(typeof(IRestService<,>), typeof(SampleRestService<,>), new InjectionConstructor(storage, execution, appInstances));
 
 					var userApp = new UserApplication();
 					var userAppInstance = new AppInstance { Id = 1, Name = "UsersManagementSystem", Application = userApp, ApplicationID = userApp.Id };
-					((IApplicationsService)RestServiceProvider.Get<Application, string>(storage, execution)).RegisterApplication(new UserApplication());
-					((RestDomainService<AppInstance, int>)RestServiceProvider.Get<AppInstance, int>(storage, execution)).Create(userAppInstance);
+					unity.Resolve<IApplicationsService>().RegisterApplication(new UserApplication());
+					appInstances.Create(userAppInstance);
 
 					var userA = new User { Id = 1, FirstName = "Jean", LastName = "Dupont" };
 					var userB = new User { Id = 2, FirstName = "Paul", LastName = "Martin" };
 
-					var users = (RestDomainService<User, int>)RestServiceProvider.Get<User, int>(storage, execution);
+					var users = unity.Resolve<IRestService<User, int>>();
 
 					users.Create(userA);
 					users.Create(userB);

@@ -27,6 +27,9 @@ namespace RDD.Domain.Services
 		protected IStorageService _storage;
 		protected IExecutionContext _execution;
 
+		public RestDomainService(IStorageService storage, IExecutionContext execution)
+			: this(storage, execution, null) { }
+
 		public RestDomainService(IStorageService storage, IExecutionContext execution, string appTag = "")
 		{
 			_storage = storage;

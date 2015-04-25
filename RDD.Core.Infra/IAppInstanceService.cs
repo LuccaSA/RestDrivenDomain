@@ -10,9 +10,9 @@ namespace RDD.Infra
 {
 	public interface IAppInstancesService
 	{
-		IAppInstance GetInstanceByTag<IEntity>(string tag);
-		IAppInstance GetInstanceById<IEntity>(int appInstanceID);
-		List<Operation> GetOperations<IEntity>(IAppInstance instance, HttpVerb verb);
-		List<Operation> GetAllOperations<IEntity>(IAppInstance instance);
+		IAppInstance GetInstanceByTag<TEntity>(string tag);
+		IAppInstance GetInstanceById<TEntity>(int appInstanceID);
+		List<Operation> GetOperations<TEntity>(IAppInstance instance, HttpVerb verb);
+		List<Operation> GetAllOperations<TEntity>(IAppInstance instance);
 	}
 }

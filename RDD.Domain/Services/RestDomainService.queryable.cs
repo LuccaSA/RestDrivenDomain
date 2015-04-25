@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain.Services
 {
-	public abstract partial class RestDomainService<TEntity, TKey> : IRestDomainService<TEntity, TKey>
+	public partial class RestDomainService<TEntity, TKey> : IRestDomainService<TEntity, TKey>
 		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{

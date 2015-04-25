@@ -12,7 +12,7 @@ namespace RDD.Samples.MultiEfContexts.BoundedContextA.Services
 {
 	public class UsersService : SampleRestService<User, int>
 	{
-		public UsersService(IStorageService storage, IExecutionContext execution)
-			: base(storage, execution) { }
+		public UsersService(IStorageService storage, IExecutionContext execution, IAppInstancesService appInstances)
+			: base(storage, execution, appInstances) { }
 	}
 }
