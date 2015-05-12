@@ -16,22 +16,25 @@ namespace RDD.Samples.MultiEfContexts.SharedKernel.Services
 {
 	public class AppInstancesService : SampleRestService<AppInstance, int>, IAppInstancesService
 	{
-		public AppInstancesService(IStorageService storage, IExecutionContext execution)
-			: base(storage, execution, null) { }
+		protected IApplicationsService _applications;
 
-		public AppInstancesService(IStorageService storage, IExecutionContext execution, string appTag = "")
-			: base(storage, execution, null, appTag) { }
+		public AppInstancesService(IStorageService storage, IExecutionContext execution, IApplicationsService applications)
+			: this(storage, execution, applications, null) { }
+
+		public AppInstancesService(IStorageService storage, IExecutionContext execution, IApplicationsService applications, string appTag = "")
+			: base(storage, execution, null, appTag)
+		{
+			_applications = applications;
+		}
 
 		protected override IAppInstance GetAppInstanceByTag(string appTag) { return Set().Where(i => i.ApplicationID == "ADMIN").FirstOrDefault(); }
 		protected override IAppInstance GetAppInstanceById(int appInstanceID) { return Set().Where(i => i.ApplicationID == "ADMIN").FirstOrDefault(); }
 
 		protected override List<AppInstance> Prepare(List<AppInstance> entities, Query<AppInstance> query)
 		{
-			var apps = RestServiceProvider.Get<Application, string>(_storage, _execution);
-
 			foreach (var entity in entities)
 			{
-				entity.Application = apps.GetById(entity.ApplicationID);
+				entity.Application = _applications.GetById(entity.ApplicationID);
 			}
 
 			return entities;
@@ -56,7 +59,7 @@ namespace RDD.Samples.MultiEfContexts.SharedKernel.Services
 
 		private IAppInstance GetInstanceByCondition<TEntity>(Expression<Func<AppInstance, bool>> condition, object value)
 		{
-			var app = RestServiceProvider.Get<Application, string>(_storage, _execution).Get(a => a.Combinations.Any(c => c.EntityType.IsAssignableFrom(typeof(TEntity)))).FirstOrDefault();
+			var app = _applications.Get(a => a.Combinations.Any(c => c.EntityType.IsAssignableFrom(typeof(TEntity)))).FirstOrDefault();
 
 			if (app != null)
 			{

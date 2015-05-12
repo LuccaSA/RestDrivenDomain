@@ -28,11 +28,14 @@ namespace RDD.Samples.MultiEfContexts
 					var unity = new UnityContainer();
 
 					unity.RegisterType<IApplicationsService, ApplicationsService>(new InjectionConstructor(storage, execution));
-					unity.RegisterType<IAppInstancesService, AppInstancesService>(new InjectionConstructor(storage, execution));
+
+					var applications = (RestDomainService<Application, string>)unity.Resolve<IApplicationsService>();
+					
+					unity.RegisterType<IAppInstancesService, AppInstancesService>(new InjectionConstructor(storage, execution, applications));
 
 					var appInstances = (RestDomainService<AppInstance, int>)unity.Resolve<IAppInstancesService>();
 
-					unity.RegisterType(typeof(IRestService<,>), typeof(SampleRestService<,>), new InjectionConstructor(storage, execution, appInstances));
+					unity.RegisterType<IUsersService, UsersService>(new InjectionConstructor(storage, execution, appInstances));
 
 					var userApp = new UserApplication();
 					var userAppInstance = new AppInstance { Id = 1, Name = "UsersManagementSystem", Application = userApp, ApplicationID = userApp.Id };
@@ -42,7 +45,7 @@ namespace RDD.Samples.MultiEfContexts
 					var userA = new User { Id = 1, FirstName = "Jean", LastName = "Dupont" };
 					var userB = new User { Id = 2, FirstName = "Paul", LastName = "Martin" };
 
-					var users = unity.Resolve<IRestService<User, int>>();
+					var users = unity.Resolve<IUsersService>();
 
 					users.Create(userA);
 					users.Create(userB);

@@ -26,14 +26,16 @@ namespace RDD.Domain.Services
 		protected IAppInstance _appInstance;
 		protected IStorageService _storage;
 		protected IExecutionContext _execution;
+		protected IAppInstancesService _appInstances;
 
-		public RestDomainService(IStorageService storage, IExecutionContext execution)
-			: this(storage, execution, null) { }
+		public RestDomainService(IStorageService storage, IExecutionContext execution, IAppInstancesService appInstances)
+			: this(storage, execution, appInstances, null) { }
 
-		public RestDomainService(IStorageService storage, IExecutionContext execution, string appTag = "")
+		public RestDomainService(IStorageService storage, IExecutionContext execution, IAppInstancesService appInstances, string appTag = "")
 		{
 			_storage = storage;
 			_execution = execution;
+			_appInstances = appInstances;
 			_appInstance = GetAppInstanceByTag(appTag);
 		}
 

@@ -18,13 +18,11 @@ namespace RDD.Samples.MultiEfContexts.SharedKernel.Services
 		where TEntity : class, IEntityBase<TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		protected IAppInstancesService _appInstances;
-
 		public SampleRestService(IStorageService storage, IExecutionContext execution, IAppInstancesService appInstances)
-			: base(storage, execution) { }
+			: base(storage, execution, appInstances) { }
 
 		public SampleRestService(IStorageService storage, IExecutionContext execution, IAppInstancesService appInstances, string appTag = "")
-			: base(storage, execution, appTag) { }
+			: base(storage, execution, appInstances, appTag) { }
 
 		protected override TEntity InstanciateEntity()
 		{

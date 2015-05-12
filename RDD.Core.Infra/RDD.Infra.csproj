@@ -78,7 +78,7 @@
     <Compile Include="Helpers\PatchEntityHelper.cs" />
     <Compile Include="Helpers\PostedDataHelper.cs" />
     <Compile Include="IAppInstance.cs" />
-    <Compile Include="IAppInstanceService.cs" />
+    <Compile Include="IAppInstancesService.cs" />
     <Compile Include="IApplication.cs" />
     <Compile Include="IEntityBase.cs" />
     <Compile Include="IExecutionContext.cs" />

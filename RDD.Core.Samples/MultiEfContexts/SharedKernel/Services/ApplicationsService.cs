@@ -1,7 +1,6 @@
 ﻿using RDD.Infra;
 using RDD.Samples.MultiEfContexts.SharedKernel.Models;
 using RDD.Domain.Services;
-using RDD.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

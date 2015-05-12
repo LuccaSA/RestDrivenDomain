@@ -71,6 +71,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="MultiEfContexts\BoundedContextA\IUsersService.cs" />
     <Compile Include="MultiEfContexts\SharedKernel\IApplicationsService.cs" />
     <Compile Include="Infra\StorageService.cs" />
     <Compile Include="Infra\ExecutionContext.cs" />
