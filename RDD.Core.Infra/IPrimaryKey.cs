@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra
 {
-	public interface IPrimaryKey
-	{
-		object GetId();
-	}
-
-	public interface IPrimaryKey<TKey> : IPrimaryKey
+	public interface IPrimaryKey<TKey>
 		where TKey : IEquatable<TKey>
 	{
 		TKey Id { get; }

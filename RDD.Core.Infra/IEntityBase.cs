@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra
 {
-	public interface IEntityBase : IPrimaryKey
+	public interface IEntityBase
 	{
-		string Name { get; set; }
+		string Name { get; }
 		void Forge(IStorageService storage, IAppInstance appInstance);
 		void Validate(IStorageService storage);
 		ICollection<Operation> Operations { get; set; }
