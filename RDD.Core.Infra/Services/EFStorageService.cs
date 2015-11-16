@@ -1,4 +1,7 @@
-﻿using System;
+﻿using RDD.Domain;
+using RDD.Domain.Helpers;
+using RDD.Infra.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core;
@@ -27,14 +30,13 @@ namespace RDD.Infra.Services
 			return _dbContext.Set<TEntity>();
 		}
 
-		public IQueryable<TEntity> Includes<TEntity>(IQueryable<TEntity> entities, ICollection<string> includes)
+		public IQueryable<TEntity> Includes<TEntity>(IQueryable<TEntity> entities, PropertySelector<TEntity> includes)
 			where TEntity : class
 		{
-			foreach (var include in includes)
+			foreach (var path in includes.ExtractPaths())
 			{
-				entities = entities.Include(include);
+				entities = entities.Include(path);
 			}
-
 			return entities;
 		}
 
@@ -92,15 +94,18 @@ namespace RDD.Infra.Services
 
 				if (updateException.InnerException is ArgumentException)
 				{
-					throw new Exception(updateException.InnerException.Message);
+					throw updateException.InnerException;
 				}
 				else if (updateException.InnerException is SqlException)
 				{
-					SqlException sqlException = (SqlException)updateException.InnerException;
+					var sqlException = (SqlException)updateException.InnerException;
 
-					foreach (SqlError error in sqlException.Errors)
+					switch (sqlException.Number)
 					{
-						throw new Exception(error.Message);
+						case 2627:
+							throw new SqlUniqConstraintException(sqlException.Message);
+						default:
+							throw sqlException;
 					}
 				}
 				else
