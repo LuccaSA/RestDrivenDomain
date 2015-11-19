@@ -588,7 +588,7 @@ namespace RDD.Domain.Models
 			return new HashSet<int>(result.Select(o => o.Id));
 		}
 
-		internal virtual ICollection<TEntity> Prepare(ICollection<TEntity> entities, Query<TEntity> query)
+		public virtual ICollection<TEntity> Prepare(ICollection<TEntity> entities, Query<TEntity> query)
 		{
 			return entities;
 		}

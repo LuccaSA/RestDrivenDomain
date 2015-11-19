@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\webservices\Hangfire\packages\RDD.Infra\</OutputPath>
+    <OutputPath>..\..\webservices\Authentication\packages\RDD.Infra.1.0.0-CI00000\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
