@@ -311,11 +311,11 @@ namespace RDD.Domain.Models
 		/// <returns></returns>
 		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb)
 		{
-			return Get(new Query<TEntity> { ExpressionFilters = filter }, verb).Items;
+			return Get(new Query<TEntity> { ExpressionFilters = filter }, verb);
 		}
 		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> field, HttpVerb verb)
 		{
-			return Get(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb).Items;
+			return Get(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb);
 		}
 
 		/// <summary>
@@ -325,21 +325,23 @@ namespace RDD.Domain.Models
 		/// <returns></returns>
 		public bool Any(Expression<Func<TEntity, bool>> filter)
 		{
-			// http://jell.lucca.fr/forum/default.asp?intMenu=2&id_theme=634&theme=634&id_sujet=12158#
-			return Get(new Query<TEntity> { ExpressionFilters = filter, Options = new Options { NeedEnumeration = false, NeedCount = true } }, HttpVerb.GET).Count > 0;
+			//Le Count() C# est plus rapide qu'un Any() SQL
+			Get(new Query<TEntity> { ExpressionFilters = filter, Options = new Options { NeedEnumeration = false, NeedCount = true } }, HttpVerb.GET);
+
+			return Count > 0;
 		}
 
-		public List<TEntity> GetAll()
+		public IEnumerable<TEntity> GetAll()
 		{
-			return Get(new Query<TEntity>(), HttpVerb.GET).Items.ToList();
+			return Get(new Query<TEntity>(), HttpVerb.GET);
 		}
 
-		public virtual IRestCollection<TEntity> Get(Query<TEntity> query, HttpVerb verb)
+		public virtual IEnumerable<TEntity> Get(Query<TEntity> query, HttpVerb verb)
 		{
 			return Get(Set(query), query, verb);
 		}
 
-		protected virtual IRestCollection<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb)
+		protected virtual IEnumerable<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb)
 		{
 			//On filtre les entités selon celles que l'on peut voir
 			if (query.Options.NeedFilterRights)
@@ -409,7 +411,7 @@ namespace RDD.Domain.Models
 				throw new UnauthorizedException(String.Format("Verb {0} unauthorized on entity type {1}", verb, typeof(TEntity).Name));
 			}
 
-			return this;
+			return Items;
 		}
 
 		public object TryGetById(object id, HttpVerb verb = HttpVerb.GET)
@@ -448,14 +450,14 @@ namespace RDD.Domain.Models
 			return result;
 		}
 
-		public ICollection<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb)
+		public IEnumerable<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb)
 		{
 			return GetByIds(ids, new Query<TEntity>(), verb);
 		}
-		public virtual ICollection<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb)
+		public virtual IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb)
 		{
 			query.ExpressionFilters = Equals("id", ids.ToList()).Expand();
-			return Get(query, verb).Items;
+			return Get(query, verb);
 		}
 
 		private IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)

@@ -25,17 +25,17 @@ namespace RDD.Web.Controllers
 		}
 
 		[NonAction]
-		protected virtual HttpResponseMessage Get(Func<Query<TEntity>, IRestCollection<TEntity>> getEntities)
+		protected virtual HttpResponseMessage Get(Func<Query<TEntity>, IEnumerable<TEntity>> getEntities)
 		{
 			var query = ApiHelper.CreateQuery();
 
 			_execution.queryWatch.Start();
 
-			var entities = getEntities(query);
+			getEntities(query);
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeCollection(entities, query.Fields));
+			var dataContainer = new Metadata(_serializer.SerializeCollection(_collection, query.Fields));
 
 			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}

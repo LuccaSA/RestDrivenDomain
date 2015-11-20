@@ -14,12 +14,12 @@ namespace RDD.Domain
 	public interface IRestCollection<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		ICollection<TEntity> Items { get; }
 		int Count { get; }
+		ICollection<TEntity> Items { get; }
 
 		IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
-		IRestCollection<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
-		List<TEntity> GetAll();
+		IEnumerable<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		IEnumerable<TEntity> GetAll();
 
 		TEntity Create(object datas, Query<TEntity> query = null);
 		TEntity Create(PostedData datas, Query<TEntity> query = null);
@@ -53,8 +53,8 @@ namespace RDD.Domain
 	{
 		TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET);
 		TEntity GetById(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
-		ICollection<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
-		ICollection<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		IEnumerable<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
+		IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 
 		TEntity Update(TKey id, PostedData datas, Query<TEntity> query = null);
 		TEntity Update(TKey id, object datas, Query<TEntity> query = null);
