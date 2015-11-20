@@ -9,26 +9,28 @@ using RDD.Domain.Models.Querying;
 using RDD.Domain.Helpers;
 using RDD.Domain;
 using NExtends.Primitives;
+using RDD.Domain.Exceptions;
+using RDD.Web.Exceptions;
 
 namespace RDD.Web.Serialization
 {
-	public abstract class EntitySerializer : IEntitySerializer
+	public class EntitySerializer : IEntitySerializer
 	{
 		private readonly Dictionary<Type, PropertySerializer> _mappings;
 		private readonly PropertySerializer _defaultSerializer;
 		protected PluralizationCacheService _pluralizationCacheService;
 
-		protected EntitySerializer()
+		public EntitySerializer()
 		{
 			_pluralizationCacheService = new PluralizationCacheService();
 			_defaultSerializer = new PropertySerializer(this);
 			_mappings = new Dictionary<Type, PropertySerializer>();
 		}
 
-		protected void Map<TEntity, TSerializer>(Func<IEntitySerializer, PluralizationCacheService, TSerializer> Initiator)
+		protected void Map<TEntity, TSerializer>(Func<IEntitySerializer, TSerializer> Initiator)
 			where TSerializer : PropertySerializer, new()
 		{
-			var serializer = Initiator(this, _pluralizationCacheService);
+			var serializer = Initiator(this);
 			_mappings.Add(typeof(TEntity), serializer);
 		}
 
@@ -45,7 +47,7 @@ namespace RDD.Web.Serialization
 			return String.Format("api/v3/{0}/{{0}}", apiRadical);
 		}
 
-		public Dictionary<string, object> SerializeCollection<TEntity>(IRestCollection<TEntity> collection, Field<TEntity> fields)
+		public Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Field<TEntity> fields)
 			where TEntity : class, IEntityBase
 		{
 			var result = new Dictionary<string, object>();
@@ -124,17 +126,25 @@ namespace RDD.Web.Serialization
 							}
 						}
 
-						foreach (var child in fields.Children)
-						{
-							entityToDictionary.Add(child.GetCurrentProperty().Name, propertySerializer.SerializeProperty(entity, child));
-						}
+						entityToDictionary = propertySerializer.SerializeProperties(entity, fields);
 					}
+
 					result.Add(entityToDictionary);
 				}
 				return result;
 			}
 
 			return new List<Dictionary<string, object>>();
+		}
+
+		public Dictionary<string, object> SerializeException(HttpLikeException e)
+		{
+			return new Dictionary<string, object>()
+			{
+				{ "Status", e.Status},
+				{ "Message", e.Message},
+				{ "StackTrace", e.StackTrace}
+			};
 		}
 	}
 }

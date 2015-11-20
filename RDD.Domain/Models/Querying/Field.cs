@@ -37,7 +37,7 @@ namespace RDD.Domain.Models.Querying
 		public int Count { get { return EntitySelector.Count; } }
 		public int CollectionCount { get { return CollectionSelector.Count; } }
 
-		public bool CollectionContains<TEntity>(Expression<Func<IRestCollection<TEntity>, object>> expression)
+		public bool CollectionContains<TEntity>(Expression<Func<ISelection<TEntity>, object>> expression)
 			where TEntity : class, IEntityBase
 		{
 			return CollectionSelector.Contains(expression);

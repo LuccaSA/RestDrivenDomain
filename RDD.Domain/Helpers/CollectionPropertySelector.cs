@@ -17,12 +17,12 @@ namespace RDD.Domain.Helpers
 		public CollectionPropertySelector()
 			: base()
 		{
-			EntityType = typeof(IRestCollection<>).MakeGenericType(typeof(TEntity));
+			EntityType = typeof(ISelection<>).MakeGenericType(typeof(TEntity));
 		}
 
 		protected override PropertyInfo GetProperty(string propertyName)
 		{
-			var property = typeof(IRestCollection<>).GetProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
+			var property = typeof(ISelection<>).GetProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
 
 			if (property == null)
 			{
@@ -64,7 +64,7 @@ namespace RDD.Domain.Helpers
 					subParameters.Add(matches[3].Value);
 				}
 
-				var sum = typeof(IRestCollection<>).GetMethod("Sum");
+				var sum = typeof(ISelection<>).GetMethod("Sum");
 
 				var param = Expression.Parameter(EntityType, "p".Repeat(depth));
 

@@ -14,11 +14,9 @@ namespace RDD.Domain
 	public interface IRestCollection<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		int Count { get; }
-		ICollection<TEntity> Items { get; }
+		ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 
 		IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
-		IEnumerable<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 		IEnumerable<TEntity> GetAll();
 
 		TEntity Create(object datas, Query<TEntity> query = null);

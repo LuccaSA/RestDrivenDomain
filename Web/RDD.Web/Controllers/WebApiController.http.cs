@@ -4,6 +4,7 @@ using RDD.Domain.Exceptions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Infra;
+using RDD.Web.Exceptions;
 using RDD.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Web.Http;
 
 namespace RDD.Web.Controllers
 {
+	[JsonException]
 	public partial class WebApiController<TCollection, TEntity, TKey> : ApiController
 		where TCollection : IRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
@@ -25,17 +27,17 @@ namespace RDD.Web.Controllers
 		}
 
 		[NonAction]
-		protected virtual HttpResponseMessage Get(Func<Query<TEntity>, IEnumerable<TEntity>> getEntities)
+		protected virtual HttpResponseMessage Get(Func<Query<TEntity>, ISelection<TEntity>> getEntities)
 		{
 			var query = ApiHelper.CreateQuery();
 
 			_execution.queryWatch.Start();
 
-			getEntities(query);
+			var selection = getEntities(query);
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeCollection(_collection, query.Fields));
+			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields));
 
 			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}

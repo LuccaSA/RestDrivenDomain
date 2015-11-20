@@ -27,28 +27,11 @@ namespace RDD.Domain.Models
 			_asyncStorage = asyncStorage;
 		}
 
-		/// <summary>
-		/// Liste des items. 
-		/// Si vous modifier explicitement cette collection, pensez à recalculer le Count vous même ...
-		/// </summary>
-		public ICollection<TEntity> Items { get; set; }
-
-		private int? _count;
-		/// <summary>
-		/// Nombre d'éléments. 
-		/// Soit le _count a été setté explicitement en interne, soit on va le calculer explicitement (la première fois uniquement) à partir des items
-		/// </summary>
-		public int Count
-		{
-			get { return (int)(_count.HasValue ? _count.Value : _count = Items.Count); } //
-			set { _count = value; }
-		}
-
 		private void AttachOperationsToEntity(TEntity entity)
 		{
 			AttachOperationsToEntities(new List<TEntity> { entity });
 		}
-		private void AttachOperationsToEntities(ICollection<TEntity> entities)
+		private void AttachOperationsToEntities(IEnumerable<TEntity> entities)
 		{
 			var operationsForAttach = new List<Operation>();//TODO  _appInstance.GetAllOperations<TEntity>();
 
@@ -93,7 +76,7 @@ namespace RDD.Domain.Models
 			//}
 		}
 
-		protected virtual void AttachOperations(ICollection<TEntity> entities, List<Operation> operations)
+		protected virtual void AttachOperations(IEnumerable<TEntity> entities, List<Operation> operations)
 		{
 			//TODO
 			//if (operations.Any())
@@ -123,12 +106,12 @@ namespace RDD.Domain.Models
 		/// Permet d'attacher des actions personnalisées en complément des opérations
 		/// </summary>
 		/// <param name="list"></param>
-		internal virtual void AttachActions(ICollection<TEntity> list) { }
+		internal virtual void AttachActions(IEnumerable<TEntity> list) { }
 		private void AttachActionsToEntity(TEntity entity)
 		{
 			AttachActionsToEntities(new HashSet<TEntity> { entity });
 		}
-		private void AttachActionsToEntities(ICollection<TEntity> list)
+		private void AttachActionsToEntities(IEnumerable<TEntity> list)
 		{
 			_execution.queryWatch.Start();
 
@@ -311,11 +294,11 @@ namespace RDD.Domain.Models
 		/// <returns></returns>
 		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb)
 		{
-			return Get(new Query<TEntity> { ExpressionFilters = filter }, verb);
+			return Get(new Query<TEntity> { ExpressionFilters = filter }, verb).Items;
 		}
 		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> field, HttpVerb verb)
 		{
-			return Get(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb);
+			return Get(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb).Items;
 		}
 
 		/// <summary>
@@ -326,23 +309,24 @@ namespace RDD.Domain.Models
 		public bool Any(Expression<Func<TEntity, bool>> filter)
 		{
 			//Le Count() C# est plus rapide qu'un Any() SQL
-			Get(new Query<TEntity> { ExpressionFilters = filter, Options = new Options { NeedEnumeration = false, NeedCount = true } }, HttpVerb.GET);
-
-			return Count > 0;
+			return Get(new Query<TEntity> { ExpressionFilters = filter, Options = new Options { NeedEnumeration = false, NeedCount = true } }, HttpVerb.GET).Count > 0;
 		}
 
 		public IEnumerable<TEntity> GetAll()
 		{
-			return Get(new Query<TEntity>(), HttpVerb.GET);
+			return Get(new Query<TEntity>(), HttpVerb.GET).Items;
 		}
 
-		public virtual IEnumerable<TEntity> Get(Query<TEntity> query, HttpVerb verb)
+		public virtual ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb)
 		{
 			return Get(Set(query), query, verb);
 		}
 
-		protected virtual IEnumerable<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb)
+		protected virtual ISelection<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb)
 		{
+			var count = 0;
+			IEnumerable<TEntity> items = new HashSet<TEntity>();
+
 			//On filtre les entités selon celles que l'on peut voir
 			if (query.Options.NeedFilterRights)
 			{
@@ -352,14 +336,17 @@ namespace RDD.Domain.Models
 			//On joue les Wheres
 			entities = ApplyFilters(entities, query);
 
+			//On mémorise le fait qu'on fait un Count SQl ou C#
+			var sqlCount = (query.Options.NeedCount && (!query.Options.NeedEnumeration || query.Options.withPagingInfo));
+
 			//Dans de rares cas on veut seulement, ou en plus, le count des entités
 			//On le fait en SQL si et seulement si y'a pas d'énumération (auquel cas on le fait en C#)
 			//Ou qu'il y a énumération avec du paging (en cas de paging, le count doit compter TOUTES les entités et pas juste celles paginées
-			if (query.Options.NeedCount && (!query.Options.NeedEnumeration || query.Options.withPagingInfo))
+			if (sqlCount)
 			{
 				_execution.queryWatch.Start();
 
-				Count = entities.Count();
+				count = entities.Count();
 
 				_execution.queryWatch.Stop();
 			}
@@ -380,38 +367,38 @@ namespace RDD.Domain.Models
 
 				_execution.queryWatch.Start();
 
-				Items = entities.ToList();
+				items = entities.ToList();
 
 				_execution.queryWatch.Stop();
 
 				//Ici on a énuméré, y'a pas eu de paging mais on veut le count, donc il n'a pas été fait en SQL, faut le faire en C#
-				if (!query.Options.withPagingInfo && query.Options.NeedCount)
+				if (query.Options.NeedCount && !sqlCount)
 				{
-					Count = Items.Count();
+					count = items.Count();
 				}
 
 				//Si on a demandé les permissions, on va les chercher après énumération
 				if (query.Options.attachOperations)
 				{
-					AttachOperationsToEntities(Items);
+					AttachOperationsToEntities(items);
 				}
 
-				Items = Prepare(Items, query);
+				items = Prepare(items, query);
 
 				//ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
 				if (query.Options.attachActions)
 				{
-					AttachActionsToEntities(Items);
+					AttachActionsToEntities(items);
 				}
 			}
 
 			//Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-			if (verb != HttpVerb.GET && Count == 0 && Any(i => true))
+			if (verb != HttpVerb.GET && count == 0 && Any(i => true))
 			{
 				throw new UnauthorizedException(String.Format("Verb {0} unauthorized on entity type {1}", verb, typeof(TEntity).Name));
 			}
 
-			return Items;
+			return new Selection<TEntity>(items, count);
 		}
 
 		public object TryGetById(object id, HttpVerb verb = HttpVerb.GET)
@@ -457,7 +444,7 @@ namespace RDD.Domain.Models
 		public virtual IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb)
 		{
 			query.ExpressionFilters = Equals("id", ids.ToList()).Expand();
-			return Get(query, verb);
+			return Get(query, verb).Items;
 		}
 
 		private IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
@@ -590,7 +577,7 @@ namespace RDD.Domain.Models
 			return new HashSet<int>(result.Select(o => o.Id));
 		}
 
-		public virtual ICollection<TEntity> Prepare(ICollection<TEntity> entities, Query<TEntity> query)
+		public virtual IEnumerable<TEntity> Prepare(IEnumerable<TEntity> entities, Query<TEntity> query)
 		{
 			return entities;
 		}

@@ -7,13 +7,10 @@ using RDD.Domain.Models.Querying;
 
 namespace RDD.Web.Models
 {
-	[JsonObject(MemberSerialization.OptIn)]
 	public class Metadata
 	{
-		[JsonProperty]
 		public MetadataHeader header { get; set; }
 
-		[JsonProperty]
 		public object data { get; set; }
 
 		public Metadata(object data)

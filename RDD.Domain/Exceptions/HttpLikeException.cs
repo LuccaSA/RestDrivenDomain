@@ -36,5 +36,10 @@ namespace RDD.Domain.Exceptions
 		public HttpLikeException(HttpStatusCode status) : this(status, null, null) { }
 		public HttpLikeException(HttpStatusCode status, string message) : this(status, message, null) { }
 		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, innerException.Message, innerException) { }
+
+		public static HttpLikeException Parse(Exception e)
+		{
+			return e as HttpLikeException ?? new HttpLikeException(HttpStatusCode.InternalServerError, e);
+		}
 	}
 }

@@ -74,6 +74,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EFStorageService.cs" />
     <Compile Include="Services\StorageService.cs" />
+    <Compile Include="Contexts\InMemoryWebContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

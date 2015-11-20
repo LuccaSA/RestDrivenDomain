@@ -161,7 +161,7 @@ namespace RDD.Domain.Models.Querying
 				return Activator.CreateInstance(stronglyTypedHashSetType, listResult);
 			}
 
-			if (genericTypeDefinition == typeof(IRestCollection<>))
+			if (genericTypeDefinition == typeof(ISelection<>))
 			{
 				return propertyType
 					.GetConstructor(new Type[] { typeof(ICollection<>).MakeGenericType(elementType) })

@@ -21,6 +21,18 @@ namespace RDD.Web.Serialization
 			_serializer = serializer;
 		}
 
+		public virtual Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
+		{
+			var result = new Dictionary<string, object>();
+
+			foreach (var child in fields.Children)
+			{
+				result.Add(child.GetCurrentProperty().Name, SerializeProperty(entity, child));
+			}
+
+			return result;
+		}
+
 		public virtual object SerializeProperty(object entity, PropertySelector field)
 		{
 			object value;
