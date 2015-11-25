@@ -1,5 +1,6 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Contexts;
+using RDD.Infra.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,11 +47,11 @@ namespace RDD.Infra.Contexts
 		public void Dispose()
 		{
 			var threadID = Thread.CurrentThread.ManagedThreadId;
-			if (WebContext.ThreadedContexts.ContainsKey(threadID))
+			if (AsyncService.ThreadedContexts.ContainsKey(threadID))
 			{
 				IWebContext context;
 
-				WebContext.ThreadedContexts.TryRemove(threadID, out context);
+				AsyncService.ThreadedContexts.TryRemove(threadID, out context);
 			}
 		}
 	}

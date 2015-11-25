@@ -58,8 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\CulturedDescriptionAttribute.cs" />
+    <Compile Include="Contexts\DIResolver.cs" />
     <Compile Include="Contexts\ExecutionContext.cs" />
-    <Compile Include="Contexts\WebContext.cs" />
     <Compile Include="Exceptions\HttpLikeException.cs" />
     <Compile Include="Exceptions\UnauthorizedException.cs" />
     <Compile Include="Helpers\CollectionPropertySelector.cs" />
@@ -73,8 +73,10 @@
     <Compile Include="Helpers\PropertySelector.cs" />
     <Compile Include="Helpers\PropertySelectorRootLambdaExtractor.cs" />
     <Compile Include="Helpers\PropertySelectorTransferor.cs" />
+    <Compile Include="IAsyncService.cs" />
     <Compile Include="IAuthenticationService.cs" />
     <Compile Include="ICloneable.cs" />
+    <Compile Include="IDependencyInjectionResolver.cs" />
     <Compile Include="IEntityBase.cs" />
     <Compile Include="IExecutionContext.cs" />
     <Compile Include="IIdable.cs" />

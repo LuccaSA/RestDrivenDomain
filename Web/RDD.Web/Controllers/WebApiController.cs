@@ -17,6 +17,7 @@ namespace RDD.Web.Controllers
 	{
 		protected IWebContext _webContext;
 		protected IExecutionContext _execution;
+		protected Func<IStorageService> _newStorage;
 		protected IStorageService _storage;
 		protected TCollection _collection;
 		protected IEntitySerializer _serializer;
@@ -26,7 +27,8 @@ namespace RDD.Web.Controllers
 		{
 			_webContext = webContext;
 			_execution = execution;
-			_storage = newStorage();
+			_newStorage = newStorage;
+			_storage = _newStorage();
 			_serializer = serializer;
 
 			ApiHelper = new ApiHelper<TEntity, TKey>(_webContext, query, jsonResolver);

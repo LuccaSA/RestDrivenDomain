@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra.Services
 {
-	public class StorageService : IStorageService, IDisposable
+	public class InMemoryStorageService : IStorageService, IDisposable
 	{
 		public Dictionary<Type, IList> Cache { get; private set; }
 
-		public StorageService()
+		public InMemoryStorageService()
 		{
 			Cache = new Dictionary<Type, IList>();
 		}

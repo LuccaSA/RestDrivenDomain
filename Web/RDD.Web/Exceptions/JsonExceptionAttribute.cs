@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Serialization;
+using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Domain.Exceptions;
 using RDD.Web.Serialization;
@@ -20,7 +21,7 @@ namespace RDD.Web.Exceptions
 
 			var httpException = HttpLikeException.Parse(baseException);
 
-			var formatter = JsonApiFormatter.GetInstance(WebContext.Current(), new CamelCasePropertyNamesContractResolver());
+			var formatter = JsonApiFormatter.GetInstance(Resolver.Current().Resolve<IWebContext>(), new CamelCasePropertyNamesContractResolver());
 
 			var data = new EntitySerializer().SerializeException(httpException);
 

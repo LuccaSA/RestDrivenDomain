@@ -12,7 +12,7 @@ namespace RDD.Domain.Contexts
 		{
 			get
 			{
-				return (IExecutionContext)WebContext.Current().Items["executionContext"];
+				return (IExecutionContext)Resolver.Current().Resolve<IWebContext>().Items["executionContext"];
 			}
 		}
 	}

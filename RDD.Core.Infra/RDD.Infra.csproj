@@ -70,10 +70,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Contexts\DependencyInjectionResolver.cs" />
     <Compile Include="Exceptions\SqlUniqConstraintException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AsyncService.cs" />
     <Compile Include="Services\EFStorageService.cs" />
-    <Compile Include="Services\StorageService.cs" />
+    <Compile Include="Services\InMemoryStorageService.cs" />
     <Compile Include="Contexts\InMemoryWebContext.cs" />
   </ItemGroup>
   <ItemGroup>

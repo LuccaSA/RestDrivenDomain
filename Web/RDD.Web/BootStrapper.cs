@@ -1,5 +1,7 @@
-﻿using RDD.Domain.Contexts;
+﻿using RDD.Domain;
+using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
+using RDD.Infra.Services;
 using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;
@@ -16,23 +18,31 @@ namespace RDD.Web
 	{
 		public static void ApplicationStart()
 		{
-			WebContext.Current = () =>
+			var resolver = new DependencyInjectionResolver();
+
+			resolver.Register<IWebContext>(() =>
 			{
+				IWebContext result;
+
 				if (HttpContext.Current != null)
 				{
-					return new HttpContextWrapper(HttpContext.Current);
+					result = new HttpContextWrapper(HttpContext.Current);
 				}
 				else
 				{
-					return WebContext.ThreadedContexts[Thread.CurrentThread.ManagedThreadId];
+					result = AsyncService.ThreadedContexts[Thread.CurrentThread.ManagedThreadId];
 				}
-			};
-			WebContext.AsyncContext = (items) => new InMemoryWebContext(items);
+
+				return result;
+			});
+			resolver.Register<IAsyncService>(() => new AsyncService());
+
+			Resolver.Current = () => resolver;
 		}
 
 		public static void ApplicationBeginRequest()
 		{
-			var webContext = WebContext.Current();
+			var webContext = Resolver.Current().Resolve<IWebContext>();
 
 			webContext.Items["executionContext"] = new HttpExecutionContext();
 		}
