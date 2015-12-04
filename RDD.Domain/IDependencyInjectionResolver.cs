@@ -8,6 +8,10 @@ namespace RDD.Domain
 {
 	public interface IDependencyInjectionResolver
 	{
-		T Resolve<T>();
+		void Register<TInterface>(Func<TInterface> constructor);
+		void Register<TInterface, TArg1>(Func<TArg1, TInterface> constructor);
+
+		TInterface Resolve<TInterface>();
+		TInterface Resolve<TInterface, TArg1>(TArg1 arg1);
 	}
 }

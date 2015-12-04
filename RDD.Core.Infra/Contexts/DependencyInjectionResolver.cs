@@ -12,7 +12,12 @@ namespace RDD.Infra.Contexts
 	{
 		private ConcurrentDictionary<Type, object> _mappings = new ConcurrentDictionary<Type, object>();
 
+		//TODO : mutualiser le code des différentes méthodes
 		public void Register<TInterface>(Func<TInterface> constructor)
+		{
+			_mappings[typeof(TInterface)] = constructor;
+		}
+		public void Register<TInterface, TArg1>(Func<TArg1, TInterface> constructor)
 		{
 			_mappings[typeof(TInterface)] = constructor;
 		}
@@ -27,6 +32,17 @@ namespace RDD.Infra.Contexts
 			}
 
 			return ((Func<TInterface>)_mappings[type])();
+		}
+		public TInterface Resolve<TInterface, TArg1>(TArg1 arg1)
+		{
+			var type = typeof(TInterface);
+
+			if (!_mappings.ContainsKey(type))
+			{
+				throw new Exception(String.Format("Type {0} not handled by dependency injection", type));
+			}
+
+			return ((Func<TArg1, TInterface>)_mappings[type])(arg1);
 		}
 	}
 }
