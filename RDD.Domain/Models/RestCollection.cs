@@ -292,11 +292,11 @@ namespace RDD.Domain.Models
 		/// </summary>
 		/// <param name="criteria"></param>
 		/// <returns></returns>
-		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb)
+		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET)
 		{
 			return Get(new Query<TEntity> { ExpressionFilters = filter }, verb).Items;
 		}
-		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> field, HttpVerb verb)
+		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> field, HttpVerb verb = HttpVerb.GET)
 		{
 			return Get(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb).Items;
 		}
@@ -317,12 +317,12 @@ namespace RDD.Domain.Models
 			return Get(new Query<TEntity>(), HttpVerb.GET).Items;
 		}
 
-		public virtual ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb)
+		public virtual ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
 			return Get(Set(query), query, verb);
 		}
 
-		protected virtual ISelection<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb)
+		protected virtual ISelection<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
 			var count = 0;
 			IEnumerable<TEntity> items = new HashSet<TEntity>();
@@ -410,7 +410,7 @@ namespace RDD.Domain.Models
 			return GetByIds(new HashSet<TKey>(id.Cast<TKey>()), verb).Cast<object>();
 		}
 
-		public TEntity GetById(TKey id, HttpVerb verb)
+		public TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET)
 		{
 			return GetById(id, new Query<TEntity>(), verb);
 		}
@@ -424,7 +424,7 @@ namespace RDD.Domain.Models
 		/// <param name="id"></param>
 		/// <param name="verb"></param>
 		/// <returns></returns>
-		public virtual TEntity GetById(TKey id, Query<TEntity> query, HttpVerb verb)
+		public virtual TEntity GetById(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
 			var result = GetByIds(new HashSet<TKey> { id }, query, verb).FirstOrDefault();
 
@@ -437,11 +437,11 @@ namespace RDD.Domain.Models
 			return result;
 		}
 
-		public IEnumerable<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb)
+		public IEnumerable<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET)
 		{
 			return GetByIds(ids, new Query<TEntity>(), verb);
 		}
-		public virtual IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb)
+		public virtual IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
 			query.ExpressionFilters = Equals("id", ids.ToList()).Expand();
 			return Get(query, verb).Items;

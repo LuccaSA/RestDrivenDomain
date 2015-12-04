@@ -52,18 +52,20 @@ namespace RDD.Domain.Models.Querying
 	public class Query<TEntity>
 		where TEntity : class, IEntityBase
 	{
+		public HttpVerb Verb { get; set; }
 		public List<OrderBy> OrderBys { get; set; }
 		public Expression<Func<TEntity, bool>> ExpressionFilters { get; set; }
 		public ICollection<Where> Filters { get; set; }
 		public Func<TEntity, object> ExpressionFieldsSelector { get; set; }
 		public Field<TEntity> Fields { get; set; }
-		public Options Options { get; set; }
+		public virtual Options Options { get; set; }
 		public PropertySelector<TEntity> Includes { get; set; }
 
 		protected HashSet<string> IgnoredFilters { get; set; }
 
 		public Query()
 		{
+			Verb = HttpVerb.GET;
 			OrderBys = new List<OrderBy>();
 			Options = new Options();
 			Filters = new List<Where>();
