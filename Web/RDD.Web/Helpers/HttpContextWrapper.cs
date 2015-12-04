@@ -26,6 +26,14 @@ namespace RDD.Web.Helpers
 		public Stream InputStream { get { return _context.Request.InputStream; } }
 		public NameValueCollection Headers { get { return _context.Request.Headers; } }
 		public Dictionary<string, string> Cookies { get { return _context.Request.Cookies.AllKeys.ToDictionary(k => k, k => _context.Request.Cookies[k].Value); } }
+		public string GetCookie(string cookieName) { return Cookies.ContainsKey(cookieName) ? Cookies[cookieName] : null; }
+		public void SetCookie(string cookieName, string value, DateTime expiration)
+		{
+			var cookie = new HttpCookie(cookieName, value);
+			cookie.Expires = expiration;
+
+			_context.Response.Cookies.Set(cookie);
+		}
 		public IDictionary Items { get { return _context.Items; } }
 		public string ApplicationPath { get { return _context.Request.ApplicationPath; } }
 		public string PhysicalApplicationPath { get { return _context.Request.PhysicalApplicationPath; } }

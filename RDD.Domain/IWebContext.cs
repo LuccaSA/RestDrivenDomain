@@ -16,6 +16,8 @@ namespace RDD.Domain
 		NameValueCollection QueryString { get; }
 		NameValueCollection Headers { get; }	
 		Dictionary<string, string> Cookies { get; }
+		string GetCookie(string cookieName);
+		void SetCookie(string cookieName, string value, DateTime expiration);
 		IDictionary Items { get; }
 		string ApplicationPath { get; }
 		string PhysicalApplicationPath { get; }

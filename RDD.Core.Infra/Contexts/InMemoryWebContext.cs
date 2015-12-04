@@ -32,6 +32,8 @@ namespace RDD.Infra.Contexts
 		public Stream InputStream { get { throw new NotImplementedException(); } }
 		public NameValueCollection Headers { get { throw new NotImplementedException(); } }
 		public Dictionary<string, string> Cookies { get { throw new NotImplementedException(); } }
+		public string GetCookie(string cookieName) { throw new NotImplementedException(); }
+		public void SetCookie(string cookieName, string value, DateTime expiration) { throw new NotImplementedException(); }
 		public string ApplicationPath { get { throw new NotImplementedException(); } }
 		public string PhysicalApplicationPath { get { throw new NotImplementedException(); } }
 		public Dictionary<string, string> GetQueryNameValuePairs() { throw new NotImplementedException(); }
