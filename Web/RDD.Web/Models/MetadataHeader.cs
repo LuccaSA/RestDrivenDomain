@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RDD.Domain;
+using RDD.Domain.Contexts;
 
 namespace RDD.Web.Models
 {
@@ -18,12 +19,14 @@ namespace RDD.Web.Models
 
 		public MetadataHeader()
 		{
-			//_execution.serverWatch.Stop();
+			var execution = ExecutionContext.Current;
 
-			//serverTime = _execution.serverWatch.ElapsedMilliseconds;
-			//queryTime = _execution.queryWatch.ElapsedMilliseconds;
+			execution.serverWatch.Stop();
 
-			//principal = _execution.curPrincipal.Name;
+			serverTime = execution.serverWatch.ElapsedMilliseconds;
+			queryTime = execution.queryWatch.ElapsedMilliseconds;
+
+			principal = execution.curPrincipal.Name;
 		}
 	}
 
