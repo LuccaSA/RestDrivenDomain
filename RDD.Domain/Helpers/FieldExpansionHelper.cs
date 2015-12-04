@@ -16,11 +16,12 @@ namespace RDD.Domain.Helpers
 		const char FIELD_SEPARATOR = '.';
 		const char SPACE = ' ';
 
-		public static List<string> Expand(string input) { return new FieldExpansionHelper(new Stack<string>()).Expanse(input); }
-
 		Stack<string> prefixes { get; set; }
 		List<string> analyseResult { get; set; }
 		string buffer { get; set; }
+
+		public FieldExpansionHelper()
+			: this(new Stack<string>()) { }
 
 		FieldExpansionHelper(Stack<string> prefixes)
 		{
@@ -40,7 +41,7 @@ namespace RDD.Domain.Helpers
 
 		void FeedBuffer(char c) { buffer += c; }
 
-		List<string> Expanse(string input)
+		public List<string> Expand(string input)
 		{
 			var isInsideFunction = false;
 			var level = 0;
@@ -64,7 +65,7 @@ namespace RDD.Domain.Helpers
 						if (--level == 0)
 						{
 							if (level < 0) { throw new FormatException("Le champ fields est mal renseigné."); }
-							analyseResult.AddRange(new FieldExpansionHelper(prefixes).Expanse(buffer));
+							analyseResult.AddRange(new FieldExpansionHelper(prefixes).Expand(buffer));
 							buffer = string.Empty;
 							prefixes.Pop();
 						}

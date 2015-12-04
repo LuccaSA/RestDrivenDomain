@@ -50,6 +50,13 @@ namespace RDD.Domain.Models.Querying
 
 			return field;
 		}
+		public static Field<TEntity> Parse<TEntity>(List<string> fields)
+		{
+			var field = new Field<TEntity>();
+			field.Parse(fields);
+
+			return field;
+		}
 	}
 
 	public class Field<TEntity> : Field
@@ -67,11 +74,16 @@ namespace RDD.Domain.Models.Querying
 			Add(expressions);
 		}
 
+
 		public void Parse(string fields)
 		{
-			var expandedFields = FieldExpansionHelper.Expand(fields);
+			var expandedFields = new FieldExpansionHelper().Expand(fields);
 
-			foreach (var item in expandedFields)
+			Parse(expandedFields);
+		}
+		public void Parse(List<string> fields)
+		{
+			foreach (var item in fields)
 			{
 				if (item.StartsWith("collection."))
 				{
@@ -86,7 +98,7 @@ namespace RDD.Domain.Models.Querying
 
 		public void ParseAllProperties()
 		{
-			var fields = String.Join(", ", EntityType.GetProperties().Select(p => p.Name).ToArray());
+			var fields = EntityType.GetProperties().Select(p => p.Name).ToList();
 
 			Parse(fields);
 		}

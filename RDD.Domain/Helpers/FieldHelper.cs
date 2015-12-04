@@ -21,7 +21,7 @@ namespace RDD.Domain.Helpers
 			fields = fields ?? "";
 			fields = fields.Replace(", ", ",");
 
-			var list = FieldExpansionHelper.Expand(fields);
+			var list = new FieldExpansionHelper().Expand(fields);
 
 			foreach (var field in list)
 			{
