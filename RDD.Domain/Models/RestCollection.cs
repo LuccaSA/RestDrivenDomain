@@ -412,7 +412,7 @@ namespace RDD.Domain.Models
 
 		public TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET)
 		{
-			return GetById(id, new Query<TEntity>(), verb);
+			return GetById(id, new Query<TEntity>() { Verb = verb }, verb);
 		}
 
 		/// <summary>
