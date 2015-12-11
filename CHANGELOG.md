@@ -21,7 +21,6 @@
 
 ### Resolved issues
  - Le count sur les collections ne marchait pas
- - 
 
 ## 1.0.1 - Integrate with WS Auth
 
