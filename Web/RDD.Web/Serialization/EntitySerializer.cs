@@ -69,12 +69,38 @@ namespace RDD.Web.Serialization
 						sums = new Dictionary<string, object>();
 						result.Add("sums", sums);
 					}
-					if (!result.ContainsKey("sums"))
-					{
-						result.Add("sums", new Dictionary<string, object>());
-					}
 
 					sums.Add(child.Subject, value); //Sum(..)
+				}
+				else if (childName.ToLower() == "min")
+				{
+					Dictionary<string, object> mins;
+					if (result.ContainsKey("mins"))
+					{
+						mins = (Dictionary<string, object>)result["mins"];
+					}
+					else
+					{
+						mins = new Dictionary<string, object>();
+						result.Add("mins", mins);
+					}
+
+					mins.Add(child.Subject, value); //Min(..)
+				}
+				else if (childName.ToLower() == "max")
+				{
+					Dictionary<string, object> maxes;
+					if (result.ContainsKey("maxes"))
+					{
+						maxes = (Dictionary<string, object>)result["maxes"];
+					}
+					else
+					{
+						maxes = new Dictionary<string, object>();
+						result.Add("maxes", maxes);
+					}
+
+					maxes.Add(child.Subject, value); //Max(..)
 				}
 				else
 				{

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionPropertiesTests.cs" />
+    <Compile Include="DecimalRoundingTests.cs" />
     <Compile Include="Models\UsersCollection.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

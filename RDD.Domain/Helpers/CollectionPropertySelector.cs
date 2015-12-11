@@ -34,30 +34,19 @@ namespace RDD.Domain.Helpers
 
 		public override void Parse(string element, List<string> tail, int depth)
 		{
-			if (element.StartsWith("sum("))
-			{
-				//sum(myProp), sum(myProp, round), sum(myProp, ceiling, 3)
-				var matches = Regex.Match(element, "sum\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)").Groups;
+			var specialMethods = new HashSet<string>() { "sum", "min", "max" };
 
+			if (specialMethods.Any(m => element.StartsWith(m)))
+			{
+				var specialMethod = element.StartsWith("sum") ? "sum" : element.StartsWith("min") ? "min" : "max";
+				var matches = Regex.Match(element, String.Format("{0}\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)", specialMethod)).Groups;
 				var propertyName = matches[1].Value;
 				var property = GetEntityProperty(propertyName);
 
-				var subParameters = new HashSet<string>();
-				if (!String.IsNullOrEmpty(matches[2].Value))
-				{
-					subParameters.Add(matches[2].Value);
-				}
-				if (!String.IsNullOrEmpty(matches[3].Value))
-				{
-					subParameters.Add(matches[3].Value);
-				}
-
-				var sum = typeof(ISelection<>).GetMethod("Sum");
-
 				var param = Expression.Parameter(EntityType, "p".Repeat(depth));
 
-				var call = Expression.Call(param, sum, new Expression[] { Expression.Constant(property), Expression.Constant(subParameters.ToArray()) });
-
+				var call = GetExpressionCall(specialMethod, element, depth, param, property);
+				
 				var lambda = Expression.Lambda(call, param);
 
 				var child = PropertySelector.NewFromType(EntityType);
@@ -70,6 +59,15 @@ namespace RDD.Domain.Helpers
 			{
 				base.Parse(element, tail, depth);
 			}
+		}
+
+		private MethodCallExpression GetExpressionCall(string specialMethod, string pattern, int depth, ParameterExpression param, PropertyInfo property)
+		{
+			var rouding = DecimalRounding.Parse(specialMethod);
+
+			var method = typeof(ISelection).GetMethod(specialMethod.ToFirstUpper(), new Type[] { typeof(PropertyInfo), typeof(DecimalRounding) });
+
+			return Expression.Call(param, method, new Expression[] { Expression.Constant(property), Expression.Constant(rouding) });
 		}
 	}
 }

@@ -69,6 +69,7 @@
     <Compile Include="Helpers\FieldExpansionHelper.cs" />
     <Compile Include="Helpers\FieldHelper.cs" />
     <Compile Include="Helpers\HttpVerb.cs" />
+    <Compile Include="Helpers\DecimalRounding.cs" />
     <Compile Include="Helpers\PatchEntityHelper.cs" />
     <Compile Include="Helpers\PredicateService.cs" />
     <Compile Include="Helpers\PropertySelector.cs" />

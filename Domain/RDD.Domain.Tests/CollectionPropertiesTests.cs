@@ -15,14 +15,14 @@ namespace RDD.Domain.Tests
     public class CollectionPropertiesTests
     {
 		[Test]
-		public void Count_should_be_zero_when_empy_collection()
+		public void Sum_of_id_should_work_on_collection()
 		{
 			using (var storage = new InMemoryStorageService())
 			{
 				var execution = new InMemoryExecutionContext();
 				var users = new UsersCollection(storage, execution, null);
 
-				var fields = "id,name,collection.count";
+				var fields = "id,name,collection.sum(id)";
 
 				var result = users.Get(new Query<User> { Fields = Field.Parse<User>(fields) });
 
