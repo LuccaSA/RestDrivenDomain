@@ -20,25 +20,13 @@ namespace RDD.Domain.Helpers
 			EntityType = typeof(ISelection<>).MakeGenericType(typeof(TEntity));
 		}
 
-		protected override PropertyInfo GetProperty(string propertyName)
-		{
-			var property = typeof(ISelection<>).GetProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
-
-			if (property == null)
-			{
-				throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, String.Format("Unknown property {0} on type IAPICollection", propertyName));
-			}
-
-			return property;
-		}
-
 		private PropertyInfo GetEntityProperty(string propertyName)
 		{
 			var property = typeof(TEntity).GetProperties().Where(p => p.Name.ToLower() == propertyName.ToLower()).FirstOrDefault();
 
 			if (property == null)
 			{
-				throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, String.Format("Unknown property {0} on type IAPICollection", propertyName));
+				throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, String.Format("Unknown property {0} on type ISelection", propertyName));
 			}
 
 			return property;
