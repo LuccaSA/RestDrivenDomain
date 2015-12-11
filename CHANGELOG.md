@@ -11,11 +11,17 @@
  - Query.Options est virtuel, vous pouvez créer votre propre Query avec vos propres Options
  - Principal.Id disponible au niveau de IPrincipal
  - On rend fonctionnelles les stopWatch et le principal dans les metadata des réponses d'API
+ - Projet de Tests avec [NCrunch](https://www.nuget.org/packages/NCrunch.Framework/)
+ - Implémentation des sum/min/max sur les collections, notamment via la classe [DecimalRounding](https://github.com/LuccaSA/RestDrivenDomain/blob/c98868a7044e059775509c727f2e5ab5d3d01b7e/RDD.Domain/Helpers/DecimalRounding.cs)
 
 ### Breaking changes
  - Le FieldExpansionHelper n'est plus static, il faut revoir ses appels dans votre code
  - Votre implémentation de IPrincipal doit exposer .Id
  - MetadataHeader suppose que le ExecutionContext.Current est setté, et que son .principal aussi
+
+### Resolved issues
+ - Le count sur les collections ne marchait pas
+ - 
 
 ## 1.0.1 - Integrate with WS Auth
 
