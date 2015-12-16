@@ -12,6 +12,7 @@ using RDD.Domain.Models.Querying;
 using RDD.Web.Serialization;
 using RDD.Domain.Exceptions;
 using NExtends.Primitives;
+using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
 
 namespace RDD.Web.Helpers
 {
@@ -50,18 +51,18 @@ namespace RDD.Web.Helpers
 			return _jsonResolver;
 		}
 
-		public List<PostedData> InputObjectsFromIncomingHTTPRequest(HttpRequestMessage Request)
+		public List<PostedData> InputObjectsFromIncomingHTTPRequest(IRequestMessage request)
 		{
 			var objects = new List<PostedData>();
 
-			var contentType = HttpContext.Current.Request.ContentType.Split(';')[0];
-			var rawInput = Request.Content.ReadAsStringAsync().Result;
+			var contentType = request.ContentType.Split(';')[0];
+			var rawInput = request.Content;
 
 			switch (contentType)
 			{
 				case "application/x-www-form-urlencoded":
 				case "text/plain":
-					objects.Add(PostedData.ParseDictionary(Request.Content.ReadAsFormDataAsync().Result.ToDictionary()));
+					objects.Add(PostedData.ParseDictionary(request.ContentAsFormDictionnary));
 					break;
 
 				//ce content-type est le seul à pouvoir envoyer plus qu'un seul formulaire

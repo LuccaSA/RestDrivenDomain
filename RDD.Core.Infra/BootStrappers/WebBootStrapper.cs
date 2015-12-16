@@ -2,7 +2,6 @@
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
 using RDD.Infra.Services;
-using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using HttpContextWrapper = RDD.Web.Helpers.HttpContextWrapper;
+using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
 
-namespace RDD.Web
+namespace RDD.Infra.BootStrappers
 {
-	public static class BootStrapper
+	public static class WebBootStrapper
 	{
 		public static void ApplicationStart()
 		{
@@ -35,6 +34,12 @@ namespace RDD.Web
 
 				return result;
 			});
+			resolver.Register<IExecutionContext>(() =>
+			{
+				var webContext = resolver.Resolve<IWebContext>();
+
+				return (IExecutionContext)webContext.Items["executionContext"];
+			});
 			resolver.Register<IAsyncService>(() => new AsyncService());
 
 			Resolver.Current = () => resolver;
@@ -43,7 +48,6 @@ namespace RDD.Web
 		public static void ApplicationBeginRequest()
 		{
 			var webContext = Resolver.Current().Resolve<IWebContext>();
-
 			webContext.Items["executionContext"] = new HttpExecutionContext();
 		}
 	}

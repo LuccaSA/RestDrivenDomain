@@ -17,6 +17,11 @@ namespace RDD.Infra.Contexts
 	{
 		protected Dictionary<string, object> _items;
 
+		public InMemoryWebContext()
+		{
+			_items = new Dictionary<string, object>();
+		}
+
 		public InMemoryWebContext(IDictionary items)
 		{
 			_items = new Dictionary<string, object>()

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RDD.Web.Helpers
+namespace RDD.Infra.Contexts
 {
 	public class HttpExecutionContext : IExecutionContext
 	{

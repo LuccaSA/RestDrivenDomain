@@ -19,7 +19,7 @@ namespace RDD.Web.Models
 
 		public MetadataHeader()
 		{
-			var execution = ExecutionContext.Current;
+			var execution = Resolver.Current().Resolve<IExecutionContext>();
 
 			execution.serverWatch.Stop();
 

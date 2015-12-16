@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 
-namespace RDD.Web.Helpers
+namespace RDD.Infra.Contexts
 {
 	public class HttpContextWrapper : IWebContext
 	{
@@ -47,6 +47,18 @@ namespace RDD.Web.Helpers
 		public string UserAgent { get { return _context.Request.UserAgent; } }
 		public string BrowserType { get { return _context.Request.Browser.Type; } }
 		public int BrowserMajorVersion { get { return _context.Request.Browser.MajorVersion; } }
+		public string Content { get { return new StreamReader(_context.Request.InputStream).ReadToEnd(); } }
+		public string ContentType { get { return _context.Request.ContentType; } }
+		public Dictionary<string, string> ContentAsFormDictionnary
+		{
+			get
+			{
+				var content = Content;
+
+				return content.Split('&').Select(s => s.Split('=')).ToDictionary(p => p[0], p => p[1]);
+			}
+		}
+
 		public void Redirect(Uri url, bool endReponse = true)
 		{
 			_context.Response.Redirect(url.ToString(), endReponse);

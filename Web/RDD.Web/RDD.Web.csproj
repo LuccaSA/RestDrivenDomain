@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\cloudcontrol\packages\RDD.Web.1.0.1\lib\net451\</OutputPath>
+    <OutputPath>..\..\..\cloudcontrol\packages\RDD.Web.1.0.2\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,8 +35,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NExtends, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NExtends.1.0.0\lib\net451\NExtends.dll</HintPath>
+    <Reference Include="NExtends, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NExtends.1.0.2\lib\net451\NExtends.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -58,14 +58,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BootStrapper.cs" />
+    <Compile Include="Contexts\HttpRequestMessageWrapper.cs" />
     <Compile Include="Exceptions\JsonExceptionAttribute.cs" />
-    <Compile Include="Helpers\HttpExecutionContext.cs" />
-    <Compile Include="Helpers\HttpContextWrapper.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="Controllers\WebApiController.http.cs" />
     <Compile Include="IEntitySerializer.cs" />
+    <Compile Include="IRequestMessage.cs" />
     <Compile Include="Models\Metadata.cs" />
     <Compile Include="Models\MetadataHeader.cs" />
     <Compile Include="Models\MetadataPaging.cs" />

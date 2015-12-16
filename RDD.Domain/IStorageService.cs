@@ -16,10 +16,10 @@ namespace RDD.Domain
 			where TEntity : class;
 
 		void Add<TEntity>(TEntity entity)
-			where TEntity : class;
+			where TEntity : class, IPrimaryKey;
 
 		void AddRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class;
+			where TEntity : class, IPrimaryKey;
 
 		void Remove<TEntity>(TEntity entity)
 			where TEntity : class;

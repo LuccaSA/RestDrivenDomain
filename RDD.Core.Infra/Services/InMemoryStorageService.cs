@@ -13,10 +13,12 @@ namespace RDD.Infra.Services
 	public class InMemoryStorageService : IStorageService, IDisposable
 	{
 		public Dictionary<Type, IList> Cache { get; private set; }
+		public Dictionary<Type, int> Indexes { get; private set; }
 
 		public InMemoryStorageService()
 		{
 			Cache = new Dictionary<Type, IList>();
+			Indexes = new Dictionary<Type, int>();
 		}
 
 		private void CreateIfNotExist<TEntity>()
@@ -26,6 +28,7 @@ namespace RDD.Infra.Services
 			if (!Cache.ContainsKey(type))
 			{
 				Cache.Add(type, new List<TEntity>());
+				Indexes.Add(type, 0);
 			}
 		}
 
@@ -44,7 +47,7 @@ namespace RDD.Infra.Services
 		}
 
 		public void Add<TEntity>(TEntity entity)
-			where TEntity : class
+			where TEntity : class, IPrimaryKey
 		{
 			CreateIfNotExist<TEntity>();
 
@@ -59,7 +62,7 @@ namespace RDD.Infra.Services
 		}
 
 		public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class
+			where TEntity : class, IPrimaryKey
 		{
 			foreach (var entity in entities)
 			{
@@ -76,7 +79,26 @@ namespace RDD.Infra.Services
 			}
 		}
 
-		public void Commit() { }
+		public void Commit()
+		{
+			foreach(var type in Cache.Keys)
+			{
+				var index = Indexes[type];
+
+				foreach(var element in Cache[type])
+				{
+					var entity = (IPrimaryKey)element;
+					var id = entity.GetId().ToString();
+
+					if (id == 0.ToString())
+					{
+						entity.SetId(++index);
+					}
+				}
+
+				Indexes[type] = index;
+			}
+		}
 		public void Dispose() { }
 	}
 }

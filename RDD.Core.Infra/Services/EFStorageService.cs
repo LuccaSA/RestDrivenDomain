@@ -41,7 +41,7 @@ namespace RDD.Infra.Services
 		}
 
 		public virtual void Add<TEntity>(TEntity entity)
-			where TEntity : class
+			where TEntity : class, IPrimaryKey
 		{
 			_dbContext.Set<TEntity>().Add(entity);
 		}
@@ -53,7 +53,7 @@ namespace RDD.Infra.Services
 		}
 
 		public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class
+			where TEntity : class, IPrimaryKey
 		{
 			//http://stackoverflow.com/questions/4355474/how-do-i-speed-up-dbset-add
 			try

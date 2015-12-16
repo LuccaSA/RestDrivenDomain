@@ -4,6 +4,8 @@ using RDD.Domain.Exceptions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Infra;
+using RDD.Infra.Contexts;
+using RDD.Web.Contexts;
 using RDD.Web.Exceptions;
 using RDD.Web.Models;
 using System;
@@ -11,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace RDD.Web.Controllers
@@ -45,9 +48,13 @@ namespace RDD.Web.Controllers
 		// Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
 		// car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
 		public virtual HttpResponseMessage Get(TKey _id_)
-        {
-			return Request.CreateResponse(HttpStatusCode.OK, GetEntity(_id_), ApiHelper.GetFormatter());
-        }
+		{
+			return Get(_id_, new HttpRequestMessageWrapper(Request));
+		}
+		public virtual HttpResponseMessage Get(TKey _id_, IRequestMessage request)
+		{
+			return request.CreateResponse(HttpStatusCode.OK, GetEntity(_id_), ApiHelper.GetFormatter());
+		}
 
 		[NonAction]
 		public Dictionary<string, object> GetEntity(TKey id)
@@ -67,8 +74,13 @@ namespace RDD.Web.Controllers
 
 		public virtual HttpResponseMessage Post()
 		{
+			return Post(new HttpRequestMessageWrapper(Request));
+		}
+
+		public virtual HttpResponseMessage Post(IRequestMessage request)
+		{
 			var query = ApiHelper.CreateQuery(false);
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(Request).SingleOrDefault();
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request).SingleOrDefault();
 
 			_execution.queryWatch.Start();
 
@@ -78,14 +90,18 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			return Get(entity.Id);
+			return Get(entity.Id, request);
 		}
 
 		public virtual HttpResponseMessage Put(TKey _id_)
 		{
+			return Put(_id_, new HttpRequestMessageWrapper(Request));
+		}
+		public virtual HttpResponseMessage Put(TKey _id_, IRequestMessage request)
+		{
 			var query = ApiHelper.CreateQuery(false);
 
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(Request).SingleOrDefault();
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request).SingleOrDefault();
 
 			_execution.queryWatch.Start();
 
@@ -102,9 +118,13 @@ namespace RDD.Web.Controllers
 
 		public virtual HttpResponseMessage Put()
 		{
+			return Put(new HttpRequestMessageWrapper(Request));
+		}
+		public virtual HttpResponseMessage Put(IRequestMessage request)
+		{
 			var query = ApiHelper.CreateQuery(false);
 
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(Request);
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request);
 
 			//Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
 			if (datas.Any(d => !d.ContainsKey("id")))
