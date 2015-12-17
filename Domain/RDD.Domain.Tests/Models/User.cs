@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,5 +12,6 @@ namespace RDD.Domain.Tests.Models
 	{
 		public override int Id { get; set; }
 		public override string Name { get; set; }
+		public MailAddress Mail { get; set; }
 	}
 }

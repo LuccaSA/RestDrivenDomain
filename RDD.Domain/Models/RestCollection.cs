@@ -512,34 +512,32 @@ namespace RDD.Domain.Models
 		/// <param name="subs">Les Fields de la sous entités = un sous ensemble des Fields du TEntity</param>
 		/// <param name="appInstance">Si la sous entité est gérée par la même application que l'entité principale, on transmet l'appInstance, sinon ça n'est pas nécessaire</param>
 		/// <returns>Les includes augmentés des includes de la sous entité</returns>
-		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, LambdaExpression selector)
+		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, LambdaExpression selector, IRestCollection<TSubEntity> subs)
 			where TSubEntity : class, IEntityBase<TSubEntity, TSubKey>, new()
 			where TSubKey : IEquatable<TSubKey>
 		{
-			//TODO
-			////On va d'abord chercher le Repo qui gère la sous entité
-			//var subRepo = RepoProvider.Current.Repository<TSubEntity, TSubKey>(_storage, appInstance.Id);
-			//var subFields = fields.TransfertTo<TSubEntity>(selector);
-			//var subIncludes = subRepo.HandleIncludes(new PropertySelector<TSubEntity>(), verb, subFields);
+			//On va d'abord chercher le Repo qui gère la sous entité
+			var subFields = fields.TransfertTo<TSubEntity>(selector);
+			var subIncludes = subs.HandleIncludes(new PropertySelector<TSubEntity>(), verb, subFields);
 
-			//if (!subIncludes.IsEmpty)
-			//{
-			//	includes.Add<TSubEntity>(subIncludes, selector);
-			//}
+			if (!subIncludes.IsEmpty)
+			{
+				includes.Add<TSubEntity>(subIncludes, selector);
+			}
 
 			return includes;
 		}
-		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, Expression<Func<TEntity, TSubEntity>> selector)
+		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, Expression<Func<TEntity, TSubEntity>> selector, IRestCollection<TSubEntity> subs)
 			where TSubEntity : class, IEntityBase<TSubEntity, TSubKey>, new()
 			where TSubKey : IEquatable<TSubKey>
 		{
-			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector);
+			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector, subs);
 		}
-		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, Expression<Func<TEntity, IEnumerable<TSubEntity>>> selector)
+		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, Expression<Func<TEntity, IEnumerable<TSubEntity>>> selector, IRestCollection<TSubEntity> subs)
 			where TSubEntity : class, IEntityBase<TSubEntity, TSubKey>, new()
 			where TSubKey : IEquatable<TSubKey>
 		{
-			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector);
+			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector, subs);
 		}
 
 		public IQueryable<TEntity> Includes(IQueryable<TEntity> entities)

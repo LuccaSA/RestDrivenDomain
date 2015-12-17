@@ -14,6 +14,8 @@ namespace RDD.Domain
 	public interface IRestCollection<TEntity>
 		where TEntity : class, IEntityBase
 	{
+		PropertySelector<TEntity> HandleIncludes(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields);
+
 		ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 
 		IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);

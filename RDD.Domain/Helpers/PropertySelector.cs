@@ -414,7 +414,8 @@ namespace RDD.Domain.Helpers
 			}
 			else //Remplacement du child existant
 			{
-				matchingChild = child;
+				Children.Remove(matchingChild);
+				Children.Add(child);
 
 				return false;
 			}
