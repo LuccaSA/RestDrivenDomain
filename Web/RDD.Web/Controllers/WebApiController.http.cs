@@ -51,6 +51,8 @@ namespace RDD.Web.Controllers
 		{
 			return Get(_id_, new HttpRequestMessageWrapper(Request));
 		}
+
+		[NonAction]
 		public virtual HttpResponseMessage Get(TKey _id_, IRequestMessage request)
 		{
 			return request.CreateResponse(HttpStatusCode.OK, GetEntity(_id_), ApiHelper.GetFormatter());
@@ -77,6 +79,7 @@ namespace RDD.Web.Controllers
 			return Post(new HttpRequestMessageWrapper(Request));
 		}
 
+		[NonAction]
 		public virtual HttpResponseMessage Post(IRequestMessage request)
 		{
 			var query = ApiHelper.CreateQuery(false);
@@ -97,6 +100,8 @@ namespace RDD.Web.Controllers
 		{
 			return Put(_id_, new HttpRequestMessageWrapper(Request));
 		}
+
+		[NonAction]
 		public virtual HttpResponseMessage Put(TKey _id_, IRequestMessage request)
 		{
 			var query = ApiHelper.CreateQuery(false);
@@ -120,6 +125,8 @@ namespace RDD.Web.Controllers
 		{
 			return Put(new HttpRequestMessageWrapper(Request));
 		}
+
+		[NonAction]
 		public virtual HttpResponseMessage Put(IRequestMessage request)
 		{
 			var query = ApiHelper.CreateQuery(false);
