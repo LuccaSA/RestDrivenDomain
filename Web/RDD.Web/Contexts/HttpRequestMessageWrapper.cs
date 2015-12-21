@@ -17,7 +17,7 @@ namespace RDD.Web.Contexts
 		}
 
 		public string Content { get { return Request.Content.ReadAsStringAsync().Result; } }
-		public string ContentType { get { return Request.Headers.Accept.FirstOrDefault().MediaType; } }
+		public string ContentType { get { return Request.Content.Headers.ContentType.MediaType; } }
 		public Dictionary<string, string> ContentAsFormDictionnary { get { return Request.Content.ReadAsFormDataAsync().Result.ToDictionary(); } }
 
 		public HttpResponseMessage CreateResponse<TEntity>(HttpStatusCode status, TEntity entity, MediaTypeFormatter formatter)
