@@ -9,23 +9,23 @@ namespace RDD.Domain.Helpers
 {
 	public class Culture
 	{
-		public CultureInfo rawCulture { get; private set; }
+		public CultureInfo RawCulture { get; private set; }
 
-		public int Id { get { return rawCulture.LCID; } set { throw new NotImplementedException(); } }
+		public int Id { get { return RawCulture.LCID; } set { throw new NotImplementedException(); } }
 
-		public string Code { get { return rawCulture.Name; } }
+		public string Code { get { return RawCulture.Name; } }
 
-		public string Name { get { return rawCulture.NativeName; } set { throw new NotImplementedException(); } }
+		public string Name { get { return RawCulture.NativeName; } set { throw new NotImplementedException(); } }
 
-		public string EnglishName { get { return rawCulture.EnglishName; } }
+		public string EnglishName { get { return RawCulture.EnglishName; } }
 
-		public int LCID { get { return rawCulture.LCID; } }
+		public int LCID { get { return RawCulture.LCID; } }
 
 		public Culture() { }
 
 		public Culture(CultureInfo rawCulture)
 		{
-			this.rawCulture = rawCulture;
+			this.RawCulture = rawCulture;
 		}
 	}
 }

@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\cloudcontrol\packages\RDD.Web.1.0.3\lib\net451\</OutputPath>
+    <OutputPath>..\..\..\webservices\Authentication\packages\RDD.Web.1.0.4\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -69,6 +69,7 @@
     <Compile Include="Models\MetadataHeader.cs" />
     <Compile Include="Models\MetadataPaging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\CultureSerializer.cs" />
     <Compile Include="Serialization\EntitySerializer.cs" />
     <Compile Include="Serialization\JsonApiFormatter.cs" />
     <Compile Include="Serialization\JsonpMediaTypeFormatter.cs" />

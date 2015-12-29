@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\cloudcontrol\packages\RDD.Domain.1.0.2\lib\net451\</OutputPath>
+    <OutputPath>..\..\webservices\Authentication\packages\RDD.Domain.1.0.3\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
