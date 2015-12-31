@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using NExtends.Primitives;
+using System.Net.Mail;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -93,6 +94,11 @@ namespace RDD.Domain.Models.Querying
 				{
 					var correctPropertyType = nullableType ?? propertyType;
 					var culture = CultureInfo.CurrentCulture;
+
+					if (correctPropertyType == typeof(MailAddress))
+					{
+						return new MailAddress(realStringValue);
+					}
 
 					//On permet, qq soit la culture du user, d'envoyer des doubles avec . ou , comme séparateur décimal
 					if (correctPropertyType == typeof(Double) || correctPropertyType == typeof(Decimal))
