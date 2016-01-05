@@ -26,7 +26,8 @@ namespace RDD.Infra.Contexts
 		{
 			_items = new Dictionary<string, object>()
 			{
-				{ "executionContext", items["executionContext"]}
+				{ "executionContext", items["executionContext"]},
+				{ "repoProvider", items["repoProvider"]}
 			};
 		}
 
