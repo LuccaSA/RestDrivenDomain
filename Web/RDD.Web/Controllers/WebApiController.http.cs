@@ -40,7 +40,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields));
+			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields), query.Options);
 
 			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}
@@ -69,7 +69,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields));
+			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
 
 			return dataContainer.ToDictionary();
 		}
@@ -116,7 +116,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Start();
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields));
+			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
 
 			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}
@@ -160,7 +160,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeEntities(entities, query.Fields));
+			var dataContainer = new Metadata(_serializer.SerializeEntities(entities, query.Fields), query.Options);
 
 			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}

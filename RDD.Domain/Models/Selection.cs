@@ -50,13 +50,13 @@ namespace RDD.Domain.Models
 				return roundFunction(sum);
 			}
 			else if (property.PropertyType == typeof(decimal))
- 			{
+			{
 				Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
 				var sum = Items.Sum(i => (decimal)property.GetValue(i));
 				return roundFunction(sum);
 			}
- 			else if (property.PropertyType == typeof(decimal?))
- 			{
+			else if (property.PropertyType == typeof(decimal?))
+			{
 				Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
 				var sum = Items.Sum(i => (decimal?)property.GetValue(i) ?? 0);
 				return roundFunction(sum);
@@ -88,14 +88,26 @@ namespace RDD.Domain.Models
 			}
 			else if (property.PropertyType == typeof(double))
 			{
-				Func<double, double> roundFunction = rounding.GetRoundingFunction();
+				Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
 				var sum = Items.Min(i => (double)property.GetValue(i));
 				return roundFunction(sum);
 			}
 			else if (property.PropertyType == typeof(double?))
 			{
-				Func<double, double> roundFunction = rounding.GetRoundingFunction();
+				Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
 				var sum = Items.Min(i => (double?)property.GetValue(i) ?? 0);
+				return roundFunction(sum);
+			}
+			else if (property.PropertyType == typeof(decimal))
+			{
+				Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
+				var sum = Items.Min(i => (decimal)property.GetValue(i));
+				return roundFunction(sum);
+			}
+			else if (property.PropertyType == typeof(decimal?))
+			{
+				Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
+				var sum = Items.Min(i => (decimal?)property.GetValue(i) ?? 0);
 				return roundFunction(sum);
 			}
 			else if (property.PropertyType == typeof(DateTime))
@@ -129,14 +141,26 @@ namespace RDD.Domain.Models
 			}
 			else if (property.PropertyType == typeof(double))
 			{
-				Func<double, double> roundFunction = rounding.GetRoundingFunction();
+				Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
 				var sum = Items.Max(i => (double)property.GetValue(i));
 				return roundFunction(sum);
 			}
 			else if (property.PropertyType == typeof(double?))
 			{
-				Func<double, double> roundFunction = rounding.GetRoundingFunction();
+				Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
 				var sum = Items.Max(i => (double?)property.GetValue(i) ?? 0);
+				return roundFunction(sum);
+			}
+			else if (property.PropertyType == typeof(decimal))
+			{
+				Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
+				var sum = Items.Max(i => (decimal)property.GetValue(i));
+				return roundFunction(sum);
+			}
+			else if (property.PropertyType == typeof(decimal?))
+			{
+				Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
+				var sum = Items.Max(i => (decimal?)property.GetValue(i) ?? 0);
 				return roundFunction(sum);
 			}
 			else if (property.PropertyType == typeof(DateTime))

@@ -377,6 +377,12 @@ namespace RDD.Domain.Models
 					count = items.Count();
 				}
 
+				//Si pagination, alors on met à jour le count total
+				if (query.Options.Page != null)
+				{
+					query.Options.Page.TotalCount = count;
+				}
+
 				//Si on a demandé les permissions, on va les chercher après énumération
 				if (query.Options.attachOperations)
 				{

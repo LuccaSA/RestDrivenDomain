@@ -18,7 +18,7 @@ namespace RDD.Domain.Models.Querying
 		public int Offset { get; private set; }
 		[Range(1, int.MaxValue)]
 		public int Limit { get; private set; }
-		public int TotalCount { get; private set; }
+		public int TotalCount { get; set; }
 
 		public Page(int offset, int limit)
 		{

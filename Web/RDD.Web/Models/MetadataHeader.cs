@@ -15,7 +15,7 @@ namespace RDD.Web.Models
 
 		public string principal { get; set; }
 
-		public MetadataPaging paging { get; set; }
+		public MetadataPaging Paging { get; set; }
 
 		public MetadataHeader()
 		{

@@ -159,7 +159,6 @@ namespace RDD.Domain.Models.Querying
 			if (parameters.ContainsKey(Reserved.paging))
 			{
 				Options.Page = Page.Parse(parameters[Reserved.paging].value);
-				Options.withPagingInfo = true;
 			}
 
 			//No Warnings

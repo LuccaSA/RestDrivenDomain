@@ -24,7 +24,7 @@ namespace RDD.Domain.Models.Querying
 		/// </summary>
 		public bool NeedFilterRights { get; set; }
 
-		public bool withPagingInfo { get; set; }
+		public bool withPagingInfo { get { return Page != null; } }
 		public Page Page { get; set; }
 		public bool withMetadata { get; set; }
 		public bool attachOperations { get; set; }
