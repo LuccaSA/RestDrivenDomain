@@ -37,7 +37,28 @@ namespace RDD.Domain.Helpers
 			Type = type;
 		}
 
-		public Func<double, double> GetRoundingFunction()
+		public Func<double, double> GetDoubleRoundingFunction()
+		{
+			switch (Type)
+			{
+				case DecimalRounding.RoudingType.Round:
+					return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
+
+				case DecimalRounding.RoudingType.RoundEven:
+					return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
+
+				case DecimalRounding.RoudingType.Ceiling:
+					return (d) => Math.Ceiling(d);
+
+				case DecimalRounding.RoudingType.Floor:
+					return (d) => Math.Floor(d);
+
+				default:
+					throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", Type.ToString()));
+			}
+		}
+
+		public Func<decimal, decimal> GetDecimalRoundingFunction()
 		{
 			switch (Type)
 			{
