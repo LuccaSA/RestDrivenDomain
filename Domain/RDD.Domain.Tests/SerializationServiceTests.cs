@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
@@ -14,10 +13,9 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain.Tests
 {
-	[TestClass]
 	public class SerializationServiceTests
 	{
-		[TestMethod]
+		[Test]
 		public void SerializeStringAsMailAddressWhenGoodMailInQueryFilters()
 		{
 			var service = new SerializationService();
