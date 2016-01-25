@@ -27,5 +27,23 @@ namespace RDD.Infra.Services
 				action();
 			});
 		}
+
+		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action)
+		{
+			RunInParallel(entities, new ParallelOptions(), action);
+		}
+
+		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
+		{
+			var items = Resolver.Current().Resolve<IWebContext>().Items;
+			var context = new InMemoryWebContext(items);
+
+			Parallel.ForEach<TEntity>(entities, options, (entity) =>
+			{
+				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, context, (key, value) => value);
+
+				action(entity);
+			});
+		}
 	}
 }
