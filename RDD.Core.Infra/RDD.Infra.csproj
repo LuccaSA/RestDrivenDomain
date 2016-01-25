@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\cloudcontrol\packages\RDD.Infra.1.0.3\lib\net451\</OutputPath>
+    <OutputPath>..\..\ws-auth\packages\RDD.Infra.1.0.5\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -47,6 +47,12 @@
       <HintPath>..\packages\LINQKit.1.1.2\lib\net45\LinqKit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\packages\mongocsharpdriver.1.9.2\lib\net35\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\packages\mongocsharpdriver.1.9.2\lib\net35\MongoDB.Driver.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -88,6 +94,8 @@
     <Compile Include="Services\EFStorageService.cs" />
     <Compile Include="Services\InMemoryStorageService.cs" />
     <Compile Include="Contexts\InMemoryWebContext.cs" />
+    <Compile Include="Storage\MongoDB\IMongoDBResource.cs" />
+    <Compile Include="Storage\MongoDB\MongoDBStorageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
