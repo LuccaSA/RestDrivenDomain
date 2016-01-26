@@ -13,5 +13,6 @@ namespace RDD.Domain.Tests.Models
 		public override int Id { get; set; }
 		public override string Name { get; set; }
 		public MailAddress Mail { get; set; }
+		public Uri TwitterUri { get; set; }
 	}
 }

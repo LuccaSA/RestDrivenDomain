@@ -49,6 +49,7 @@
     <Compile Include="DecimalRoundingTests.cs" />
     <Compile Include="Models\UsersCollection.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="PatchEntityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationServiceTests.cs" />
     <Compile Include="PropertySelectorTests.cs" />
