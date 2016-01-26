@@ -28,14 +28,15 @@ namespace RDD.Domain.Exceptions
 			}
 		}
 
-		public HttpLikeException(HttpStatusCode status, string message, Exception innerException)
-			: base(message, innerException)
+		public HttpLikeException(HttpStatusCode status, string message, Exception innerException, params object[] args)
+			: base(String.Format(message, args), innerException)
 		{
 			this.Status = status;
 		}
-		public HttpLikeException(HttpStatusCode status) : this(status, null, null) { }
-		public HttpLikeException(HttpStatusCode status, string message) : this(status, message, null) { }
-		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, innerException.Message, innerException) { }
+		public HttpLikeException(HttpStatusCode status) : this(status, null, null, new HashSet<object>().ToArray()) { }
+		public HttpLikeException(HttpStatusCode status, string message) : this(status, message, null, new HashSet<object>().ToArray()) { }
+		public HttpLikeException(HttpStatusCode status, string message, params object[] args) : this(status, message, null, args) { }
+		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, innerException.Message, innerException, new HashSet<object>().ToArray()) { }
 
 		public static HttpLikeException Parse(Exception e)
 		{

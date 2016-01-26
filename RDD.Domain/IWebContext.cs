@@ -23,6 +23,7 @@ namespace RDD.Domain
 		string PhysicalApplicationPath { get; }
 		Dictionary<string, string> GetQueryNameValuePairs();
 		string UserHostAddress { get; }
+		string UserHostName { get; }
 		string UserAgent { get; }
 		string BrowserType { get; }
 		int BrowserMajorVersion { get; }
