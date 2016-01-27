@@ -1,6 +1,6 @@
 # Change log
 
-## 1.1.0 - Integrate with CloudControl
+## 1.1 - Lucca WebServices integration
 
 ### New features
  - Get/SetCookie pour faciliter le travail sur les Cookies dans le IWebContext
@@ -21,7 +21,8 @@
  - Support des decimals dans les sommes/min/max sur les Selections (source : https://github.com/LuccaSA/ilucca/commit/efd89c176dc73ac58fa5ecf94b457c0170fc391a)
  - On sait désérialiser un string en MailAddress, et donc on peut utiliser ce type dans des objets du Domain
  - Ajout du concept de WebService et gestion de leur authentification (ApiAuthorize)
-
+ - AsyncService : Parallel tasks support
+ - Basé sur NExtends 1.0.3 qui gère la désérialisation d'un string en Uri
 
 ### Breaking changes
  - Le FieldExpansionHelper n'est plus static, il faut revoir ses appels dans votre code
@@ -36,7 +37,8 @@
  - Le count sur les collections ne marchait pas
  - PropertySelector.Add() : on changeait une référence locale vers l'élément dans la collection, mais pas la référence vers l'élément depuis la collection. Attention, le child se retrouve en dernier dans la collection, en espérant que l'ordre ne soit pas un pb
  - issue #3 
- - issuer #4 - cependant pas encore de lien previous/next
+ - issue #4 - cependant pas encore de lien previous/next
+ - On n'utilise que NUnit, pas MSTest, sinon ça casse le build de myGet
 
 ## 1.0.1 - Integrate with WS Auth
 
