@@ -7,6 +7,7 @@
 
 ### Breaking changes
  - Http verb of `Query<T>` is now properly set, so you might have `Unreachable entity type` errors if you don't properly handle right management. In this case, you have to override `FilterRights()` method on your collection.
+ - Signature of `ApiHelper.CreateQuery()` now takes a second argument which is the Http Verb corresponding to the current Http Request.
 
 ## 1.0.2-5 - Lucca WebServices integration
 
