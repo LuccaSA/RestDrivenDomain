@@ -1,6 +1,6 @@
 # Change log
 
-## 1.0.6 - Post redirect Get strategy
+## 1.0.7 - Post redirect Get strategy
 
 ### New features
  - After a Post, we no longer redirect to Get front door, but rather play `GetById()` method with POST Http verb behavior. This way you can customize the way an entity should be sent back to the client between a Post and a real Get.
@@ -9,7 +9,7 @@
  - Http verb of `Query<T>` is now properly set, so you might have `Unreachable entity type` errors if you don't properly handle right management. In this case, you have to override `FilterRights()` method on your collection.
  - Signature of `ApiHelper.CreateQuery()` now takes a second argument which is the Http Verb corresponding to the current Http Request.
 
-## 1.0.2-5 - Lucca WebServices integration
+## 1.0.2-6 - Lucca WebServices integration
 
 ### New features
  - Get/SetCookie pour faciliter le travail sur les Cookies dans le IWebContext
