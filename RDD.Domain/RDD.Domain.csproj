@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\ws-auth\packages\RDD.Domain.1.0.5\lib\net451\</OutputPath>
+    <OutputPath>..\..\webservices\FTPAccounts\packages\RDD.Domain.1.0.5\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -77,6 +77,7 @@
     <Compile Include="IAsyncService.cs" />
     <Compile Include="IAuthenticationService.cs" />
     <Compile Include="ICloneable.cs" />
+    <Compile Include="ICombinationsHolder.cs" />
     <Compile Include="IDependencyInjectionResolver.cs" />
     <Compile Include="IEntityBase.cs" />
     <Compile Include="IExecutionContext.cs" />
@@ -89,6 +90,8 @@
     <Compile Include="IStorageService.cs" />
     <Compile Include="IWebContext.cs" />
     <Compile Include="IWebServicesCollection.cs" />
+    <Compile Include="Models\Application.cs" />
+    <Compile Include="Models\Combination.cs" />
     <Compile Include="Models\EntityBase.cs" />
     <Compile Include="Models\Enum.cs" />
     <Compile Include="Models\Operation.cs" />

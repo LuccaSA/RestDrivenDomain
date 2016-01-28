@@ -1,6 +1,7 @@
 ﻿using NExtends.Primitives;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
+using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Infra;
@@ -32,7 +33,7 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		protected virtual HttpResponseMessage Get(Func<Query<TEntity>, ISelection<TEntity>> getEntities)
 		{
-			var query = ApiHelper.CreateQuery();
+			var query = ApiHelper.CreateQuery(HttpVerb.GET);
 
 			_execution.queryWatch.Start();
 
@@ -61,7 +62,7 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		public Dictionary<string, object> GetEntity(TKey id)
 		{
-			var query = ApiHelper.CreateQuery(false);
+			var query = ApiHelper.CreateQuery(HttpVerb.GET, false);
 
 			_execution.queryWatch.Start();
 
@@ -82,18 +83,22 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		public virtual HttpResponseMessage Post(IRequestMessage request)
 		{
-			var query = ApiHelper.CreateQuery(false);
+			var query = ApiHelper.CreateQuery(HttpVerb.POST, false);
 			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request).SingleOrDefault();
 
-			_execution.queryWatch.Start();
-
 			var entity = _collection.Create(datas, query);
+
+			_execution.queryWatch.Start();
 
 			_storage.Commit();
 
 			_execution.queryWatch.Stop();
 
-			return Get(entity.Id, request);
+			entity = _collection.GetById(entity.Id, query, query.Verb);
+
+			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
+
+			return request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}
 
 		public virtual HttpResponseMessage Put(TKey _id_)
@@ -104,7 +109,7 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		public virtual HttpResponseMessage Put(TKey _id_, IRequestMessage request)
 		{
-			var query = ApiHelper.CreateQuery(false);
+			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
 
 			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request).SingleOrDefault();
 
@@ -129,7 +134,7 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		public virtual HttpResponseMessage Put(IRequestMessage request)
 		{
-			var query = ApiHelper.CreateQuery(false);
+			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
 
 			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request);
 

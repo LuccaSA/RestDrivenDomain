@@ -13,6 +13,7 @@ using RDD.Web.Serialization;
 using RDD.Domain.Exceptions;
 using NExtends.Primitives;
 using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
+using RDD.Domain.Helpers;
 
 namespace RDD.Web.Helpers
 {
@@ -31,9 +32,12 @@ namespace RDD.Web.Helpers
 			_jsonResolver = jsonResolver ?? new CamelCasePropertyNamesContractResolver();
 		}
 
-		public virtual Query<TEntity> CreateQuery(bool isCollectionCall = true)
+		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
 		{
-			return _query.Parse(_webContext, isCollectionCall);
+			var query = _query.Parse(_webContext, isCollectionCall);
+			query.Verb = verb;
+
+			return query;
 		}
 
 		protected virtual ICollection<Expression<Func<TEntity, object>>> IgnoreList()

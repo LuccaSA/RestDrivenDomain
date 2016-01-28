@@ -22,7 +22,7 @@ namespace RDD.Domain.WebServices
 			get { return new Culture(CultureInfo.GetCultureInfo("en-US")); }
 		}
 
-		protected ICollection<int> AppOperations { get; set; }
+		public ICollection<int> AppOperations { get; set; }
 
 		public WebService()
 		{

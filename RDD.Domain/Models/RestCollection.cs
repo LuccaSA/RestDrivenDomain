@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Helpers;
 using RDD.Domain.Exceptions;
+using RDD.Domain.Contexts;
 
 namespace RDD.Domain.Models
 {
@@ -561,24 +562,13 @@ namespace RDD.Domain.Models
 			}
 			return entities;
 		}
-		protected HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
-		{
-			IEnumerable<Operation> result = new List<Operation>();
-			//On ne permet de filtrer sur certaines opérations qu'en GET
-			//Sinon le user pourrait tenter un PUT avec l'opération "view" et ainsi modifier les entités qu'il peut voir !
-			//Par contre il a le droit de voir les entités qu'il peut modifier, même si ce n'est pas paramétré comme ça dans ses rôles
-			//if (query.Options.FilterOperations != null && verb == HttpVerb.GET)
-			//{
-			//	var filters = Where.ParseOperations<TEntity>(query.Options.FilterOperations);
-			//	var predicate = new PredicateService(filters).GetPredicate<Operation>();
 
-			//	result = _appInstance.GetAllOperations<TEntity>().AsQueryable().Where(predicate);
-			//}
-			//else
-			//{
-			//	result = _appInstance.GetOperations<TEntity>(verb);
-			//}
-			return new HashSet<int>(result.Select(o => o.Id));
+		protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
+		{
+			var holder = Resolver.Current().Resolve<ICombinationsHolder>();
+			var combinations = holder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
+
+			return new HashSet<int>(combinations.Select(c => c.Operation.Id));
 		}
 
 		public virtual IEnumerable<TEntity> Prepare(IEnumerable<TEntity> entities, Query<TEntity> query)
