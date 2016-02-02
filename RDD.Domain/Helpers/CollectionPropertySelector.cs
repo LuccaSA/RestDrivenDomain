@@ -42,10 +42,10 @@ namespace RDD.Domain.Helpers
 				var matches = Regex.Match(element, String.Format("{0}\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)", specialMethod)).Groups;
 				var propertyName = matches[1].Value;
 				var property = GetEntityProperty(propertyName);
-
+				var rouding = DecimalRounding.Parse(element);
 				var param = Expression.Parameter(EntityType, "p".Repeat(depth));
 
-				var call = GetExpressionCall(specialMethod, element, depth, param, property);
+				var call = GetExpressionCall(specialMethod, rouding, depth, param, property);
 				
 				var lambda = Expression.Lambda(call, param);
 
@@ -61,10 +61,8 @@ namespace RDD.Domain.Helpers
 			}
 		}
 
-		private MethodCallExpression GetExpressionCall(string specialMethod, string pattern, int depth, ParameterExpression param, PropertyInfo property)
+		private MethodCallExpression GetExpressionCall(string specialMethod, DecimalRounding rouding, int depth, ParameterExpression param, PropertyInfo property)
 		{
-			var rouding = DecimalRounding.Parse(specialMethod);
-
 			var method = typeof(ISelection).GetMethod(specialMethod.ToFirstUpper(), new Type[] { typeof(PropertyInfo), typeof(DecimalRounding) });
 
 			return Expression.Call(param, method, new Expression[] { Expression.Constant(property), Expression.Constant(rouding) });

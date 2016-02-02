@@ -14,5 +14,6 @@ namespace RDD.Domain.Tests.Models
 		public override string Name { get; set; }
 		public MailAddress Mail { get; set; }
 		public Uri TwitterUri { get; set; }
+		public decimal Salary { get; set; }
 	}
 }

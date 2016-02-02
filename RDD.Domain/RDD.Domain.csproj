@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\webservices\FTPAccounts\packages\RDD.Domain.1.0.5\lib\net451\</OutputPath>
+    <OutputPath>..\..\cloudcontrol\packages\RDD.Domain.1.0.3\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

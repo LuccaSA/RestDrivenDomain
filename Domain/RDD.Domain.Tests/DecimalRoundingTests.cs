@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using RDD.Domain.Helpers;
+using RDD.Domain.Models;
+using RDD.Domain.Tests.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +51,46 @@ namespace RDD.Domain.Tests
 
 			Assert.AreEqual(strategy, rounding.Type);
 			Assert.AreEqual(numberOfDecimals, rounding.NumberOfDecimals);
+		}
+
+		[Test]
+		public void Should_round_to_two_decimal_when_asked()
+		{
+			var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
+			var selection = new Selection<User>(items, 2);
+
+			var result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Round, 2));
+
+			Assert.AreEqual(58.01M, result);
+
+			result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Round, 1));
+
+			Assert.AreEqual(58.0M, result);
+
+			result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Round));
+
+			Assert.AreEqual(58M, result);
+
+			result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Floor));
+
+			Assert.AreEqual(58M, result);
+
+			result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Ceiling));
+
+			Assert.AreEqual(59M, result);
+		}
+		[Test]
+		public void Should_parse_rounding_correctly_to_good_propertySelector()
+		{
+			var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
+			var selection = new Selection<User>(items, 2);
+
+			var pattern = "sum(salary,round,2)";
+			var selector = new CollectionPropertySelector<User>();
+
+			selector.Parse(pattern);
+
+			Assert.AreEqual(58.01M, selector.Children.First().Lambda.Compile().DynamicInvoke(selection));
 		}
 	}
 }

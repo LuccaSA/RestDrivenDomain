@@ -11,7 +11,7 @@ namespace RDD.Domain.Helpers
 {
 	public class DecimalRounding
 	{
-		public static DecimalRounding Default = new DecimalRounding(0, RoudingType.Floor);
+		public static DecimalRounding Default = new DecimalRounding(RoudingType.Floor);
 
 		public enum RoudingType
 		{
@@ -31,10 +31,15 @@ namespace RDD.Domain.Helpers
 		public int NumberOfDecimals { get; private set; }
 		public RoudingType Type { get; private set; }
 
-		public DecimalRounding(int numberOfDecimals, RoudingType type)
+		public DecimalRounding(RoudingType type, int numberOfDecimals = 0)
 		{
-			NumberOfDecimals = numberOfDecimals;
+			if ((type == RoudingType.Floor || type == RoudingType.Ceiling) && numberOfDecimals != 0)
+			{
+				throw new Exception(String.Format("Does not support decimals with {0} rounding strategy", type));
+			}
+
 			Type = type;
+			NumberOfDecimals = numberOfDecimals;
 		}
 
 		public Func<double, double> GetDoubleRoundingFunction()
