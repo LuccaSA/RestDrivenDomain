@@ -3,7 +3,7 @@
 ## 1.0.8
 
 ### Resolved issues
- - issue #9, rouding was not working properly with floating numbers
+ - [#9](https://github.com/LuccaSA/RestDrivenDomain/issues/9), rouding was not working properly with floating numbers
 
 
 ## 1.0.7 - Post redirect Get strategy
