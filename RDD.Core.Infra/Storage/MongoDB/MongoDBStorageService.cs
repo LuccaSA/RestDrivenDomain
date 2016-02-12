@@ -45,9 +45,9 @@ namespace RDD.Infra.Storage.MongoDB
 			
 			WriteConcernResult result = collection.Save(entity);
 
-			if (!result.Ok)
+			if (result.HasLastErrorMessage)
 			{
-				throw new Exception(String.Format("Error while saving: {0}", result.ErrorMessage));
+				throw new Exception(String.Format("Error while saving: {0}", result.LastErrorMessage));
 			}
 
 			// nouvelle resource tout juste créée, on la récupère de la BD
@@ -70,9 +70,9 @@ namespace RDD.Infra.Storage.MongoDB
 
 			WriteConcernResult result = collection.Remove(query);
 
-			if (!result.Ok)
+			if (result.HasLastErrorMessage)
 			{
-				throw new Exception(String.Format("Error while deleting: {0}", result.ErrorMessage));
+				throw new Exception(String.Format("Error while deleting: {0}", result.LastErrorMessage));
 			}
 		}
 
