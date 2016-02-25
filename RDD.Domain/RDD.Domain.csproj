@@ -88,7 +88,6 @@
     <Compile Include="IIncludable.cs" />
     <Compile Include="IPrimaryKey.cs" />
     <Compile Include="IPrincipal.cs" />
-    <Compile Include="IRestApiProxy.cs" />
     <Compile Include="IRestCollection.cs" />
     <Compile Include="ISelection.cs" />
     <Compile Include="IStorageService.cs" />
