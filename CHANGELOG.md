@@ -1,5 +1,12 @@
 # Change log
 
+## 1.0.9 - RDD for WS BI
+
+### New features
+ - Add support for MongoDB database - implementing IStorageService
+ - Add log and mail services - you can use FileLogService in order to log into files, or SmtpMailService in order to send mails via SMTP
+ - HttpLikeException now logs each exception into the ILogService
+
 ## 1.0.8
 
 ### Resolved issues
