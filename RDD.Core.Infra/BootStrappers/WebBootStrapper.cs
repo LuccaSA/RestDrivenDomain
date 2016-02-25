@@ -1,6 +1,7 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
+using RDD.Infra.Logs;
 using RDD.Infra.Services;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ namespace RDD.Infra.BootStrappers
 				return (IExecutionContext)webContext.Items["executionContext"];
 			});
 			resolver.Register<IAsyncService>(() => new AsyncService());
+			resolver.Register<ILogService>(() => new LostLogService());
 
 			Resolver.Current = () => resolver;
 		}

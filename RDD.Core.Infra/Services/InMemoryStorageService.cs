@@ -46,12 +46,14 @@ namespace RDD.Infra.Services
 			return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
 		}
 
-		public void Add<TEntity>(TEntity entity)
+		public TEntity Add<TEntity>(TEntity entity)
 			where TEntity : class, IPrimaryKey
 		{
 			CreateIfNotExist<TEntity>();
 
 			Cache[typeof(TEntity)].Add((object)entity);
+
+			return entity;
 		}
 
 		public void Remove<TEntity>(TEntity entity)

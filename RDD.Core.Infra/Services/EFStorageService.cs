@@ -40,10 +40,10 @@ namespace RDD.Infra.Services
 			return entities;
 		}
 
-		public virtual void Add<TEntity>(TEntity entity)
+		public virtual TEntity Add<TEntity>(TEntity entity)
 			where TEntity : class, IPrimaryKey
 		{
-			_dbContext.Set<TEntity>().Add(entity);
+			return _dbContext.Set<TEntity>().Add(entity);
 		}
 
 		public virtual void Remove<TEntity>(TEntity entity)

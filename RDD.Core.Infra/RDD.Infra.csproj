@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\cloudcontrol\packages\RDD.Infra.1.0.3\lib\net451\</OutputPath>
+    <OutputPath>..\..\ws-budgetInsight\packages\RDD.Infra.1.0.8.3\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -47,6 +47,22 @@
       <HintPath>..\packages\LINQKit.1.1.2\lib\net45\LinqKit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MongoDB.Bson, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.2.3\lib\net45\MongoDB.Bson.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.2.2.3\lib\net45\MongoDB.Driver.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.2.3\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Legacy, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\mongocsharpdriver.2.2.3\lib\net45\MongoDB.Driver.Legacy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -83,11 +99,23 @@
     <Compile Include="Contexts\HttpExecutionContext.cs" />
     <Compile Include="Contexts\InMemoryExecutionContext.cs" />
     <Compile Include="Exceptions\SqlUniqConstraintException.cs" />
+    <Compile Include="Logs\FileLogService.cs" />
+    <Compile Include="Logs\LostLogService.cs" />
+    <Compile Include="Mails\ExceptionMailInfo.cs" />
+    <Compile Include="Mails\LostMailService.cs" />
+    <Compile Include="Mails\SmtpMailService.cs" />
+    <Compile Include="Mails\SmtpServerInfo.cs" />
+    <Compile Include="Net\WrappedWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Net\WrappedWebClientFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AsyncService.cs" />
     <Compile Include="Services\EFStorageService.cs" />
     <Compile Include="Services\InMemoryStorageService.cs" />
     <Compile Include="Contexts\InMemoryWebContext.cs" />
+    <Compile Include="Storage\MongoDB\IMongoDBResource.cs" />
+    <Compile Include="Storage\MongoDB\MongoDBStorageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

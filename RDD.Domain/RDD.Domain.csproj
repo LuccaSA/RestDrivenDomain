@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\cloudcontrol\packages\RDD.Domain.1.0.3\lib\net451\</OutputPath>
+    <OutputPath>..\..\ws-budgetInsight\packages\RDD.Domain.1.0.8.3\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -79,6 +79,9 @@
     <Compile Include="ICloneable.cs" />
     <Compile Include="ICombinationsHolder.cs" />
     <Compile Include="IDependencyInjectionResolver.cs" />
+    <Compile Include="IDownloadableEntity.cs" />
+    <Compile Include="ILogService.cs" />
+    <Compile Include="IMailService.cs" />
     <Compile Include="IEntityBase.cs" />
     <Compile Include="IExecutionContext.cs" />
     <Compile Include="IIdable.cs" />
@@ -88,6 +91,8 @@
     <Compile Include="IRestCollection.cs" />
     <Compile Include="ISelection.cs" />
     <Compile Include="IStorageService.cs" />
+    <Compile Include="IWebClient.cs" />
+    <Compile Include="IWebClientFactory.cs" />
     <Compile Include="IWebContext.cs" />
     <Compile Include="IWebServicesCollection.cs" />
     <Compile Include="Models\Application.cs" />

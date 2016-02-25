@@ -15,7 +15,7 @@ namespace RDD.Domain
 		IQueryable<TEntity> Includes<TEntity>(IQueryable<TEntity> entities, PropertySelector<TEntity> includes)
 			where TEntity : class;
 
-		void Add<TEntity>(TEntity entity)
+		TEntity Add<TEntity>(TEntity entity)
 			where TEntity : class, IPrimaryKey;
 
 		void AddRange<TEntity>(IEnumerable<TEntity> entities)
