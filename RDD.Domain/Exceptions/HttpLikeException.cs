@@ -29,19 +29,18 @@ namespace RDD.Domain.Exceptions
 			}
 		}
 
-		public HttpLikeException(HttpStatusCode status, LogLevel logLevel, string message, Exception innerException, params object[] args)
-			: base(String.Format(message, args), innerException)
+		public HttpLikeException(HttpStatusCode status) : this(status, StatusToLogLevel(status), null, null) { }
+		public HttpLikeException(HttpStatusCode status, string message) : this(status, StatusToLogLevel(status), message, null) { }
+		public HttpLikeException(HttpStatusCode status, LogLevel logLevel, string message) : this(status, logLevel, message, null) { }
+		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, StatusToLogLevel(status), innerException.Message, innerException) { }
+		public HttpLikeException(HttpStatusCode status, LogLevel logLevel, string message, Exception innerException)
+			: base(message, innerException)
 		{
 			this.Status = status;
 
 			var logger = Resolver.Current().Resolve<ILogService>();
 			logger.Log(logLevel, String.Format("Error {0}, {1}", status, message));
 		}
-		public HttpLikeException(HttpStatusCode status) : this(status, StatusToLogLevel(status), null, null, new HashSet<object>().ToArray()) { }
-		public HttpLikeException(HttpStatusCode status, string message) : this(status, StatusToLogLevel(status), message, null, new HashSet<object>().ToArray()) { }
-		public HttpLikeException(HttpStatusCode status, LogLevel logLevel, string message) : this(status, logLevel, message, null, new HashSet<object>().ToArray()) { }
-		public HttpLikeException(HttpStatusCode status, string message, params object[] args) : this(status, StatusToLogLevel(status), message, null, args) { }
-		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, StatusToLogLevel(status), innerException.Message, innerException, new HashSet<object>().ToArray()) { }
 
 		public static HttpLikeException Parse(Exception e)
 		{
