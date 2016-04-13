@@ -5,6 +5,9 @@
 ### Resolved issues
 - FIX typo in HttpLikeException
 
+### Breaking changes
+- HttpLikeException does not handle args after the message, so you have to String.Format() yourself the message with the args, and then call the constructor with only the message parameter.
+
 ## 1.0.9 - RDD for WS BI
 
 ### New features
