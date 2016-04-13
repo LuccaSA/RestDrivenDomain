@@ -16,7 +16,8 @@
  - HttpLikeException now logs each exception into the ILogService
 
 ### Breaking changes
-- You have to register an ILogService. By default you can use the LostLogService, which does not log anything => Resolver.Current().Register<ILogService>(() => new LostLogService());
+- You have to register an ILogService. By default you can use the LostLogService, which does not log anything
+`Resolver.Current().Register<ILogService>(() => new LostLogService());`
 
 ## 1.0.8
 
