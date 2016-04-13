@@ -15,6 +15,9 @@
  - Add log and mail services - you can use FileLogService in order to log into files, or SmtpMailService in order to send mails via SMTP
  - HttpLikeException now logs each exception into the ILogService
 
+### Breaking changes
+- You have to register an ILogService. By default you can use the LostLogService, which does not log anything => Resolver.Current().Register<ILogService>(() => new LostLogService());
+
 ## 1.0.8
 
 ### Resolved issues
