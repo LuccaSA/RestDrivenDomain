@@ -35,7 +35,7 @@ namespace RDD.Domain.Exceptions
 			this.Status = status;
 
 			var logger = Resolver.Current().Resolve<ILogService>();
-			logger.Log(logLevel, String.Format("Error {0}, {1]", status, message));
+			logger.Log(logLevel, String.Format("Error {0}, {1}", status, message));
 		}
 		public HttpLikeException(HttpStatusCode status) : this(status, StatusToLogLevel(status), null, null, new HashSet<object>().ToArray()) { }
 		public HttpLikeException(HttpStatusCode status, string message) : this(status, StatusToLogLevel(status), message, null, new HashSet<object>().ToArray()) { }

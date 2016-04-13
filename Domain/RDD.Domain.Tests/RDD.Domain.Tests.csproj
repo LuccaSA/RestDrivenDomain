@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpLikeExceptionsTests.cs" />
     <Compile Include="CollectionPropertiesTests.cs" />
     <Compile Include="DecimalRoundingTests.cs" />
     <Compile Include="Models\UsersCollection.cs" />
