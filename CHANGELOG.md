@@ -1,5 +1,10 @@
 # Change log
 
+## 1.0.10
+
+### Resolved issues
+- FIX typo in HttpLikeException
+
 ## 1.0.9 - RDD for WS BI
 
 ### New features
