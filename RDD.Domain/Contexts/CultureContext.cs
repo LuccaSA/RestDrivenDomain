@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace RDD.Domain.Contexts
+{
+	public class CultureContext : IDisposable
+	{
+		private CultureInfo _originalCulture;
+		private CultureInfo _originalUICulture;
+
+		public CultureContext(CultureInfo culture)
+		{
+			_originalCulture = Thread.CurrentThread.CurrentCulture;
+			_originalUICulture = Thread.CurrentThread.CurrentUICulture;
+
+			Thread.CurrentThread.CurrentCulture = culture;
+			Thread.CurrentThread.CurrentUICulture = culture;
+		}
+
+		public void Dispose()
+		{
+			Thread.CurrentThread.CurrentCulture = _originalCulture;
+			Thread.CurrentThread.CurrentUICulture = _originalUICulture;
+		}
+	}
+}
