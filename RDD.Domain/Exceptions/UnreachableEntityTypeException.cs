@@ -10,6 +10,6 @@ namespace RDD.Domain.Exceptions
 	public class UnreachableEntityTypeException<TEntity> : HttpLikeException
 	{
 		public UnreachableEntityTypeException()
-			: base(HttpStatusCode.Forbidden, String.Format("Unreachable entity type {0}", typeof(TEntity).Name)) { }
+			: base(HttpStatusCode.Forbidden, String.Format("Unreachable entity type {0}. Consider adding Combinations to your Application.", typeof(TEntity).Name)) { }
 	}
 }

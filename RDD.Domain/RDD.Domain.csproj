@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\ws-auth\packages\RDD.Domain.1.0.9.6\lib\net451\</OutputPath>
+    <OutputPath>..\..\ws-auth\packages\RDD.Domain.1.0.9.8\lib\net451\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

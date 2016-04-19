@@ -61,8 +61,14 @@ namespace RDD.Domain.Models
 				return entities;
 
 			var operationIds = GetOperationIds(query, verb);
-			if (!operationIds.Any() || !_execution.curPrincipal.HasAnyOperations(_storage, operationIds))
+			if (!operationIds.Any())
+			{
 				throw new UnreachableEntityTypeException<TEntity>();
+			}
+			if (!_execution.curPrincipal.HasAnyOperations(_storage, operationIds))
+			{
+				throw new UnauthorizedException(String.Format("You do not have sufficient permission to make a {0} on type {1}", verb, typeof(TEntity).Name));
+			}
 
 			return entities;
 		}
