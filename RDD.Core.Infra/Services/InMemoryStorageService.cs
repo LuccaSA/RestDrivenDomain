@@ -12,11 +12,13 @@ namespace RDD.Infra.Services
 {
 	public class InMemoryStorageService : IStorageService, IDisposable
 	{
+		protected ISet<Action> _afterCommitActions { get; set; }
 		public Dictionary<Type, IList> Cache { get; private set; }
 		public Dictionary<Type, int> Indexes { get; private set; }
 
 		public InMemoryStorageService()
 		{
+			_afterCommitActions = new HashSet<Action>();
 			Cache = new Dictionary<Type, IList>();
 			Indexes = new Dictionary<Type, int>();
 		}
@@ -81,6 +83,11 @@ namespace RDD.Infra.Services
 			}
 		}
 
+		public void AddAfterCommitAction(Action action)
+		{
+			_afterCommitActions.Add(action);
+		}
+
 		public void Commit()
 		{
 			foreach(var type in Cache.Keys)
@@ -99,6 +106,11 @@ namespace RDD.Infra.Services
 				}
 
 				Indexes[type] = index;
+			}
+
+			foreach(var action in _afterCommitActions)
+			{
+				action();
 			}
 		}
 		public void Dispose() { }

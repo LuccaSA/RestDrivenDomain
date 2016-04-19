@@ -82,6 +82,10 @@ namespace RDD.Infra.Storage.MongoDB
 		public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
 			where TEntity : class { throw new NotImplementedException(); }
 
+		public void AddAfterCommitAction(Action action)
+		{
+			throw new NotImplementedException();
+		}
 		public virtual void Commit() { }
 		public void Dispose() { }
 	}

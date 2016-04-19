@@ -28,5 +28,7 @@ namespace RDD.Domain
 			where TEntity : class;
 
 		void Commit();
+
+		void AddAfterCommitAction(Action action);
 	}
 }

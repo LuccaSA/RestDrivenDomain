@@ -17,11 +17,13 @@ namespace RDD.Infra.Services
 	public class EFStorageService : IStorageService
 	{
 		protected DbContext _dbContext { get; set; }
+		protected ISet<Action> _afterCommitActions { get; set; }
 
 		public EFStorageService() { }
 		public EFStorageService(DbContext dbContext)
 		{
 			_dbContext = dbContext;
+			_afterCommitActions = new HashSet<Action>();
 		}
 
 		public virtual IQueryable<TEntity> Set<TEntity>()
@@ -82,11 +84,21 @@ namespace RDD.Infra.Services
 			}
 		}
 
+		public void AddAfterCommitAction(Action action)
+		{
+			_afterCommitActions.Add(action);
+		}
+
 		public virtual void Commit()
 		{
 			try
 			{
 				_dbContext.SaveChanges();
+
+				foreach(var action in _afterCommitActions)
+				{
+					action();
+				}
 			}
 			catch (DbUpdateException ex)
 			{
