@@ -408,7 +408,7 @@ namespace RDD.Domain.Models
 			//Si c'était un PUT/DELETE, on en profite pour affiner la réponse
 			if (verb != HttpVerb.GET && count == 0 && items.Count() == 0 && Any(i => true))
 			{
-				throw new UnauthorizedException(String.Format("Verb {0} unauthorized on entity type {1}", verb, typeof(TEntity).Name));
+				throw new HttpLikeException(HttpStatusCode.NotFound, String.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, verb));
 			}
 
 			return new Selection<TEntity>(items, count);
