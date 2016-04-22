@@ -2,6 +2,9 @@
 
 ## 1.0.10
 
+### New features
+- IStorageService.AddAfterCommitAction(), ability to perform Action after the Commit(), if successful. This is usefull when you want to condition the call of tird party HTTP services to the sucess of the local Commit() against your database.
+
 ### Resolved issues
 - FIX typo in HttpLikeException
 
