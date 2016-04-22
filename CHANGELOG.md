@@ -10,6 +10,7 @@
 
 ### Breaking changes
 - HttpLikeException does not handle args after the message, so you have to String.Format() yourself the message with the args, and then call the constructor with only the message parameter.
+- In yours tests, if you instantiate a User, you now HAVE TO set a cultureId to that user `new User { CultureId = 106 }`
 
 ## 1.0.9 - RDD for WS BI
 
