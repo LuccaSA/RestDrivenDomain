@@ -99,6 +99,8 @@
     <Compile Include="Contexts\HttpExecutionContext.cs" />
     <Compile Include="Contexts\InMemoryExecutionContext.cs" />
     <Compile Include="Exceptions\SqlUniqConstraintException.cs" />
+    <Compile Include="Helpers\TestExecutionModeProvider.cs" />
+    <Compile Include="Helpers\DevExecutionModeProvider.cs" />
     <Compile Include="Logs\FileLogService.cs" />
     <Compile Include="Logs\LostLogService.cs" />
     <Compile Include="Mails\ExceptionMailInfo.cs" />
@@ -122,7 +124,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Helpers\" />
     <Folder Include="Models\EntityFramework\" />
     <Folder Include="Models\Enums\" />
     <Folder Include="Models\Exceptions\" />

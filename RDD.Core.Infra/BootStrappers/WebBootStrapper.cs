@@ -1,6 +1,7 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
+using RDD.Infra.Helpers;
 using RDD.Infra.Logs;
 using RDD.Infra.Services;
 using System;
@@ -43,6 +44,7 @@ namespace RDD.Infra.BootStrappers
 			});
 			resolver.Register<IAsyncService>(() => new AsyncService());
 			resolver.Register<ILogService>(() => new LostLogService());
+			resolver.Register<IExecutionModeProvider>(() => new DevExecutionModeProvider());
 
 			Resolver.Current = () => resolver;
 		}

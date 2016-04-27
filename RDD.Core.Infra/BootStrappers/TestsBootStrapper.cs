@@ -1,6 +1,7 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
+using RDD.Infra.Helpers;
 using RDD.Infra.Services;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace RDD.Infra.BootStrappers
 			var resolver = new DependencyInjectionResolver();
 
 			resolver.Register<IAsyncService>(() => new AsyncService());
+			resolver.Register<IExecutionModeProvider>(() => new TestExecutionModeProvider());
 
 			Resolver.Current = () => resolver;
 		}

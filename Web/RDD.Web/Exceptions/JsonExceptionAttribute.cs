@@ -21,11 +21,20 @@ namespace RDD.Web.Exceptions
 
 			var httpException = HttpLikeException.Parse(baseException);
 
-			var formatter = JsonApiFormatter.GetInstance(Resolver.Current().Resolve<IWebContext>(), new CamelCasePropertyNamesContractResolver());
+			var resolver = Resolver.Current();
 
-			var data = new EntitySerializer().SerializeException(httpException);
+			var formatter = JsonApiFormatter.GetInstance(resolver.Resolve<IWebContext>(), new CamelCasePropertyNamesContractResolver());
 
-			actionExecutedContext.Response = new HttpResponseMessage(httpException.Status) {  Content = new ObjectContent(typeof(HttpLikeException), httpException, formatter) };
+			var data = new EntitySerializer().SerializeExceptionWithStackTrace(httpException);
+
+			var executionMode = resolver.Resolve<IExecutionModeProvider>().GetExecutionMode();
+
+			if (executionMode == Domain.Helpers.ExecutionMode.ReleaseCandidate || executionMode == Domain.Helpers.ExecutionMode.Production)
+			{
+				data = new EntitySerializer().SerializeException(httpException);
+			}
+
+			actionExecutedContext.Response = new HttpResponseMessage(httpException.Status) { Content = new ObjectContent<object>(data, formatter) };
 		}
 	}
 }

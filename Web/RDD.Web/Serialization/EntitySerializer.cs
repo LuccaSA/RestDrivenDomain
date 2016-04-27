@@ -171,6 +171,17 @@ namespace RDD.Web.Serialization
 			{
 				{ "Status", e.Status},
 				{ "Message", e.Message},
+				{ "Data", e.Data}
+			};
+		}
+
+		public Dictionary<string, object> SerializeExceptionWithStackTrace(HttpLikeException e)
+		{
+			return new Dictionary<string, object>()
+			{
+				{ "Status", e.Status},
+				{ "Message", e.Message},
+				{ "Data", e.Data},
 				{ "StackTrace", e.StackTrace}
 			};
 		}
