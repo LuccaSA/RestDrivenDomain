@@ -4,6 +4,7 @@
 
 ### New features
 - IStorageService.AddAfterCommitAction(), ability to perform Action after the Commit(), if successful. This is usefull when you want to condition the call of tird party HTTP services to the sucess of the local Commit() against your database.
+- IExecutionMode, holds the execution context of the application (dev, test, production, ..). In production ou prerelease mode, stacktrace of errors are not shown. Errors are now sanitized (camelCase, least number of properties returned)
 
 ### Resolved issues
 - FIX typo in HttpLikeException
@@ -11,6 +12,7 @@
 ### Breaking changes
 - HttpLikeException does not handle args after the message, so you have to String.Format() yourself the message with the args, and then call the constructor with only the message parameter.
 - In yours tests, if you instantiate a User, you now HAVE TO set a cultureId to that user `new User { CultureId = 106 }`
+- Errors are now in camelCase, and only contains (status, message, data, stackTrace)
 
 ## 1.0.9 - RDD for WS BI
 
