@@ -183,6 +183,41 @@ namespace RDD.Web.Controllers
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
+		public virtual HttpResponseMessage Delete()
+		{
+			return Delete(new HttpRequestMessageWrapper(Request));
+		}
+
+		[NonAction]
+		public virtual HttpResponseMessage Delete(IRequestMessage request)
+		{
+			var query = ApiHelper.CreateQuery(HttpVerb.DELETE, true);
+
+			_execution.queryWatch.Start();
+
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request);
+
+			if (datas.Any(d => !d.ContainsKey("id")))
+			{
+				throw new HttpLikeException(HttpStatusCode.BadRequest, "DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+			}
+
+			//Il faut que les id soient convertibles en TKey
+			try { var result = datas.Select(d => TypeExtensions.Convert<TKey>(d["id"].value)); }
+			catch { throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name)); }
+
+			foreach (var d in datas)
+			{
+				var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
+
+				_collection.Delete(id);
+			}
+
+			_storage.Commit();
+
+			return Request.CreateResponse(HttpStatusCode.OK);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			_storage.Dispose();
