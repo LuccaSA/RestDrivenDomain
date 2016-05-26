@@ -12,17 +12,19 @@ namespace RDD.Domain.Tests.Templates
 {
 	public class SingleContextTests
 	{
+		protected IDependencyInjectionResolver _resolver;
 		protected IStorageService _storage;
 		protected IExecutionContext _execution;
 		protected Func<IStorageService> _newStorage;
 
 		public SingleContextTests()
 		{
+			TestsBootStrapper.ApplicationStart();
+
+			_resolver = Resolver.Current();
 			_newStorage = () => new InMemoryStorageService();
 			_storage = _newStorage();
 			_execution = new InMemoryExecutionContext();
-
-			TestsBootStrapper.ApplicationStart();
 		}
 	}
 }
