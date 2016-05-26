@@ -50,10 +50,12 @@
     <Compile Include="DecimalRoundingTests.cs" />
     <Compile Include="Models\UsersCollection.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="CollectionMethodsTests.cs" />
     <Compile Include="PatchEntityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationServiceTests.cs" />
     <Compile Include="PropertySelectorTests.cs" />
+    <Compile Include="Templates\SingleContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

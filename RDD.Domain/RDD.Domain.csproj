@@ -63,6 +63,9 @@
     <Compile Include="Contexts\ExecutionContext.cs" />
     <Compile Include="Exceptions\HttpLikeException.cs" />
     <Compile Include="Exceptions\UnauthorizedException.cs" />
+    <Compile Include="Exceptions\NotFoundException.cs" />
+    <Compile Include="Helpers\BooleanExpression.cs" />
+    <Compile Include="Helpers\ParameterChanger.cs" />
     <Compile Include="Helpers\CollectionPropertySelector.cs" />
     <Compile Include="Helpers\Culture.cs" />
     <Compile Include="Helpers\ExecutionMode.cs" />

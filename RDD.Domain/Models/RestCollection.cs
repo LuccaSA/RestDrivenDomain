@@ -416,11 +416,19 @@ namespace RDD.Domain.Models
 
 		public object TryGetById(object id, HttpVerb verb = HttpVerb.GET)
 		{
-			return GetById((TKey)id, verb);
+			try
+			{
+				return GetById((TKey)id, verb);
+			}
+			catch { return null; }
 		}
 		public IEnumerable<object> TryGetByIds(IEnumerable<object> id, HttpVerb verb = HttpVerb.GET)
 		{
-			return GetByIds(new HashSet<TKey>(id.Cast<TKey>()), verb).Cast<object>();
+			try
+			{
+				return GetByIds(new HashSet<TKey>(id.Cast<TKey>()), verb).Cast<object>();
+			}
+			catch { return null; }
 		}
 
 		public TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET)
@@ -444,7 +452,7 @@ namespace RDD.Domain.Models
 			if (result == null)
 			{
 				//NB : si verb == PUT alors l'exception UnAuthorized sera levée lors du GetByIds
-				throw new HttpLikeException(HttpStatusCode.NotFound, String.Format("Resource with ID {0} not found", id));
+				throw new NotFoundException(String.Format("Resource with ID {0} not found", id));
 			}
 
 			return result;
