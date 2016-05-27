@@ -13,16 +13,16 @@ namespace RDD.Infra.Contexts
 		private ConcurrentDictionary<Type, object> _mappings = new ConcurrentDictionary<Type, object>();
 
 		//TODO : mutualiser le code des différentes méthodes
-		public void Register<TInterface>(Func<TInterface> constructor)
+		public void Register<TInterface>(Func<TInterface> constructor) where TInterface : class
 		{
 			_mappings[typeof(TInterface)] = constructor;
 		}
-		public void Register<TInterface, TArg1>(Func<TArg1, TInterface> constructor)
+		public void Register<TInterface, TArg1>(Func<TArg1, TInterface> constructor) where TInterface : class
 		{
 			_mappings[typeof(TInterface)] = constructor;
 		}
 
-		public TInterface Resolve<TInterface>()
+		public TInterface Resolve<TInterface>() where TInterface : class
 		{
 			var type = typeof(TInterface);
 
@@ -33,7 +33,7 @@ namespace RDD.Infra.Contexts
 
 			return ((Func<TInterface>)_mappings[type])();
 		}
-		public TInterface Resolve<TInterface, TArg1>(TArg1 arg1)
+		public TInterface Resolve<TInterface, TArg1>(TArg1 arg1) where TInterface : class
 		{
 			var type = typeof(TInterface);
 
