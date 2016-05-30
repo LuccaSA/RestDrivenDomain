@@ -12,7 +12,7 @@
 
 ### Resolved issues
 - FIX typo in HttpLikeException
-- FIX #8, #13, #14
+- FIX [#8](https://github.com/LuccaSA/RestDrivenDomain/issues/8), [#13](https://github.com/LuccaSA/RestDrivenDomain/issues/13), [#14](https://github.com/LuccaSA/RestDrivenDomain/issues/14)
 
 ### Breaking changes
 - HttpLikeException does not handle args after the message, so you have to String.Format() yourself the message with the args, and then call the constructor with only the message parameter.
