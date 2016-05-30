@@ -5,9 +5,14 @@
 ### New features
 - IStorageService.AddAfterCommitAction(), ability to perform Action after the Commit(), if successful. This is usefull when you want to condition the call of tird party HTTP services to the sucess of the local Commit() against your database.
 - IExecutionMode, holds the execution context of the application (dev, test, production, ..). In production ou prerelease mode, stacktrace of errors are not shown. Errors are now sanitized (camelCase, least number of properties returned)
+- ADD BooleanExpression from Lucca
+- TestBootstrapper now sets the LostLogService as the default ILogService
+- NotFoundException is more explicit than generic HttpLikeException
+- ADD support for multi-DELETE (ie, DELETE on entities collection)
 
 ### Resolved issues
 - FIX typo in HttpLikeException
+- FIX #8, #13, #14
 
 ### Breaking changes
 - HttpLikeException does not handle args after the message, so you have to String.Format() yourself the message with the args, and then call the constructor with only the message parameter.
