@@ -1,9 +1,14 @@
 # Change log
 
+## 1.0.11
+
+### New features
+- IDependencyInjectionResolver, compatibility with SimpleInjector. This is useful to create any custom resolver in RDD based on SimpleInjector. See [#6] for more details.
+
 ## 1.0.10
 
 ### New features
-- IStorageService.AddAfterCommitAction(), ability to perform Action after the Commit(), if successful. This is usefull when you want to condition the call of tird party HTTP services to the sucess of the local Commit() against your database.
+- IStorageService.AddAfterCommitAction(), ability to perform Action after the Commit(), if successful. This is useful when you want to condition the call of tird party HTTP services to the sucess of the local Commit() against your database.
 - IExecutionMode, holds the execution context of the application (dev, test, production, ..). In production ou prerelease mode, stacktrace of errors are not shown. Errors are now sanitized (camelCase, least number of properties returned)
 - ADD BooleanExpression from Lucca
 - TestBootstrapper now sets the LostLogService as the default ILogService
