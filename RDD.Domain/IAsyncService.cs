@@ -8,7 +8,7 @@ namespace RDD.Domain
 {
 	public interface IAsyncService
 	{
-		void ContinueAsync(Action action);
+		Task ContinueAsync(Action action);
 		void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action);
 		void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action);
 	}
