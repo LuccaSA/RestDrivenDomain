@@ -15,12 +15,12 @@ namespace RDD.Infra.Services
 	{
 		public static ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
 
-		public void ContinueAsync(Action action)
+		public Task ContinueAsync(Action action)
 		{
 			var items = Resolver.Current().Resolve<IWebContext>().Items;
 			var context = new InMemoryWebContext(items);
 
-			Task.Factory.StartNew(() =>
+			return Task.Factory.StartNew(() =>
 			{
 				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, context, (key, value) => value);
 
