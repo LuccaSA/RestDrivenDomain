@@ -1,5 +1,10 @@
 # Change log
 
+## 1.0.12
+
+### New features
+- The `AsyncService.ContinueAsync()` method now returns the `Task` instead of `void`
+
 ## 1.0.11
 
 ### New features
@@ -86,7 +91,7 @@
 ### Resolved issues
  - Le count sur les collections ne marchait pas
  - PropertySelector.Add() : on changeait une référence locale vers l'élément dans la collection, mais pas la référence vers l'élément depuis la collection. Attention, le child se retrouve en dernier dans la collection, en espérant que l'ordre ne soit pas un pb
- - issue #3 
+ - issue #3
  - issue #4 - cependant pas encore de lien previous/next
  - On n'utilise que NUnit, pas MSTest, sinon ça casse le build de myGet
 
@@ -105,4 +110,4 @@
  - Newtonsoft.Json
  - EntityFramework
  - LinqKit
- 
+
