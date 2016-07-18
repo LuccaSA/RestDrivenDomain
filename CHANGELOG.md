@@ -1,14 +1,10 @@
 # Change log
 
-## 1.0.12
-
-### New features
-- The `AsyncService.ContinueAsync()` method now returns the `Task` instead of `void`
-
 ## 1.0.11
 
 ### New features
 - IDependencyInjectionResolver, compatibility with SimpleInjector. This is useful to create any custom resolver in RDD based on SimpleInjector. See [#16](https://github.com/LuccaSA/RestDrivenDomain/issues/16) for more details.
+- The `AsyncService.ContinueAsync()` method now returns the `Task` instead of `void`
 
 ## 1.0.10
 
