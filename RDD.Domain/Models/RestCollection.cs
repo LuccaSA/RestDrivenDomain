@@ -75,12 +75,16 @@ namespace RDD.Domain.Models
 
 		protected virtual void CheckRightsForCreate(TEntity entity)
 		{
-			//TODO
-			//var operations = new HashSet<int>(_appInstance.GetOperations<TEntity>(HttpVerb.POST).Select(o => o.Id));
-			//if (!ExecutionContext.Current.curPrincipal.HasAnyOperations(_storage, _appInstance, operations))
-			//{
-			//	throw new HttpLikeException(HttpStatusCode.Unauthorized, String.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
-			//}
+			var holder = Resolver.Current().Resolve<ICombinationsHolder>();
+
+			var operationIds = holder.Combinations
+				.Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
+				.Select(c => c.Operation.Id);
+
+			if (!_execution.curPrincipal.HasAnyOperations(_storage, new HashSet<int>(operationIds)))
+			{
+				throw new HttpLikeException(HttpStatusCode.Unauthorized, String.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
+			}
 		}
 
 		protected virtual void AttachOperations(IEnumerable<TEntity> entities, List<Operation> operations)
