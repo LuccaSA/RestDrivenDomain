@@ -24,6 +24,7 @@ namespace RDD.Domain
 		TEntity Create(object datas, Query<TEntity> query = null);
 		TEntity Create(PostedData datas, Query<TEntity> query = null);
 		void Create(TEntity entity, Query<TEntity> query = null);
+		TEntity CreateRedirectGet(TEntity entity, Query<TEntity> query = null);
 		void CreateRange(IEnumerable<TEntity> entities, Query<TEntity> query = null);
 
 		void Delete(TEntity entity);
