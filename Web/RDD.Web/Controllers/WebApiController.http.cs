@@ -94,11 +94,16 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			entity = _collection.GetById(entity.Id, query, query.Verb);
+			entity = RefreshEntityAfterCommit(query, entity);
 
 			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
 
 			return request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
+		}
+
+		protected virtual TEntity RefreshEntityAfterCommit(Query<TEntity> query, TEntity entity)
+		{
+			return _collection.GetById(entity.Id, query, query.Verb);
 		}
 
 		public virtual HttpResponseMessage Put(TKey _id_)
