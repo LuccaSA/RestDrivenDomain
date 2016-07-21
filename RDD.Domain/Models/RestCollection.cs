@@ -173,7 +173,7 @@ namespace RDD.Domain.Models
 
 			Add(entity);
 		}
-		public virtual TEntity CreateRedirectGet(TEntity entity, Query<TEntity> query = null)
+		public virtual TEntity GetEntityAfterCreate(TEntity entity, Query<TEntity> query = null)
 		{
 			return GetById(entity.Id, query, query.Verb);
 		}
