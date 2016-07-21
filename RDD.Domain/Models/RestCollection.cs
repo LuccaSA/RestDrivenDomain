@@ -173,6 +173,11 @@ namespace RDD.Domain.Models
 
 			Add(entity);
 		}
+		public virtual TEntity GetEntityAfterCreate(TEntity entity, Query<TEntity> query = null)
+		{
+			return GetById(entity.Id, query, query.Verb);
+		}
+
 		public virtual void CreateRange(IEnumerable<TEntity> entities, Query<TEntity> query = null)
 		{
 			if (query == null)

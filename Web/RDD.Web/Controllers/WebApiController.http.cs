@@ -94,7 +94,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			entity = _collection.GetById(entity.Id, query, query.Verb);
+			entity = _collection.GetEntityAfterCreate(entity, query);
 
 			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
 
