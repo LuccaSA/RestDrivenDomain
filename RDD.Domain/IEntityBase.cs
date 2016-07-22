@@ -12,8 +12,8 @@ namespace RDD.Domain
 	{
 		string Name { get; set; }
 		string Url { get; set; }
-		ICollection<Operation> Operations { get; set; }
-		Dictionary<string, bool> Actions { get; set; }
+		ICollection<Operation> AuthorizedOperations { get; set; }
+		Dictionary<string, bool> AuthorizedActions { get; set; }
 
 		void Forge(IStorageService storage, Options queryOptions);
 	}
