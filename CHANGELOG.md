@@ -4,6 +4,7 @@
 
 ### New features
 - `GetEntityAfterCreate` method added in IRestCollection. It defines how the created entity should be returned to the client. Useful when the entity is not persisted in DB.
+- `Operations` and `Actions` are renamed into `AuthorizedOperations` and `AuthorizedActions`.
 
 ## 1.0.11
 

@@ -103,7 +103,7 @@ namespace RDD.Domain.Models
 			{
 				if (entityPerms.ContainsKey(el.Id))
 				{
-					el.Operations = operations.Where(op => entityPerms[el.Id].Contains(op.Id)).ToList();
+					el.AuthorizedOperations = operations.Where(op => entityPerms[el.Id].Contains(op.Id)).ToList();
 				}
 			}
 		}
@@ -527,7 +527,7 @@ namespace RDD.Domain.Models
 		public virtual PropertySelector<TEntity> HandleIncludes(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields)
 		{
 			//On n'inclut pas les propriétés qui ne viennent pas de la BDD
-			includes.Remove(t => t.Operations);
+			includes.Remove(t => t.AuthorizedOperations);
 			//includes = helper.Remove(includes, t => t.Culture);
 			//includes = helper.Remove(includes, t => t.Application);
 

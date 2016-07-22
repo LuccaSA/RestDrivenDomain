@@ -15,13 +15,13 @@ namespace RDD.Domain.Models
 		public abstract TKey Id { get; set; }
 		public abstract string Name { get; set; }
 		public string Url { get; set; }
-		public ICollection<Operation> Operations { get; set; }
-		public Dictionary<string, bool> Actions { get; set; }
+		public ICollection<Operation> AuthorizedOperations { get; set; }
+		public Dictionary<string, bool> AuthorizedActions { get; set; }
 
 		public EntityBase()
 		{
-			Operations = new HashSet<Operation>();
-			Actions = new Dictionary<string, bool>();
+			AuthorizedOperations = new HashSet<Operation>();
+			AuthorizedActions = new Dictionary<string, bool>();
 		}
 
 		public virtual object GetId()

@@ -152,8 +152,8 @@ namespace RDD.Domain.Models.Querying
 			}
 			//            query.ExpressionFieldsSelector = new ExpressionFieldsService().GetExpression<TEntity>(query.Fields);
 
-			Options.attachActions = Fields.Contains(e => ((IEntityBase)e).Actions);
-			Options.attachOperations = Options.attachActions || Fields.Contains(e => ((IEntityBase)e).Operations);
+			Options.attachActions = Fields.Contains(e => ((IEntityBase)e).AuthorizedActions);
+			Options.attachOperations = Options.attachActions || Fields.Contains(e => ((IEntityBase)e).AuthorizedOperations);
 
 			//Paging
 			if (parameters.ContainsKey(Reserved.paging))
