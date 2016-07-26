@@ -1,5 +1,10 @@
 # Change log
 
+## 1.1.1
+
+### New features
+- Update NExtends 1.0.7
+
 ## 1.1
 
 ### New features
