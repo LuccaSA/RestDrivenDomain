@@ -1,5 +1,10 @@
 # Change log
 
+## 1.1.2
+
+### Resolved issues
+- FIX duplicate log in `SmtpMailService.SendMail()` method
+
 ## 1.1.1
 
 ### New features
