@@ -56,6 +56,8 @@ namespace RDD.Infra.Mails
 					};
 
 					logService.Log(LogLevel.INFO, String.Format("Smtp message sent from {0} to {1} with subject {2}", from, to, subject));
+
+					return;
 				}
 
 				logService.Log(LogLevel.INFO, String.Format("Smtp message not forced (then not sent) from {0} to {1} with subject {2}", from, to, subject));
