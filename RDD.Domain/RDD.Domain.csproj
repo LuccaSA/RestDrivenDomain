@@ -108,6 +108,7 @@
     <Compile Include="Models\Operation.cs" />
     <Compile Include="Models\Period.cs" />
     <Compile Include="Models\Querying\Field.cs" />
+    <Compile Include="Models\Querying\Headers.cs" />
     <Compile Include="Models\Querying\Options.cs" />
     <Compile Include="Models\Querying\OrderBy.cs" />
     <Compile Include="Models\Querying\Page.cs" />
