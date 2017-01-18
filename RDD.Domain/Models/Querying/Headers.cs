@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -9,7 +10,7 @@ namespace RDD.Domain.Models.Querying
 			RawHeaders = new NameValueCollection();
 		}
 
-		public string IfUnmodifiedSince { get; set; }
+		public DateTime IfUnmodifiedSince { get; set; }
 		public string Authorization { get; set; }
 		public string ContentType { get; set; }
 
@@ -19,12 +20,16 @@ namespace RDD.Domain.Models.Querying
 		{
 			var headers = new Headers();
 
+			headers.RawHeaders = requestHeaders;
+
 			foreach (var key in requestHeaders.AllKeys)
 			{
 				switch (key)
 				{
 					case "If-Unmodified-Since":
-						headers.IfUnmodifiedSince = requestHeaders[key];
+						DateTime dateTime;
+						DateTime.TryParse(requestHeaders[key], out dateTime);
+						headers.IfUnmodifiedSince = dateTime;
 						break;
 
 					case "Authorization":
@@ -35,8 +40,6 @@ namespace RDD.Domain.Models.Querying
 						headers.ContentType = requestHeaders[key];
 						break;
 				}
-
-				headers.RawHeaders.Add(key, requestHeaders[key]);
 			}
 
 			return headers;
