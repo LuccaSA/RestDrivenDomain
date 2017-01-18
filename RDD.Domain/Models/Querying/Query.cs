@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -59,6 +56,7 @@ namespace RDD.Domain.Models.Querying
 		public Func<TEntity, object> ExpressionFieldsSelector { get; set; }
 		public Field<TEntity> Fields { get; set; }
 		public virtual Options Options { get; set; }
+		public Headers Headers { get; set; }
 		public PropertySelector<TEntity> Includes { get; set; }
 
 		protected HashSet<string> IgnoredFilters { get; set; }
@@ -68,6 +66,7 @@ namespace RDD.Domain.Models.Querying
 			Verb = HttpVerb.GET;
 			OrderBys = new List<OrderBy>();
 			Options = new Options();
+			Headers = new Headers();
 			Filters = new List<Where>();
 			Includes = new PropertySelector<TEntity>();
 			Fields = new Field<TEntity>();
@@ -98,6 +97,8 @@ namespace RDD.Domain.Models.Querying
 
 		public Query<TEntity> Parse(IWebContext webContext, bool isCollectionCall = true)
 		{
+			Headers = Headers.Parse(webContext.Headers);
+
 			//On transforme la queryString en PostedData pour que ce soit plus simple à manipuler ensuite
 			var parameters = PostedData.ParseDictionary(webContext.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(K => K.Key.ToLower(), K => K.Value));
 

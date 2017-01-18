@@ -1,5 +1,10 @@
 # Change log
 
+## 1.1.3
+
+### New features
+- Add `Headers` property to the Query<T> to store the webrequest headers
+
 ## 1.1.2
 
 ### Resolved issues
