@@ -1,11 +1,7 @@
 ﻿using NUnit.Framework;
 using RDD.Domain.Models.Querying;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Tests.Models.Querying
 {
@@ -19,7 +15,18 @@ namespace RDD.Domain.Tests.Models.Querying
 
 			var headers = Headers.Parse(requestHeaders);
 
-			Assert.AreEqual(0, DateTime.Compare(date, headers.IfUnmodifiedSince));
+			Assert.AreEqual(true, headers.IfUnmodifiedSince.HasValue);
+			Assert.AreEqual(0, DateTime.Compare(date, headers.IfUnmodifiedSince.Value));
+		}
+
+		[Test]
+		public void Headers_ShouldNotParseIfUnmodifiedSinceHeader_WhenDateFormatIsInvalid()
+		{
+			var requestHeaders = new NameValueCollection { { "If-Unmodified-Since", "invalid format" } };
+
+			var headers = Headers.Parse(requestHeaders);
+
+			Assert.AreEqual(false, headers.IfUnmodifiedSince.HasValue);
 		}
 
 		[Test]

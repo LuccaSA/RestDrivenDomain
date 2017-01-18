@@ -10,7 +10,7 @@ namespace RDD.Domain.Models.Querying
 			RawHeaders = new NameValueCollection();
 		}
 
-		public DateTime IfUnmodifiedSince { get; set; }
+		public DateTime? IfUnmodifiedSince { get; set; }
 		public string Authorization { get; set; }
 		public string ContentType { get; set; }
 
@@ -27,9 +27,11 @@ namespace RDD.Domain.Models.Querying
 				switch (key)
 				{
 					case "If-Unmodified-Since":
-						DateTime dateTime;
-						DateTime.TryParse(requestHeaders[key], out dateTime);
-						headers.IfUnmodifiedSince = dateTime;
+						DateTime unModifiedSince;
+						if (DateTime.TryParse(requestHeaders[key], out unModifiedSince))
+						{
+							headers.IfUnmodifiedSince = unModifiedSince;
+						}
 						break;
 
 					case "Authorization":
