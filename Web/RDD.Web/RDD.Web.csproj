@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RDD.Web</RootNamespace>
     <AssemblyName>RDD.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -35,8 +35,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NExtends, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NExtends.1.0.7\lib\net451\NExtends.dll</HintPath>
+    <Reference Include="NExtends, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NExtends.1.0.11\lib\net451\NExtends.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
