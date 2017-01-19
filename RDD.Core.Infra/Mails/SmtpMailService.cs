@@ -74,8 +74,7 @@ namespace RDD.Infra.Mails
 
 			try
 			{
-				string stackTrace      = String.Empty;
-				string innerStackTrace = String.Empty;
+				var stackTrace = String.Empty;
 
 				//Si l'Exception est instanciée à la mano, y'a pas de StackTrace
 				if (E.StackTrace != null)
@@ -83,15 +82,17 @@ namespace RDD.Infra.Mails
 					stackTrace = E.StackTrace.Replace("\r\n", "<br />");
 				}
 
-				if (E.InnerException != null && E.InnerException.StackTrace != null)
-				{
-					innerStackTrace = E.InnerException.StackTrace.Replace("\r\n", "<br />");
-				}
-
 				var body = String.Format("Erreur : {0}<br /><br />{1}<br /><br />", E.Message, stackTrace);
 
 				if (E.InnerException != null)
 				{
+					var innerStackTrace = String.Empty;
+
+					if (E.InnerException.StackTrace != null)
+					{
+						innerStackTrace = E.InnerException.StackTrace.Replace("\r\n", "<br />");
+					}
+
 					body += String.Format("Inner : {0}<br /><br />{1}<br /><br />", E.InnerException.Message, innerStackTrace);
 				}
 
