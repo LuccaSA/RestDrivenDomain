@@ -1,5 +1,10 @@
 # Change log
 
+## 1.1.4
+
+### Breaking changes
+- `Forge` on entities is replaced by `ForgeEntity` on collections, in which the data context is larger. Resolve #18
+
 ## 1.1.3
 
 ### New features

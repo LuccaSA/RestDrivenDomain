@@ -165,8 +165,7 @@ namespace RDD.Domain.Models
 				query = new Query<TEntity>();
 			}
 
-			//L'entité se complète elle même
-			entity.Forge(_storage, query.Options);
+			ForgeEntity(entity, query.Options);
 
 			//On valide l'entité
 			entity.Validate(_storage, null);
@@ -187,8 +186,7 @@ namespace RDD.Domain.Models
 
 			foreach (var entity in entities)
 			{
-				//L'entité se complète elle même
-				entity.Forge(_storage, query.Options);
+				ForgeEntity(entity, query.Options);
 
 				//On valide l'entité
 				entity.Validate(_storage, null);
@@ -200,6 +198,7 @@ namespace RDD.Domain.Models
 		{
 			return new TEntity();
 		}
+		protected virtual void ForgeEntity(TEntity entity, Options queryOptions) { }
 
 		private TEntity Update(TEntity entity, object datas, Query<TEntity> query = null)
 		{

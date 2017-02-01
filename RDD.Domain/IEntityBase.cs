@@ -14,8 +14,6 @@ namespace RDD.Domain
 		string Url { get; set; }
 		ICollection<Operation> AuthorizedOperations { get; set; }
 		Dictionary<string, bool> AuthorizedActions { get; set; }
-
-		void Forge(IStorageService storage, Options queryOptions);
 	}
 
 	public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey> { }
