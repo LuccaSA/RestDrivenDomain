@@ -1,5 +1,4 @@
-﻿using NUnit.Framework;
-using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Tests.Models;
 using System;
@@ -9,12 +8,13 @@ using System.Linq.Expressions;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace RDD.Domain.Tests
 {
 	class PropertySelectorTests
 	{
-		[Test]
+		[Fact]
 		public void Parsing_count_on_empty_collection()
 		{
 			var field = "count";
@@ -22,7 +22,7 @@ namespace RDD.Domain.Tests
 			selector.Parse(field);
 		}
 
-		[Test]
+		[Fact]
 		public void Replace_child_and_return_false_when_adding_subs_on_existing_child()
 		{
 			var selector = new PropertySelector<User>(u => u.Id, u => u.Name, u => u.Mail);
@@ -30,10 +30,10 @@ namespace RDD.Domain.Tests
 
 			var result = selector.Add<MailAddress>(subSelector, (Expression<Func<User, MailAddress>>)(u => u.Mail));
 
-			Assert.AreEqual(false, result);
-			Assert.IsTrue(selector.Contains(u => u.Name));
-			Assert.IsTrue(selector.Contains(u => u.Mail));
-			Assert.IsTrue(selector.Contains(u => u.Mail.Host));
+			Assert.Equal(false, result);
+			Assert.True(selector.Contains(u => u.Name));
+			Assert.True(selector.Contains(u => u.Mail));
+			Assert.True(selector.Contains(u => u.Mail.Host));
 		}
 	}
 }

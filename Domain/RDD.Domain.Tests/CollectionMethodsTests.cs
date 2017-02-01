@@ -1,5 +1,4 @@
 ﻿using Moq;
-using NUnit.Framework;
 using RDD.Domain.Contexts;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
@@ -14,13 +13,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace RDD.Domain.Tests
 {
-	[TestFixture]
 	public class CollectionMethodsTests : SingleContextTests
 	{
-		[Test]
+		[Fact]
 		public void GetById_should_throw_exception()
 		{
 			TestsBootStrapper.ApplicationBeginRequest();
@@ -33,7 +32,7 @@ namespace RDD.Domain.Tests
 			Assert.Throws<NotFoundException>(() => users.GetById(0));
 		}
 
-		[Test]
+		[Fact]
 		public void TryGetById_should_not_throw_exception_and_return_null()
 		{
 			TestsBootStrapper.ApplicationBeginRequest();
@@ -43,10 +42,10 @@ namespace RDD.Domain.Tests
 
 			users.Create(user);
 
-			Assert.IsNull(users.TryGetById(0));
+			Assert.Null(users.TryGetById(0));
 		}
 
-		[Test]
+		[Fact]
 		public void Put_on_unexisting_entity_should_throw_notfound_exception()
 		{
 			TestsBootStrapper.ApplicationBeginRequest();
