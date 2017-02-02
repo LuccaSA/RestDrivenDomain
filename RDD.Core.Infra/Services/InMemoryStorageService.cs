@@ -45,6 +45,17 @@ namespace RDD.Infra.Services
 		{
 			CreateIfNotExist<TEntity>();
 
+			var type = typeof(TEntity);
+
+			if (type.IsAbstract)
+			{
+				//If abstract, aggregate all subclasses
+				//Does not handle recursivity (if subType is also abstract, it won't look into subsubtypes !)
+				var subTypes = Cache.Keys.Where(k => type.IsAssignableFrom(k));
+
+				return subTypes.SelectMany(t => Cache[t].Cast<TEntity>()).AsQueryable();
+			}
+
 			return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
 		}
 

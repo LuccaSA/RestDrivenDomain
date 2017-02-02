@@ -68,7 +68,7 @@ namespace RDD.Domain.Helpers
 		/// /api/users?manager.id=2&departement.id=4,5 devient manager.id == 2 AND ( department.id == 4 OR department.id == 5 )
 		/// </summary>
 		/// <returns></returns>
-		public Expression<Func<TEntity, bool>> GetEntityPredicate<TEntity, TKey>(IRestCollection<TEntity, TKey> repo)
+		public Expression<Func<TEntity, bool>> GetEntityPredicate<TEntity, TKey>(IReadOnlyRestCollection<TEntity, TKey> repo)
 			where TEntity : class, IEntityBase<TEntity, TKey>
 			where TKey : IEquatable<TKey>
 		{
@@ -82,7 +82,7 @@ namespace RDD.Domain.Helpers
 			return feed.Expand();
 		}
 
-		private Expression<Func<TEntity, bool>> ToEntityExpression<TEntity, TKey>(IRestCollection<TEntity, TKey> repo, Where where, IList value)
+		private Expression<Func<TEntity, bool>> ToEntityExpression<TEntity, TKey>(IReadOnlyRestCollection<TEntity, TKey> repo, Where where, IList value)
 			where TEntity : class, IEntityBase<TEntity, TKey>
 			where TKey : IEquatable<TKey>
 		{

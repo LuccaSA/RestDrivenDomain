@@ -63,10 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractEntityTests.cs" />
     <Compile Include="HttpLikeExceptionsTests.cs" />
     <Compile Include="CollectionPropertiesTests.cs" />
     <Compile Include="DecimalRoundingTests.cs" />
     <Compile Include="Models\Querying\HeadersTests.cs" />
+    <Compile Include="Models\TablePerHierarchyModel.cs" />
     <Compile Include="Models\UsersCollection.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="CollectionMethodsTests.cs" />
