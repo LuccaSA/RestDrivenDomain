@@ -23,7 +23,7 @@ namespace RDD.Domain.Tests
 		}
 
 		[Fact]
-		public void Replace_child_and_return_false_when_adding_subs_on_existing_child()
+		public void Replace_child_and_return_false_WHEN_adding_subs_on_existing_child()
 		{
 			var selector = new PropertySelector<User>(u => u.Id, u => u.Name, u => u.Mail);
 			var subSelector = new PropertySelector<MailAddress>(m => m.DisplayName, m => m.Host);

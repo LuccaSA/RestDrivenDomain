@@ -20,7 +20,7 @@ namespace RDD.Domain.Tests
 	public class CollectionMethodsTests : SingleContextTests
 	{
 		[Fact]
-		public void GetById_should_throw_exception()
+		public void GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
 		{
 			TestsBootStrapper.ApplicationBeginRequest();
 
@@ -33,7 +33,7 @@ namespace RDD.Domain.Tests
 		}
 
 		[Fact]
-		public void TryGetById_should_not_throw_exception_and_return_null()
+		public void TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
 		{
 			TestsBootStrapper.ApplicationBeginRequest();
 
@@ -46,7 +46,7 @@ namespace RDD.Domain.Tests
 		}
 
 		[Fact]
-		public void Put_on_unexisting_entity_should_throw_notfound_exception()
+		public void Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
 		{
 			TestsBootStrapper.ApplicationBeginRequest();
 			_execution.curPrincipal = new WebService { Id = 1, AppOperations = new HashSet<int>() { 1 } };

@@ -13,7 +13,7 @@ namespace RDD.Domain.Tests
 	public class PatchEntityTests
 	{
 		[Fact]
-		public void Uri_should_accept_string_in_json()
+		public void Uri_SHOULD_accept_string_in_json()
 		{
 			var json = @"{ ""twitterUri"": ""https://twitter.com"" }";
 			var user = new User();

@@ -13,7 +13,7 @@ namespace RDD.Domain.Tests
 	public class DecimalRoundingTests
 	{
 		[Fact]
-		public void Should_round_to_defaut_when_empy_rounding_pattern()
+		public void SHOULD_round_to_defaut_WHEN_empy_rounding_pattern()
 		{
 			var pattern = "sum(id)";
 
@@ -27,7 +27,7 @@ namespace RDD.Domain.Tests
 		[InlineData(DecimalRounding.RoudingType.RoundEven)]
 		[InlineData(DecimalRounding.RoudingType.Floor)]
 		[InlineData(DecimalRounding.RoudingType.Ceiling)]
-		public void Should_round_to_value_when_present_in_rounding_pattern(DecimalRounding.RoudingType strategy)
+		public void SHOULD_round_to_value_WHEN_present_in_rounding_pattern(DecimalRounding.RoudingType strategy)
 		{
 			var pattern = String.Format("sum(id,{0})", strategy.ToString().ToLower());
 
@@ -45,7 +45,7 @@ namespace RDD.Domain.Tests
 		[InlineData(DecimalRounding.RoudingType.Ceiling, 1)]
 		[InlineData(DecimalRounding.RoudingType.Ceiling, 2)]
 		[InlineData(DecimalRounding.RoudingType.Ceiling, 3)]
-		public void Should_round_to_value_when_present_in_rounding_pattern_with_decimals(DecimalRounding.RoudingType strategy, int numberOfDecimals)
+		public void SHOULD_round_to_value_WHEN_present_in_rounding_pattern_with_decimals(DecimalRounding.RoudingType strategy, int numberOfDecimals)
 		{
 			var pattern = String.Format("sum(id,{0},{1})", strategy.ToString().ToLower(), numberOfDecimals);
 
@@ -56,7 +56,7 @@ namespace RDD.Domain.Tests
 		}
 
 		[Fact]
-		public void Should_round_to_two_decimal_when_asked()
+		public void SHOULD_round_to_two_decimal_WHEN_asked()
 		{
 			var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
 			var selection = new Selection<User>(items, 2);
@@ -83,7 +83,7 @@ namespace RDD.Domain.Tests
 		}
 
 		[Fact]
-		public void Should_parse_rounding_correctly_to_good_propertySelector()
+		public void SHOULD_parse_rounding_correctly_to_good_propertySelector()
 		{
 			var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
 			var selection = new Selection<User>(items, 2);

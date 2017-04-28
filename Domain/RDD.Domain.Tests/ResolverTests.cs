@@ -13,7 +13,7 @@ namespace RDD.Domain.Tests
 	public class ResolverTests
 	{
 		[Fact]
-		public void ResolverShouldNotResolveClassWithArgumentsIfNotRegistered()
+		public void Resolver_SHOULD_NotResolveClassWithArguments_WHEN_NotRegistered()
 		{
 			var resolver = new DependencyInjectionResolver();
 

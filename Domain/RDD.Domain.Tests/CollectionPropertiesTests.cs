@@ -15,7 +15,7 @@ namespace RDD.Domain.Tests
     public class CollectionPropertiesTests
     {
 		[Fact]
-		public void Sum_of_id_should_work_on_collection()
+		public void Sum_of_id_SHOULD_work_on_collection()
 		{
 			using (var storage = new InMemoryStorageService())
 			{

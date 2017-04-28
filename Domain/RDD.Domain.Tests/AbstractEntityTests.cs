@@ -22,7 +22,7 @@ namespace RDD.Domain.Tests
 	public class AbstractEntityTests
 	{
 		[Fact]
-		public void AbstractCollectionShouldWorkAsExpected()
+		public void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
 		{
 			using (var storage = new InMemoryStorageService())
 			{
