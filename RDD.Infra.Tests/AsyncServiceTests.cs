@@ -1,16 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿using Moq;
 using RDD.Domain;
-using RDD.Domain.Contexts;
 using RDD.Infra.BootStrappers;
 using RDD.Infra.Services;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace RDD.Infra.Tests
 {
-	[TestClass]
 	public class AsyncServiceTests
 	{
 		private readonly IAsyncService _asyncService;
@@ -22,11 +20,7 @@ namespace RDD.Infra.Tests
 			TestsBootStrapper.ApplicationStart();
 			
 			_asyncService = new AsyncService();
-		}
 
-		[TestInitialize]
-		public void Init()
-		{
 			TestsBootStrapper.ApplicationBeginRequest();
 
 			_mock = new Mock<ICollection>();
@@ -38,7 +32,7 @@ namespace RDD.Infra.Tests
 			_mock.Object.GetEnumerator();
 		}
 
-		[TestMethod]
+		[Fact]
 		public async Task AsyncService_ShouldBeTestable_WhenCallingContinueAsync()
 		{
 			await _asyncService.ContinueAsync(() => CallVerifiableMockMethod());
@@ -46,7 +40,7 @@ namespace RDD.Infra.Tests
 			_mock.Verify(m => m.GetEnumerator(), Times.Once());
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AsyncService_ShouldBeTestable_WhenCallingRunInParallel()
 		{
 			var list = new List<int> { 1, 2, 3 };

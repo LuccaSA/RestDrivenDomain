@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
-using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Specialized;
+using Xunit;
 
 namespace RDD.Domain.Tests.Models.Querying
 {
 	public class HeadersTests
 	{
-		[Test]
+		[Fact]
 		public void Headers_ShouldParseIfUnmodifiedSinceHeader()
 		{
 			var date = new DateTime(2015, 9, 21, 7, 28, 0);
@@ -15,21 +15,21 @@ namespace RDD.Domain.Tests.Models.Querying
 
 			var headers = Headers.Parse(requestHeaders);
 
-			Assert.AreEqual(true, headers.IfUnmodifiedSince.HasValue);
-			Assert.AreEqual(0, DateTime.Compare(date, headers.IfUnmodifiedSince.Value));
+			Assert.Equal(true, headers.IfUnmodifiedSince.HasValue);
+			Assert.Equal(0, DateTime.Compare(date, headers.IfUnmodifiedSince.Value));
 		}
 
-		[Test]
+		[Fact]
 		public void Headers_ShouldNotParseIfUnmodifiedSinceHeader_WhenDateFormatIsInvalid()
 		{
 			var requestHeaders = new NameValueCollection { { "If-Unmodified-Since", "invalid format" } };
 
 			var headers = Headers.Parse(requestHeaders);
 
-			Assert.AreEqual(false, headers.IfUnmodifiedSince.HasValue);
+			Assert.Equal(false, headers.IfUnmodifiedSince.HasValue);
 		}
 
-		[Test]
+		[Fact]
 		public void Headers_ShouldParseAuthorizationHeader()
 		{
 			var authorization = "anything here";
@@ -37,10 +37,10 @@ namespace RDD.Domain.Tests.Models.Querying
 
 			var headers = Headers.Parse(requestHeaders);
 
-			Assert.AreEqual(authorization, headers.Authorization);
+			Assert.Equal(authorization, headers.Authorization);
 		}
 
-		[Test]
+		[Fact]
 		public void Headers_ShouldParseContentTypeHeader()
 		{
 			var contentType = "multipart/form-data";
@@ -48,10 +48,10 @@ namespace RDD.Domain.Tests.Models.Querying
 
 			var headers = Headers.Parse(requestHeaders);
 
-			Assert.AreEqual(contentType, headers.ContentType);
+			Assert.Equal(contentType, headers.ContentType);
 		}
 
-		[Test]
+		[Fact]
 		public void Headers_ShouldParseRawHeaders()
 		{
 			var requestHeaders = new NameValueCollection
@@ -63,11 +63,11 @@ namespace RDD.Domain.Tests.Models.Querying
 
 			var headers = Headers.Parse(requestHeaders);
 
-			Assert.AreEqual(3, headers.RawHeaders.Count);
+			Assert.Equal(3, headers.RawHeaders.Count);
 
-			Assert.AreEqual("multipart/form-data", headers.RawHeaders["Content-Type"]);
-			Assert.AreEqual("value", headers.RawHeaders["any"]);
-			Assert.AreEqual("Bar", headers.RawHeaders["Foo"]);
+			Assert.Equal("multipart/form-data", headers.RawHeaders["Content-Type"]);
+			Assert.Equal("value", headers.RawHeaders["any"]);
+			Assert.Equal("Bar", headers.RawHeaders["Foo"]);
 		}
 	}
 }

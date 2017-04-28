@@ -14,8 +14,8 @@ using RDD.Domain.Helpers;
 
 namespace RDD.Domain.Models
 {
-	public partial class RestCollection<TEntity, TKey> : IRestCollection<TEntity, TKey>
-		where TEntity : class, IEntityBase<TEntity, TKey>, new()
+	public partial class ReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>
+		where TEntity : class, IEntityBase<TEntity, TKey>
 		where TKey : IEquatable<TKey>
 	{
 		public virtual IQueryable<TEntity> OrderByDefault(IQueryable<TEntity> entities)

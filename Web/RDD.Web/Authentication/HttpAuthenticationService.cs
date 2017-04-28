@@ -39,7 +39,10 @@ namespace RDD.Web.Authentication
 						{
 							var webService = _webServices.GetByToken(token.Value.ToString()).FirstOrDefault();
 
-							return webService;
+							if (webService != null)
+							{
+								return webService;
+							}
 						}
 
 						HandleUnauthorizedRequest();
@@ -66,7 +69,10 @@ namespace RDD.Web.Authentication
 					var applicationParts = autorisationParts[1].Split('=');
 					if (applicationParts[0] == authType)
 					{
-						return Guid.Parse(applicationParts[1]);
+						Guid result;
+						Guid.TryParse(applicationParts[1], out result);
+
+						return result;
 					}
 				}
 			}
@@ -76,7 +82,7 @@ namespace RDD.Web.Authentication
 
 		public void HandleUnauthorizedRequest()
 		{
-			throw new HttpLikeException(HttpStatusCode.Unauthorized, "Your token is invalid or you did not provide any");
+			throw new UnauthorizedException("Your token is invalid or you did not provide any");
 		}
 	}
 }

@@ -99,6 +99,7 @@
     <Compile Include="Contexts\HttpContextWrapper.cs" />
     <Compile Include="Contexts\HttpExecutionContext.cs" />
     <Compile Include="Contexts\InMemoryExecutionContext.cs" />
+    <Compile Include="Exceptions\ResolverException.cs" />
     <Compile Include="Exceptions\SqlUniqConstraintException.cs" />
     <Compile Include="Helpers\TestExecutionModeProvider.cs" />
     <Compile Include="Helpers\DevExecutionModeProvider.cs" />

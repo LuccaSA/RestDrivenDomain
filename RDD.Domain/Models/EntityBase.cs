@@ -32,7 +32,6 @@ namespace RDD.Domain.Models
 		{
 			Id = (TKey)id;
 		}
-		public virtual void Forge(IStorageService storage, Options queryOptions) { }
 
 		public void Validate(IStorageService storage, TEntity oldEntity)
 		{
