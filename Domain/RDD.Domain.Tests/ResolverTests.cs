@@ -19,21 +19,37 @@ namespace RDD.Domain.Tests
 
 			resolver.Register<IFakeInterface, string>((arg1) => new OneArgumentConstructorClass(arg1));
 
-			//Should not fail
-			var result = resolver.Resolve<IFakeInterface, string>("test");
-			Assert.NotNull(result);
+			//Should throw resolver exception (parameterless constr not registered)
+			Assert.Throws<ResolverException>(() =>
+			{
+				resolver.Resolve<IFakeInterface>();
+			});
+		}
+
+		[Fact]
+		public void Resolver_SHOULD_NotResolveClassWithArguments_WHEN_RegisteredWithWrongArgumentTypes()
+		{
+			var resolver = new DependencyInjectionResolver();
+
+			resolver.Register<IFakeInterface, string>((arg1) => new OneArgumentConstructorClass(arg1));
 
 			//Should throw resolver exception (good number of argument, but wrong type)
 			Assert.Throws<ResolverException>(() =>
 			{
-				result = resolver.Resolve<IFakeInterface, int>(1);
+				resolver.Resolve<IFakeInterface, int>(1);
 			});
+		}
 
-			//Should throw resolver exception (parameterless constr not registered)
-			Assert.Throws<ResolverException>(() =>
-			{
-				result = resolver.Resolve<IFakeInterface>();
-			});
+		[Fact]
+		public void Resolver_SHOULD_ResolveClassWithArguments_WHEN_ProperlyRegistered()
+		{
+			var resolver = new DependencyInjectionResolver();
+
+			resolver.Register<IFakeInterface, string>((arg1) => new OneArgumentConstructorClass(arg1));
+
+			//Should not fail
+			var result = resolver.Resolve<IFakeInterface, string>("test");
+			Assert.NotNull(result);
 		}
 	}
 }
