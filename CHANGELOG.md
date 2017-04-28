@@ -1,9 +1,17 @@
 # Change log
 
-## 1.1.4
+## 1.2
 
 ### Breaking changes
-- `Forge` on entities is replaced by `ForgeEntity` on collections, in which the data context is larger. Resolve #18
+- `Forge` on entities is replaced by `ForgeEntity` on collections, in which the data context is larger. Resolves #18
+
+### New features
+- From MSTest/NUnit to xUnit for test projects
+- Support for Abstract entity RestCollection. Resolves #28
+
+### Resolved issues
+- Resolving dependencies with parameter constr. Resolves #27
+- Unauthorized Exception when GUID sent in headers is malformed. Resolves #10
 
 ## 1.1.3
 
