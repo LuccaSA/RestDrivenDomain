@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using NExtends.Primitives;
+using NExtends.Primitives.Types;
 using System.Net.Mail;
 
 namespace RDD.Domain.Models.Querying

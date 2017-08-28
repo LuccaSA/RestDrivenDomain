@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Collections;
 using RDD.Domain.Models.Querying;
 using NExtends.Primitives;
+using NExtends.Primitives.Types;
 using RDD.Domain.Exceptions;
 using RDD.Domain;
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NExtends.Primitives;
+using NExtends.Primitives.Types;
 using RDD.Domain.Exceptions;
 
 namespace RDD.Domain.Helpers
