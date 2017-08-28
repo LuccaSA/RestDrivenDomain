@@ -8,7 +8,7 @@ using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Helpers;
 using RDD.Domain;
-using NExtends.Primitives;
+using NExtends.Primitives.Types;
 using RDD.Domain.Exceptions;
 using RDD.Web.Exceptions;
 

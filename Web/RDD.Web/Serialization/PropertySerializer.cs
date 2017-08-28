@@ -7,7 +7,7 @@ using System.Web;
 using System.Linq.Expressions;
 using RDD.Domain.Helpers;
 using RDD.Domain;
-using NExtends.Primitives;
+using NExtends.Primitives.Types;
 
 namespace RDD.Web.Serialization
 {

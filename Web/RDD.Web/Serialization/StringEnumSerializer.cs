@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using NExtends.Primitives;
+using NExtends.Primitives.Types;
 
 namespace RDD.Web.Serialization
 {

@@ -14,7 +14,7 @@ namespace RDD.Web.Serialization
 	{
 		public static JsonMediaTypeFormatter GetInstance(IWebContext webContext, IContractResolver resolver)
 		{
-			var formatter = webContext.GetQueryNameValuePairs().ContainsKey(Reserved.callback.ToString()) ? new JsonpMediaTypeFormatter() : new JsonMediaTypeFormatter();
+			var formatter = new JsonMediaTypeFormatter();
 			formatter.SerializerSettings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, ContractResolver = resolver };
 			return formatter;
 		}

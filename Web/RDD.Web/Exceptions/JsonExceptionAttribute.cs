@@ -1,23 +1,20 @@
-﻿using Newtonsoft.Json.Serialization;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json.Serialization;
 using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Domain.Exceptions;
 using RDD.Web.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http.Filters;
 
 namespace RDD.Web.Exceptions
 {
-	public class JsonExceptionAttribute : ExceptionFilterAttribute
+    public class JsonExceptionAttribute : ExceptionFilterAttribute
 	{
-		public override void OnException(HttpActionExecutedContext actionExecutedContext)
+		public override Task OnExceptionAsync(ExceptionContext context)
 		{
-			var baseException = actionExecutedContext.Exception.GetBaseException();
+			var baseException = context.Exception.GetBaseException();
 
 			var httpException = HttpLikeException.Parse(baseException);
 
@@ -34,7 +31,12 @@ namespace RDD.Web.Exceptions
 				data = new EntitySerializer().SerializeException(httpException);
 			}
 
-			actionExecutedContext.Response = new HttpResponseMessage(httpException.Status) { Content = new ObjectContent<object>(data, formatter) };
+			context.HttpContext.Response.StatusCode = (int)httpException.Status;
+			
+			var stringContent = "";// await new ObjectContent<object>(data, formatter).ReadAsStringAsync();
+			var content = Encoding.UTF8.GetBytes(stringContent);
+
+			return context.HttpContext.Response.Body.WriteAsync(content, 0, content.Length);
 		}
 	}
 }
