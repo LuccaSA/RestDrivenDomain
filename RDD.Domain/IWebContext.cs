@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -13,20 +14,15 @@ namespace RDD.Domain
 	{
 		Uri Url { get; }
 		string RawUrl { get; }
-		NameValueCollection QueryString { get; }
-		NameValueCollection Headers { get; }	
-		Dictionary<string, string> Cookies { get; }
+        IEnumerable<KeyValuePair<string, StringValues>> QueryString { get; }
+        IEnumerable<KeyValuePair<string, StringValues>> Headers { get; }
+        IEnumerable<KeyValuePair<string, string>> Cookies { get; }
 		string GetCookie(string cookieName);
-		void SetCookie(string cookieName, string value, DateTime expiration);
-		IDictionary Items { get; }
+        IDictionary<object, object> Items { get; }
 		string ApplicationPath { get; }
 		string PhysicalApplicationPath { get; }
 		Dictionary<string, string> GetQueryNameValuePairs();
 		string UserHostAddress { get; }
-		string UserHostName { get; }
-		string UserAgent { get; }
-		string BrowserType { get; }
-		int BrowserMajorVersion { get; }
 		void Redirect(Uri url, bool endResponse);
 	}
 }

@@ -103,8 +103,6 @@ namespace RDD.Infra.Mails
 					body += Detail("Page REST", webContext.RawUrl);
 					body += Detail("Page", webContext.Url.ToString());
 					body += Detail("Host Address", webContext.UserHostAddress);
-					body += Detail("Host Name", webContext.UserHostName);
-					body += Detail("User Agent", webContext.UserAgent);
 				}
 				catch { } // No context
 

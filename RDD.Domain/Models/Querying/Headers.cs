@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace RDD.Domain.Models.Querying
@@ -7,39 +9,39 @@ namespace RDD.Domain.Models.Querying
 	{
 		public Headers()
 		{
-			RawHeaders = new NameValueCollection();
+			RawHeaders = new Dictionary<string, StringValues>();
 		}
 
 		public DateTime? IfUnmodifiedSince { get; set; }
 		public string Authorization { get; set; }
 		public string ContentType { get; set; }
 
-		public NameValueCollection RawHeaders { get; set; }
+		public IEnumerable<KeyValuePair<string, StringValues>> RawHeaders { get; set; }
 
-		public static Headers Parse(NameValueCollection requestHeaders)
+		public static Headers Parse(IEnumerable<KeyValuePair<string, StringValues>> requestHeaders)
 		{
 			var headers = new Headers();
 
 			headers.RawHeaders = requestHeaders;
 
-			foreach (var key in requestHeaders.AllKeys)
+			foreach (var element in requestHeaders)
 			{
-				switch (key)
+				switch (element.Key)
 				{
 					case "If-Unmodified-Since":
 						DateTime unModifiedSince;
-						if (DateTime.TryParse(requestHeaders[key], out unModifiedSince))
+						if (DateTime.TryParse(element.Value, out unModifiedSince))
 						{
 							headers.IfUnmodifiedSince = unModifiedSince;
 						}
 						break;
 
 					case "Authorization":
-						headers.Authorization = requestHeaders[key];
+						headers.Authorization = element.Value;
 						break;
 
 					case "Content-Type":
-						headers.ContentType = requestHeaders[key];
+						headers.ContentType = element.Value;
 						break;
 				}
 			}

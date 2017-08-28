@@ -1,12 +1,9 @@
-﻿using RDD.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Infra.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Core;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -45,7 +42,7 @@ namespace RDD.Infra.Services
 		public virtual TEntity Add<TEntity>(TEntity entity)
 			where TEntity : class, IPrimaryKey
 		{
-			return _dbContext.Set<TEntity>().Add(entity);
+			return _dbContext.Set<TEntity>().Add(entity).Entity;
 		}
 
 		public virtual void Remove<TEntity>(TEntity entity)
@@ -60,12 +57,12 @@ namespace RDD.Infra.Services
 			//http://stackoverflow.com/questions/4355474/how-do-i-speed-up-dbset-add
 			try
 			{
-				_dbContext.Configuration.AutoDetectChangesEnabled = false;
+				_dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 				_dbContext.Set<TEntity>().AddRange(entities);
 			}
 			finally
 			{
-				_dbContext.Configuration.AutoDetectChangesEnabled = true;
+				_dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
 			}
 		}
 
@@ -75,12 +72,12 @@ namespace RDD.Infra.Services
 
 			try
 			{
-				_dbContext.Configuration.AutoDetectChangesEnabled = false;
+				_dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 				_dbContext.Set<TEntity>().RemoveRange(entities);
 			}
 			finally
 			{
-				_dbContext.Configuration.AutoDetectChangesEnabled = true;
+				_dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
 			}
 		}
 
@@ -102,7 +99,7 @@ namespace RDD.Infra.Services
 			}
 			catch (DbUpdateException ex)
 			{
-				UpdateException updateException = (UpdateException)ex.InnerException;
+				var updateException = ex.InnerException;
 
 				if (updateException.InnerException is ArgumentException)
 				{
@@ -124,22 +121,6 @@ namespace RDD.Infra.Services
 				{
 					throw updateException;
 				}
-			}
-			catch (DbEntityValidationException ex)
-			{
-				// Retrieve the error messages as a list of strings.
-				var errorMessages = ex.EntityValidationErrors
-						.SelectMany(x => x.ValidationErrors)
-						.Select(x => String.Format("Property : {0}, ErrorMessage: {1}", x.PropertyName, x.ErrorMessage));
-
-				// Join the list to a single string.
-				var fullErrorMessage = string.Join("; ", errorMessages);
-
-				// Combine the original exception message with the new one.
-				var exceptionMessage = string.Concat(ex.Message, " The validation errors are: ", fullErrorMessage);
-
-				// Throw a new DbEntityValidationException with the improved exception message.
-				throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
 			}
 		}
 
