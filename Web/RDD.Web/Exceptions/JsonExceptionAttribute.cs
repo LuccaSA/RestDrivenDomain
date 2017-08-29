@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Web.Exceptions
 {
-    public class JsonExceptionAttribute : ExceptionFilterAttribute
+	public class JsonExceptionAttribute : ExceptionFilterAttribute
 	{
 		public override Task OnExceptionAsync(ExceptionContext context)
 		{

@@ -5,8 +5,8 @@ using System.Text;
 
 namespace RDD.Web.Helpers
 {
-    public class NameValueCollectionHelper
-    {
+	public class NameValueCollectionHelper
+	{
 		//from NExtends : https://github.com/LuccaSA/NExtends/commit/7f7c45bf5696d17cfb01c33274dcdb946586648e
 		//waiting for NExtends to support this extension again
 		public Dictionary<string, string> ToDictionary(NameValueCollection collection)
@@ -20,5 +20,5 @@ namespace RDD.Web.Helpers
 
 			return dico;
 		}
-    }
+	}
 }

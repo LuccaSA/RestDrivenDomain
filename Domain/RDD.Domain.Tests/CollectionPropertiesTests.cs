@@ -12,8 +12,8 @@ using Xunit;
 
 namespace RDD.Domain.Tests
 {
-    public class CollectionPropertiesTests
-    {
+	public class CollectionPropertiesTests
+	{
 		[Fact]
 		public void Sum_of_id_SHOULD_work_on_collection()
 		{
@@ -29,5 +29,5 @@ namespace RDD.Domain.Tests
 				Assert.Equal(0, result.Count);
 			}
 		}
-    }
+	}
 }

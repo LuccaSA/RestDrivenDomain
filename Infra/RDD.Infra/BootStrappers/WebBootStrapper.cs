@@ -10,21 +10,21 @@ using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
 
 namespace RDD.Infra.BootStrappers
 {
-    public static class WebBootStrapper
+	public static class WebBootStrapper
 	{
 		public static void ApplicationStart()
 		{
 			var resolver = new DependencyInjectionResolver();
 
-            resolver.Register<IWebContext, HttpContext>((HttpContext context) =>
-            {
-                return new HttpContextWrapper(context);
-            });
+			resolver.Register<IWebContext, HttpContext>((HttpContext context) =>
+			{
+				return new HttpContextWrapper(context);
+			});
 
-            resolver.Register<IWebContext>(() =>
-            {
-                return AsyncService.ThreadedContexts[Thread.CurrentThread.ManagedThreadId];
-            });
+			resolver.Register<IWebContext>(() =>
+			{
+				return AsyncService.ThreadedContexts[Thread.CurrentThread.ManagedThreadId];
+			});
 
 			resolver.Register<IExecutionContext>(() =>
 			{
