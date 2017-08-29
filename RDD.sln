@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Domain.Mocks", "Domain\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Domain.Tests", "Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj", "{7B355B8F-EF90-4C28-A2D7-1B9180E1F8A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Infra.Tests", "Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj", "{9EF0D70A-0C96-4B87-B7CA-D189290926E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{7B355B8F-EF90-4C28-A2D7-1B9180E1F8A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B355B8F-EF90-4C28-A2D7-1B9180E1F8A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B355B8F-EF90-4C28-A2D7-1B9180E1F8A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EF0D70A-0C96-4B87-B7CA-D189290926E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EF0D70A-0C96-4B87-B7CA-D189290926E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EF0D70A-0C96-4B87-B7CA-D189290926E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EF0D70A-0C96-4B87-B7CA-D189290926E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

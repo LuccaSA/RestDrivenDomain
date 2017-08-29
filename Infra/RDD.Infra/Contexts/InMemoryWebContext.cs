@@ -24,12 +24,12 @@ namespace RDD.Infra.Contexts
 		}
 
 		public InMemoryWebContext(IDictionary<object, object> items)
+			: this()
 		{
-			_items = new Dictionary<object, object>()
+			foreach (var kvp in items)
 			{
-				{ "executionContext", items["executionContext"]},
-				{ "repoProvider", items["repoProvider"]}
-			};
+				_items.Add(kvp.Key, kvp.Value);
+			}
 		}
 
 		public Uri Url { get { throw new NotImplementedException(); } }
