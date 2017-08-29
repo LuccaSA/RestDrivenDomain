@@ -1,5 +1,8 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using Microsoft.Extensions.Primitives;
+using RDD.Domain.Models.Querying;
+using NExtends.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Xunit;
 
@@ -11,7 +14,7 @@ namespace RDD.Domain.Tests.Models.Querying
 		public void Headers_ShouldParseIfUnmodifiedSinceHeader()
 		{
 			var date = new DateTime(2015, 9, 21, 7, 28, 0);
-			var requestHeaders = new NameValueCollection { { "If-Unmodified-Since", date.ToString("ddd, dd MMM yyyy HH:mm:ss zzz") } };
+			var requestHeaders = new Dictionary<string, StringValues> { { "If-Unmodified-Since", date.ToString("ddd, dd MMM yyyy HH:mm:ss zzz") } };
 
 			var headers = Headers.Parse(requestHeaders);
 
@@ -22,7 +25,7 @@ namespace RDD.Domain.Tests.Models.Querying
 		[Fact]
 		public void Headers_ShouldNotParseIfUnmodifiedSinceHeader_WhenDateFormatIsInvalid()
 		{
-			var requestHeaders = new NameValueCollection { { "If-Unmodified-Since", "invalid format" } };
+			var requestHeaders = new Dictionary<string, StringValues> { { "If-Unmodified-Since", "invalid format" } };
 
 			var headers = Headers.Parse(requestHeaders);
 
@@ -33,7 +36,7 @@ namespace RDD.Domain.Tests.Models.Querying
 		public void Headers_ShouldParseAuthorizationHeader()
 		{
 			var authorization = "anything here";
-			var requestHeaders = new NameValueCollection { { "Authorization", authorization } };
+			var requestHeaders = new Dictionary<string, StringValues> { { "Authorization", authorization } };
 
 			var headers = Headers.Parse(requestHeaders);
 
@@ -44,7 +47,7 @@ namespace RDD.Domain.Tests.Models.Querying
 		public void Headers_ShouldParseContentTypeHeader()
 		{
 			var contentType = "multipart/form-data";
-			var requestHeaders = new NameValueCollection { { "Content-Type", contentType } };
+			var requestHeaders = new Dictionary<string, StringValues> { { "Content-Type", contentType } };
 
 			var headers = Headers.Parse(requestHeaders);
 
@@ -54,20 +57,20 @@ namespace RDD.Domain.Tests.Models.Querying
 		[Fact]
 		public void Headers_ShouldParseRawHeaders()
 		{
-			var requestHeaders = new NameValueCollection
+			var requestHeaders = new Dictionary<string, StringValues>
 			{
 				{ "Content-Type", "multipart/form-data" },
 				{ "any", "value" },
 				{ "Foo", "Bar" },
 			};
 
-			var headers = Headers.Parse(requestHeaders);
+			var rawHeaders = Headers.Parse(requestHeaders).RawHeaders.ToDictionary();
 
-			Assert.Equal(3, headers.RawHeaders.Count);
+			Assert.Equal(3, rawHeaders.Count);
 
-			Assert.Equal("multipart/form-data", headers.RawHeaders["Content-Type"]);
-			Assert.Equal("value", headers.RawHeaders["any"]);
-			Assert.Equal("Bar", headers.RawHeaders["Foo"]);
+			Assert.Equal("multipart/form-data", rawHeaders["Content-Type"]);
+			Assert.Equal("value", rawHeaders["any"]);
+			Assert.Equal("Bar", rawHeaders["Foo"]);
 		}
 	}
 }

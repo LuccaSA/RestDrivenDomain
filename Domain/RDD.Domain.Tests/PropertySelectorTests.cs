@@ -12,7 +12,7 @@ using Xunit;
 
 namespace RDD.Domain.Tests
 {
-	class PropertySelectorTests
+	public class PropertySelectorTests
 	{
 		[Fact]
 		public void Parsing_count_on_empty_collection()
