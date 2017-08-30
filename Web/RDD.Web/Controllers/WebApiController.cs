@@ -10,28 +10,12 @@ using RDD.Domain.Models;
 
 namespace RDD.Web.Controllers
 {
-	public partial class WebApiController<TCollection, TEntity, TKey> : IDisposable
+	public partial class WebApiController<TCollection, TEntity, TKey> : ReadOnlyWebApiController<TCollection, TEntity, TKey>
 		where TCollection : IRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		protected IWebContext _webContext;
-		protected IExecutionContext _execution;
-		protected Func<IStorageService> _newStorage;
-		protected IStorageService _storage;
-		protected TCollection _collection;
-		protected IEntitySerializer _serializer;
-		protected ApiHelper<TEntity, TKey> ApiHelper { get; set; }
-
 		public WebApiController(IWebContext webContext, IExecutionContext execution, Func<IStorageService> newStorage, IEntitySerializer serializer, Query<TEntity> query = null, IContractResolver jsonResolver = null)
-		{
-			_webContext = webContext;
-			_execution = execution;
-			_newStorage = newStorage;
-			_storage = _newStorage();
-			_serializer = serializer;
-
-			ApiHelper = new ApiHelper<TEntity, TKey>(_webContext, query, jsonResolver);
-		}
+			: base(webContext, execution, newStorage, serializer, query, jsonResolver) { }
 	}
 }

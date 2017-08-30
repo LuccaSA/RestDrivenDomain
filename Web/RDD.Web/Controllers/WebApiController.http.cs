@@ -21,61 +21,11 @@ using System.Web.Http;
 namespace RDD.Web.Controllers
 {
 	[JsonException]
-	public partial class WebApiController<TCollection, TEntity, TKey> : ApiController
+	public partial class WebApiController<TCollection, TEntity, TKey> : ReadOnlyWebApiController<TCollection, TEntity, TKey>
 		where TCollection : IRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		public virtual HttpResponseMessage Get()
-		{
-			return Get(query => _collection.Get(query));
-		}
-
-		[NonAction]
-		protected virtual HttpResponseMessage Get(Func<Query<TEntity>, ISelection<TEntity>> getEntities)
-		{
-			var query = ApiHelper.CreateQuery(HttpVerb.GET);
-
-			_execution.queryWatch.Start();
-
-			var selection = getEntities(query);
-
-			_execution.queryWatch.Stop();
-
-			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields), query.Options);
-
-			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
-		}
-
-		// Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
-		// car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
-		public virtual HttpResponseMessage Get(TKey _id_)
-		{
-			return Get(_id_, new HttpRequestMessageWrapper(Request));
-		}
-
-		[NonAction]
-		public virtual HttpResponseMessage Get(TKey _id_, IRequestMessage request)
-		{
-			return request.CreateResponse(HttpStatusCode.OK, GetEntity(_id_), ApiHelper.GetFormatter());
-		}
-
-		[NonAction]
-		public Dictionary<string, object> GetEntity(TKey id)
-		{
-			var query = ApiHelper.CreateQuery(HttpVerb.GET, false);
-
-			_execution.queryWatch.Start();
-
-			var entity = _collection.GetById(id, query);
-
-			_execution.queryWatch.Stop();
-
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
-
-			return dataContainer.ToDictionary();
-		}
-
 		public virtual HttpResponseMessage Post()
 		{
 			return Post(new HttpRequestMessageWrapper(Request));
