@@ -1,4 +1,5 @@
-﻿using RDD.Domain;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
 using RDD.Infra.DependencyInjection;
@@ -10,28 +11,11 @@ namespace RDD.Infra.BootStrappers
 {
 	public static class TestsBootStrapper
 	{
-		public static void ApplicationStart()
+		public static void ApplicationStart(IServiceCollection services)
 		{
-			var resolver = new DependencyInjectionResolver();
-
-			resolver.Register<IAsyncService>(() => new AsyncService());
-			resolver.Register<IExecutionModeProvider>(() => new TestExecutionModeProvider());
-			resolver.Register<ILogService>(() => new LostLogService());
-
-			Resolver.Current = () => resolver;
-		}
-
-		public static void ApplicationBeginRequest()
-		{
-			var resolver = Resolver.Current();
-			var webContext = new InMemoryWebContext();
-			webContext.Items["executionContext"] = new HttpExecutionContext();
-
-			resolver.Register<IWebContext>(() => webContext);
-			resolver.Register<IExecutionContext>(() =>
-			{
-				return (IExecutionContext)resolver.Resolve<IWebContext>().Items["executionContext"];
-			});
+			services.AddSingleton<IAsyncService, AsyncService>();
+			services.AddSingleton<ILogService, LostLogService>();
+			services.AddSingleton<IExecutionModeProvider, TestExecutionModeProvider>();
 		}
 	}
 }

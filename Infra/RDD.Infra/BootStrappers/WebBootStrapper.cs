@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
@@ -14,28 +15,11 @@ namespace RDD.Infra.BootStrappers
 {
 	public static class WebBootStrapper
 	{
-		public static void ApplicationStart()
+		public static void ApplicationStart(IServiceCollection services)
 		{
-			var resolver = new DependencyInjectionResolver();
-
-			resolver.Register<IWebContextProvider>(() => new WebContextProvider());
-			resolver.Register<IExecutionContext>(() =>
-			{
-				var webContext = resolver.Resolve<IWebContext>();
-
-				return (IExecutionContext)webContext.Items["executionContext"];
-			});
-			resolver.Register<IAsyncService>(() => new AsyncService());
-			resolver.Register<ILogService>(() => new LostLogService());
-			resolver.Register<IExecutionModeProvider>(() => new DevExecutionModeProvider());
-
-			Resolver.Current = () => resolver;
-		}
-
-		public static void ApplicationBeginRequest()
-		{
-			var webContext = Resolver.Current().Resolve<Func<HttpContext, IWebContext>>()(null);
-			webContext.Items["executionContext"] = new HttpExecutionContext();
+			services.AddSingleton<IAsyncService, AsyncService>();
+			services.AddSingleton<ILogService, LostLogService>();
+			services.AddSingleton<IExecutionModeProvider, DevExecutionModeProvider>();
 		}
 	}
 }
