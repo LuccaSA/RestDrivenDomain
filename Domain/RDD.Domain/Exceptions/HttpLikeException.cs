@@ -29,27 +29,18 @@ namespace RDD.Domain.Exceptions
 			}
 		}
 
-		public HttpLikeException(HttpStatusCode status) : this(status, StatusToLogLevel(status), null, null) { }
-		public HttpLikeException(HttpStatusCode status, string message) : this(status, StatusToLogLevel(status), message, null) { }
-		public HttpLikeException(HttpStatusCode status, LogLevel logLevel, string message) : this(status, logLevel, message, null) { }
-		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, StatusToLogLevel(status), innerException.Message, innerException) { }
-		public HttpLikeException(HttpStatusCode status, LogLevel logLevel, string message, Exception innerException)
+		public HttpLikeException(HttpStatusCode status) : this(status, null, null) { }
+		public HttpLikeException(HttpStatusCode status, string message) : this(status, message, null) { }
+		public HttpLikeException(HttpStatusCode status, Exception innerException) : this(status, innerException.Message, innerException) { }
+		public HttpLikeException(HttpStatusCode status, string message, Exception innerException)
 			: base(message, innerException)
 		{
 			this.Status = status;
-
-			var logger = Resolver.Current().Resolve<ILogService>();
-			logger.Log(logLevel, String.Format("Error {0}, {1}", status, message));
 		}
 
 		public static HttpLikeException Parse(Exception e)
 		{
 			return e as HttpLikeException ?? new HttpLikeException(HttpStatusCode.InternalServerError, e);
-		}
-
-		private static LogLevel StatusToLogLevel(HttpStatusCode status)
-		{
-			return (int)status >= 500 ? LogLevel.ERROR : LogLevel.INFO;
 		}
 	}
 }
