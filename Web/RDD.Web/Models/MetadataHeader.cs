@@ -1,7 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
-using RDD.Domain;
-using RDD.Domain.Contexts;
+﻿using RDD.Domain;
+using System;
 
 namespace RDD.Web.Models
 {
@@ -17,10 +15,8 @@ namespace RDD.Web.Models
 
 		public MetadataPaging Paging { get; set; }
 
-		public MetadataHeader()
+		public MetadataHeader(IExecutionContext execution)
 		{
-			var execution = Resolver.Current().Resolve<IExecutionContext>();
-
 			execution.serverWatch.Stop();
 
 			serverTime = execution.serverWatch.ElapsedMilliseconds;

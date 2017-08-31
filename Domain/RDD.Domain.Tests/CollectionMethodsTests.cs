@@ -1,18 +1,11 @@
 ﻿using Moq;
-using RDD.Domain.Contexts;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
-using RDD.Infra.BootStrappers;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -22,10 +15,8 @@ namespace RDD.Domain.Tests
 		[Fact]
 		public void GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
 		{
-			TestsBootStrapper.ApplicationBeginRequest();
-
 			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, _newStorage);
+			var users = new UsersCollection(_storage, _execution, null, _newStorage);
 
 			users.Create(user);
 
@@ -35,10 +26,8 @@ namespace RDD.Domain.Tests
 		[Fact]
 		public void TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
 		{
-			TestsBootStrapper.ApplicationBeginRequest();
-
 			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, _newStorage);
+			var users = new UsersCollection(_storage, _execution, null, _newStorage);
 
 			users.Create(user);
 
@@ -48,20 +37,17 @@ namespace RDD.Domain.Tests
 		[Fact]
 		public void Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
 		{
-			TestsBootStrapper.ApplicationBeginRequest();
 			_execution.curPrincipal = new WebService { Id = 1, AppOperations = new HashSet<int>() { 1 } };
-			_resolver.Register<ICombinationsHolder>(() =>
-			{
-				var mock = new Mock<ICombinationsHolder>();
-				mock.Setup(h => h.Combinations)
-				.Returns(new HashSet<Combination>() {
-					new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.PUT }
-				});
-				return mock.Object;
+			
+			var mock = new Mock<ICombinationsHolder>();
+			mock.Setup(h => h.Combinations)
+			.Returns(new HashSet<Combination>() {
+				new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.PUT }
 			});
+			var combinationsHolder = mock.Object;
 
 			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, _newStorage);
+			var users = new UsersCollection(_storage, _execution, combinationsHolder, _newStorage);
 
 			users.Create(user);
 

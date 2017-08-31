@@ -1,15 +1,12 @@
-﻿using RDD.Domain;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Http.Headers;
+using Microsoft.Extensions.Primitives;
+using RDD.Domain;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Extensions.Primitives;
 
 namespace RDD.Infra.Contexts
 {
