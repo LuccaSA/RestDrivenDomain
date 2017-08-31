@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
+﻿using RDD.Domain;
 using RDD.Domain.Models.Querying;
+using System;
+using System.Collections.Generic;
 
 namespace RDD.Web.Models
 {
@@ -13,9 +11,9 @@ namespace RDD.Web.Models
 
 		public object Data { get; set; }
 
-		public Metadata(object datas, Options options)
+		public Metadata(object datas, Options options, IExecutionContext execution)
 		{
-			Header = new MetadataHeader { generated = DateTime.Now };
+			Header = new MetadataHeader(execution) { generated = DateTime.Now };
 			Data = datas;
 
 			if (options.withPagingInfo)

@@ -1,16 +1,11 @@
-﻿using System;
+﻿using NExtends.Primitives.Types;
+using RDD.Domain;
+using RDD.Domain.Exceptions;
+using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Net;
-using System.Linq.Expressions;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Helpers;
-using RDD.Domain;
-using NExtends.Primitives.Types;
-using RDD.Domain.Exceptions;
-using RDD.Web.Exceptions;
 
 namespace RDD.Web.Serialization
 {

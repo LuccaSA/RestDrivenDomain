@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RDD.Domain.Tests.Models;
+﻿using RDD.Domain.Mocks;
 using RDD.Domain.Models;
+using RDD.Domain.Tests.Models;
 using RDD.Infra.Services;
-using RDD.Domain.Contexts;
-using Moq;
+using System;
+using System.Linq;
 using Xunit;
-using RDD.Domain.Mocks;
 
 namespace RDD.Domain.Tests
 {
 	internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
 	{
-		public AbstractClassCollection(IStorageService storage, IExecutionContext execution, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, asyncStorage) { }
+		public AbstractClassCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
+			: base(storage, execution, combinationsHolder, asyncStorage) { }
 	}
 
 	public class AbstractEntityTests
@@ -32,7 +27,7 @@ namespace RDD.Domain.Tests
 				storage.Add(new ConcreteClassOne());
 				storage.Add(new ConcreteClassTwo());
 
-				var collection = new AbstractClassCollection(storage, execution);
+				var collection = new AbstractClassCollection(storage, execution, null);
 
 				var result = collection.GetAll();
 

@@ -1,12 +1,7 @@
 ﻿using RDD.Domain;
-using RDD.Domain.Contexts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Infra.Mails
 {
@@ -14,17 +9,17 @@ namespace RDD.Infra.Mails
 	{
 		private SmtpServerInfo _serverInfo;
 		private ExceptionMailInfo _exceptionMailInfo;
+		private IWebContext _webContext;
 
-		public SmtpMailService(SmtpServerInfo serverInfo, ExceptionMailInfo exceptionMailInfo)
+		public SmtpMailService(SmtpServerInfo serverInfo, ExceptionMailInfo exceptionMailInfo, IWebContext webContext)
 		{
 			_serverInfo = serverInfo;
 			_exceptionMailInfo = exceptionMailInfo;
+			_webContext = webContext;
 		}
 
 		public void SendMail(string from, string to, string subject, string body, bool forceSend = false)
 		{
-			var logService = Resolver.Current().Resolve<ILogService>();
-
 			try
 			{
 				if (forceSend)
@@ -55,23 +50,16 @@ namespace RDD.Infra.Mails
 						smtpClient.Send(mail);
 					};
 
-					logService.Log(LogLevel.INFO, String.Format("Smtp message sent from {0} to {1} with subject {2}", from, to, subject));
-
 					return;
 				}
-
-				logService.Log(LogLevel.INFO, String.Format("Smtp message not forced (then not sent) from {0} to {1} with subject {2}", from, to, subject));
 			}
 			catch (Exception E)
 			{
-				logService.Log(LogLevel.ERROR, String.Format("Smtp message send failure from {0} to {1} with subject {2}, error : {3}", from, to, subject, E.Message));
 			}
 		}
 
 		public void SendExceptionMail(Exception E)
 		{
-			var webContext = Resolver.Current().Resolve<IWebContext>();
-
 			try
 			{
 				var stackTrace = String.Empty;
@@ -100,9 +88,9 @@ namespace RDD.Infra.Mails
 				{
 					var Detail = new Func<string, string, string>((k, v) => String.Format("{0} : {1}<br /><br />", k, v));
 
-					body += Detail("Page REST", webContext.RawUrl);
-					body += Detail("Page", webContext.Url.ToString());
-					body += Detail("Host Address", webContext.UserHostAddress);
+					body += Detail("Page REST", _webContext.RawUrl);
+					body += Detail("Page", _webContext.Url.ToString());
+					body += Detail("Host Address", _webContext.UserHostAddress);
 				}
 				catch { } // No context
 

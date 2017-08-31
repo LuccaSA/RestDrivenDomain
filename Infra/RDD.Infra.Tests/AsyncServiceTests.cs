@@ -1,6 +1,6 @@
 ﻿using Moq;
 using RDD.Domain;
-using RDD.Infra.BootStrappers;
+using RDD.Infra.Contexts;
 using RDD.Infra.Services;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,11 +17,7 @@ namespace RDD.Infra.Tests
 
 		public AsyncServiceTests()
 		{
-			TestsBootStrapper.ApplicationStart();
-			
-			_asyncService = new AsyncService();
-
-			TestsBootStrapper.ApplicationBeginRequest();
+			_asyncService = new AsyncService(new InMemoryWebContext());
 
 			_mock = new Mock<ICollection>();
 			_mock.Setup(m => m.GetEnumerator()).Verifiable();

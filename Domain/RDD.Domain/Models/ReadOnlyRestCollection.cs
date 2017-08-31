@@ -18,13 +18,15 @@ namespace RDD.Domain.Models
 	{
 		protected IStorageService _storage;
 		protected IExecutionContext _execution;
+		protected ICombinationsHolder _combinationsHolder;
 		protected Func<IStorageService> _asyncStorage;
 
 		protected ReadOnlyRestCollection() { }
-		public ReadOnlyRestCollection(IStorageService storage, IExecutionContext execution, Func<IStorageService> asyncStorage = null)
+		public ReadOnlyRestCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
 		{
 			_storage = storage;
 			_execution = execution;
+			_combinationsHolder = combinationsHolder;
 			_asyncStorage = asyncStorage;
 		}
 
@@ -408,8 +410,7 @@ namespace RDD.Domain.Models
 
 		protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
 		{
-			var holder = Resolver.Current().Resolve<ICombinationsHolder>();
-			var combinations = holder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
+			var combinations = _combinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
 
 			return new HashSet<int>(combinations.Select(c => c.Operation.Id));
 		}

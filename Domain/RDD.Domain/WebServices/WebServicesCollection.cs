@@ -2,16 +2,13 @@
 using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.WebServices
 {
 	public class WebServicesCollection : RestCollection<WebService, int>, IWebServicesCollection
 	{
-		public WebServicesCollection(IStorageService storage, IExecutionContext execution, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, asyncStorage) { }
+		public WebServicesCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
+			: base(storage, execution, combinationsHolder, asyncStorage) { }
 
 		public IEnumerable<WebService> GetByToken(string token)
 		{

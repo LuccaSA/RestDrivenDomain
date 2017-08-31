@@ -3,7 +3,6 @@ using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Contexts;
-using RDD.Web.Exceptions;
 using RDD.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ using System.Web.Http;
 
 namespace RDD.Web.Controllers
 {
-	[JsonException]
 	public partial class ReadOnlyWebApiController<TCollection, TEntity, TKey> : ApiController
 		where TCollection : IReadOnlyRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
@@ -35,7 +33,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields), query.Options);
+			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields), query.Options, _execution);
 
 			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
 		}
@@ -64,7 +62,7 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options);
+			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
 
 			return dataContainer.ToDictionary();
 		}

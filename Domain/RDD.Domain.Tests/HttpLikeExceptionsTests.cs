@@ -1,12 +1,5 @@
-﻿using RDD.Domain.Contexts;
-using RDD.Domain.Exceptions;
-using RDD.Infra.Logs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using RDD.Domain.Exceptions;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -15,9 +8,6 @@ namespace RDD.Domain.Tests
 	{
 		public HttpLikeExceptionsTests()
 		{
-			RDD.Infra.BootStrappers.TestsBootStrapper.ApplicationStart();
-			RDD.Infra.BootStrappers.TestsBootStrapper.ApplicationBeginRequest();
-			Resolver.Current().Register<ILogService>(() => new LostLogService());
 		}
 
 		[Fact]

@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Exceptions;
+using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
-using LinqKit;
-using Newtonsoft.Json;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Helpers;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Contexts;
 
 namespace RDD.Domain.Models
 {
@@ -16,14 +13,12 @@ namespace RDD.Domain.Models
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		public RestCollection(IStorageService storage, IExecutionContext execution, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, asyncStorage) { }
+		public RestCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
+			: base(storage, execution, combinationsHolder, asyncStorage) { }
 
 		protected virtual void CheckRightsForCreate(TEntity entity)
 		{
-			var holder = Resolver.Current().Resolve<ICombinationsHolder>();
-
-			var operationIds = holder.Combinations
+			var operationIds = _combinationsHolder.Combinations
 				.Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
 				.Select(c => c.Operation.Id);
 
