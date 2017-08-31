@@ -2,9 +2,11 @@
 using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
+using RDD.Infra.DependencyInjection;
 using RDD.Infra.Helpers;
 using RDD.Infra.Logs;
 using RDD.Infra.Services;
+using System;
 using System.Threading;
 using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
 
@@ -16,16 +18,7 @@ namespace RDD.Infra.BootStrappers
 		{
 			var resolver = new DependencyInjectionResolver();
 
-			resolver.Register<IWebContext, HttpContext>((HttpContext context) =>
-			{
-				return new HttpContextWrapper(context);
-			});
-
-			resolver.Register<IWebContext>(() =>
-			{
-				return AsyncService.ThreadedContexts[Thread.CurrentThread.ManagedThreadId];
-			});
-
+			resolver.Register<IWebContextProvider>(() => new WebContextProvider());
 			resolver.Register<IExecutionContext>(() =>
 			{
 				var webContext = resolver.Resolve<IWebContext>();
@@ -41,7 +34,7 @@ namespace RDD.Infra.BootStrappers
 
 		public static void ApplicationBeginRequest()
 		{
-			var webContext = Resolver.Current().Resolve<IWebContext>();
+			var webContext = Resolver.Current().Resolve<Func<HttpContext, IWebContext>>()(null);
 			webContext.Items["executionContext"] = new HttpExecutionContext();
 		}
 	}

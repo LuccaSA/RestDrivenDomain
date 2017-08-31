@@ -1,17 +1,10 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
+using RDD.Infra.DependencyInjection;
 using RDD.Infra.Helpers;
 using RDD.Infra.Logs;
 using RDD.Infra.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
 
 namespace RDD.Infra.BootStrappers
 {
