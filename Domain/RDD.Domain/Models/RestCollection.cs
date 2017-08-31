@@ -12,7 +12,7 @@ using RDD.Domain.Contexts;
 
 namespace RDD.Domain.Models
 {
-	public partial class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>
+	public partial class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
