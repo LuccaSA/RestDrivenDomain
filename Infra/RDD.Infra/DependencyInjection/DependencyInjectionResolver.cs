@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RDD.Infra.Contexts
+namespace RDD.Infra.DependencyInjection
 {
 	public class DependencyInjectionResolver : IDependencyInjectionResolver
 	{
