@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RDD.Domain;
+using RDD.Infra.Contexts;
 using RDD.Infra.Helpers;
 using RDD.Infra.Services;
 
@@ -11,6 +12,7 @@ namespace RDD.Infra.BootStrappers
 		{
 			services.AddSingleton<IAsyncService, AsyncService>();
 			services.AddSingleton<IExecutionModeProvider, DevExecutionModeProvider>();
+			services.AddScoped<IWebContext, HttpContextWrapper>();
 		}
 	}
 }

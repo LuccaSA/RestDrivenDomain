@@ -3,13 +3,11 @@ using NExtends.Primitives.Types;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
-using RDD.Web.Contexts;
 using RDD.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 
 namespace RDD.Web.Controllers
 {
@@ -18,16 +16,11 @@ namespace RDD.Web.Controllers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		public virtual HttpResponseMessage Post()
-		{
-			return Post(new HttpRequestMessageWrapper(Request));
-		}
-
 		[NonAction]
-		public virtual HttpResponseMessage Post(IRequestMessage request)
+		public virtual IActionResult Post()
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.POST, false);
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request).SingleOrDefault();
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
 
 			var entity = _collection.Create(datas, query);
 
@@ -41,20 +34,15 @@ namespace RDD.Web.Controllers
 
 			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
 
-			return request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
-		}
-
-		public virtual HttpResponseMessage Put(TKey _id_)
-		{
-			return Put(_id_, new HttpRequestMessageWrapper(Request));
+			return Ok(dataContainer.ToDictionary());
 		}
 
 		[NonAction]
-		public virtual HttpResponseMessage Put(TKey _id_, IRequestMessage request)
+		public virtual IActionResult Put(TKey _id_)
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
 
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request).SingleOrDefault();
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
 
 			_execution.queryWatch.Start();
 
@@ -66,20 +54,15 @@ namespace RDD.Web.Controllers
 
 			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
 
-			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
-		}
-
-		public virtual HttpResponseMessage Put()
-		{
-			return Put(new HttpRequestMessageWrapper(Request));
+			return Ok(dataContainer.ToDictionary());//, ApiHelper.GetFormatter());
 		}
 
 		[NonAction]
-		public virtual HttpResponseMessage Put(IRequestMessage request)
+		public virtual IActionResult Put()
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
 
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request);
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
 
 			//Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
 			if (datas.Any(d => !d.ContainsKey("id")))
@@ -110,10 +93,10 @@ namespace RDD.Web.Controllers
 
 			var dataContainer = new Metadata(_serializer.SerializeEntities(entities, query.Fields), query.Options, _execution);
 
-			return Request.CreateResponse(HttpStatusCode.OK, dataContainer.ToDictionary(), ApiHelper.GetFormatter());
+			return Ok(dataContainer.ToDictionary());
 		}
 
-		public virtual HttpResponseMessage Delete(TKey _id_)
+		public virtual IActionResult Delete(TKey _id_)
 		{
 			_execution.queryWatch.Start();
 
@@ -123,22 +106,17 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Stop();
 
-			return Request.CreateResponse(HttpStatusCode.OK);
-		}
-
-		public virtual HttpResponseMessage Delete()
-		{
-			return Delete(new HttpRequestMessageWrapper(Request));
+			return Ok();
 		}
 
 		[NonAction]
-		public virtual HttpResponseMessage Delete(IRequestMessage request)
+		public virtual IActionResult Delete()
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.DELETE, true);
 
 			_execution.queryWatch.Start();
 
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(request);
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
 
 			if (datas.Any(d => !d.ContainsKey("id")))
 			{
@@ -158,14 +136,7 @@ namespace RDD.Web.Controllers
 
 			_storage.Commit();
 
-			return Request.CreateResponse(HttpStatusCode.OK);
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			_storage.Dispose();
-
-			base.Dispose(disposing);
+			return Ok();
 		}
 	}
 }

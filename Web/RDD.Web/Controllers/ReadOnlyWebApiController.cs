@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Net.Http.Formatting;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Serialization;
 using RDD.Domain;
-using RDD.Web.Helpers;
 using RDD.Domain.Models.Querying;
-using RDD.Domain.Models;
-using System.Web.Http;
+using RDD.Web.Helpers;
+using System;
 
 namespace RDD.Web.Controllers
 {
-	public partial class ReadOnlyWebApiController<TCollection, TEntity, TKey> : ApiController
+	public partial class ReadOnlyWebApiController<TCollection, TEntity, TKey> : ControllerBase
 		where TCollection : IReadOnlyRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
