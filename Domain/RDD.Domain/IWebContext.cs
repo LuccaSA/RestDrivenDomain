@@ -17,6 +17,5 @@ namespace RDD.Domain
 		string PhysicalApplicationPath { get; }
 		Dictionary<string, string> GetQueryNameValuePairs();
 		string UserHostAddress { get; }
-		void Redirect(Uri url, bool endResponse);
 	}
 }

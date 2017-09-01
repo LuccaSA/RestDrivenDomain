@@ -16,7 +16,6 @@ namespace RDD.Infra.Services
 		protected DbContext _dbContext { get; set; }
 		protected ISet<Action> _afterCommitActions { get; set; }
 
-		public EFStorageService() { }
 		public EFStorageService(DbContext dbContext)
 		{
 			_dbContext = dbContext;

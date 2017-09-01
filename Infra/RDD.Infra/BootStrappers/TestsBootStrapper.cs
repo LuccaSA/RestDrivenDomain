@@ -14,6 +14,7 @@ namespace RDD.Infra.BootStrappers
 		{
 			services.AddSingleton<IAsyncService, AsyncService>();
 			services.AddSingleton<IExecutionModeProvider, TestExecutionModeProvider>();
+			services.AddScoped<IWebContext, InMemoryWebContext>();
 		}
 	}
 }
