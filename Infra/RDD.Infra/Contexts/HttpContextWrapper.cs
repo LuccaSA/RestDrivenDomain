@@ -51,7 +51,7 @@ namespace RDD.Infra.Contexts
 			UserHostAddress = context.Connection.RemoteIpAddress?.ToString();
 			Content = GetContent(context.Request.Body);
 			ContentType = context.Request.ContentType;
-			ContentAsFormDictionnary = Content.Split('&').Select(s => s.Split('=')).ToDictionary(p => p[0], p => p[1]);
+			ContentAsFormDictionnary = String.IsNullOrEmpty(Content) ? new Dictionary<string, string>() : Content.Split('&').Select(s => s.Split('=')).ToDictionary(p => p[0], p => p[1]);
 		}
 
 		private string GetContent(Stream body)
