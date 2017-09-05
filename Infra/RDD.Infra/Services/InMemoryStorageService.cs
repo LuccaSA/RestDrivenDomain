@@ -68,6 +68,15 @@ namespace RDD.Infra.Services
 
 			return entity;
 		}
+		public async Task<TEntity> AddAsync<TEntity>(TEntity entity)
+	where TEntity : class, IPrimaryKey
+		{
+			CreateIfNotExist<TEntity>();
+
+			Cache[typeof(TEntity)].Add((object)entity);
+
+			return entity;
+		}
 
 		public void Remove<TEntity>(TEntity entity)
 			where TEntity : class
@@ -120,6 +129,31 @@ namespace RDD.Infra.Services
 			}
 
 			foreach(var action in _afterCommitActions)
+			{
+				action();
+			}
+		}
+		public async Task CommitAsync()
+		{
+			foreach (var type in Cache.Keys)
+			{
+				var index = Indexes[type];
+
+				foreach (var element in Cache[type])
+				{
+					var entity = (IPrimaryKey)element;
+					var id = entity.GetId().ToString();
+
+					if (id == 0.ToString())
+					{
+						entity.SetId(++index);
+					}
+				}
+
+				Indexes[type] = index;
+			}
+
+			foreach (var action in _afterCommitActions)
 			{
 				action();
 			}

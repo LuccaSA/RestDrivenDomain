@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace RDD.Web.Controllers
 {
@@ -31,6 +32,27 @@ namespace RDD.Web.Controllers
 			_execution.queryWatch.Stop();
 
 			entity = _collection.GetEntityAfterCreate(entity, query);
+
+			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
+
+			return Ok(dataContainer.ToDictionary());
+		}
+
+		[NonAction]
+		public async virtual Task<IActionResult> PostAsync()
+		{
+			var query = ApiHelper.CreateQuery(HttpVerb.POST, false);
+			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+
+			var entity = await _collection.CreateAsync(datas, query);
+
+			_execution.queryWatch.Start();
+
+			await _storage.CommitAsync();
+
+			_execution.queryWatch.Stop();
+
+			entity = await _collection.GetEntityAfterCreateAsync(entity, query);
 
 			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
 

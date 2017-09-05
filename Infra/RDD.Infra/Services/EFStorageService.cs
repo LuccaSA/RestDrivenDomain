@@ -44,6 +44,14 @@ namespace RDD.Infra.Services
 			return _dbContext.Set<TEntity>().Add(entity).Entity;
 		}
 
+		public async virtual Task<TEntity> AddAsync<TEntity>(TEntity entity)
+			where TEntity : class, IPrimaryKey
+		{
+			var entry = await _dbContext.Set<TEntity>().AddAsync(entity);
+
+			return entry.Entity;
+		}
+
 		public virtual void Remove<TEntity>(TEntity entity)
 			where TEntity : class
 		{
@@ -92,6 +100,44 @@ namespace RDD.Infra.Services
 				_dbContext.SaveChanges();
 
 				foreach(var action in _afterCommitActions)
+				{
+					action();
+				}
+			}
+			catch (DbUpdateException ex)
+			{
+				var updateException = ex.InnerException;
+
+				if (updateException.InnerException is ArgumentException)
+				{
+					throw updateException.InnerException;
+				}
+				else if (updateException.InnerException is SqlException)
+				{
+					var sqlException = (SqlException)updateException.InnerException;
+
+					switch (sqlException.Number)
+					{
+						case 2627:
+							throw new SqlUniqConstraintException(sqlException.Message);
+						default:
+							throw sqlException;
+					}
+				}
+				else
+				{
+					throw updateException;
+				}
+			}
+		}
+
+		public async virtual Task CommitAsync()
+		{
+			try
+			{
+				await _dbContext.SaveChangesAsync();
+
+				foreach (var action in _afterCommitActions)
 				{
 					action();
 				}

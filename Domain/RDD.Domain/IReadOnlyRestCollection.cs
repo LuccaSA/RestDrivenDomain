@@ -17,8 +17,10 @@ namespace RDD.Domain
 		PropertySelector<TEntity> HandleIncludes(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields);
 
 		ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		Task<ISelection<TEntity>> GetAsync(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 
 		IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
+		Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
 		IEnumerable<TEntity> GetAll();
 
 		IQueryable<TEntity> OrderByDefault(IQueryable<TEntity> entities);
@@ -44,8 +46,12 @@ namespace RDD.Domain
 		where TKey : IEquatable<TKey>
 	{
 		TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET);
+		Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET);
 		TEntity GetById(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 		IEnumerable<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
+		Task<IEnumerable<TEntity>> GetByIdsAsync(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
 		IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		Task<IEnumerable<TEntity>> GetByIdsAsync(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
 	}
 }

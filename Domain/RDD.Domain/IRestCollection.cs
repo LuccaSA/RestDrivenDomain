@@ -17,7 +17,11 @@ namespace RDD.Domain
 		TEntity Create(object datas, Query<TEntity> query = null);
 		TEntity Create(PostedData datas, Query<TEntity> query = null);
 		void Create(TEntity entity, Query<TEntity> query = null);
+		Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null);
+		Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null);
+		Task CreateAsync(TEntity entity, Query<TEntity> query = null);
 		TEntity GetEntityAfterCreate(TEntity entity, Query<TEntity> query = null);
+		Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null);
 		void CreateRange(IEnumerable<TEntity> entities, Query<TEntity> query = null);
 
 		void Delete(TEntity entity);

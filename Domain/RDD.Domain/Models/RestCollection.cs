@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
@@ -33,6 +34,22 @@ namespace RDD.Domain.Models
 			return new PatchEntityHelper(storage);
 		}
 
+		public async Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
+		{
+			return await CreateAsync(PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+		}
+		public async Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
+		{
+			var entity = InstanciateEntity();
+
+			GetPatcher(_storage).PatchEntity(entity, datas);
+
+			CheckRightsForCreate(entity);
+
+			await CreateAsync(entity, query);
+
+			return entity;
+		}
 		public TEntity Create(object datas, Query<TEntity> query = null)
 		{
 			return Create(PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
@@ -63,9 +80,27 @@ namespace RDD.Domain.Models
 
 			Add(entity);
 		}
+		public async virtual Task CreateAsync(TEntity entity, Query<TEntity> query = null)
+		{
+			if (query == null)
+			{
+				query = new Query<TEntity>();
+			}
+
+			ForgeEntity(entity, query.Options);
+
+			//On valide l'entité
+			entity.Validate(_storage, null);
+
+			await AddAsync(entity);
+		}
 		public virtual TEntity GetEntityAfterCreate(TEntity entity, Query<TEntity> query = null)
 		{
 			return GetById(entity.Id, query, query.Verb);
+		}
+		public async virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
+		{
+			return await GetByIdAsync(entity.Id, query, query.Verb);
 		}
 
 		public virtual void CreateRange(IEnumerable<TEntity> entities, Query<TEntity> query = null)
@@ -159,6 +194,10 @@ namespace RDD.Domain.Models
 		internal protected virtual void Add(TEntity entity)
 		{
 			_storage.Add<TEntity>(entity);
+		}
+		internal async protected virtual Task AddAsync(TEntity entity)
+		{
+			await _storage.AddAsync<TEntity>(entity);
 		}
 		internal protected virtual void AddRange(IEnumerable<TEntity> entities)
 		{
