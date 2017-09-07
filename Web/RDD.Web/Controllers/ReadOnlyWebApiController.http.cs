@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Domain;
-using RDD.Domain.Helpers;
+using RDD.Domain.Models.Collections;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Models;
 using System;
@@ -10,8 +10,7 @@ namespace RDD.Web.Controllers
 {
 	public partial class ReadOnlyWebApiController<TCollection, TEntity, TKey> : ControllerBase
 		where TCollection : IReadOnlyRestCollection<TEntity, TKey>
-		where TEntity : class, IEntityBase<TEntity, TKey>, new()
-		where TKey : IEquatable<TKey>
+		where TEntity : class, IEntityBase<TKey>
 	{
 		public virtual IActionResult Get()
 		{
@@ -21,14 +20,10 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		protected virtual IActionResult Get(Func<Query<TEntity>, ISelection<TEntity>> getEntities)
 		{
-			var query = ApiHelper.CreateQuery(HttpVerb.GET);
-
-			_execution.queryWatch.Start();
-
+			var query = _apiHelper.CreateQuery(true);
+			
 			var selection = getEntities(query);
-
-			_execution.queryWatch.Stop();
-
+			
 			var dataContainer = new Metadata(_serializer.SerializeSelection(selection, query.Fields), query.Options, _execution);
 
 			return Ok(dataContainer.ToDictionary());
@@ -45,17 +40,11 @@ namespace RDD.Web.Controllers
 		[NonAction]
 		public Dictionary<string, object> GetEntity(TKey id)
 		{
-			var query = ApiHelper.CreateQuery(HttpVerb.GET, false);
-
-			_execution.queryWatch.Start();
-
+			var query = _apiHelper.CreateQuery(false);
+			
 			var entity = _collection.GetById(id, query);
-
-			_execution.queryWatch.Stop();
-
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
-
-			return dataContainer.ToDictionary();
+			
+			return new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution).ToDictionary();
 		}
 	}
 }

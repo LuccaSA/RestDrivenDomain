@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Serialization;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Contexts;
-using RDD.Web.Serialization;
+using RDD.Web.Contexts;
+using RDD.Web.QueryParsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,37 +14,20 @@ using System.Net;
 
 namespace RDD.Web.Helpers
 {
-	public class ApiHelper<TEntity, TKey>
-		where TEntity : class, IEntityBase<TEntity, TKey>, new()
-		where TKey : IEquatable<TKey>
+	public class ApiHelper<T> : IApiHelper<T>
 	{
-		private Query<TEntity> _query { get; set; }
-		private IContractResolver _jsonResolver { get; set; }
+		IQueryParser<T> _queryParser;
 		private IWebContext _webContext { get; set; }
 
-		public ApiHelper(IWebContext webContext, Query<TEntity> query = null, IContractResolver jsonResolver = null)
+		public ApiHelper(IWebContext webContext, IQueryParser<T> queryParser)
 		{
 			_webContext = webContext;
-			_query = query ?? new Query<TEntity>();
-			_jsonResolver = jsonResolver ?? new CamelCasePropertyNamesContractResolver();
+			_queryParser=  queryParser;
 		}
 
-		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
+		public virtual Query<T> CreateQuery(bool isCollectionCall = true)
 		{
-			var query = _query.Parse(_webContext, isCollectionCall);
-			query.Verb = verb;
-
-			return query;
-		}
-
-		protected virtual ICollection<Expression<Func<TEntity, object>>> IgnoreList()
-		{
-			return new HashSet<Expression<Func<TEntity, object>>>();
-		}
-
-		private IContractResolver GetJsonResolver()
-		{
-			return _jsonResolver;
+			return _queryParser.ParseWebContext(_webContext, isCollectionCall);
 		}
 
 		public List<PostedData> InputObjectsFromIncomingHTTPRequest(HttpContext context)
@@ -92,7 +75,7 @@ namespace RDD.Web.Helpers
 		/// <param name="filters"></param>
 		public void IgnoreFilters(params string[] filters)
 		{
-			_query.IgnoreFilters(filters);
+			_queryParser.IgnoreFilters(filters);
 		}
 	}
 }

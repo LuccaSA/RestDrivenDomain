@@ -1,15 +1,10 @@
-﻿using RDD.Domain.Models.Querying;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
-	public abstract class EntityBase<TEntity, TKey> : IEntityBase<TEntity, TKey>, IValidatableObject, IIncludable
-		where TEntity : class
+	public abstract class EntityBase<TKey> : IEntityBase<TKey>, IValidatableObject, IIncludable
 		where TKey : IEquatable<TKey>
 	{
 		public abstract TKey Id { get; set; }
@@ -33,35 +28,9 @@ namespace RDD.Domain.Models
 			Id = (TKey)id;
 		}
 
-		public void Validate(IStorageService storage, TEntity oldEntity)
-		{
-			var validationContext = new ValidationContext(this, null, new Dictionary<object, object> { { "storageService", storage } });
-			Validator.ValidateObject(this, validationContext, true);
-		}
-		public void Validate()
-		{
-			Validate(null, null);
-		}
-		/// <summary>
-		/// http://odetocode.com/blogs/scott/archive/2011/06/29/manual-validation-with-data-annotations.aspx
-		/// </summary>
-		/// <param name="results"></param>
-		/// <returns></returns>
-		public bool TryValidate(out ICollection<ValidationResult> results)
-		{
-			var context = new ValidationContext(this, serviceProvider: null, items: null);
-			results = new List<ValidationResult>();
-			return Validator.TryValidateObject(this, context, results, validateAllProperties: true);
-		}
-
 		public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
 			return new HashSet<ValidationResult>();
-		}
-
-		public virtual TEntity Clone()
-		{
-			return (TEntity)this.MemberwiseClone();
 		}
 	}
 }
