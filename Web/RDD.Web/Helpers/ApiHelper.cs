@@ -5,6 +5,7 @@ using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Contexts;
+using RDD.Web.Querying;
 using RDD.Web.Serialization;
 using System;
 using System.Collections.Generic;
@@ -18,20 +19,19 @@ namespace RDD.Web.Helpers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		private Query<TEntity> _query { get; set; }
+		private QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 		private IContractResolver _jsonResolver { get; set; }
 		private IWebContext _webContext { get; set; }
 
-		public ApiHelper(IWebContext webContext, Query<TEntity> query = null, IContractResolver jsonResolver = null)
+		public ApiHelper(IWebContext webContext, IContractResolver jsonResolver = null)
 		{
 			_webContext = webContext;
-			_query = query ?? new Query<TEntity>();
 			_jsonResolver = jsonResolver ?? new CamelCasePropertyNamesContractResolver();
 		}
 
 		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
 		{
-			var query = _query.Parse(_webContext, isCollectionCall);
+			var query = _queryFactory.FromWebContext(_webContext, isCollectionCall);
 			query.Verb = verb;
 
 			return query;
@@ -92,7 +92,7 @@ namespace RDD.Web.Helpers
 		/// <param name="filters"></param>
 		public void IgnoreFilters(params string[] filters)
 		{
-			_query.IgnoreFilters(filters);
+			_queryFactory.IgnoreFilters(filters);
 		}
 	}
 }

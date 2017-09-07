@@ -14,8 +14,8 @@ namespace RDD.Domain.Models
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		public RestCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, combinationsHolder, asyncStorage) { }
+		public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+			: base(repository, execution, combinationsHolder) { }
 
 		protected virtual Task CheckRightsForCreateAsync(TEntity entity)
 		{
@@ -23,7 +23,7 @@ namespace RDD.Domain.Models
 				.Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
 				.Select(c => c.Operation.Id);
 
-			if (!_execution.curPrincipal.HasAnyOperations(_storage, new HashSet<int>(operationIds)))
+			if (!_execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
 			{
 				throw new HttpLikeException(HttpStatusCode.Unauthorized, String.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
 			}
@@ -31,9 +31,9 @@ namespace RDD.Domain.Models
 			return Task.CompletedTask;
 		}
 
-		protected virtual PatchEntityHelper GetPatcher(IStorageService storage)
+		protected virtual PatchEntityHelper GetPatcher()
 		{
-			return new PatchEntityHelper(storage);
+			return new PatchEntityHelper();
 		}
 
 		public async Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
@@ -44,7 +44,7 @@ namespace RDD.Domain.Models
 		{
 			var entity = InstanciateEntity();
 
-			GetPatcher(_storage).PatchEntity(entity, datas);
+			GetPatcher().PatchEntity(entity, datas);
 
 			await CheckRightsForCreateAsync(entity);
 
@@ -62,15 +62,15 @@ namespace RDD.Domain.Models
 			ForgeEntity(entity, query.Options);
 
 			//On valide l'entité
-			entity.Validate(_storage, null);
+			ValidateEntity(entity, null);
 
-			Add(entity);
+			_repository.Add(entity);
 
 			return Task.CompletedTask;
 		}
 		public async virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
-			return await GetByIdAsync(entity.Id, query, query.Verb);
+			return await GetByIdAsync(entity.Id, query);
 		}
 
 		public virtual TEntity InstanciateEntity()
@@ -78,6 +78,7 @@ namespace RDD.Domain.Models
 			return new TEntity();
 		}
 		protected virtual void ForgeEntity(TEntity entity, Options queryOptions) { }
+		protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
 
 		private async Task<TEntity> UpdateAsync(TEntity entity, object datas, Query<TEntity> query = null)
 		{
@@ -96,11 +97,11 @@ namespace RDD.Domain.Models
 			await OnBeforeUpdateEntity(entity, datas);
 			var oldEntity = entity.Clone();
 
-			GetPatcher(_storage).PatchEntity(entity, datas);
+			GetPatcher().PatchEntity(entity, datas);
 
 			await OnAfterUpdateEntity(oldEntity, entity, datas, query);
 
-			entity.Validate(_storage, oldEntity);
+			ValidateEntity(entity, oldEntity);
 
 			return entity;
 		}
@@ -133,11 +134,6 @@ namespace RDD.Domain.Models
 			return Task.CompletedTask;
 		}
 
-		internal protected virtual void Add(TEntity entity)
-		{
-			_storage.Add<TEntity>(entity);
-		}
-
 		public async Task DeleteAsync(TKey id)
 		{
 			var entity = await GetByIdAsync(id, HttpVerb.DELETE);
@@ -150,14 +146,9 @@ namespace RDD.Domain.Models
 
 		public virtual Task DeleteAsync(TEntity entity)
 		{
-			Remove(entity);
+			_repository.Remove(entity);
 
 			return Task.CompletedTask;
-		}
-
-		internal protected virtual void Remove(TEntity entity)
-		{
-			_storage.Remove<TEntity>(entity);
 		}
 	}
 }

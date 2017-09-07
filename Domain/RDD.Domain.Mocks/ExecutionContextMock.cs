@@ -16,7 +16,7 @@ namespace RDD.Domain.Mocks
 
 		public ExecutionContextMock()
 		{
-			curPrincipal = new Mock<IPrincipal>().Object;
+			curPrincipal = new PrincipalMock();
 			serverWatch = new Stopwatch();
 			queryWatch = new Stopwatch();
 		}

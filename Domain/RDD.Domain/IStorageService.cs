@@ -10,25 +10,16 @@ namespace RDD.Domain
 	public interface IStorageService : IDisposable
 	{
 		IQueryable<TEntity> Set<TEntity>()
-			where TEntity : class;
+			where TEntity : class, IEntityBase;
 
-		IQueryable<TEntity> Includes<TEntity>(IQueryable<TEntity> entities, PropertySelector<TEntity> includes)
-			where TEntity : class;
-
-		TEntity Add<TEntity>(TEntity entity)
-			where TEntity : class, IPrimaryKey;
-
-		void AddRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class, IPrimaryKey;
+		void Add<TEntity>(TEntity entity)
+			where TEntity : class, IEntityBase;
 
 		void Remove<TEntity>(TEntity entity)
-			where TEntity : class;
+			where TEntity : class, IEntityBase;
 
-		void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class;
 
-		Task CommitAsync();
-
-		void AddAfterCommitAction(Task action);
+		Task SaveChangesAsync();
+		void AddAfterSaveChangesAction(Task action);
 	}
 }

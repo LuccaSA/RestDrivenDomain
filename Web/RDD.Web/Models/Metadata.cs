@@ -12,16 +12,16 @@ namespace RDD.Web.Models
 
 		public object Data { get; set; }
 
-		public Metadata(object datas, Options options, IExecutionContext execution)
+		public Metadata(object datas, Options options, Page page, IExecutionContext execution)
 		{
 			Header = new MetadataHeader(execution) { generated = DateTime.Now };
 			Data = datas;
 
-			if (options.withPagingInfo)
+			if (options.WithPagingInfo)
 			{
-				var offset = options.Page.Offset;
-				var limit = options.Page.Limit;
-				var count = options.Page.TotalCount;
+				var offset = page.Offset;
+				var limit = page.Limit;
+				var count = page.TotalCount;
 
 				string next = null;
 				string previous = null;

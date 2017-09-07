@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RDD.Domain.Mocks;
 using RDD.Domain.Models;
+using RDD.Domain.Storage;
 using RDD.Domain.Tests.Models;
 using RDD.Infra.Services;
 using System;
@@ -11,14 +12,14 @@ namespace RDD.Domain.Tests
 {
 	internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
 	{
-		public AbstractClassCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, combinationsHolder, asyncStorage) { }
+		public AbstractClassCollection(IRepository<AbstractClass> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+			: base(repository, execution, combinationsHolder) { }
 	}
 
 	internal class ConcreteClassThreeCollection : ReadOnlyRestCollection<ConcreteClassThree, int>
 	{
-		public ConcreteClassThreeCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, combinationsHolder, asyncStorage) { }
+		public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+			: base(repository, execution, combinationsHolder) { }
 	}
 
 	public class AbstractEntityTests
@@ -26,50 +27,38 @@ namespace RDD.Domain.Tests
 		[Fact]
 		public async void NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
 		{
-			var options = new DbContextOptionsBuilder<DataContext>()
-				.UseInMemoryDatabase(databaseName: "NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called")
-				.Options;
+			var execution = new ExecutionContextMock();
+			var combinationHolder = new CombinationsHolderMock();
+			var storage = new InMemoryStorageService();
+			var repo = new GetFreeRepository<ConcreteClassThree>(storage, execution, combinationHolder);
 
-			using (var storage = new EFStorageService(new DataContext(options)))
-			{
-				var execution = new ExecutionContextMock();
+			repo.Add(new ConcreteClassThree());
+			repo.Add(new ConcreteClassThree());
 
-				storage.Add(new ConcreteClassThree());
-				storage.Add(new ConcreteClassThree());
+			var collection = new ConcreteClassThreeCollection(repo, execution, null);
 
-				await storage.CommitAsync();
+			var result = await collection.GetAllAsync();
 
-				var collection = new ConcreteClassThreeCollection(storage, execution, null, () => storage);
-
-				var result = await collection.GetAllAsync();
-
-				Assert.Equal(2, result.Count());
-			}
+			Assert.Equal(2, result.Count());
 		}
 
 		[Fact]
 		public async void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
 		{
-			var options = new DbContextOptionsBuilder<DataContext>()
-				.UseInMemoryDatabase(databaseName: "AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called")
-				.Options;
+			var execution = new ExecutionContextMock();
+			var combinationHolder = new CombinationsHolderMock();
+			var storage = new InMemoryStorageService();
+			var repo = new GetFreeRepository<AbstractClass>(storage, execution, combinationHolder);
 
-			using (var storage = new EFStorageService(new DataContext(options)))
-			{
-				var execution = new ExecutionContextMock();
+			repo.Add(new ConcreteClassOne());
+			repo.Add(new ConcreteClassOne());
+			repo.Add(new ConcreteClassTwo());
 
-				storage.Add(new ConcreteClassOne());
-				storage.Add(new ConcreteClassOne());
-				storage.Add(new ConcreteClassTwo());
+			var collection = new AbstractClassCollection(repo, execution, combinationHolder);
 
-				await storage.CommitAsync();
+			var result = await collection.GetAllAsync();
 
-				var collection = new AbstractClassCollection(storage, execution, null);
-
-				var result = await collection.GetAllAsync();
-
-				Assert.Equal(3, result.Count());
-			}
+			Assert.Equal(3, result.Count());
 		}
 	}
 }

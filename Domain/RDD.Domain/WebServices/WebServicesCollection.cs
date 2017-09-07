@@ -8,15 +8,13 @@ namespace RDD.Domain.WebServices
 {
 	public class WebServicesCollection : RestCollection<WebService, int>, IWebServicesCollection
 	{
-		public WebServicesCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, combinationsHolder, asyncStorage) { }
+		public WebServicesCollection(IRepository<WebService> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+			: base(repository, execution, combinationsHolder) { }
 
 		public async Task<IEnumerable<WebService>> GetByTokenAsync(string token)
 		{
-			return (await GetAsync(new Query<WebService>
-			{
-				ExpressionFilters = ws => ws.Token == token
-			})).Items;
+			return (await GetAsync(new ExpressionQuery<WebService>(ws => ws.Token == token)))
+				.Items;
 		}
 	}
 }

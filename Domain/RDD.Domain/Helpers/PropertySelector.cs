@@ -124,7 +124,7 @@ namespace RDD.Domain.Helpers
 			{
 				Func<string, string> regex = (expressionString) =>
 				{
-					var result = Regex.Replace(expressionString, "Convert\\((.*)\\)", "$1"); //Convert(p.Id) => p.Id
+					var result = Regex.Replace(expressionString, "Convert\\(([\\w\\.?]*),?.*\\)", "$1"); //Convert(p.Id) => p.Id
 					var elements = result.Split('.').ToList();
 					elements.RemoveAt(0); //On vire le paramètre en préfixe, p.xx.Select(..) => xx.Select(..)
 					result = String.Join(".", elements);

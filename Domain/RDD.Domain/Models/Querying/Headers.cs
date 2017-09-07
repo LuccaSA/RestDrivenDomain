@@ -17,36 +17,5 @@ namespace RDD.Domain.Models.Querying
 		public string ContentType { get; set; }
 
 		public IEnumerable<KeyValuePair<string, StringValues>> RawHeaders { get; set; }
-
-		public static Headers Parse(IEnumerable<KeyValuePair<string, StringValues>> requestHeaders)
-		{
-			var headers = new Headers();
-
-			headers.RawHeaders = requestHeaders;
-
-			foreach (var element in requestHeaders)
-			{
-				switch (element.Key)
-				{
-					case "If-Unmodified-Since":
-						DateTime unModifiedSince;
-						if (DateTime.TryParse(element.Value, out unModifiedSince))
-						{
-							headers.IfUnmodifiedSince = unModifiedSince;
-						}
-						break;
-
-					case "Authorization":
-						headers.Authorization = element.Value;
-						break;
-
-					case "Content-Type":
-						headers.ContentType = element.Value;
-						break;
-				}
-			}
-
-			return headers;
-		}
 	}
 }

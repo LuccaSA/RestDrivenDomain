@@ -24,24 +24,21 @@ namespace RDD.Domain.Models.Querying
 		/// </summary>
 		public bool NeedFilterRights { get; set; }
 
-		public bool withPagingInfo { get { return Page != null; } }
-		public Page Page { get; set; }
-		public bool withMetadata { get; set; }
-		public bool attachOperations { get; set; }
-		public bool attachActions { get; set; }
-		public bool withTemplate { get; set; }
-		public bool withWarnings { get; set; }
+		public bool AttachOperations { get; set; }
+		public bool AttachActions { get; set; }
+		public bool WithWarnings { get; set; }
+		public bool WithPagingInfo { get; set; }
 
 		public String Accept { get; set; }
 
-		public PostedData FilterOperations { get; set; }
-		public int impersonatedPrincipal { get; set; }
+		public Dictionary<string, string> FilterOperations { get; set; }
+		public int ImpersonatedPrincipal { get; set; }
 
 		public Options()
 		{
 			NeedEnumeration = true;
 			NeedFilterRights = true;
-			withWarnings = true;
+			WithWarnings = true;
 		}
 	}
 }

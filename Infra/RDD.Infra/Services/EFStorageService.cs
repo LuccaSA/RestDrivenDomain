@@ -14,16 +14,16 @@ namespace RDD.Infra.Services
 	public class EFStorageService : IStorageService
 	{
 		protected DbContext _dbContext { get; set; }
-		protected ISet<Task> _afterCommitActions { get; set; }
+		protected Queue<Task> _afterSaveChangesActions { get; set; }
 
 		public EFStorageService(DbContext dbContext)
 		{
 			_dbContext = dbContext;
-			_afterCommitActions = new HashSet<Task>();
+			_afterSaveChangesActions = new Queue<Task>();
 		}
 
 		public virtual IQueryable<TEntity> Set<TEntity>()
-			where TEntity : class
+			where TEntity : class, IEntityBase
 		{
 			return _dbContext.Set<TEntity>();
 		}
@@ -38,14 +38,14 @@ namespace RDD.Infra.Services
 			return entities;
 		}
 
-		public virtual TEntity Add<TEntity>(TEntity entity)
-			where TEntity : class, IPrimaryKey
+		public virtual void Add<TEntity>(TEntity entity)
+			where TEntity : class, IEntityBase
 		{
-			return _dbContext.Set<TEntity>().Add(entity).Entity;
+			_dbContext.Set<TEntity>().Add(entity);
 		}
 
 		public virtual void Remove<TEntity>(TEntity entity)
-			where TEntity : class
+			where TEntity : class, IEntityBase
 		{
 			_dbContext.Set<TEntity>().Remove(entity);
 		}
@@ -80,20 +80,20 @@ namespace RDD.Infra.Services
 			}
 		}
 
-		public void AddAfterCommitAction(Task action)
+		public void AddAfterSaveChangesAction(Task action)
 		{
-			_afterCommitActions.Add(action);
+			_afterSaveChangesActions.Enqueue(action);
 		}
 
-		public async virtual Task CommitAsync()
+		public async virtual Task SaveChangesAsync()
 		{
 			try
 			{
 				await _dbContext.SaveChangesAsync();
 
-				foreach (var action in _afterCommitActions)
+				while(_afterSaveChangesActions.Count > 0)
 				{
-					await action;
+					await _afterSaveChangesActions.Dequeue();
 				}
 			}
 			catch (DbUpdateException ex)

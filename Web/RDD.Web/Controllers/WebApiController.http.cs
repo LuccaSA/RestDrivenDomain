@@ -12,128 +12,147 @@ using System.Threading.Tasks;
 
 namespace RDD.Web.Controllers
 {
-	public partial class WebApiController<TCollection, TEntity, TKey> : ReadOnlyWebApiController<TCollection, TEntity, TKey>
+	public abstract partial class WebApiController<TCollection, TEntity, TKey> : ReadOnlyWebApiController<TCollection, TEntity, TKey>
 		where TCollection : IRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
 		public async virtual Task<IActionResult> PostAsync()
 		{
-			var query = ApiHelper.CreateQuery(HttpVerb.POST, false);
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+			using (var storage = GetStorage())
+			{
+				var query = _apiHelper.CreateQuery(HttpVerb.POST, false);
+				var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+				var collection = GetCollection(storage, GetRepository(storage));
 
-			var entity = await _collection.CreateAsync(datas, query);
+				var entity = await collection.CreateAsync(datas, query);
 
-			_execution.queryWatch.Start();
+				_execution.queryWatch.Start();
 
-			await _storage.CommitAsync();
+				await storage.SaveChangesAsync();
 
-			_execution.queryWatch.Stop();
+				_execution.queryWatch.Stop();
 
-			entity = await _collection.GetEntityAfterCreateAsync(entity, query);
+				entity = await collection.GetEntityAfterCreateAsync(entity, query);
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
+				var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _execution);
 
-			return Ok(dataContainer.ToDictionary());
+				return Ok(dataContainer.ToDictionary());
+			}
 		}
 
 		public async virtual Task<IActionResult> PutAsync(TKey _id_)
 		{
-			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
+			using (var storage = GetStorage())
+			{
+				var query = _apiHelper.CreateQuery(HttpVerb.PUT, false);
+				var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+				var collection = GetCollection(storage, GetRepository(storage));
 
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+				_execution.queryWatch.Start();
 
-			_execution.queryWatch.Start();
+				var entity = await collection.UpdateAsync(_id_, datas, query);
 
-			var entity = await _collection.UpdateAsync(_id_, datas, query);
+				await storage.SaveChangesAsync();
 
-			await _storage.CommitAsync();
+				_execution.queryWatch.Start();
 
-			_execution.queryWatch.Start();
+				var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _execution);
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
-
-			return Ok(dataContainer.ToDictionary());
+				return Ok(dataContainer.ToDictionary());
+			}
 		}
 
 		public async virtual Task<IActionResult> PutAsync()
 		{
-			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
-
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
-
-			//Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
-			if (datas.Any(d => !d.ContainsKey("id")))
+			using (var storage = GetStorage())
 			{
-				throw new HttpLikeException(HttpStatusCode.BadRequest, "PUT on collection implies that you provide an array of objets each of which with an id attribute");
+				var query = _apiHelper.CreateQuery(HttpVerb.PUT, false);
+				var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
+				var collection = GetCollection(storage, GetRepository(storage));
+
+				//Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
+				if (datas.Any(d => !d.ContainsKey("id")))
+				{
+					throw new HttpLikeException(HttpStatusCode.BadRequest, "PUT on collection implies that you provide an array of objets each of which with an id attribute");
+				}
+
+				//Il faut que les id soient convertibles en TKey
+				try { var result = datas.Select(d => TypeExtensions.Convert<TKey>(d["id"].value)); }
+				catch { throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name)); }
+
+				var entities = new HashSet<TEntity>();
+
+				_execution.queryWatch.Start();
+
+				foreach (var d in datas)
+				{
+					var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
+
+					var entity = await collection.UpdateAsync(id, d, query);
+
+					entities.Add(entity);
+				}
+
+				await storage.SaveChangesAsync();
+
+				_execution.queryWatch.Stop();
+
+				var dataContainer = new Metadata(_serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, _execution);
+
+				return Ok(dataContainer.ToDictionary());
 			}
-
-			//Il faut que les id soient convertibles en TKey
-			try { var result = datas.Select(d => TypeExtensions.Convert<TKey>(d["id"].value)); }
-			catch { throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name)); }
-
-			var entities = new HashSet<TEntity>();
-
-			_execution.queryWatch.Start();
-
-			foreach (var d in datas)
-			{
-				var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
-
-				var entity = await _collection.UpdateAsync(id, d, query);
-
-				entities.Add(entity);
-			}
-
-			await _storage.CommitAsync();
-
-			_execution.queryWatch.Stop();
-
-			var dataContainer = new Metadata(_serializer.SerializeEntities(entities, query.Fields), query.Options, _execution);
-
-			return Ok(dataContainer.ToDictionary());
 		}
 
 		public async virtual Task<IActionResult> DeleteAsync(TKey _id_)
 		{
-			_execution.queryWatch.Start();
+			using (var storage = GetStorage())
+			{
+				var collection = GetCollection(storage, GetRepository(storage));
 
-			await _collection.DeleteAsync(_id_);
+				_execution.queryWatch.Start();
 
-			await _storage.CommitAsync();
+				await collection.DeleteAsync(_id_);
 
-			_execution.queryWatch.Stop();
+				await storage.SaveChangesAsync();
 
-			return Ok();
+				_execution.queryWatch.Stop();
+
+				return Ok();
+			}
 		}
 
 		public async virtual Task<IActionResult> DeleteAsync()
 		{
-			var query = ApiHelper.CreateQuery(HttpVerb.DELETE, true);
-
-			_execution.queryWatch.Start();
-
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
-
-			if (datas.Any(d => !d.ContainsKey("id")))
+			using (var storage = GetStorage())
 			{
-				throw new HttpLikeException(HttpStatusCode.BadRequest, "DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+				var query = _apiHelper.CreateQuery(HttpVerb.DELETE, true);
+				var collection = GetCollection(storage, GetRepository(storage));
+
+				_execution.queryWatch.Start();
+
+				var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
+
+				if (datas.Any(d => !d.ContainsKey("id")))
+				{
+					throw new HttpLikeException(HttpStatusCode.BadRequest, "DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+				}
+
+				//Il faut que les id soient convertibles en TKey
+				try { var result = datas.Select(d => TypeExtensions.Convert<TKey>(d["id"].value)); }
+				catch { throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name)); }
+
+				foreach (var d in datas)
+				{
+					var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
+
+					await collection.DeleteAsync(id);
+				}
+
+				await storage.SaveChangesAsync();
+
+				return Ok();
 			}
-
-			//Il faut que les id soient convertibles en TKey
-			try { var result = datas.Select(d => TypeExtensions.Convert<TKey>(d["id"].value)); }
-			catch { throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name)); }
-
-			foreach (var d in datas)
-			{
-				var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
-
-				await _collection.DeleteAsync(id);
-			}
-
-			await _storage.CommitAsync();
-
-			return Ok();
 		}
 	}
 }

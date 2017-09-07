@@ -18,8 +18,5 @@ namespace RDD.Domain
 
 	public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey> { }
 
-	public interface IEntityBase<TEntity, TKey> : IEntityBase<TKey>, ICloneable<TEntity>
-	{
-		void Validate(IStorageService storage, TEntity oldEntity);
-	}
+	public interface IEntityBase<TEntity, TKey> : IEntityBase<TKey>, ICloneable<TEntity> { }
 }

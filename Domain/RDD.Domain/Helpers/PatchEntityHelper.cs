@@ -1,28 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Newtonsoft.Json;
-using System.Globalization;
-using System.Collections;
-using RDD.Domain.Models.Querying;
+﻿using Newtonsoft.Json;
 using NExtends.Primitives;
 using NExtends.Primitives.Types;
 using RDD.Domain.Exceptions;
-using RDD.Domain;
+using RDD.Domain.Models.Querying;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
 
 namespace RDD.Domain.Helpers
 {
 	public class PatchEntityHelper
 	{
-//		protected IRepoProvider _provider;
-		protected IStorageService _storage;
-
-		public PatchEntityHelper(IStorageService storage)
-		{
-			_storage = storage;
-		}
-
 		/// <summary>
 		/// Utilisé pour setter les props d'une entité lors d'un POST ou un PUT
 		/// Et récursivement pour les sous entités
@@ -58,7 +49,7 @@ namespace RDD.Domain.Helpers
 				//Si c'est un type du domaine, on doit aller chercher les entités via leur repo, pour garantir qu'ils seront récupérés via le contexte courant (et pas créé au moment du commit)
 				if (typeof(IEntityBase).IsAssignableFrom(subType))
 				{
-					var entityBaseType = subType.GetInterfaces().FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEntityBase<,>));
+					var entityBaseType = subType.GetInterfaces().FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEntityBase<>));
 					if (entityBaseType != null)
 					{
 						//Collection de Type du domaine (1-N ou N-N)

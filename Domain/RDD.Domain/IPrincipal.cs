@@ -15,11 +15,11 @@ namespace RDD.Domain
 		string Name { get; }
 		Culture Culture { get; }
 
-		bool HasOperation(IStorageService context, int operation);
-		bool HasAnyOperations(IStorageService context, HashSet<int> operations);
+		bool HasOperation(int operation);
+		bool HasAnyOperations(HashSet<int> operations);
 
-		HashSet<int> GetOperations(IStorageService context, HashSet<int> operations);
+		HashSet<int> GetOperations(HashSet<int> operations);
 
-		IQueryable<TEntity> ApplyRights<TEntity>(IStorageService context, IQueryable<TEntity> entities, HashSet<int> operations);
+		IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations);
 	}
 }

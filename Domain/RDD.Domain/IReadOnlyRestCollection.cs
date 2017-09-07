@@ -16,37 +16,19 @@ namespace RDD.Domain
 	{
 		PropertySelector<TEntity> HandleIncludes(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields);
 
-		Task<ISelection<TEntity>> GetAsync(Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
-		Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET);
+		Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
 		Task<IEnumerable<TEntity>> GetAllAsync();
 
-		Task<bool> AnyAsync(Expression<Func<TEntity, bool>> filter);
-
-		IQueryable<TEntity> OrderByDefault(IQueryable<TEntity> entities);
-		IQueryable<TEntity> OrderBy(IQueryable<TEntity> entities, string field, SortDirection direction, bool isFirst = true);
-
-		Expression<Func<TEntity, bool>> Equals(string field, IList values);
-		Expression<Func<TEntity, bool>> NotEqual(string field, IList values);
-		Expression<Func<TEntity, bool>> Starts(string field, IList values);
-		Expression<Func<TEntity, bool>> Like(string field, IList values);
-
-		Expression<Func<TEntity, bool>> Between(string field, IList values);
-		Expression<Func<TEntity, bool>> Until(string field, IList values);
-		Expression<Func<TEntity, bool>> Since(string field, IList values);
-
-		Expression<Func<TEntity, bool>> GreaterThan(string field, IList values);
-		Expression<Func<TEntity, bool>> GreaterThanOrEqual(string field, IList values);
-		Expression<Func<TEntity, bool>> LessThan(string field, IList values);
-		Expression<Func<TEntity, bool>> LessThanOrEqual(string field, IList values);
+		Task<bool> AnyAsync(Query<TEntity> query);
 	}
 
 	public interface IReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity>
 		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET);
-		Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
-		Task<IEnumerable<TEntity>> GetByIdsAsync(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET);
-		Task<IEnumerable<TEntity>> GetByIdsAsync(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET);
+		Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb);
+		Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
+		Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerb verb);
+		Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query);
 	}
 }

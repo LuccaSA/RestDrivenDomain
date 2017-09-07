@@ -21,7 +21,6 @@ namespace RDD.Domain.Models.Querying
 
 		protected Type EntityType { get; set; }
 		public PropertySelector EntitySelector { get; protected set; }
-		public PropertySelector CollectionSelector { get; set; }
 
 		//public static Field<TEntity> New<TEntity>()
 		//{
@@ -35,28 +34,6 @@ namespace RDD.Domain.Models.Querying
 		public bool HasChild { get { return EntitySelector.HasChild; } }
 		public bool IsEmpty { get { return !HasChild; } }
 		public int Count { get { return EntitySelector.Count; } }
-		public int CollectionCount { get { return CollectionSelector.Count; } }
-
-		public bool CollectionContains<TEntity>(Expression<Func<ISelection<TEntity>, object>> expression)
-			where TEntity : class, IEntityBase
-		{
-			return CollectionSelector.Contains(expression);
-		}
-
-		public static Field<TEntity> Parse<TEntity>(string fields)
-		{
-			var field = new Field<TEntity>();
-			field.Parse(fields);
-
-			return field;
-		}
-		public static Field<TEntity> Parse<TEntity>(List<string> fields)
-		{
-			var field = new Field<TEntity>();
-			field.Parse(fields);
-
-			return field;
-		}
 	}
 
 	public class Field<TEntity> : Field
@@ -65,42 +42,12 @@ namespace RDD.Domain.Models.Querying
 		{
 			EntityType = typeof(TEntity);
 			EntitySelector = new PropertySelector<TEntity>();
-			CollectionSelector = new CollectionPropertySelector<TEntity>();
 		}
 
 		public Field(params Expression<Func<TEntity, object>>[] expressions)
 			: this()
 		{
 			Add(expressions);
-		}
-
-
-		public void Parse(string fields)
-		{
-			var expandedFields = new FieldExpansionHelper().Expand(fields);
-
-			Parse(expandedFields);
-		}
-		public void Parse(List<string> fields)
-		{
-			foreach (var item in fields)
-			{
-				if (item.StartsWith("collection."))
-				{
-					CollectionSelector.Parse(item.Replace("collection.", ""));
-				}
-				else
-				{
-					EntitySelector.Parse(item);
-				}
-			}
-		}
-
-		public void ParseAllProperties()
-		{
-			var fields = EntityType.GetProperties().Select(p => p.Name).ToList();
-
-			Parse(fields);
 		}
 
 		public bool Add(Expression<Func<TEntity, object>> field)

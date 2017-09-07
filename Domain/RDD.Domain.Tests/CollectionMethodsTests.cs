@@ -2,6 +2,7 @@
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
+using RDD.Domain.Storage;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
@@ -16,11 +17,12 @@ namespace RDD.Domain.Tests
 		public async void GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
 		{
 			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, null, _newStorage);
+			var repo = new GetFreeRepository<User>(_storage, _execution, _combinationsHolder);
+			var users = new UsersCollection(repo, _execution, _combinationsHolder);
 
 			await users.CreateAsync(user);
 
-			await _storage.CommitAsync();
+			await _storage.SaveChangesAsync();
 
 			await Assert.ThrowsAsync<NotFoundException>(() => users.GetByIdAsync(0));
 		}
@@ -29,11 +31,12 @@ namespace RDD.Domain.Tests
 		public async void TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
 		{
 			var user = new User { Id = 2 };
-			var users = new UsersCollection(_storage, _execution, null, _newStorage);
+			var repo = new Repository<User>(_storage, _execution, _combinationsHolder);
+			var users = new UsersCollection(repo, _execution, _combinationsHolder);
 
 			await users.CreateAsync(user);
 
-			await _storage.CommitAsync();
+			await _storage.SaveChangesAsync();
 
 			Assert.Null(await users.TryGetByIdAsync(0));
 		}
@@ -51,11 +54,12 @@ namespace RDD.Domain.Tests
 			var combinationsHolder = mock.Object;
 
 			var user = new User { Id = 3 };
-			var users = new UsersCollection(_storage, _execution, combinationsHolder, _newStorage);
+			var repo = new Repository<User>(_storage, _execution, combinationsHolder);
+			var users = new UsersCollection(repo, _execution, combinationsHolder);
 
 			await users.CreateAsync(user);
 
-			await _storage.CommitAsync();
+			await _storage.SaveChangesAsync();
 
 			await Assert.ThrowsAsync<NotFoundException>(() => users.UpdateAsync(0, new { name = "new name" }));
 		}

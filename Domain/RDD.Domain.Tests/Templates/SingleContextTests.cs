@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Mocks;
 using RDD.Domain.Tests.Models;
 using RDD.Infra.Contexts;
 using RDD.Infra.Services;
@@ -12,6 +13,7 @@ namespace RDD.Domain.Tests.Templates
 		protected IStorageService _storage;
 		protected IExecutionContext _execution;
 		protected Func<IStorageService> _newStorage;
+		protected ICombinationsHolder _combinationsHolder;
 
 		public SingleContextTests()
 		{
@@ -21,7 +23,8 @@ namespace RDD.Domain.Tests.Templates
 
 			_newStorage = () => new EFStorageService(new DataContext(options));
 			_storage = _newStorage();
-			_execution = new InMemoryExecutionContext();
+			_execution = new ExecutionContextMock();
+			_combinationsHolder = new CombinationsHolderMock();
 		}
 	}
 }

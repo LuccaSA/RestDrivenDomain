@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Xunit;
+using RDD.Web.Querying;
 
 namespace RDD.Domain.Tests.Models.Querying
 {
@@ -16,9 +17,9 @@ namespace RDD.Domain.Tests.Models.Querying
 			var date = new DateTime(2015, 9, 21, 7, 28, 0);
 			var requestHeaders = new Dictionary<string, StringValues> { { "If-Unmodified-Since", date.ToString("ddd, dd MMM yyyy HH:mm:ss zzz") } };
 
-			var headers = Headers.Parse(requestHeaders);
+			var headers = new HeadersParser().Parse(requestHeaders);
 
-			Assert.Equal(true, headers.IfUnmodifiedSince.HasValue);
+			Assert.True(headers.IfUnmodifiedSince.HasValue);
 			Assert.Equal(0, DateTime.Compare(date, headers.IfUnmodifiedSince.Value));
 		}
 
@@ -27,7 +28,7 @@ namespace RDD.Domain.Tests.Models.Querying
 		{
 			var requestHeaders = new Dictionary<string, StringValues> { { "If-Unmodified-Since", "invalid format" } };
 
-			var headers = Headers.Parse(requestHeaders);
+			var headers = new HeadersParser().Parse(requestHeaders);
 
 			Assert.Equal(false, headers.IfUnmodifiedSince.HasValue);
 		}
@@ -38,7 +39,7 @@ namespace RDD.Domain.Tests.Models.Querying
 			var authorization = "anything here";
 			var requestHeaders = new Dictionary<string, StringValues> { { "Authorization", authorization } };
 
-			var headers = Headers.Parse(requestHeaders);
+			var headers = new HeadersParser().Parse(requestHeaders);
 
 			Assert.Equal(authorization, headers.Authorization);
 		}
@@ -49,7 +50,7 @@ namespace RDD.Domain.Tests.Models.Querying
 			var contentType = "multipart/form-data";
 			var requestHeaders = new Dictionary<string, StringValues> { { "Content-Type", contentType } };
 
-			var headers = Headers.Parse(requestHeaders);
+			var headers = new HeadersParser().Parse(requestHeaders);
 
 			Assert.Equal(contentType, headers.ContentType);
 		}
@@ -64,7 +65,7 @@ namespace RDD.Domain.Tests.Models.Querying
 				{ "Foo", "Bar" },
 			};
 
-			var rawHeaders = Headers.Parse(requestHeaders).RawHeaders.ToDictionary();
+			var rawHeaders = new HeadersParser().Parse(requestHeaders).RawHeaders.ToDictionary();
 
 			Assert.Equal(3, rawHeaders.Count);
 

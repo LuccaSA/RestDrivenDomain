@@ -1,6 +1,8 @@
 ﻿using RDD.Domain.Helpers;
 using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
+using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,20 +22,6 @@ namespace RDD.Domain.Tests
 			var field = "count";
 			var selector = new CollectionPropertySelector<User>();
 			selector.Parse(field);
-		}
-
-		[Fact]
-		public void Replace_child_and_return_false_WHEN_adding_subs_on_existing_child()
-		{
-			var selector = new PropertySelector<User>(u => u.Id, u => u.Name, u => u.Mail);
-			var subSelector = new PropertySelector<MailAddress>(m => m.DisplayName, m => m.Host);
-
-			var result = selector.Add<MailAddress>(subSelector, (Expression<Func<User, MailAddress>>)(u => u.Mail));
-
-			Assert.False(result);
-			Assert.True(selector.Contains(u => u.Name));
-			Assert.True(selector.Contains(u => u.Mail));
-			Assert.True(selector.Contains(u => u.Mail.Host));
 		}
 	}
 }

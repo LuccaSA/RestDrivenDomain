@@ -12,13 +12,13 @@ namespace RDD.Infra.Services
 {
 	public class InMemoryStorageService : IStorageService, IDisposable
 	{
-		protected ISet<Task> _afterCommitActions { get; set; }
+		protected Queue<Task> _afterAfterSaveChangesActions { get; set; }
 		public Dictionary<Type, IList> Cache { get; private set; }
 		public Dictionary<Type, int> Indexes { get; private set; }
 
 		public InMemoryStorageService()
 		{
-			_afterCommitActions = new HashSet<Task>();
+			_afterAfterSaveChangesActions = new Queue<Task>();
 			Cache = new Dictionary<Type, IList>();
 			Indexes = new Dictionary<Type, int>();
 		}
@@ -41,7 +41,7 @@ namespace RDD.Infra.Services
 		}
 
 		public IQueryable<TEntity> Set<TEntity>()
-			where TEntity : class
+			where TEntity : class, IEntityBase
 		{
 			CreateIfNotExist<TEntity>();
 
@@ -59,25 +59,23 @@ namespace RDD.Infra.Services
 			return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
 		}
 
-		public TEntity Add<TEntity>(TEntity entity)
-			where TEntity : class, IPrimaryKey
+		public void Add<TEntity>(TEntity entity)
+			where TEntity : class, IEntityBase
 		{
 			CreateIfNotExist<TEntity>();
 
 			Cache[typeof(TEntity)].Add((object)entity);
-
-			return entity;
 		}
 
 		public void Remove<TEntity>(TEntity entity)
-			where TEntity : class
+			where TEntity : class, IEntityBase
 		{
 			CreateIfNotExist<TEntity>();
 			Cache[typeof(TEntity)].Remove((object)entity);
 		}
 
 		public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class, IPrimaryKey
+			where TEntity : class, IEntityBase
 		{
 			foreach (var entity in entities)
 			{
@@ -86,7 +84,7 @@ namespace RDD.Infra.Services
 		}
 
 		public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class
+			where TEntity : class, IEntityBase
 		{
 			foreach (var entity in entities)
 			{
@@ -94,12 +92,12 @@ namespace RDD.Infra.Services
 			}
 		}
 
-		public void AddAfterCommitAction(Task action)
+		public void AddAfterSaveChangesAction(Task action)
 		{
-			_afterCommitActions.Add(action);
+			_afterAfterSaveChangesActions.Enqueue(action);
 		}
 
-		public async Task CommitAsync()
+		public async Task SaveChangesAsync()
 		{
 			foreach(var type in Cache.Keys)
 			{
@@ -119,9 +117,9 @@ namespace RDD.Infra.Services
 				Indexes[type] = index;
 			}
 
-			foreach(var action in _afterCommitActions)
+			while(_afterAfterSaveChangesActions.Count() > 0)
 			{
-				await action;
+				await _afterAfterSaveChangesActions.Dequeue();
 			}
 		}
 		public void Dispose() { }
