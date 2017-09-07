@@ -1,13 +1,9 @@
 ﻿using RDD.Domain.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Tests.Models
 {
-	public abstract class AbstractClass : EntityBase<AbstractClass, int>
+	public abstract class AbstractClass : EntityBase<int>
 	{
 		public override int Id
 		{

@@ -40,13 +40,6 @@ namespace RDD.Domain.Helpers
 			}
 		}
 		public string Subject { get; set; }
-		public int LeafNumber
-		{
-			get
-			{
-				return (HasChild ? Children.Sum(c => c.LeafNumber) : 1);
-			}
-		}
 
 		protected PropertySelector() { }
 
@@ -183,7 +176,7 @@ namespace RDD.Domain.Helpers
 			Parse(elements, 1);
 		}
 
-		public void Parse(List<string> elements, int depth)
+		protected void Parse(List<string> elements, int depth)
 		{
 			var first = elements[0];
 			elements.RemoveAt(0);
@@ -191,7 +184,7 @@ namespace RDD.Domain.Helpers
 			Parse(first, elements, depth);
 		}
 
-		public virtual void Parse(string element, List<string> tail, int depth)
+		protected virtual void Parse(string element, List<string> tail, int depth)
 		{
 			var property = GetProperty(element);
 
@@ -305,44 +298,12 @@ namespace RDD.Domain.Helpers
 				return null;
 			}
 
-			var result = PropertySelector.NewFromType(EntityType);
+			var result = NewFromType(EntityType);
 			result.Lambda = Lambda;
 
 			if (HasChild)
 			{
 				result.Children = new HashSet<PropertySelector>(Children.Select(c => c.CropToInterface(interfaceType)).Where(c => c != null));
-			}
-
-			return result;
-		}
-
-		public List<string> ExtractPaths()
-		{
-			return RecursiveExtractPaths(new List<string>(), this, new List<string>());
-		}
-
-		private List<string> RecursiveExtractPaths(List<string> result, PropertySelector includes, IEnumerable<string> elementsOfpath)
-		{
-			foreach (var child in includes.Children)
-			{
-				//u => u.Department
-				//On prend le body, donc u.Department
-				//On vire le u.
-				//Il ne reste que "Department"
-				//NB : le vrai Include() typé ne fonctionne pas car il faut lui préciser le type de la propriété at compile time !
-				//Et de toute façon, en lisant la doc de l'include typé, on voit qu'il appelle aussi l'include non typé !
-				IEnumerable<string> elements = child.Lambda.Body.ToString().Split('.');
-				elements = elementsOfpath.Union(new string[] { elements.ElementAt(1) });
-
-				//Si le noeud a des enfants, ce n'est qu'un intermédiaire, on va donc uniquement inclure ses enfants, il sera inclus nativement lui-même par EF
-				if (child.HasChild)
-				{
-					result = RecursiveExtractPaths(result, child, elements);
-				}
-				else
-				{
-					result.Add(string.Join(".", elements));
-				}
 			}
 
 			return result;

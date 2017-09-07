@@ -1,34 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Serialization;
 using RDD.Domain;
-using RDD.Domain.Models.Querying;
+using RDD.Domain.Models.Collections;
 using RDD.Web.Helpers;
-using System;
 
 namespace RDD.Web.Controllers
 {
 	public partial class ReadOnlyWebApiController<TCollection, TEntity, TKey> : ControllerBase
 		where TCollection : IReadOnlyRestCollection<TEntity, TKey>
-		where TEntity : class, IEntityBase<TEntity, TKey>, new()
-		where TKey : IEquatable<TKey>
+		where TEntity : class, IEntityBase<TKey>
 	{
-		protected IWebContext _webContext;
 		protected IExecutionContext _execution;
-		protected Func<IStorageService> _newStorage;
-		protected IStorageService _storage;
 		protected TCollection _collection;
+		protected IContext _context;
+
 		protected IEntitySerializer _serializer;
-		protected ApiHelper<TEntity, TKey> ApiHelper { get; set; }
+		protected IApiHelper<TEntity> _apiHelper { get; set; }
 
-		public ReadOnlyWebApiController(IWebContext webContext, IExecutionContext execution, Func<IStorageService> newStorage, IEntitySerializer serializer, Query<TEntity> query = null, IContractResolver jsonResolver = null)
+		public ReadOnlyWebApiController(IExecutionContext execution, TCollection collection, IContext context, IEntitySerializer serializer, IApiHelper<TEntity> apiHelper)
 		{
-			_webContext = webContext;
 			_execution = execution;
-			_newStorage = newStorage;
-			_storage = _newStorage();
+			_collection = collection;
 			_serializer = serializer;
+			_context = context;
 
-			ApiHelper = new ApiHelper<TEntity, TKey>(_webContext, query, jsonResolver);
+			_apiHelper = apiHelper;
 		}
 	}
 }

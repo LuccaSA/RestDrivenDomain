@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using RDD.Domain.Helpers;
+using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
-using RDD.Domain.Helpers;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -23,39 +22,14 @@ namespace RDD.Domain.Models.Querying
 		public PropertySelector EntitySelector { get; protected set; }
 		public PropertySelector CollectionSelector { get; set; }
 
-		//public static Field<TEntity> New<TEntity>()
-		//{
-		//	return new Field<TEntity>();
-		//}
-		//public static Field NewFromType(Type entityType)
-		//{
-		//	return (Field)typeof(Field).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { });
-		//}
-
 		public bool HasChild { get { return EntitySelector.HasChild; } }
 		public bool IsEmpty { get { return !HasChild; } }
 		public int Count { get { return EntitySelector.Count; } }
 		public int CollectionCount { get { return CollectionSelector.Count; } }
 
 		public bool CollectionContains<TEntity>(Expression<Func<ISelection<TEntity>, object>> expression)
-			where TEntity : class, IEntityBase
 		{
 			return CollectionSelector.Contains(expression);
-		}
-
-		public static Field<TEntity> Parse<TEntity>(string fields)
-		{
-			var field = new Field<TEntity>();
-			field.Parse(fields);
-
-			return field;
-		}
-		public static Field<TEntity> Parse<TEntity>(List<string> fields)
-		{
-			var field = new Field<TEntity>();
-			field.Parse(fields);
-
-			return field;
 		}
 	}
 
@@ -72,35 +46,6 @@ namespace RDD.Domain.Models.Querying
 			: this()
 		{
 			Add(expressions);
-		}
-
-
-		public void Parse(string fields)
-		{
-			var expandedFields = new FieldExpansionHelper().Expand(fields);
-
-			Parse(expandedFields);
-		}
-		public void Parse(List<string> fields)
-		{
-			foreach (var item in fields)
-			{
-				if (item.StartsWith("collection."))
-				{
-					CollectionSelector.Parse(item.Replace("collection.", ""));
-				}
-				else
-				{
-					EntitySelector.Parse(item);
-				}
-			}
-		}
-
-		public void ParseAllProperties()
-		{
-			var fields = EntityType.GetProperties().Select(p => p.Name).ToList();
-
-			Parse(fields);
 		}
 
 		public bool Add(Expression<Func<TEntity, object>> field)

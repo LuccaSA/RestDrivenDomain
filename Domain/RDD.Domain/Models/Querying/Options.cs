@@ -34,7 +34,7 @@ namespace RDD.Domain.Models.Querying
 
 		public String Accept { get; set; }
 
-		public PostedData FilterOperations { get; set; }
+		public Dictionary<string, string> FilterOperations { get; set; }
 		public int impersonatedPrincipal { get; set; }
 
 		public Options()

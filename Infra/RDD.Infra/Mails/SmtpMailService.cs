@@ -7,15 +7,13 @@ namespace RDD.Infra.Mails
 {
 	public class SmtpMailService : IMailService
 	{
-		private SmtpServerInfo _serverInfo;
-		private ExceptionMailInfo _exceptionMailInfo;
-		private IWebContext _webContext;
+		private ISmtpServer _smtpServer;
+		private ExceptionMail _exceptionMailInfo;
 
-		public SmtpMailService(SmtpServerInfo serverInfo, ExceptionMailInfo exceptionMailInfo, IWebContext webContext)
+		public SmtpMailService(ISmtpServer smtpServer, ExceptionMail exceptionMailInfo)
 		{
-			_serverInfo = serverInfo;
+			_smtpServer = smtpServer;
 			_exceptionMailInfo = exceptionMailInfo;
-			_webContext = webContext;
 		}
 
 		public void SendMail(string from, string to, string subject, string body, bool forceSend = false)
@@ -36,15 +34,15 @@ namespace RDD.Infra.Mails
 
 					using (var smtpClient = new SmtpClient())
 					{
-						smtpClient.Host = _serverInfo.Server;
-						smtpClient.Port = _serverInfo.Port;
+						smtpClient.Host = _smtpServer.Server;
+						smtpClient.Port = _smtpServer.Port;
 						smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-						smtpClient.EnableSsl = _serverInfo.Ssl;
+						smtpClient.EnableSsl = _smtpServer.Ssl;
 
-						if (!String.IsNullOrEmpty(_serverInfo.Login))
+						if (!String.IsNullOrEmpty(_smtpServer.Login))
 						{
 							smtpClient.UseDefaultCredentials = false;
-							smtpClient.Credentials = new NetworkCredential(_serverInfo.Login, _serverInfo.Password);
+							smtpClient.Credentials = new NetworkCredential(_smtpServer.Login, _smtpServer.Password);
 						}
 
 						smtpClient.Send(mail);
@@ -53,9 +51,7 @@ namespace RDD.Infra.Mails
 					return;
 				}
 			}
-			catch (Exception E)
-			{
-			}
+			catch { }
 		}
 
 		public void SendExceptionMail(Exception E)
@@ -84,20 +80,11 @@ namespace RDD.Infra.Mails
 					body += String.Format("Inner : {0}<br /><br />{1}<br /><br />", E.InnerException.Message, innerStackTrace);
 				}
 
-				try
-				{
-					var Detail = new Func<string, string, string>((k, v) => String.Format("{0} : {1}<br /><br />", k, v));
-
-					body += Detail("Page REST", _webContext.RawUrl);
-					body += Detail("Page", _webContext.Url.ToString());
-					body += Detail("Host Address", _webContext.UserHostAddress);
-				}
-				catch { } // No context
-
 				SendMail(_exceptionMailInfo.Sender, _exceptionMailInfo.Recipient, _exceptionMailInfo.Subject, body, true);
 			}
 			catch { }
 		}
+
 		public void SendCriticalExceptionMail(string message)
 		{
 			var body = String.Format("Critical log level reached : {1}", message);

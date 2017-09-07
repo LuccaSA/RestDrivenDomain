@@ -84,35 +84,21 @@ namespace RDD.Domain.Models.Querying
 		public WhereOperand Type { get; set; }
 		public IList Values { get; set; }
 
-		internal static List<Where> ParseOperations<T>(PostedData datas)
-		{
-			var prefix = "operations.";
-			var keys = datas.Keys.Where(k => k.StartsWith(prefix));
-
-			var result = Parse<T>(datas, keys);
-
-			foreach (var where in result)
-			{
-				where.Field = where.Field.Substring(prefix.Length); //operations.name=toto => name=toto
-			}
-
-			return result;
-		}
-		public static List<Where> Parse<T>(PostedData datas)
+		public static List<Where> Parse<T>(Dictionary<string,string> input)
 		{
 			var reserved = Enum.GetNames(typeof(Reserved)).ToLower();
 
-			var keys = datas.Keys.Where(k => !reserved.Contains(k.Split('.')[0]));
+			var keys = input.Keys.Where(k => !reserved.Contains(k.Split('.')[0]));
 
-			return Parse<T>(datas, keys);
+			return Parse<T>(input, keys);
 		}
-		private static List<Where> Parse<T>(PostedData datas, IEnumerable<string> keys)
+		private static List<Where> Parse<T>(Dictionary<string, string> input, IEnumerable<string> keys)
 		{
 			var list = new List<Where>();
 
 			foreach (var key in keys)
 			{
-				var stringValue = datas[key].value;
+				var stringValue = input[key];
 
 				PostedData data;
 				bool isJsonObject = false; //Par défaut on considère que ce sont des types simples séparés par des ,

@@ -32,7 +32,7 @@ namespace RDD.Domain.Helpers
 			return property;
 		}
 
-		public override void Parse(string element, List<string> tail, int depth)
+		protected override void Parse(string element, List<string> tail, int depth)
 		{
 			var specialMethods = new HashSet<string>() { "sum", "min", "max" };
 
@@ -49,7 +49,7 @@ namespace RDD.Domain.Helpers
 				
 				var lambda = Expression.Lambda(call, param);
 
-				var child = PropertySelector.NewFromType(EntityType);
+				var child = NewFromType(EntityType);
 				child.Lambda = lambda;
 				child.Subject = propertyName;
 

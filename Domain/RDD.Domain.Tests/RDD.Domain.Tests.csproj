@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
@@ -14,6 +14,10 @@
     <ProjectReference Include="..\..\Infra\RDD.Infra\RDD.Infra.csproj" />
     <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
     <ProjectReference Include="..\RDD.Domain.Mocks\RDD.Domain.Mocks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Querying\" />
   </ItemGroup>
 
 </Project>
