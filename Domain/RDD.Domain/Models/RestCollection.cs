@@ -17,7 +17,7 @@ namespace RDD.Domain.Models
 		public RestCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
 			: base(storage, execution, combinationsHolder, asyncStorage) { }
 
-		protected virtual void CheckRightsForCreate(TEntity entity)
+		protected virtual Task CheckRightsForCreateAsync(TEntity entity)
 		{
 			var operationIds = _combinationsHolder.Combinations
 				.Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
@@ -27,6 +27,8 @@ namespace RDD.Domain.Models
 			{
 				throw new HttpLikeException(HttpStatusCode.Unauthorized, String.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
 			}
+
+			return Task.CompletedTask;
 		}
 
 		protected virtual PatchEntityHelper GetPatcher(IStorageService storage)
@@ -44,29 +46,13 @@ namespace RDD.Domain.Models
 
 			GetPatcher(_storage).PatchEntity(entity, datas);
 
-			CheckRightsForCreate(entity);
+			await CheckRightsForCreateAsync(entity);
 
 			await CreateAsync(entity, query);
 
 			return entity;
 		}
-		public TEntity Create(object datas, Query<TEntity> query = null)
-		{
-			return Create(PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
-		}
-		public TEntity Create(PostedData datas, Query<TEntity> query = null)
-		{
-			var entity = InstanciateEntity();
-
-			GetPatcher(_storage).PatchEntity(entity, datas);
-
-			CheckRightsForCreate(entity);
-
-			Create(entity, query);
-
-			return entity;
-		}
-		public virtual void Create(TEntity entity, Query<TEntity> query = null)
+		public virtual Task CreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
 			if (query == null)
 			{
@@ -79,58 +65,25 @@ namespace RDD.Domain.Models
 			entity.Validate(_storage, null);
 
 			Add(entity);
-		}
-		public async virtual Task CreateAsync(TEntity entity, Query<TEntity> query = null)
-		{
-			if (query == null)
-			{
-				query = new Query<TEntity>();
-			}
 
-			ForgeEntity(entity, query.Options);
-
-			//On valide l'entité
-			entity.Validate(_storage, null);
-
-			await AddAsync(entity);
-		}
-		public virtual TEntity GetEntityAfterCreate(TEntity entity, Query<TEntity> query = null)
-		{
-			return GetById(entity.Id, query, query.Verb);
+			return Task.CompletedTask;
 		}
 		public async virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
 			return await GetByIdAsync(entity.Id, query, query.Verb);
 		}
 
-		public virtual void CreateRange(IEnumerable<TEntity> entities, Query<TEntity> query = null)
-		{
-			if (query == null)
-			{
-				query = new Query<TEntity>();
-			}
-
-			foreach (var entity in entities)
-			{
-				ForgeEntity(entity, query.Options);
-
-				//On valide l'entité
-				entity.Validate(_storage, null);
-			}
-
-			AddRange(entities);
-		}
 		public virtual TEntity InstanciateEntity()
 		{
 			return new TEntity();
 		}
 		protected virtual void ForgeEntity(TEntity entity, Options queryOptions) { }
 
-		private TEntity Update(TEntity entity, object datas, Query<TEntity> query = null)
+		private async Task<TEntity> UpdateAsync(TEntity entity, object datas, Query<TEntity> query = null)
 		{
-			return Update(entity, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+			return await UpdateAsync(entity, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
 		}
-		public virtual TEntity Update(TEntity entity, PostedData datas, Query<TEntity> query = null)
+		public async virtual Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query = null)
 		{
 			if (query == null)
 			{
@@ -140,46 +93,32 @@ namespace RDD.Domain.Models
 			AttachOperationsToEntity(entity);
 			AttachActionsToEntity(entity);
 
-			OnBeforeUpdateEntity(entity, datas);
+			await OnBeforeUpdateEntity(entity, datas);
 			var oldEntity = entity.Clone();
 
 			GetPatcher(_storage).PatchEntity(entity, datas);
 
-			OnAfterUpdateEntity(oldEntity, entity, datas, query);
+			await OnAfterUpdateEntity(oldEntity, entity, datas, query);
 
 			entity.Validate(_storage, oldEntity);
 
 			return entity;
 		}
-		public TEntity Update(TKey id, object datas, Query<TEntity> query = null)
+		public async Task<TEntity> UpdateAsync(TKey id, object datas, Query<TEntity> query = null)
 		{
-			return Update(id, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+			return await UpdateAsync(id, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
 		}
-		public TEntity Update(TKey id, PostedData datas, Query<TEntity> query = null)
+		public async Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query = null)
 		{
-			var entity = GetById(id, HttpVerb.PUT);
+			var entity = await GetByIdAsync(id, HttpVerb.PUT);
 
-			return Update(entity, datas, query);
+			return await UpdateAsync(entity, datas, query);
 		}
-		//public ICollection<TEntity> Update(Query<TEntity> query, object datas)
-		//{
-		//	return Update(query, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)));
-		//}
-		//public virtual ICollection<TEntity> Update(Query<TEntity> query, PostedData datas)
-		//{
-		//	var result = new HashSet<TEntity>();
-		//	var entities = Get(query, CombinationVerb.PUT).Items;
 
-		//	foreach(var entity in entities)
-		//	{
-		//		var item = Update(entity, datas);
-
-		//		result.Add(item);
-		//	}
-
-		//	return entities;
-		//}
-		protected virtual void OnBeforeUpdateEntity(TEntity entity, PostedData datas) { }
+		protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas)
+		{
+			return Task.CompletedTask;
+		}
 
 		/// <summary>
 		/// Called after entity update
@@ -189,47 +128,36 @@ namespace RDD.Domain.Models
 		/// <param name="oldEntity"></param>
 		/// <param name="entity"></param>
 		/// <param name="datas"></param>
-		protected virtual void OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) { }
+		protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query)
+		{
+			return Task.CompletedTask;
+		}
 
 		internal protected virtual void Add(TEntity entity)
 		{
 			_storage.Add<TEntity>(entity);
 		}
-		internal async protected virtual Task AddAsync(TEntity entity)
-		{
-			await _storage.AddAsync<TEntity>(entity);
-		}
-		internal protected virtual void AddRange(IEnumerable<TEntity> entities)
-		{
-			_storage.AddRange<TEntity>(entities);
-		}
 
-		public void Delete(TKey id)
+		public async Task DeleteAsync(TKey id)
 		{
-			var entity = GetById(id, HttpVerb.DELETE);
+			var entity = await GetByIdAsync(id, HttpVerb.DELETE);
 
 			AttachOperationsToEntity(entity);
 			AttachActionsToEntity(entity);
 
-			Delete(entity);
+			await DeleteAsync(entity);
 		}
 
-		public virtual void Delete(TEntity entity)
+		public virtual Task DeleteAsync(TEntity entity)
 		{
 			Remove(entity);
-		}
-		public virtual void DeleteRange(IEnumerable<TEntity> entities)
-		{
-			RemoveRange(entities);
+
+			return Task.CompletedTask;
 		}
 
 		internal protected virtual void Remove(TEntity entity)
 		{
 			_storage.Remove<TEntity>(entity);
-		}
-		internal protected virtual void RemoveRange(IEnumerable<TEntity> entities)
-		{
-			_storage.RemoveRange<TEntity>(entities);
 		}
 	}
 }

@@ -124,136 +124,29 @@ namespace RDD.Domain.Models
 			//AttachOperations(entities, operationsForAttach);
 		}
 
-		/// <summary>
-		/// Get depuis du C# avec un predicat C#
-		/// </summary>
-		/// <param name="criteria"></param>
-		/// <returns></returns>
-		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET)
-		{
-			return Get(new Query<TEntity> { ExpressionFilters = filter }, verb).Items;
-		}
 		public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter, HttpVerb verb = HttpVerb.GET)
 		{
 			return (await GetAsync(new Query<TEntity> { ExpressionFilters = filter }, verb)).Items;
-		}
-		public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> field, HttpVerb verb = HttpVerb.GET)
-		{
-			return Get(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb).Items;
 		}
 		public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> field, HttpVerb verb = HttpVerb.GET)
 		{
 			return (await GetAsync(new Query<TEntity>(field, true) { ExpressionFilters = filter }, verb)).Items;
 		}
 
-		/// <summary>
-		/// Savoir s'il existent certaines ressources repondant a un filtre particulier
-		/// </summary>
-		/// <param name="filter"></param>
-		/// <returns></returns>
-		public bool Any(Expression<Func<TEntity, bool>> filter)
+		public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> filter)
 		{
 			//Le Count() C# est plus rapide qu'un Any() SQL
-			return Get(new Query<TEntity> { ExpressionFilters = filter, Options = new Options { NeedEnumeration = false, NeedCount = true } }, HttpVerb.GET).Count > 0;
+			return (await GetAsync(new Query<TEntity> { ExpressionFilters = filter, Options = new Options { NeedEnumeration = false, NeedCount = true } }, HttpVerb.GET)).Count > 0;
 		}
 
-		public IEnumerable<TEntity> GetAll()
+		public async Task<IEnumerable<TEntity>> GetAllAsync()
 		{
-			return Get(new Query<TEntity>(), HttpVerb.GET).Items;
+			return (await GetAsync(new Query<TEntity>(), HttpVerb.GET)).Items;
 		}
 
-		public virtual ISelection<TEntity> Get(Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
-		{
-			return Get(Set(query), query, verb);
-		}
 		public async virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
 			return await GetAsync(Set(query), query, verb);
-		}
-
-		protected virtual ISelection<TEntity> Get(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
-		{
-			var count = 0;
-			IEnumerable<TEntity> items = new HashSet<TEntity>();
-
-			//On filtre les entités selon celles que l'on peut voir
-			if (query.Options.NeedFilterRights)
-			{
-				entities = FilterRights(entities, query, verb);
-			}
-
-			//On joue les Wheres
-			entities = ApplyFilters(entities, query);
-
-			//On mémorise le fait qu'on fait un Count SQl ou C#
-			var sqlCount = (query.Options.NeedCount && (!query.Options.NeedEnumeration || query.Options.withPagingInfo));
-
-			//Dans de rares cas on veut seulement, ou en plus, le count des entités
-			//On le fait en SQL si et seulement si y'a pas d'énumération (auquel cas on le fait en C#)
-			//Ou qu'il y a énumération avec du paging (en cas de paging, le count doit compter TOUTES les entités et pas juste celles paginées
-			if (sqlCount)
-			{
-				_execution.queryWatch.Start();
-
-				count = entities.Count();
-
-				_execution.queryWatch.Stop();
-			}
-
-			//En général on veut une énumération des entités
-			if (query.Options.NeedEnumeration)
-			{
-				//Les orderby
-				entities = ApplyOrderBys(entities, query);
-
-				//Paging => BUG dans EF sur le paging ?!!
-				if (query.Options.withPagingInfo)
-				{
-					entities = entities.Skip(query.Options.Page.Offset).Take(query.Options.Page.Limit);
-				}
-
-				entities = Includes(entities, query, verb, query.Fields);
-
-				_execution.queryWatch.Start();
-
-				items = entities.ToList();
-
-				_execution.queryWatch.Stop();
-
-				//Ici on a énuméré, y'a pas eu de paging mais on veut le count, donc il n'a pas été fait en SQL, faut le faire en C#
-				if (query.Options.NeedCount && !sqlCount)
-				{
-					count = items.Count();
-				}
-
-				//Si pagination, alors on met à jour le count total
-				if (query.Options.Page != null)
-				{
-					query.Options.Page.TotalCount = count;
-				}
-
-				//Si on a demandé les permissions, on va les chercher après énumération
-				if (query.Options.attachOperations)
-				{
-					AttachOperationsToEntities(items);
-				}
-
-				items = Prepare(items, query);
-
-				//ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
-				if (query.Options.attachActions)
-				{
-					AttachActionsToEntities(items);
-				}
-			}
-
-			//Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-			if (verb != HttpVerb.GET && count == 0 && items.Count() == 0 && Any(i => true))
-			{
-				throw new NotFoundException(String.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, verb));
-			}
-
-			return new Selection<TEntity>(items, count);
 		}
 
 		protected async virtual Task<ISelection<TEntity>> GetAsync(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
@@ -323,7 +216,7 @@ namespace RDD.Domain.Models
 					AttachOperationsToEntities(items);
 				}
 
-				items = Prepare(items, query);
+				items = await PrepareAsync(items, query);
 
 				//ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
 				if (query.Options.attachActions)
@@ -333,7 +226,7 @@ namespace RDD.Domain.Models
 			}
 
 			//Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-			if (verb != HttpVerb.GET && count == 0 && items.Count() == 0 && Any(i => true))
+			if (verb != HttpVerb.GET && count == 0 && items.Count() == 0 && await AnyAsync(i => true))
 			{
 				throw new NotFoundException(String.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, verb));
 			}
@@ -341,27 +234,23 @@ namespace RDD.Domain.Models
 			return new Selection<TEntity>(items, count);
 		}
 
-		public object TryGetById(object id, HttpVerb verb = HttpVerb.GET)
+		public async Task<object> TryGetByIdAsync(object id, HttpVerb verb = HttpVerb.GET)
 		{
 			try
 			{
-				return GetById((TKey)id, verb);
+				return await GetByIdAsync((TKey)id, verb);
 			}
 			catch { return null; }
 		}
-		public IEnumerable<object> TryGetByIds(IEnumerable<object> id, HttpVerb verb = HttpVerb.GET)
+		public async Task<IEnumerable<object>> TryGetByIdsAsync(IEnumerable<object> id, HttpVerb verb = HttpVerb.GET)
 		{
 			try
 			{
-				return GetByIds(new HashSet<TKey>(id.Cast<TKey>()), verb).Cast<object>();
+				return (await GetByIdsAsync(new HashSet<TKey>(id.Cast<TKey>()), verb)).Cast<object>();
 			}
 			catch { return null; }
 		}
 
-		public TEntity GetById(TKey id, HttpVerb verb = HttpVerb.GET)
-		{
-			return GetById(id, new Query<TEntity>() { Verb = verb }, verb);
-		}
 		public async Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET)
 		{
 			return await GetByIdAsync(id, new Query<TEntity>() { Verb = verb }, verb);
@@ -376,18 +265,6 @@ namespace RDD.Domain.Models
 		/// <param name="id"></param>
 		/// <param name="verb"></param>
 		/// <returns></returns>
-		public virtual TEntity GetById(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
-		{
-			var result = GetByIds(new HashSet<TKey> { id }, query, verb).FirstOrDefault();
-
-			if (result == null)
-			{
-				//NB : si verb == PUT alors l'exception UnAuthorized sera levée lors du GetByIds
-				throw new NotFoundException(String.Format("Resource with ID {0} not found", id));
-			}
-
-			return result;
-		}
 		public async virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
 			var result = (await GetByIdsAsync(new HashSet<TKey> { id }, query, verb)).FirstOrDefault();
@@ -401,18 +278,9 @@ namespace RDD.Domain.Models
 			return result;
 		}
 
-		public IEnumerable<TEntity> GetByIds(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET)
-		{
-			return GetByIds(ids, new Query<TEntity>(), verb);
-		}
 		public async Task<IEnumerable<TEntity>> GetByIdsAsync(ISet<TKey> ids, HttpVerb verb = HttpVerb.GET)
 		{
 			return await GetByIdsAsync(ids, new Query<TEntity>(), verb);
-		}
-		public virtual IEnumerable<TEntity> GetByIds(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
-		{
-			query.ExpressionFilters = Equals("id", ids.ToList()).Expand();
-			return Get(query, verb).Items;
 		}
 		public async virtual Task<IEnumerable<TEntity>> GetByIdsAsync(ISet<TKey> ids, Query<TEntity> query, HttpVerb verb = HttpVerb.GET)
 		{
@@ -536,9 +404,9 @@ namespace RDD.Domain.Models
 			return new HashSet<int>(combinations.Select(c => c.Operation.Id));
 		}
 
-		public virtual IEnumerable<TEntity> Prepare(IEnumerable<TEntity> entities, Query<TEntity> query)
+		public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
 		{
-			return entities;
+			return Task.FromResult(entities);
 		}
 	}
 }

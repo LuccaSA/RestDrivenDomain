@@ -14,12 +14,12 @@ namespace RDD.Infra.Services
 	public class EFStorageService : IStorageService
 	{
 		protected DbContext _dbContext { get; set; }
-		protected ISet<Action> _afterCommitActions { get; set; }
+		protected ISet<Task> _afterCommitActions { get; set; }
 
 		public EFStorageService(DbContext dbContext)
 		{
 			_dbContext = dbContext;
-			_afterCommitActions = new HashSet<Action>();
+			_afterCommitActions = new HashSet<Task>();
 		}
 
 		public virtual IQueryable<TEntity> Set<TEntity>()
@@ -42,14 +42,6 @@ namespace RDD.Infra.Services
 			where TEntity : class, IPrimaryKey
 		{
 			return _dbContext.Set<TEntity>().Add(entity).Entity;
-		}
-
-		public async virtual Task<TEntity> AddAsync<TEntity>(TEntity entity)
-			where TEntity : class, IPrimaryKey
-		{
-			var entry = await _dbContext.Set<TEntity>().AddAsync(entity);
-
-			return entry.Entity;
 		}
 
 		public virtual void Remove<TEntity>(TEntity entity)
@@ -88,47 +80,9 @@ namespace RDD.Infra.Services
 			}
 		}
 
-		public void AddAfterCommitAction(Action action)
+		public void AddAfterCommitAction(Task action)
 		{
 			_afterCommitActions.Add(action);
-		}
-
-		public virtual void Commit()
-		{
-			try
-			{
-				_dbContext.SaveChanges();
-
-				foreach(var action in _afterCommitActions)
-				{
-					action();
-				}
-			}
-			catch (DbUpdateException ex)
-			{
-				var updateException = ex.InnerException;
-
-				if (updateException.InnerException is ArgumentException)
-				{
-					throw updateException.InnerException;
-				}
-				else if (updateException.InnerException is SqlException)
-				{
-					var sqlException = (SqlException)updateException.InnerException;
-
-					switch (sqlException.Number)
-					{
-						case 2627:
-							throw new SqlUniqConstraintException(sqlException.Message);
-						default:
-							throw sqlException;
-					}
-				}
-				else
-				{
-					throw updateException;
-				}
-			}
 		}
 
 		public async virtual Task CommitAsync()
@@ -139,7 +93,7 @@ namespace RDD.Infra.Services
 
 				foreach (var action in _afterCommitActions)
 				{
-					action();
+					await action;
 				}
 			}
 			catch (DbUpdateException ex)
@@ -169,9 +123,9 @@ namespace RDD.Infra.Services
 			}
 		}
 
-		public string ExecuteScript(string script)
+		public async Task<string> ExecuteScriptAsync(string script)
 		{
-			return _dbContext.Database.ExecuteSqlCommand(script).ToString();
+			return (await _dbContext.Database.ExecuteSqlCommandAsync(script)).ToString();
 		}
 		public void Dispose()
 		{

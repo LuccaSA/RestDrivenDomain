@@ -14,27 +14,19 @@ namespace RDD.Domain
 	public interface IRestCollection<TEntity> : IReadOnlyRestCollection<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		TEntity Create(object datas, Query<TEntity> query = null);
-		TEntity Create(PostedData datas, Query<TEntity> query = null);
-		void Create(TEntity entity, Query<TEntity> query = null);
 		Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null);
 		Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null);
 		Task CreateAsync(TEntity entity, Query<TEntity> query = null);
-		TEntity GetEntityAfterCreate(TEntity entity, Query<TEntity> query = null);
 		Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null);
-		void CreateRange(IEnumerable<TEntity> entities, Query<TEntity> query = null);
-
-		void Delete(TEntity entity);
-		void DeleteRange(IEnumerable<TEntity> entities);
+		Task DeleteAsync(TEntity entity);
 	}
 
 	public interface IRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity>
 		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		TEntity Update(TKey id, PostedData datas, Query<TEntity> query = null);
-		TEntity Update(TKey id, object datas, Query<TEntity> query = null);
-	
-		void Delete(TKey id);
+		Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query = null);
+		Task<TEntity> UpdateAsync(TKey id, object datas, Query<TEntity> query = null);
+		Task DeleteAsync(TKey id);
 	}
 }

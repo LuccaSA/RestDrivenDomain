@@ -1,4 +1,6 @@
-﻿using RDD.Infra.Contexts;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Tests.Models;
+using RDD.Infra.Contexts;
 using RDD.Infra.Services;
 using System;
 
@@ -13,7 +15,11 @@ namespace RDD.Domain.Tests.Templates
 
 		public SingleContextTests()
 		{
-			_newStorage = () => new InMemoryStorageService();
+			var options = new DbContextOptionsBuilder<DataContext>()
+				.UseInMemoryDatabase(databaseName: "SingleContextTests")
+				.Options;
+
+			_newStorage = () => new EFStorageService(new DataContext(options));
 			_storage = _newStorage();
 			_execution = new InMemoryExecutionContext();
 		}

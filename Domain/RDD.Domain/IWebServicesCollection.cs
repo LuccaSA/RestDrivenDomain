@@ -9,6 +9,6 @@ namespace RDD.Domain
 {
 	public interface IWebServicesCollection : IRestCollection<WebService, int>
 	{
-		IEnumerable<WebService> GetByToken(string token);
+		Task<IEnumerable<WebService>> GetByTokenAsync(string token);
 	}
 }

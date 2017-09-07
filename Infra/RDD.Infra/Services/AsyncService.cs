@@ -19,7 +19,7 @@ namespace RDD.Infra.Services
 			_webContext = webContext;
 		}
 
-		public Task ContinueAsync(Action action)
+		public Task ContinueAlone(Action action)
 		{
 			return Task.Factory.StartNew(() =>
 			{

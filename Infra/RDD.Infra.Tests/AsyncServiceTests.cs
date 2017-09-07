@@ -31,7 +31,7 @@ namespace RDD.Infra.Tests
 		[Fact]
 		public async Task AsyncService_ShouldBeTestable_WhenCallingContinueAsync()
 		{
-			await _asyncService.ContinueAsync(() => CallVerifiableMockMethod());
+			await _asyncService.ContinueAlone(() => CallVerifiableMockMethod());
 
 			_mock.Verify(m => m.GetEnumerator(), Times.Once());
 		}

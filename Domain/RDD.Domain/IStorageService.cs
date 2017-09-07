@@ -18,9 +18,6 @@ namespace RDD.Domain
 		TEntity Add<TEntity>(TEntity entity)
 			where TEntity : class, IPrimaryKey;
 
-		Task<TEntity> AddAsync<TEntity>(TEntity entity)
-			where TEntity : class, IPrimaryKey;
-
 		void AddRange<TEntity>(IEnumerable<TEntity> entities)
 			where TEntity : class, IPrimaryKey;
 
@@ -30,9 +27,8 @@ namespace RDD.Domain
 		void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
 			where TEntity : class;
 
-		void Commit();
 		Task CommitAsync();
 
-		void AddAfterCommitAction(Action action);
+		void AddAfterCommitAction(Task action);
 	}
 }

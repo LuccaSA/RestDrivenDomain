@@ -17,28 +17,6 @@ namespace RDD.Web.Controllers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		[NonAction]
-		public virtual IActionResult Post()
-		{
-			var query = ApiHelper.CreateQuery(HttpVerb.POST, false);
-			var datas = ApiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
-
-			var entity = _collection.Create(datas, query);
-
-			_execution.queryWatch.Start();
-
-			_storage.Commit();
-
-			_execution.queryWatch.Stop();
-
-			entity = _collection.GetEntityAfterCreate(entity, query);
-
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
-
-			return Ok(dataContainer.ToDictionary());
-		}
-
-		[NonAction]
 		public async virtual Task<IActionResult> PostAsync()
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.POST, false);
@@ -59,8 +37,7 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		[NonAction]
-		public virtual IActionResult Put(TKey _id_)
+		public async virtual Task<IActionResult> PutAsync(TKey _id_)
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
 
@@ -68,19 +45,18 @@ namespace RDD.Web.Controllers
 
 			_execution.queryWatch.Start();
 
-			var entity = _collection.Update(_id_, datas, query);
+			var entity = await _collection.UpdateAsync(_id_, datas, query);
 
-			_storage.Commit();
+			await _storage.CommitAsync();
 
 			_execution.queryWatch.Start();
 
 			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, _execution);
 
-			return Ok(dataContainer.ToDictionary());//, ApiHelper.GetFormatter());
+			return Ok(dataContainer.ToDictionary());
 		}
 
-		[NonAction]
-		public virtual IActionResult Put()
+		public async virtual Task<IActionResult> PutAsync()
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.PUT, false);
 
@@ -104,12 +80,12 @@ namespace RDD.Web.Controllers
 			{
 				var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
 
-				var entity = _collection.Update(id, d, query);
+				var entity = await _collection.UpdateAsync(id, d, query);
 
 				entities.Add(entity);
 			}
 
-			_storage.Commit();
+			await _storage.CommitAsync();
 
 			_execution.queryWatch.Stop();
 
@@ -118,21 +94,20 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		public virtual IActionResult Delete(TKey _id_)
+		public async virtual Task<IActionResult> DeleteAsync(TKey _id_)
 		{
 			_execution.queryWatch.Start();
 
-			_collection.Delete(_id_);
+			await _collection.DeleteAsync(_id_);
 
-			_storage.Commit();
+			await _storage.CommitAsync();
 
 			_execution.queryWatch.Stop();
 
 			return Ok();
 		}
 
-		[NonAction]
-		public virtual IActionResult Delete()
+		public async virtual Task<IActionResult> DeleteAsync()
 		{
 			var query = ApiHelper.CreateQuery(HttpVerb.DELETE, true);
 
@@ -153,10 +128,10 @@ namespace RDD.Web.Controllers
 			{
 				var id = (TKey)TypeExtensions.Convert<TKey>(d["id"].value);
 
-				_collection.Delete(id);
+				await _collection.DeleteAsync(id);
 			}
 
-			_storage.Commit();
+			await _storage.CommitAsync();
 
 			return Ok();
 		}

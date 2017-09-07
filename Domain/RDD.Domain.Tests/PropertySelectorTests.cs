@@ -30,7 +30,7 @@ namespace RDD.Domain.Tests
 
 			var result = selector.Add<MailAddress>(subSelector, (Expression<Func<User, MailAddress>>)(u => u.Mail));
 
-			Assert.Equal(false, result);
+			Assert.False(result);
 			Assert.True(selector.Contains(u => u.Name));
 			Assert.True(selector.Contains(u => u.Mail));
 			Assert.True(selector.Contains(u => u.Mail.Host));

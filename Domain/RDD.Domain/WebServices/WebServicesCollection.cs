@@ -2,6 +2,7 @@
 using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RDD.Domain.WebServices
 {
@@ -10,12 +11,12 @@ namespace RDD.Domain.WebServices
 		public WebServicesCollection(IStorageService storage, IExecutionContext execution, ICombinationsHolder combinationsHolder, Func<IStorageService> asyncStorage = null)
 			: base(storage, execution, combinationsHolder, asyncStorage) { }
 
-		public IEnumerable<WebService> GetByToken(string token)
+		public async Task<IEnumerable<WebService>> GetByTokenAsync(string token)
 		{
-			return Get(new Query<WebService>
+			return (await GetAsync(new Query<WebService>
 			{
 				ExpressionFilters = ws => ws.Token == token
-			}).Items;
+			})).Items;
 		}
 	}
 }
