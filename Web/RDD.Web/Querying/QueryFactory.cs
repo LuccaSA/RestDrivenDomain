@@ -1,13 +1,13 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Models.Querying;
+using RDD.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace RDD.Web.Querying
 {
-    public class QueryFactory<TEntity>
+	public class QueryFactory<TEntity>
 		where TEntity : class, IEntityBase
 	{
 		protected HashSet<string> IgnoredFilters { get; set; }
@@ -47,5 +47,5 @@ namespace RDD.Web.Querying
 				Headers = headers,
 			};
 		}
-    }
+	}
 }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Serialization;
 using RDD.Domain;
-using RDD.Domain.Models.Querying;
+using RDD.Infra;
 using System;
 
 namespace RDD.Web.Controllers

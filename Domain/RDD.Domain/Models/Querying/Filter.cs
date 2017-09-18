@@ -8,8 +8,8 @@ using System.Text;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class Filter<TEntity>
-    {
+	public class Filter<TEntity>
+	{
 		public PropertySelector<TEntity> Property { get; private set; }
 		public FilterOperand Operand { get; private set; }
 		public IList Values { get; private set; }

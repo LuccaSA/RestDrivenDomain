@@ -5,8 +5,8 @@ using System.Text;
 
 namespace RDD.Domain.Mocks
 {
-    public class CombinationsHolderMock : ICombinationsHolder
-    {
+	public class CombinationsHolderMock : ICombinationsHolder
+	{
 		public IEnumerable<Combination> Combinations
 		{
 			get

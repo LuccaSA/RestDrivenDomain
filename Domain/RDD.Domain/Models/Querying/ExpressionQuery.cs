@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class ExpressionQuery<TEntity> : Query<TEntity>
+	public class ExpressionQuery<TEntity> : Query<TEntity>
 		where TEntity : class, IEntityBase
 	{
 		public Expression<Func<TEntity, bool>> ExpressionFilters { get; set; }

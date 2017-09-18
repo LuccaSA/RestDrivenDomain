@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain
 {
-    public interface IRepository<TEntity>
+	public interface IRepository<TEntity>
 		where TEntity : class, IEntityBase
 	{
 		Task<int> CountAsync(Query<TEntity> query);

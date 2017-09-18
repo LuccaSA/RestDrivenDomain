@@ -6,8 +6,8 @@ using System.Text;
 
 namespace RDD.Domain.Mocks
 {
-    public class PrincipalMock : IPrincipal
-    {
+	public class PrincipalMock : IPrincipal
+	{
 		public int Id { get; set; }
 		public string Token { get; set; }
 		public string Name { get; set; }

@@ -6,7 +6,7 @@ using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain.Storage
 {
-    public class GetFreeRepository<TEntity> : Repository<TEntity>
+	public class GetFreeRepository<TEntity> : Repository<TEntity>
 		where TEntity : class, IEntityBase
 	{
 		public GetFreeRepository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)

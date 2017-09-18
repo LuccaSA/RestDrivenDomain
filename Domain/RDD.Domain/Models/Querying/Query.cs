@@ -8,9 +8,9 @@ using System.Text;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class Query<TEntity>
+	public class Query<TEntity>
 		where TEntity : class, IEntityBase
-    {
+	{
 		public Stopwatch Watch { get; private set; }
 		public HttpVerb Verb { get; set; }
 		public Field<TEntity> Fields { get; set; }

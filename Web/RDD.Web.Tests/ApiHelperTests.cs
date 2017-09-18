@@ -13,8 +13,8 @@ using Xunit;
 
 namespace RDD.Web.Tests
 {
-    public class ApiHelperTests
-    {
+	public class ApiHelperTests
+	{
 		[Fact]
 		public void ConvertingFiltersShouldKeepTheEntityType()
 		{
@@ -33,5 +33,5 @@ namespace RDD.Web.Tests
 
 			Assert.True(filter.Property.Contains(u => u.Id));
 		}
-    }
+	}
 }

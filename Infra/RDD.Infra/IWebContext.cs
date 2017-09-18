@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RDD.Domain
+namespace RDD.Infra
 {
 	public interface IWebContext : IDisposable
 	{

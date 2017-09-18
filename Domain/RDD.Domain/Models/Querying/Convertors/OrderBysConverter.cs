@@ -9,7 +9,7 @@ using System.Text;
 
 namespace RDD.Domain.Models.Querying.Convertors
 {
-    public class OrderBysConverter<TEntity>
+	public class OrderBysConverter<TEntity>
 		where TEntity : class, IEntityBase
 	{
 		public IQueryable<TEntity> Convert(IQueryable<TEntity> entities, Queue<OrderBy<TEntity>> orderBys)

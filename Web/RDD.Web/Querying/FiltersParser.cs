@@ -11,9 +11,9 @@ using System.Text;
 
 namespace RDD.Web.Querying
 {
-    public class FiltersParser<TEntity>
+	public class FiltersParser<TEntity>
 		where TEntity : class, IEntityBase
-    {
+	{
 		public static Dictionary<string, FilterOperand> Operands = new Dictionary<string, FilterOperand>()
 		{
 			{"between", FilterOperand.Between},

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using RDD.Domain;
 using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
+using RDD.Infra;
 using RDD.Web.Helpers;
 using System;
 
