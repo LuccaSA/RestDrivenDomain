@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 using NExtends.Primitives;
-using RDD.Domain;
-using RDD.Infra.Services;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace RDD.Infra.Contexts
 {

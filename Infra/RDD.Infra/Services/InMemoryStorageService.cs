@@ -1,11 +1,9 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Helpers;
-using RDD.Infra;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RDD.Infra.Services

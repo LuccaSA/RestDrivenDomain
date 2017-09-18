@@ -1,12 +1,6 @@
 ﻿using RDD.Domain;
-using RDD.Domain.Models.Querying;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RDD.Infra.Contexts
 {

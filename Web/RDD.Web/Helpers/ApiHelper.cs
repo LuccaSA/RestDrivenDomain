@@ -23,10 +23,10 @@ namespace RDD.Web.Helpers
 		private IContractResolver _jsonResolver { get; set; }
 		private IWebContext _webContext { get; set; }
 
-		public ApiHelper(IWebContext webContext, IContractResolver jsonResolver = null)
+		public ApiHelper(IWebContext webContext, IContractResolver jsonResolver)
 		{
 			_webContext = webContext;
-			_jsonResolver = jsonResolver ?? new CamelCasePropertyNamesContractResolver();
+			_jsonResolver = jsonResolver;
 		}
 
 		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)

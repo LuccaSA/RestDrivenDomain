@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RDD.Web.Serialization
+﻿namespace RDD.Web.Serialization
 {
 	public class SerializationOptions
 	{

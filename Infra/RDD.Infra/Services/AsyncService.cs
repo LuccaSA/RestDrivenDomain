@@ -1,5 +1,4 @@
 ﻿using RDD.Domain;
-using RDD.Infra.Contexts;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
