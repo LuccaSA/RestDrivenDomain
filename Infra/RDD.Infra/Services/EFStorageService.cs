@@ -43,25 +43,25 @@ namespace RDD.Infra.Services
 			_dbContext.Set<TEntity>().Add(entity);
 		}
 
-		public virtual void Remove<TEntity>(TEntity entity)
+		public virtual void AddRange<TEntity>(IEnumerable<TEntity> entities)
 			where TEntity : class, IEntityBase
-		{
-			_dbContext.Set<TEntity>().Remove(entity);
-		}
-
-		public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-			where TEntity : class, IPrimaryKey
 		{
 			//http://stackoverflow.com/questions/4355474/how-do-i-speed-up-dbset-add
 			try
 			{
-				_dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
+				//_dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 				_dbContext.Set<TEntity>().AddRange(entities);
 			}
 			finally
 			{
 				_dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
 			}
+		}
+
+		public virtual void Remove<TEntity>(TEntity entity)
+			where TEntity : class, IEntityBase
+		{
+			_dbContext.Set<TEntity>().Remove(entity);
 		}
 
 		public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)

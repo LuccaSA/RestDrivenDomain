@@ -27,7 +27,6 @@ namespace RDD.Domain.Models.Querying
 		public bool AttachOperations { get; set; }
 		public bool AttachActions { get; set; }
 		public bool WithWarnings { get; set; }
-		public bool WithPagingInfo { get; set; }
 
 		public String Accept { get; set; }
 

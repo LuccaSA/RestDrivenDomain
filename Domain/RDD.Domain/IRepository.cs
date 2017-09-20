@@ -14,6 +14,7 @@ namespace RDD.Domain
 		Task<int> CountAsync(Query<TEntity> query);
 		Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query);
 		void Add(TEntity entity);
+		void AddRange(IEnumerable<TEntity> entities);
 		void Remove(TEntity entity);
 	}
 }

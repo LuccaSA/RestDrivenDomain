@@ -7,12 +7,25 @@ using RDD.Domain.Tests.Templates;
 using RDD.Infra.Contexts;
 using RDD.Infra.Services;
 using RDD.Web.Querying;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace RDD.Domain.Tests
 {
 	public class CollectionPropertiesTests : SingleContextTests
 	{
+		IRepository<User> _repo;
+		IReadOnlyRestCollection<User> _collection;
+		IStorageService _storage;
+
+		public CollectionPropertiesTests()
+		{
+			_storage = _newStorage(Guid.NewGuid().ToString());
+			_repo = new GetFreeRepository<User>(_storage, _execution, _combinationsHolder);
+			_collection = new UsersCollection(_repo, _execution, _combinationsHolder);
+		}
+
 		[Fact]
 		public async void Sum_of_id_SHOULD_work_on_collection()
 		{
@@ -31,6 +44,43 @@ namespace RDD.Domain.Tests
 
 				Assert.Equal(0, result.Count);
 			}
+		}
+
+		[Fact]
+		public async void Count_of_collection_should_tell_10_when_10_entities()
+		{
+			var users = User.GetManyRandomUsers(10);
+			_repo.AddRange(users);
+			await _storage.SaveChangesAsync();
+
+			var result = await _collection.GetAsync(new Query<User>());
+
+			Assert.Equal(10, result.Count);
+		}
+
+		[Fact]
+		public async void Count_of_collection_should_tell_100_when_100_entities()
+		{
+			var users = User.GetManyRandomUsers(100);
+			_repo.AddRange(users);
+			await _storage.SaveChangesAsync();
+
+			var result = await _collection.GetAsync(new Query<User>());
+
+			Assert.Equal(100, result.Count);
+		}
+
+		[Fact]
+		public async void Count_of_collection_should_tell_10000_when_10000_entities()
+		{
+			var users = User.GetManyRandomUsers(10000);
+			_repo.AddRange(users);
+			await _storage.SaveChangesAsync();
+
+			var result = await _collection.GetAsync(new Query<User>());
+
+			Assert.Equal(10, result.Items.Count());
+			Assert.Equal(10000, result.Count);
 		}
 	}
 }

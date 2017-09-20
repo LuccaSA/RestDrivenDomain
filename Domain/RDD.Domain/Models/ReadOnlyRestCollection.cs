@@ -133,28 +133,22 @@ namespace RDD.Domain.Models
 			var count = 0;
 			IEnumerable<TEntity> items = new HashSet<TEntity>();
 
-			var needStorageCount = query.Options.NeedCount && (!query.Options.NeedEnumeration || query.Options.WithPagingInfo);
-			if (needStorageCount)
-			{
-				count = await _repository.CountAsync(query);
-			}
-
 			//En général on veut une énumération des entités
 			if (query.Options.NeedEnumeration)
 			{
 				items = await _repository.EnumerateAsync(query);
 
-				//Ici on a énuméré, y'a pas eu de paging mais on veut le count, donc il n'a pas été fait en SQL, faut le faire en C#
-				if (query.Options.NeedCount && !needStorageCount)
+				count = items.Count();
+
+				//Si y'a plus d'items que le paging max ou que l'offset du paging n'est pas à 0, il faut compter la totalité des entités
+				if (query.Page.Offset > 0 || query.Page.Limit <= count)
 				{
-					count = items.Count();
+					var countQuery = new Query<TEntity>(query) { Page = new UnlimitedPage() };
+
+					count = await _repository.CountAsync(countQuery);
 				}
 
-				//Si pagination, alors on met à jour le count total
-				if (query.Page != null)
-				{
-					query.Page.TotalCount = count;
-				}
+				query.Page.TotalCount = count;
 
 				//Si on a demandé les permissions, on va les chercher après énumération
 				if (query.Options.AttachOperations)

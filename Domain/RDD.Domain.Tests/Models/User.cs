@@ -15,5 +15,19 @@ namespace RDD.Domain.Tests.Models
 		public MailAddress Mail { get; set; }
 		public Uri TwitterUri { get; set; }
 		public decimal Salary { get; set; }
+
+		public static IEnumerable<User> GetManyRandomUsers(int howMuch)
+		{
+			var result = new List<User>();
+
+			for (var i = 1; i <= howMuch; i++)
+			{
+				var name = $"John Doe {i}";
+
+				result.Add(new User { Id = i, Name = name });
+			}
+
+			return result;
+		}
 	}
 }

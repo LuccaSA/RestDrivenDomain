@@ -10,21 +10,23 @@ namespace RDD.Domain.Tests.Templates
 	public class SingleContextTests
 	{
 		protected IDependencyInjectionResolver _resolver;
-		protected IStorageService _storage;
+		protected Func<string, IStorageService> _newStorage;
 		protected IExecutionContext _execution;
-		protected Func<IStorageService> _newStorage;
 		protected ICombinationsHolder _combinationsHolder;
 
 		public SingleContextTests()
 		{
-			var options = new DbContextOptionsBuilder<DataContext>()
-				.UseInMemoryDatabase(databaseName: "SingleContextTests")
-				.Options;
-
-			_newStorage = () => new EFStorageService(new DataContext(options));
-			_storage = _newStorage();
+			_newStorage = (name) => new EFStorageService(new DataContext(GetOptions(name)));
 			_execution = new ExecutionContextMock();
 			_combinationsHolder = new CombinationsHolderMock();
+		}
+
+		private DbContextOptions<DataContext> GetOptions(string name)
+		{
+			return new DbContextOptionsBuilder<DataContext>()
+				.UseInMemoryDatabase(databaseName: name)
+				//				.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+				.Options;
 		}
 	}
 }

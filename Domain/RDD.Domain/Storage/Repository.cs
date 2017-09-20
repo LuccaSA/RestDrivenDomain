@@ -51,6 +51,11 @@ namespace RDD.Domain.Storage
 			_storageService.Add(entity);
 		}
 
+		public virtual void AddRange(IEnumerable<TEntity> entities)
+		{
+			_storageService.AddRange(entities);
+		}
+
 		public virtual void Remove(TEntity entity)
 		{
 			_storageService.Remove(entity);
@@ -72,6 +77,8 @@ namespace RDD.Domain.Storage
 
 			result = ApplyFilters(result, query);
 			result = ApplyOrderBys(result, query);
+			result = ApplyPage(result, query);
+			result = ApplyIncludes(result, query);
 
 			return result;
 		}
@@ -100,6 +107,14 @@ namespace RDD.Domain.Storage
 			var orderBysConverter = new OrderBysConverter<TEntity>();
 
 			return orderBysConverter.Convert(entities, query.OrderBys);
+		}
+		protected virtual IQueryable<TEntity> ApplyPage(IQueryable<TEntity> entities, Query<TEntity> query)
+		{
+			return entities.Skip(query.Page.Offset).Take(query.Page.Limit);
+		}
+		protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
+		{
+			return entities;
 		}
 
 		protected virtual HashSet<int> GetOperationIds(HttpVerb verb)

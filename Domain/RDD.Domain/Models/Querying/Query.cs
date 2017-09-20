@@ -3,6 +3,7 @@ using RDD.Domain.Models.Querying.Convertors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -30,11 +31,18 @@ namespace RDD.Domain.Models.Querying
 			Filters = new List<Filter<TEntity>>();
 			OrderBys = new Queue<OrderBy<TEntity>>();
 			Options = new Options();
+			Page = Page.DEFAULT;
 		}
 		public Query(params Filter<TEntity>[] filters)
 			: this()
 		{
 			Filters.AddRange(filters);
+		}
+		public Query(Query<TEntity> source)
+			: this()
+		{
+			Filters = new List<Filter<TEntity>>(source.Filters);
+			OrderBys = new Queue<OrderBy<TEntity>>(source.OrderBys);
 		}
 
 		public virtual Expression<Func<TEntity, bool>> FiltersAsExpression()

@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.Primitives;
-using Moq;
-using RDD.Domain;
+using Newtonsoft.Json.Serialization;
 using RDD.Domain.Helpers;
 using RDD.Infra.Contexts;
 using RDD.Web.Helpers;
 using RDD.Web.Tests.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace RDD.Web.Tests
@@ -22,7 +19,7 @@ namespace RDD.Web.Tests
 			webContext.QueryString = new Dictionary<string, StringValues>() { { "id", "2" } };
 			webContext.Headers = new Dictionary<string, StringValues>();
 
-			var helper = new ApiHelper<User, int>(webContext);
+			var helper = new ApiHelper<User, int>(webContext, new CamelCasePropertyNamesContractResolver());
 			var query = helper.CreateQuery(HttpVerb.GET);
 
 			Assert.Single(query.Filters);
