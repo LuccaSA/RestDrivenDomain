@@ -18,10 +18,10 @@ namespace RDD.Web.Controllers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		new protected IRestCollection<TEntity, TKey> _collection;
+		new protected TCollection _collection;
 		protected IStorageService _storage;
 
-		public WebApiController(IRestCollection<TEntity, TKey> collection, IStorageService storage, IExecutionContext execution, IEntitySerializer serializer, ApiHelper<TEntity, TKey> apiHelper)
+		public WebApiController(TCollection collection, IStorageService storage, IExecutionContext execution, IEntitySerializer serializer, ApiHelper<TEntity, TKey> apiHelper)
 			: base(collection, execution, serializer, apiHelper)
 		{
 			_collection = collection;

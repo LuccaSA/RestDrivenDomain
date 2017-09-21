@@ -13,12 +13,12 @@ namespace RDD.Web.Controllers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		protected IReadOnlyRestCollection<TEntity, TKey> _collection;
+		protected TCollection _collection;
 		protected IExecutionContext _execution;
 		protected IEntitySerializer _serializer;
 		protected ApiHelper<TEntity, TKey> _apiHelper;
 
-		public ReadOnlyWebApiController(IReadOnlyRestCollection<TEntity, TKey> collection, IExecutionContext execution, IEntitySerializer serializer, ApiHelper<TEntity, TKey> apiHelper)
+		public ReadOnlyWebApiController(TCollection collection, IExecutionContext execution, IEntitySerializer serializer, ApiHelper<TEntity, TKey> apiHelper)
 		{
 			_collection = collection;
 			_execution = execution;
