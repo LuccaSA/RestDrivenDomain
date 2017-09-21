@@ -17,7 +17,7 @@ namespace RDD.Domain.Tests
 		{
 			var json = @"{ ""twitterUri"": ""https://twitter.com"" }";
 			var user = new User();
-			var patcher = new PatchEntityHelper(null);
+			var patcher = new PatchEntityHelper();
 			
 			patcher.PatchEntity(user, PostedData.ParseJSON(json));
 		}

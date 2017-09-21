@@ -1,33 +1,86 @@
-﻿using RDD.Domain.Contexts;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Mocks;
 using RDD.Domain.Models.Querying;
+using RDD.Domain.Storage;
 using RDD.Domain.Tests.Models;
+using RDD.Domain.Tests.Templates;
 using RDD.Infra.Contexts;
 using RDD.Infra.Services;
+using RDD.Web.Querying;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
 {
-    public class CollectionPropertiesTests
-    {
-		[Fact]
-		public void Sum_of_id_SHOULD_work_on_collection()
+	public class CollectionPropertiesTests : SingleContextTests
+	{
+		IRepository<User> _repo;
+		IReadOnlyRestCollection<User> _collection;
+		IStorageService _storage;
+
+		public CollectionPropertiesTests()
 		{
-			using (var storage = new InMemoryStorageService())
+			_storage = _newStorage(Guid.NewGuid().ToString());
+			_repo = new GetFreeRepository<User>(_storage, _execution, _combinationsHolder);
+			_collection = new UsersCollection(_repo, _execution, _combinationsHolder);
+		}
+
+		[Fact]
+		public async void Sum_of_id_SHOULD_work_on_collection()
+		{
+			var options = new DbContextOptionsBuilder<DataContext>()
+				.UseInMemoryDatabase(databaseName: "Sum_of_id_SHOULD_work_on_collection")
+				.Options;
+
+			using (var storage = new EFStorageService(new DataContext(options)))
 			{
-				var execution = new InMemoryExecutionContext();
-				var users = new UsersCollection(storage, execution, null);
+				var repo = new GetFreeRepository<User>(storage, _execution, _combinationsHolder);
+				var users = new UsersCollection(repo, _execution, _combinationsHolder);
 
 				var fields = "id,name,collection.sum(id)";
 
-				var result = users.Get(new Query<User> { Fields = Field.Parse<User>(fields) });
+				var result = await users.GetAsync(new Query<User> { Fields = new FieldsParser().ParseFields<User>(fields) });
 
 				Assert.Equal(0, result.Count);
 			}
 		}
-    }
+
+		[Fact]
+		public async void Count_of_collection_should_tell_10_when_10_entities()
+		{
+			var users = User.GetManyRandomUsers(10);
+			_repo.AddRange(users);
+			await _storage.SaveChangesAsync();
+
+			var result = await _collection.GetAsync(new Query<User>());
+
+			Assert.Equal(10, result.Count);
+		}
+
+		[Fact]
+		public async void Count_of_collection_should_tell_100_when_100_entities()
+		{
+			var users = User.GetManyRandomUsers(100);
+			_repo.AddRange(users);
+			await _storage.SaveChangesAsync();
+
+			var result = await _collection.GetAsync(new Query<User>());
+
+			Assert.Equal(100, result.Count);
+		}
+
+		[Fact]
+		public async void Count_of_collection_should_tell_10000_when_10000_entities()
+		{
+			var users = User.GetManyRandomUsers(10000);
+			_repo.AddRange(users);
+			await _storage.SaveChangesAsync();
+
+			var result = await _collection.GetAsync(new Query<User>());
+
+			Assert.Equal(10, result.Items.Count());
+			Assert.Equal(10000, result.Count);
+		}
+	}
 }

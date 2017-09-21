@@ -1,0 +1,125 @@
+image: Visual Studio 2017
+
+version: 2.0.{build}
+
+environment:
+  global:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  SONAR_TOKEN:
+    secure: 1SINCrkPiJ/hZMMOHo0hdLMtpF+0j5Jda9G2bJfXfwxlWeNUCvE04zSAc6/cz+ei
+  GITHUB_ACCESS_TOKEN:
+    secure: eQWdJCAhgleAfweBawODT9BN6oTS+/CXpBNflA1qvzsAcV6J4QQr615ETW64UeBK
+
+branches:
+  only:
+    - master
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+configuration: Release
+platform: Any CPU
+
+install:
+  # Get last commit tag to compute version
+  - ps: '$NearestTag = git.exe describe --tags $(git.exe rev-list --tags --max-count=1)'
+  - ps: >- 
+     if($NearestTag -eq $null)
+     {
+        $NearestVersion = $env:APPVEYOR_BUILD_VERSION
+     }
+     else
+     {
+        $NearestVersion =  $NearestTag.TrimStart("v")
+     }
+
+  # Release build : Git Tag (v4.2) + build number 
+  # Pull request build : Last tag on branch + build number + '-dev-' + PR number
+  # Commit on non PR branch : Last tag on branch + build number + '-beta' 
+  - ps: >- 
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        $ComputedVersion = "$($env:appveyor_repo_tag_name.TrimStart("v")).$($env:APPVEYOR_BUILD_NUMBER)"
+      }
+      elseif($env:APPVEYOR_PULL_REQUEST_NUMBER)
+      {
+        $ComputedVersion = "$NearestVersion.$($env:APPVEYOR_BUILD_NUMBER)-dev-$($env:APPVEYOR_PULL_REQUEST_NUMBER)"
+      }
+      else
+      {
+        $ComputedVersion = "$NearestVersion.$($env:APPVEYOR_BUILD_NUMBER)-beta"
+      }
+
+  - ps: >- 
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        $env:deploy_public = "true"
+      }
+      else
+      {
+        $env:deploy_unstable = "true"
+      }
+
+  - ps: 'Write-Host "Computed version = $ComputedVersion"' 
+  - ps: 'Update-AppveyorBuild -Version "$ComputedVersion"'
+  - choco install "msbuild-sonarqube-runner" -y
+  - choco install opencover.portable
+  - choco install codecov
+  - ps: >- 
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+
+before_build:
+- dotnet restore
+- cmd: >-
+    IF "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" (
+    C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%"
+    ) ELSE (
+    C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=preview" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.pullRequest=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%"
+    )
+
+build:
+  parallel: true
+  project: RDD.sln
+  verbosity: minimal
+
+after_build:
+- cmd: >-
+    "C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe" end /d:"sonar.login=%SONAR_TOKEN%"
+- cmd: >-
+    dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o artifacts
+    dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o artifacts
+    dotnet pack Web\RDD.Web\RDD.Web.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o artifacts
+
+test_script:
+- OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug .\Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj .\Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj .\Web\RDD.Web.Tests\RDD.Web.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
+- codecov -f coverage-opencover.xml
+
+artifacts:
+  - path: RestDrivenDomain\artifacts\*.nupkg
+    name: lib
+
+deploy:
+
+- provider: NuGet
+  api_key:
+    secure: 12345678
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  on:
+    branch: master
+    deploy_public: true
+     
+- provider: NuGet
+  server: https://ci.appveyor.com/nuget/luccaintegration-uvk5yq2c460b
+  api_key:
+    secure: shmMXUHQLw1te1msoPnFzFFxFEo2lLWF4wriUUAwOaY=
+  skip_symbols: false
+  artifact: /.*\.nupkg/
+  on:
+    deploy_unstable: true

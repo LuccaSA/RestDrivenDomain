@@ -17,18 +17,6 @@ namespace RDD.Web.Serialization
 		public CultureSerializer(IEntitySerializer serializer)
 			: base(serializer) { }
 
-		//public override object SerializeProperty(object entity, Domain.Helpers.PropertySelector field)
-		//{
-		//	Expression<Func<Culture, CultureInfo>> exp = c => c.RawCulture;
-
-		//	if(field.IsEqual(exp))
-		//	{
-		//		return 
-		//	}
-
-		//	return base.SerializeProperty(entity, field);
-		//}
-
 		public override Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
 		{
 			Expression<Func<Culture, CultureInfo>> exp = c => c.RawCulture;

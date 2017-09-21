@@ -1,9 +1,5 @@
-﻿using System;
+﻿using Inflector;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NExtends.Primitives;
 
 namespace RDD.Web.Serialization
 {
@@ -20,7 +16,7 @@ namespace RDD.Web.Serialization
 		{
 			if (!_pluralsByName.ContainsKey(name))
 			{
-				_pluralsByName[name] = name.Pluralize();
+				_pluralsByName[name] = InflectorExtensions.Pluralize(name);
 			}
 
 			return _pluralsByName[name];

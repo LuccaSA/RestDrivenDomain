@@ -1,16 +1,12 @@
-﻿using System;
+﻿using NExtends.Primitives.Types;
+using RDD.Domain;
+using RDD.Domain.Exceptions;
+using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
+using RDD.Web.Querying;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Net;
-using System.Linq.Expressions;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Helpers;
-using RDD.Domain;
-using NExtends.Primitives;
-using RDD.Domain.Exceptions;
-using RDD.Web.Exceptions;
 
 namespace RDD.Web.Serialization
 {
@@ -49,12 +45,12 @@ namespace RDD.Web.Serialization
 			return String.Format("api/v3/{0}/{{0}}", apiRadical);
 		}
 
-		public Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Field<TEntity> fields)
+		public Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
 			where TEntity : class, IEntityBase
 		{
 			var result = new Dictionary<string, object>();
 
-			foreach (var child in fields.CollectionSelector.Children)
+			foreach (var child in query.CollectionFields.EntitySelector.Children)
 			{
 				var childName = child.Name;
 				var value = child.Lambda.Compile().DynamicInvoke(collection);
@@ -110,7 +106,7 @@ namespace RDD.Web.Serialization
 				}
 			}
 
-			result.Add("items", SerializeEntities(collection.Items, fields.EntitySelector));
+			result.Add("items", SerializeEntities(collection.Items, query.Fields));
 
 			return result;
 		}
@@ -150,7 +146,7 @@ namespace RDD.Web.Serialization
 							}
 							else
 							{
-								fields = FieldHelper.ParseAllProperties(entity.GetType());
+								fields = new FieldsParser().ParseAllProperties<TEntity>().EntitySelector;
 							}
 						}
 

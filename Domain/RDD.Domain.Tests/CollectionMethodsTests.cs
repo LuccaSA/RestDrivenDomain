@@ -1,18 +1,13 @@
 ﻿using Moq;
-using RDD.Domain.Contexts;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
+using RDD.Domain.Storage;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
-using RDD.Infra.BootStrappers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -20,52 +15,63 @@ namespace RDD.Domain.Tests
 	public class CollectionMethodsTests : SingleContextTests
 	{
 		[Fact]
-		public void GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
+		public async void GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
 		{
-			TestsBootStrapper.ApplicationBeginRequest();
-
-			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, _newStorage);
-
-			users.Create(user);
-
-			Assert.Throws<NotFoundException>(() => users.GetById(0));
-		}
-
-		[Fact]
-		public void TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
-		{
-			TestsBootStrapper.ApplicationBeginRequest();
-
-			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, _newStorage);
-
-			users.Create(user);
-
-			Assert.Null(users.TryGetById(0));
-		}
-
-		[Fact]
-		public void Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
-		{
-			TestsBootStrapper.ApplicationBeginRequest();
-			_execution.curPrincipal = new WebService { Id = 1, AppOperations = new HashSet<int>() { 1 } };
-			_resolver.Register<ICombinationsHolder>(() =>
+			using (var storage = _newStorage(Guid.NewGuid().ToString()))
 			{
+				var user = new User { Id = 1 };
+				var repo = new GetFreeRepository<User>(storage, _execution, _combinationsHolder);
+				var users = new UsersCollection(repo, _execution, _combinationsHolder);
+
+				await users.CreateAsync(user);
+
+				await storage.SaveChangesAsync();
+
+				await Assert.ThrowsAsync<NotFoundException>(() => users.GetByIdAsync(0));
+			}
+		}
+
+		[Fact]
+		public async void TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
+		{
+			using (var storage = _newStorage(Guid.NewGuid().ToString()))
+			{
+				var user = new User { Id = 2 };
+				var repo = new Repository<User>(storage, _execution, _combinationsHolder);
+				var users = new UsersCollection(repo, _execution, _combinationsHolder);
+
+				await users.CreateAsync(user);
+
+				await storage.SaveChangesAsync();
+
+				Assert.Null(await users.TryGetByIdAsync(0));
+			}
+		}
+
+		[Fact]
+		public async void Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
+		{
+			using (var storage = _newStorage(Guid.NewGuid().ToString()))
+			{
+				_execution.curPrincipal = new WebService { Id = 1, AppOperations = new HashSet<int>() { 1 } };
+
 				var mock = new Mock<ICombinationsHolder>();
 				mock.Setup(h => h.Combinations)
 				.Returns(new HashSet<Combination>() {
-					new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.PUT }
+				new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.PUT }
 				});
-				return mock.Object;
-			});
+				var combinationsHolder = mock.Object;
 
-			var user = new User { Id = 1 };
-			var users = new UsersCollection(_storage, _execution, _newStorage);
+				var user = new User { Id = 3 };
+				var repo = new Repository<User>(storage, _execution, combinationsHolder);
+				var users = new UsersCollection(repo, _execution, combinationsHolder);
 
-			users.Create(user);
+				await users.CreateAsync(user);
 
-			Assert.Throws<NotFoundException>(() => users.Update(0, new { name = "new name" }));
+				await storage.SaveChangesAsync();
+
+				await Assert.ThrowsAsync<NotFoundException>(() => users.UpdateAsync(0, new { name = "new name" }));
+			}
 		}
 	}
 }

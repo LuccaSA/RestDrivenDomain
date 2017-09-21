@@ -1,9 +1,7 @@
-﻿using RDD.Domain.Helpers;
-using System;
+﻿using NExtends.Primitives.Types;
+using RDD.Domain.Helpers;
 using System.Collections;
 using System.Linq;
-using System.Reflection;
-using NExtends.Primitives;
 
 namespace RDD.Web.Serialization
 {

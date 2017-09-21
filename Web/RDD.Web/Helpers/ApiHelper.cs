@@ -1,19 +1,17 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Serialization;
+using RDD.Domain;
+using RDD.Domain.Exceptions;
+using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
+using RDD.Infra;
+using RDD.Infra.Contexts;
+using RDD.Web.Querying;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Web;
-using Newtonsoft.Json.Serialization;
-using RDD.Domain;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Serialization;
-using RDD.Domain.Exceptions;
-using NExtends.Primitives;
-using HttpContextWrapper = RDD.Infra.Contexts.HttpContextWrapper;
-using RDD.Domain.Helpers;
 
 namespace RDD.Web.Helpers
 {
@@ -21,20 +19,19 @@ namespace RDD.Web.Helpers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		private Query<TEntity> _query { get; set; }
+		private QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 		private IContractResolver _jsonResolver { get; set; }
 		private IWebContext _webContext { get; set; }
 
-		public ApiHelper(IWebContext webContext, Query<TEntity> query = null, IContractResolver jsonResolver = null)
+		public ApiHelper(IWebContext webContext, IContractResolver jsonResolver)
 		{
 			_webContext = webContext;
-			_query = query ?? new Query<TEntity>();
-			_jsonResolver = jsonResolver ?? new CamelCasePropertyNamesContractResolver();
+			_jsonResolver = jsonResolver;
 		}
 
 		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
 		{
-			var query = _query.Parse(_webContext, isCollectionCall);
+			var query = _queryFactory.FromWebContext(_webContext, isCollectionCall);
 			query.Verb = verb;
 
 			return query;
@@ -45,28 +42,25 @@ namespace RDD.Web.Helpers
 			return new HashSet<Expression<Func<TEntity, object>>>();
 		}
 
-		public JsonMediaTypeFormatter GetFormatter()
-		{
-			return JsonApiFormatter.GetInstance(_webContext, GetJsonResolver());
-		}
-
 		private IContractResolver GetJsonResolver()
 		{
 			return _jsonResolver;
 		}
 
-		public List<PostedData> InputObjectsFromIncomingHTTPRequest(IRequestMessage request)
+		public List<PostedData> InputObjectsFromIncomingHTTPRequest(HttpContext context)
 		{
 			var objects = new List<PostedData>();
+			var webContext = new HttpContextWrapper();
+			webContext.SetContext(context);
 
-			var contentType = request.ContentType.Split(';')[0];
-			var rawInput = request.Content;
+			var contentType = webContext.ContentType.Split(';')[0];
+			var rawInput = webContext.Content;
 
 			switch (contentType)
 			{
 				case "application/x-www-form-urlencoded":
 				case "text/plain":
-					objects.Add(PostedData.ParseDictionary(request.ContentAsFormDictionnary));
+					objects.Add(PostedData.ParseDictionary(webContext.ContentAsFormDictionnary));
 					break;
 
 				//ce content-type est le seul à pouvoir envoyer plus qu'un seul formulaire
@@ -98,7 +92,7 @@ namespace RDD.Web.Helpers
 		/// <param name="filters"></param>
 		public void IgnoreFilters(params string[] filters)
 		{
-			_query.IgnoreFilters(filters);
+			_queryFactory.IgnoreFilters(filters);
 		}
 	}
 }
