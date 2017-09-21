@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RDD.Domain.Helpers
 {
 	[Flags]
-	public enum HttpVerb : byte
+	public enum HttpVerb
 	{
 		GET = 1,
 		POST = 2,
