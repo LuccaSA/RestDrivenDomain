@@ -16,9 +16,9 @@ namespace RDD.Domain
 	{
 		Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null);
 		Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null);
-		Task CreateAsync(TEntity entity, Query<TEntity> query = null);
+		void Create(TEntity entity, Query<TEntity> query = null);
 		Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null);
-		Task DeleteAsync(TEntity entity);
+		void Delete(TEntity entity);
 	}
 
 	public interface IRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity>

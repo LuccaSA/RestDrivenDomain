@@ -48,11 +48,11 @@ namespace RDD.Domain.Models
 
 			await CheckRightsForCreateAsync(entity);
 
-			await CreateAsync(entity, query);
+			Create(entity, query);
 
 			return entity;
 		}
-		public virtual Task CreateAsync(TEntity entity, Query<TEntity> query = null)
+		public virtual void Create(TEntity entity, Query<TEntity> query = null)
 		{
 			if (query == null)
 			{
@@ -65,8 +65,6 @@ namespace RDD.Domain.Models
 			ValidateEntity(entity, null);
 
 			_repository.Add(entity);
-
-			return Task.CompletedTask;
 		}
 		public virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
@@ -141,14 +139,12 @@ namespace RDD.Domain.Models
 			AttachOperationsToEntity(entity);
 			AttachActionsToEntity(entity);
 
-			await DeleteAsync(entity);
+			Delete(entity);
 		}
 
-		public virtual Task DeleteAsync(TEntity entity)
+		public virtual void Delete(TEntity entity)
 		{
 			_repository.Remove(entity);
-
-			return Task.CompletedTask;
 		}
 	}
 }
