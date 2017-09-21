@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
-	public partial class ReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>
+	public class ReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>
 		where TKey : IEquatable<TKey>
 	{
@@ -191,9 +191,9 @@ namespace RDD.Domain.Models
 			catch { return null; }
 		}
 
-		public async Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET)
+		public Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET)
 		{
-			return await GetByIdAsync(id, new Query<TEntity>() { Verb = verb });
+			return GetByIdAsync(id, new Query<TEntity>() { Verb = verb });
 		}
 
 		/// <summary>

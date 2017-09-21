@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
-	public partial class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
+	public class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
@@ -36,9 +36,9 @@ namespace RDD.Domain.Models
 			return new PatchEntityHelper();
 		}
 
-		public async Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
+		public Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
 		{
-			return await CreateAsync(PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+			return CreateAsync(PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
 		}
 		public async Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
 		{
@@ -68,9 +68,9 @@ namespace RDD.Domain.Models
 
 			return Task.CompletedTask;
 		}
-		public async virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
+		public virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
-			return await GetByIdAsync(entity.Id, query);
+			return GetByIdAsync(entity.Id, query);
 		}
 
 		public virtual TEntity InstanciateEntity()
@@ -80,9 +80,9 @@ namespace RDD.Domain.Models
 		protected virtual void ForgeEntity(TEntity entity, Options queryOptions) { }
 		protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
 
-		private async Task<TEntity> UpdateAsync(TEntity entity, object datas, Query<TEntity> query = null)
+		private Task<TEntity> UpdateAsync(TEntity entity, object datas, Query<TEntity> query = null)
 		{
-			return await UpdateAsync(entity, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+			return UpdateAsync(entity, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
 		}
 		public async virtual Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query = null)
 		{
@@ -105,9 +105,9 @@ namespace RDD.Domain.Models
 
 			return entity;
 		}
-		public async Task<TEntity> UpdateAsync(TKey id, object datas, Query<TEntity> query = null)
+		public Task<TEntity> UpdateAsync(TKey id, object datas, Query<TEntity> query = null)
 		{
-			return await UpdateAsync(id, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+			return UpdateAsync(id, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
 		}
 		public async Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query = null)
 		{
