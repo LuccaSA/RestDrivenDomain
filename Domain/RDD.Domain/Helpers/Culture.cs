@@ -9,6 +9,13 @@ namespace RDD.Domain.Helpers
 {
 	public class Culture
 	{
+		public Culture() { }
+
+		public Culture(CultureInfo rawCulture)
+		{
+			this.RawCulture = rawCulture;
+		}
+
 		public CultureInfo RawCulture { get; private set; }
 
 		public int Id { get { return RawCulture.LCID; } set { throw new NotImplementedException(); } }
@@ -20,12 +27,5 @@ namespace RDD.Domain.Helpers
 		public string EnglishName { get { return RawCulture.EnglishName; } }
 
 		public int LCID { get { return RawCulture.LCID; } }
-
-		public Culture() { }
-
-		public Culture(CultureInfo rawCulture)
-		{
-			this.RawCulture = rawCulture;
-		}
 	}
 }
