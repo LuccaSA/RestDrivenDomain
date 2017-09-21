@@ -65,7 +65,7 @@ namespace RDD.Infra.Contexts
 
 		public Dictionary<string, string> GetQueryNameValuePairs()
 		{
-			return QueryString.ToDictionary(k => k.Key, k => String.Join(",", k.Value.ToArray()));
+			return QueryString.Where(s => !String.IsNullOrEmpty(s.Key)).ToDictionary(k => k.Key, k => String.Join(",", k.Value.ToArray()));
 		}
 
 		public string GetCookie(string cookieName)
