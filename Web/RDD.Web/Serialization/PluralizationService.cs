@@ -1,14 +1,17 @@
 ﻿using Inflector;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace RDD.Web.Serialization
 {
-	public class PluralizationCacheService
+	public class PluralizationService
 	{
 		readonly Dictionary<string, string> _pluralsByName;
 
-		public PluralizationCacheService()
+		public PluralizationService()
 		{
+			Inflector.Inflector.SetDefaultCultureFunc = () => new CultureInfo("en-US");
+
 			_pluralsByName = new Dictionary<string, string>();
 		}
 

@@ -14,11 +14,11 @@ namespace RDD.Web.Serialization
 	{
 		private readonly Dictionary<Type, PropertySerializer> _mappings;
 		private readonly PropertySerializer _defaultSerializer;
-		protected PluralizationCacheService _pluralizationCacheService;
+		protected PluralizationService _pluralizationService;
 
 		public EntitySerializer()
 		{
-			_pluralizationCacheService = new PluralizationCacheService();
+			_pluralizationService = new PluralizationService();
 			_defaultSerializer = new PropertySerializer(this);
 			_mappings = new Dictionary<Type, PropertySerializer>();
 
@@ -40,7 +40,7 @@ namespace RDD.Web.Serialization
 
 		public virtual string GetUrlTemplateFromEntityType(Type entityType)
 		{
-			var apiRadical = _pluralizationCacheService.GetPlural(entityType.Name).ToLower();
+			var apiRadical = _pluralizationService.GetPlural(entityType.Name).ToLower();
 
 			return String.Format("api/v3/{0}/{{0}}", apiRadical);
 		}
