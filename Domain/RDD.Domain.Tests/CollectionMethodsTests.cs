@@ -57,9 +57,10 @@ namespace RDD.Domain.Tests
 
 				var mock = new Mock<ICombinationsHolder>();
 				mock.Setup(h => h.Combinations)
-				.Returns(new HashSet<Combination>() {
-				new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.PUT }
-				});
+					.Returns(new HashSet<Combination>() {
+						new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.POST },
+						new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerb.PUT }
+					});
 				var combinationsHolder = mock.Object;
 
 				var user = new User { Id = 3 };
