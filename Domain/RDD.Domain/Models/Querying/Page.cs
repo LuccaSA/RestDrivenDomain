@@ -28,7 +28,7 @@ namespace RDD.Domain.Models.Querying
 			if (!limitConditions)
 			{
 				throw new HttpLikeException(HttpStatusCode.BadRequest,
-					$"Paging limit should be between 1 and {maxLimit - 1}");
+					$"Paging limit should be between 1 and {maxLimit}");
 			}
 
 			Offset = offset;
