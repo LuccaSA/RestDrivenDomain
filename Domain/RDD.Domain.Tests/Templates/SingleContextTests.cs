@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RDD.Domain.Mocks;
 using RDD.Domain.Tests.Models;
-using RDD.Infra.Contexts;
-using RDD.Infra.Services;
+using RDD.Infra.Storage;
 using System;
 
 namespace RDD.Domain.Tests.Templates
