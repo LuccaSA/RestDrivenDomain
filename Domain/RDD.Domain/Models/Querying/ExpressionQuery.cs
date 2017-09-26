@@ -14,6 +14,13 @@ namespace RDD.Domain.Models.Querying
 		{
 			ExpressionFilters = filters;
 		}
+		public ExpressionQuery(Query<TEntity> source, Expression<Func<TEntity, bool>> filters)
+			: this(filters)
+		{
+			Fields = source.Fields;
+			OrderBys = source.OrderBys;
+			Page = source.Page;
+		}
 
 		public override Expression<Func<TEntity, bool>> FiltersAsExpression()
 		{
