@@ -1,11 +1,5 @@
 ﻿using RDD.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -23,11 +17,11 @@ namespace RDD.Domain.Models.Querying
 
 		protected Page(int offset, int limit, int maxLimit)
 		{
-			var offsetConnditions = offset >= 0 && offset < maxLimit;
+			var offsetConnditions = offset >= 0;
 			if (!offsetConnditions)
 			{
 				throw new HttpLikeException(HttpStatusCode.BadRequest,
-					$"Paging offset should be between 0 and {maxLimit - 1}");
+					"Paging offset should be greater than 0");
 			}
 
 			var limitConditions = limit >= 1 && limit <= maxLimit;

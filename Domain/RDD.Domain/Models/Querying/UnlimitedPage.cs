@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RDD.Domain.Models.Querying
+﻿namespace RDD.Domain.Models.Querying
 {
 	internal class UnlimitedPage : Page
 	{
