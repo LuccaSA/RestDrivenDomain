@@ -19,7 +19,7 @@ namespace RDD.Web.Tests
 			webContext.QueryString = new Dictionary<string, StringValues>() { { "id", "2" } };
 			webContext.Headers = new Dictionary<string, StringValues>();
 
-			var helper = new ApiHelper<User, int>(webContext, new CamelCasePropertyNamesContractResolver());
+			var helper = new ApiHelper<User, int>(new CamelCasePropertyNamesContractResolver(), webContext, null, null);
 			var query = helper.CreateQuery(HttpVerb.GET);
 
 			Assert.Single(query.Filters);

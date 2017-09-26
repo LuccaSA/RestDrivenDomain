@@ -18,58 +18,56 @@ namespace RDD.Web.Controllers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		new protected TCollection _collection;
 		protected IStorageService _storage;
 
-		public WebApiController(TCollection collection, IStorageService storage, IExecutionContext execution, IEntitySerializer serializer, ApiHelper<TEntity, TKey> apiHelper)
-			: base(collection, execution, serializer, apiHelper)
+		public WebApiController(IStorageService storage, TCollection collection, ApiHelper<TEntity, TKey> helper)
+			: base(collection, helper)
 		{
-			_collection = collection;
 			_storage = storage;
 		}
 
 		public async virtual Task<IActionResult> PostAsync()
 		{
-			var query = _apiHelper.CreateQuery(HttpVerb.POST, false);
-			var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+			var query = _helper.CreateQuery(HttpVerb.POST, false);
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
 
 			var entity = await _collection.CreateAsync(datas, query);
 
-			_execution.queryWatch.Start();
+			_helper.Execution.queryWatch.Start();
 
 			await _storage.SaveChangesAsync();
 
-			_execution.queryWatch.Stop();
+			_helper.Execution.queryWatch.Stop();
 
 			entity = await _collection.GetEntityAfterCreateAsync(entity, query);
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _execution);
+			var dataContainer = new Metadata(_helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _helper.Execution);
 
 			return Ok(dataContainer.ToDictionary());
 		}
 
 		public async virtual Task<IActionResult> PutAsync(TKey _id_)
 		{
-			var query = _apiHelper.CreateQuery(HttpVerb.PUT, false);
-			var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+			var query = _helper.CreateQuery(HttpVerb.PUT, false);
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
 
-			_execution.queryWatch.Start();
+			_helper.Execution.queryWatch.Start();
 
 			var entity = await _collection.UpdateAsync(_id_, datas, query);
 
 			await _storage.SaveChangesAsync();
 
-			_execution.queryWatch.Start();
+			_helper.Execution.queryWatch.Start();
 
-			var dataContainer = new Metadata(_serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _execution);
+			var dataContainer = new Metadata(_helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _helper.Execution);
 
 			return Ok(dataContainer.ToDictionary());
 		}
 
 		public async virtual Task<IActionResult> PutAsync()
 		{
-			var query = _apiHelper.CreateQuery(HttpVerb.PUT, false);
-			var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
+			var query = _helper.CreateQuery(HttpVerb.PUT, false);
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext);
 
 			//Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
 			if (datas.Any(d => !d.ContainsKey("id")))
@@ -83,7 +81,7 @@ namespace RDD.Web.Controllers
 
 			var entities = new HashSet<TEntity>();
 
-			_execution.queryWatch.Start();
+			_helper.Execution.queryWatch.Start();
 
 			foreach (var d in datas)
 			{
@@ -96,33 +94,33 @@ namespace RDD.Web.Controllers
 
 			await _storage.SaveChangesAsync();
 
-			_execution.queryWatch.Stop();
+			_helper.Execution.queryWatch.Stop();
 
-			var dataContainer = new Metadata(_serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, _execution);
+			var dataContainer = new Metadata(_helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, _helper.Execution);
 
 			return Ok(dataContainer.ToDictionary());
 		}
 
 		public async virtual Task<IActionResult> DeleteAsync(TKey _id_)
 		{
-			_execution.queryWatch.Start();
+			_helper.Execution.queryWatch.Start();
 
 			await _collection.DeleteAsync(_id_);
 
 			await _storage.SaveChangesAsync();
 
-			_execution.queryWatch.Stop();
+			_helper.Execution.queryWatch.Stop();
 
 			return Ok();
 		}
 
 		public async virtual Task<IActionResult> DeleteAsync()
 		{
-			var query = _apiHelper.CreateQuery(HttpVerb.DELETE, true);
+			var query = _helper.CreateQuery(HttpVerb.DELETE, true);
 
-			_execution.queryWatch.Start();
+			_helper.Execution.queryWatch.Start();
 
-			var datas = _apiHelper.InputObjectsFromIncomingHTTPRequest(HttpContext);
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext);
 
 			if (datas.Any(d => !d.ContainsKey("id")))
 			{

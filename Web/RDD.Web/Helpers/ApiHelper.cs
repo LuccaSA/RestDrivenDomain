@@ -21,17 +21,23 @@ namespace RDD.Web.Helpers
 	{
 		private QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 		private IContractResolver _jsonResolver { get; set; }
-		private IWebContext _webContext { get; set; }
 
-		public ApiHelper(IWebContext webContext, IContractResolver jsonResolver)
+		public IWebContext WebContext { get; private set; }
+		public IExecutionContext Execution { get; private set; }
+		public IEntitySerializer Serializer { get; private set; }
+
+		public ApiHelper(IContractResolver jsonResolver, IWebContext webContext, IExecutionContext execution, IEntitySerializer serializer)
 		{
-			_webContext = webContext;
 			_jsonResolver = jsonResolver;
+			
+			WebContext = webContext;
+			Execution = execution;
+			Serializer = serializer;
 		}
 
 		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
 		{
-			var query = _queryFactory.FromWebContext(_webContext, isCollectionCall);
+			var query = _queryFactory.FromWebContext(WebContext, isCollectionCall);
 			query.Verb = verb;
 
 			return query;
