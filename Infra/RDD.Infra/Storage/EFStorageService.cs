@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Infra.Services
+namespace RDD.Infra.Storage
 {
 	public class EFStorageService : IStorageService
 	{

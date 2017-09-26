@@ -2,11 +2,8 @@
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Models.Querying.Convertors;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RDD.Domain.Storage
@@ -33,13 +30,6 @@ namespace RDD.Domain.Storage
 		}
 
 		public virtual Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query)
-		{
-			var result = QueryEntities(query).ToList();
-
-			return Task.FromResult<IEnumerable<TEntity>>(result);
-		}
-
-		public virtual Task<IEnumerable<TEntity>> EnumerateAsync(ExpressionQuery<TEntity> query)
 		{
 			var result = QueryEntities(query).ToList();
 

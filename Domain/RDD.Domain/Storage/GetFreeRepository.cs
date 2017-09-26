@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using RDD.Domain.Models.Querying;
 using System.Linq;
-using System.Text;
-using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain.Storage
 {
