@@ -17,5 +17,6 @@ namespace RDD.Infra
 		string PhysicalApplicationPath { get; }
 		Dictionary<string, string> GetQueryNameValuePairs();
 		string UserHostAddress { get; }
+		string Content { get; }
 	}
 }
