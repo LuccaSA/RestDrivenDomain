@@ -114,7 +114,7 @@ namespace RDD.Domain.Storage
 				Indexes[type] = index;
 			}
 
-			while(_afterAfterSaveChangesActions.Count() > 0)
+			while(_afterAfterSaveChangesActions.Any())
 			{
 				await _afterAfterSaveChangesActions.Dequeue();
 			}

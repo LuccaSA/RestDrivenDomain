@@ -30,7 +30,7 @@ namespace RDD.Domain.Tests
 			var execution = new ExecutionContextMock();
 			var combinationHolder = new CombinationsHolderMock();
 			var storage = new InMemoryStorageService();
-			var repo = new GetFreeRepository<ConcreteClassThree>(storage, execution, combinationHolder);
+			var repo = new OpenRepository<ConcreteClassThree>(storage, execution, combinationHolder);
 
 			repo.Add(new ConcreteClassThree());
 			repo.Add(new ConcreteClassThree());
@@ -48,7 +48,7 @@ namespace RDD.Domain.Tests
 			var execution = new ExecutionContextMock();
 			var combinationHolder = new CombinationsHolderMock();
 			var storage = new InMemoryStorageService();
-			var repo = new GetFreeRepository<AbstractClass>(storage, execution, combinationHolder);
+			var repo = new OpenRepository<AbstractClass>(storage, execution, combinationHolder);
 
 			repo.Add(new ConcreteClassOne());
 			repo.Add(new ConcreteClassOne());

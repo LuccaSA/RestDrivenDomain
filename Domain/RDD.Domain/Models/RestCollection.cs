@@ -61,7 +61,6 @@ namespace RDD.Domain.Models
 
 			ForgeEntity(entity, query.Options);
 
-			//On valide l'entité
 			ValidateEntity(entity, null);
 
 			_repository.Add(entity);
@@ -88,10 +87,7 @@ namespace RDD.Domain.Models
 		}
 		public async virtual Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query = null)
 		{
-			if (query == null)
-			{
-				query = new Query<TEntity>();
-			}
+			query = query ?? new Query<TEntity>();
 
 			AttachOperationsToEntity(entity);
 			AttachActionsToEntity(entity);

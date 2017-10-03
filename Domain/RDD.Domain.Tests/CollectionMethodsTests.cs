@@ -20,7 +20,7 @@ namespace RDD.Domain.Tests
 			using (var storage = _newStorage(Guid.NewGuid().ToString()))
 			{
 				var user = new User { Id = 1 };
-				var repo = new GetFreeRepository<User>(storage, _execution, _combinationsHolder);
+				var repo = new OpenRepository<User>(storage, _execution, _combinationsHolder);
 				var users = new UsersCollection(repo, _execution, _combinationsHolder);
 
 				await users.CreateAsync(user);

@@ -36,11 +36,7 @@ namespace RDD.Infra.Contexts
 			Url = new Uri(context.Request.GetDisplayUrl());
 			RawUrl = context.Request.GetDisplayUrl();
 			HttpMethod = context.Request.Method;
-			Items = new Dictionary<object, object>();
-			foreach (var kvp in context.Items)
-			{
-				Items.Add(kvp.Key, kvp.Value);
-			}
+			Items = new Dictionary<object, object>(context.Items);
 			QueryString = context.Request.Query;
 			Headers = context.Request.Headers;
 			Cookies = ((IEnumerable<KeyValuePair<string, string>>)context.Request.Cookies).ToDictionary();

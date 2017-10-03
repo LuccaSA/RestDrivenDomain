@@ -176,7 +176,7 @@ namespace RDD.Domain.Models
 			return new Selection<TEntity>(items, count);
 		}
 
-		public async Task<object> TryGetByIdAsync(object id)
+		public async Task<TEntity> TryGetByIdAsync(object id)
 		{
 			try
 			{
@@ -184,11 +184,11 @@ namespace RDD.Domain.Models
 			}
 			catch { return null; }
 		}
-		public async Task<IEnumerable<object>> TryGetByIdsAsync(IEnumerable<object> id)
+		public async Task<IEnumerable<TEntity>> TryGetByIdsAsync(IEnumerable<object> id)
 		{
 			try
 			{
-				return (await GetByIdsAsync(new List<TKey>(id.Cast<TKey>()))).Cast<object>();
+				return (await GetByIdsAsync(new List<TKey>(id.Cast<TKey>())));
 			}
 			catch { return null; }
 		}
@@ -276,22 +276,6 @@ namespace RDD.Domain.Models
 		{
 			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector, subs);
 		}
-
-		//public IQueryable<TEntity> Includes(IQueryable<TEntity> entities)
-		//{
-		//	return Includes(entities, new Query<TEntity>(), HttpVerb.GET, new Field<TEntity>());
-		//}
-
-		//public virtual IQueryable<TEntity> Includes(IQueryable<TEntity> entities, Query<TEntity> query, HttpVerb verb, Field<TEntity> fields)
-		//{
-		//	if (query != null)
-		//	{
-		//		query.Includes = HandleIncludes(query.Includes, verb, fields);
-
-		//		return _storage.Includes<TEntity>(entities, query.Includes);
-		//	}
-		//	return entities;
-		//}
 
 		protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
 		{

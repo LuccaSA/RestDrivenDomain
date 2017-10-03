@@ -46,16 +46,7 @@ namespace RDD.Infra.Storage
 		public virtual void AddRange<TEntity>(IEnumerable<TEntity> entities)
 			where TEntity : class, IEntityBase
 		{
-			//http://stackoverflow.com/questions/4355474/how-do-i-speed-up-dbset-add
-			try
-			{
-				//_dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
-				_dbContext.Set<TEntity>().AddRange(entities);
-			}
-			finally
-			{
-				_dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
-			}
+			_dbContext.Set<TEntity>().AddRange(entities);
 		}
 
 		public virtual void Remove<TEntity>(TEntity entity)
@@ -67,16 +58,7 @@ namespace RDD.Infra.Storage
 		public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
 			where TEntity : class
 		{
-
-			try
-			{
-				_dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
-				_dbContext.Set<TEntity>().RemoveRange(entities);
-			}
-			finally
-			{
-				_dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
-			}
+			_dbContext.Set<TEntity>().RemoveRange(entities);
 		}
 
 		public void AddAfterSaveChangesAction(Task action)

@@ -22,7 +22,7 @@ namespace RDD.Domain.Tests
 		public QueryTests()
 		{
 			_storage = _newStorage(Guid.NewGuid().ToString());
-			_repo = new GetFreeRepository<User>(_storage, _execution, _combinationsHolder);
+			_repo = new Repository<User>(_storage, _execution, _combinationsHolder);
 			_collection = new UsersCollection(_repo, _execution, _combinationsHolder);
 		}
 
