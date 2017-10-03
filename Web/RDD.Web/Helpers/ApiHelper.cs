@@ -22,22 +22,21 @@ namespace RDD.Web.Helpers
 		private QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 		private IContractResolver _jsonResolver { get; set; }
 
-		public IWebContext WebContext { get; private set; }
+		public IWebContextWrapper WebContextWrapper { get; private set; }
 		public IExecutionContext Execution { get; private set; }
 		public IEntitySerializer Serializer { get; private set; }
 
-		public ApiHelper(IContractResolver jsonResolver, IWebContext webContext, IExecutionContext execution, IEntitySerializer serializer)
+		public ApiHelper(IContractResolver jsonResolver, IWebContextWrapper webContextWrapper, IExecutionContext execution, IEntitySerializer serializer)
 		{
 			_jsonResolver = jsonResolver;
-			
-			WebContext = webContext;
+			WebContextWrapper = webContextWrapper;
 			Execution = execution;
 			Serializer = serializer;
 		}
 
 		public virtual Query<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
 		{
-			var query = _queryFactory.FromWebContext(WebContext, isCollectionCall);
+			var query = _queryFactory.FromWebContext(WebContextWrapper, isCollectionCall);
 			query.Verb = verb;
 
 			return query;
@@ -53,22 +52,21 @@ namespace RDD.Web.Helpers
 			return _jsonResolver;
 		}
 
-		public List<PostedData> InputObjectsFromIncomingHTTPRequest(HttpContext context)
+		public List<PostedData> InputObjectsFromIncomingHTTPRequest()
 		{
 			var objects = new List<PostedData>();
-			var webContext = new HttpContextWrapper();
-			webContext.SetContext(context);
-
-			var contentType = webContext.ContentType.Split(';')[0];
-			var rawInput = webContext.Content;
+			var contentType = WebContextWrapper.ContentType.Split(';')[0];
+			var rawInput = WebContextWrapper.Content;
 
 			switch (contentType)
 			{
 				case "application/x-www-form-urlencoded":
 				case "text/plain":
-					objects.Add(PostedData.ParseDictionary(webContext.ContentAsFormDictionnary));
-					break;
-
+					{
+						var dictionaryInput = String.IsNullOrEmpty(rawInput) ? new Dictionary<string, string>() : rawInput.Split('&').Select(s => s.Split('=')).ToDictionary(p => p[0], p => p[1]);
+						objects.Add(PostedData.ParseDictionary(dictionaryInput));
+						break;
+					}
 				//ce content-type est le seul à pouvoir envoyer plus qu'un seul formulaire
 				case "application/json":
 					if (rawInput.StartsWith("[")) //soit une collection

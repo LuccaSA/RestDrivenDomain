@@ -3,6 +3,7 @@ using NExtends.Primitives.Types;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
+using RDD.Infra.Contexts;
 using RDD.Web.Helpers;
 using RDD.Web.Models;
 using System;
@@ -26,10 +27,17 @@ namespace RDD.Web.Controllers
 			_storage = storage;
 		}
 
-		public async virtual Task<IActionResult> PostAsync()
+		protected virtual Task<IActionResult> ProtectedPostAsync()
+		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedPostAsyncAfterContext();
+		}
+
+		protected async virtual Task<IActionResult> ProtectedPostAsyncAfterContext()
 		{
 			var query = _helper.CreateQuery(HttpVerb.POST, false);
-			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest().SingleOrDefault();
 
 			var entity = await _collection.CreateAsync(datas, query);
 
@@ -46,10 +54,16 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		public async virtual Task<IActionResult> PutAsync(TKey _id_)
+		protected virtual Task<IActionResult> ProtectedPutAsync(TKey _id_)
+		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedPutAsyncAfterContext(_id_);
+		}
+		protected async virtual Task<IActionResult> ProtectedPutAsyncAfterContext(TKey _id_)
 		{
 			var query = _helper.CreateQuery(HttpVerb.PUT, false);
-			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext).SingleOrDefault();
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest().SingleOrDefault();
 
 			_helper.Execution.queryWatch.Start();
 
@@ -64,10 +78,16 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		public async virtual Task<IActionResult> PutAsync()
+		protected virtual Task<IActionResult> ProtectedPutAsync()
+		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedPutAsyncAfterContext();
+		}
+		protected async virtual Task<IActionResult> ProtectedPutAsyncAfterContext()
 		{
 			var query = _helper.CreateQuery(HttpVerb.PUT, false);
-			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext);
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest();
 
 			//Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
 			if (datas.Any(d => !d.ContainsKey("id")))
@@ -101,7 +121,13 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		public async virtual Task<IActionResult> DeleteAsync(TKey _id_)
+		protected virtual Task<IActionResult> ProtectedDeleteAsync(TKey _id_)
+		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedDeleteAsyncAfterContext(_id_);
+		}
+		protected async virtual Task<IActionResult> ProtectedDeleteAsyncAfterContext(TKey _id_)
 		{
 			_helper.Execution.queryWatch.Start();
 
@@ -114,13 +140,19 @@ namespace RDD.Web.Controllers
 			return Ok();
 		}
 
-		public async virtual Task<IActionResult> DeleteAsync()
+		protected virtual Task<IActionResult> ProtectedDeleteAsync()
+		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedDeleteAsyncAfterContext();
+		}
+		protected async virtual Task<IActionResult> ProtectedDeleteAsyncAfterContext()
 		{
 			var query = _helper.CreateQuery(HttpVerb.DELETE, true);
 
 			_helper.Execution.queryWatch.Start();
 
-			var datas = _helper.InputObjectsFromIncomingHTTPRequest(HttpContext);
+			var datas = _helper.InputObjectsFromIncomingHTTPRequest();
 
 			if (datas.Any(d => !d.ContainsKey("id")))
 			{

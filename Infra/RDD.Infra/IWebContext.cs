@@ -18,5 +18,6 @@ namespace RDD.Infra
 		Dictionary<string, string> GetQueryNameValuePairs();
 		string UserHostAddress { get; }
 		string Content { get; }
+		string ContentType { get; }
 	}
 }

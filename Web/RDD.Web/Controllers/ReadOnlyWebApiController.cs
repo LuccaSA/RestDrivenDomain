@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Web.Helpers;
@@ -22,8 +23,15 @@ namespace RDD.Web.Controllers
 			_helper = helper;
 		}
 
-		public async virtual Task<IActionResult> GetAsync()
+		protected virtual Task<IActionResult> ProtectedGetAsync()
 		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedGetAsyncAfterContext();
+		}
+
+		protected async virtual Task<IActionResult> ProtectedGetAsyncAfterContext()
+		{ 
 			var query = _helper.CreateQuery(HttpVerb.GET);
 
 			_helper.Execution.queryWatch.Start();
@@ -39,7 +47,13 @@ namespace RDD.Web.Controllers
 
 		// Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
 		// car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
-		public async virtual Task<IActionResult> GetAsync(TKey _id_)
+		protected virtual Task<IActionResult> ProtectedGetAsync(TKey _id_)
+		{
+			_helper.WebContextWrapper.SetContext(HttpContext);
+
+			return ProtectedGetAsyncAfterContext(_id_);
+		}
+		protected async virtual Task<IActionResult> ProtectedGetAsyncAfterContext(TKey _id_)
 		{
 			var query = _helper.CreateQuery(HttpVerb.GET, false);
 

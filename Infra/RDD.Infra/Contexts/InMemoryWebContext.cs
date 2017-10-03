@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using NExtends.Primitives;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace RDD.Infra.Contexts
 {
-	public class InMemoryWebContext : IWebContext
+	public class InMemoryWebContext : IWebContextWrapper
 	{
 		public Uri Url { get; set; }
 		public string RawUrl { get; set; }
@@ -33,6 +34,7 @@ namespace RDD.Infra.Contexts
 		{
 			return Cookies.ContainsKey(cookieName) ? Cookies[cookieName] : null;
 		}
+		public void SetContext(HttpContext context) { }
 
 		public void Dispose() { }
 	}
