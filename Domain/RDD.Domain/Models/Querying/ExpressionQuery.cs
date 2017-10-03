@@ -20,6 +20,7 @@ namespace RDD.Domain.Models.Querying
 			Fields = source.Fields;
 			OrderBys = source.OrderBys;
 			Page = source.Page;
+			Options = source.Options;
 		}
 
 		public override Expression<Func<TEntity, bool>> FiltersAsExpression()

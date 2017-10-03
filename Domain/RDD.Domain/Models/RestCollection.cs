@@ -70,6 +70,8 @@ namespace RDD.Domain.Models
 		}
 		public virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
+			query.Options.NeedFilterRights = false;
+
 			return GetByIdAsync(entity.Id, query);
 		}
 

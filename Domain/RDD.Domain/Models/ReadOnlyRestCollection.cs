@@ -113,13 +113,15 @@ namespace RDD.Domain.Models
 			//AttachOperations(entities, operationsForAttach);
 		}
 
-		protected async Task<bool> AnyAsync()
+		protected Task<bool> AnyAsync()
 		{
-			//Le Count() C# est plus rapide qu'un Any() SQL
-			return (await GetAsync(new Query<TEntity> { Options = new Options { NeedEnumeration = false, NeedCount = true } })).Count > 0;
+			return AnyAsync(new Query<TEntity>());
 		}
 		public async Task<bool> AnyAsync(Query<TEntity> query)
 		{
+			query.Options.NeedEnumeration = false;
+			query.Options.NeedCount = true;
+
 			return (await GetAsync(query)).Count > 0;
 		}
 
@@ -166,7 +168,7 @@ namespace RDD.Domain.Models
 			}
 
 			//Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-			if (query.Verb != HttpVerb.GET && count == 0 && items.Count() == 0 && await AnyAsync())
+			if (query.Verb != HttpVerb.GET && count == 0 && items.Count() == 0 && await AnyAsync(query))
 			{
 				throw new NotFoundException(String.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, query.Verb));
 			}
