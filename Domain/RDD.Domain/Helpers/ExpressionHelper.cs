@@ -146,7 +146,7 @@ namespace RDD.Domain.Helpers
 				if (_HasType) { return node; }
 				if (node != null && node.Type == _toKeep)
 				{
-					_HasType = _HasType | true;
+					_HasType = _HasType || true;
 					return node;
 				}
 				else

@@ -11,7 +11,7 @@ namespace RDD.Domain.Helpers
 {
 	public class DecimalRounding
 	{
-		public static DecimalRounding Default = new DecimalRounding(RoudingType.Floor);
+		public static readonly DecimalRounding Default = new DecimalRounding(RoudingType.Floor);
 
 		public enum RoudingType
 		{

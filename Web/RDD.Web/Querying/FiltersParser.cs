@@ -14,7 +14,7 @@ namespace RDD.Web.Querying
 	public class FiltersParser<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		public static Dictionary<string, FilterOperand> Operands = new Dictionary<string, FilterOperand>()
+		public static readonly Dictionary<string, FilterOperand> Operands = new Dictionary<string, FilterOperand>()
 		{
 			{"between", FilterOperand.Between},
 			{"equals", FilterOperand.Equals},

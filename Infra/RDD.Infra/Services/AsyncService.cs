@@ -11,7 +11,7 @@ namespace RDD.Infra.Services
 	{
 		private IWebContext _webContext;
 
-		public static ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
+		public static readonly ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
 
 		public AsyncService(IWebContext webContext)
 		{

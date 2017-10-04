@@ -100,7 +100,7 @@ namespace RDD.Infra.Mails
 		}
 		public void SendCriticalExceptionMail(string message)
 		{
-			var body = String.Format("Critical log level reached : {1}", message);
+			var body = $"Critical log level reached : {message}";
 
 			SendMail(_exceptionMailInfo.Sender, _exceptionMailInfo.Recipient, _exceptionMailInfo.Subject, body, true);
 		}
