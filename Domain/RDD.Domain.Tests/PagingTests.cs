@@ -56,5 +56,17 @@ namespace RDD.Domain.Tests
 				var result = await _collection.GetAsync(query);
 			});
 		}
+
+		[Fact]
+		public void Changing_query_page_count_should_not_affect_another_query()
+		{
+			var query1 = new Query<User>();
+			query1.Page.TotalCount = 20;
+
+			var query2 = new Query<User>();
+			query2.Page.TotalCount = 10;
+
+			Assert.Equal(20, query1.Page.TotalCount);
+		}
 	}
 }
