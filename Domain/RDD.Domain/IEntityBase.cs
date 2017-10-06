@@ -10,8 +10,8 @@ namespace RDD.Domain
 {
 	public interface IEntityBase : IPrimaryKey, IIncludable
 	{
-		string Name { get; set; }
-		string Url { get; set; }
+		string Name { get; }
+		string Url { get; }
 		ICollection<Operation> AuthorizedOperations { get; set; }
 		Dictionary<string, bool> AuthorizedActions { get; set; }
 	}
