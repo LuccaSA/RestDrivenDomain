@@ -156,7 +156,7 @@ namespace RDD.Domain.Models
 					AttachOperationsToEntities(items);
 				}
 
-				items = await PrepareAsync(items, query);
+				items = await _repository.PrepareAsync(items, query);
 
 				//ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
 				if (query.Options.AttachActions)
@@ -234,11 +234,6 @@ namespace RDD.Domain.Models
 			var combinations = _combinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
 
 			return new HashSet<int>(combinations.Select(c => c.Operation.Id));
-		}
-
-		public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
-		{
-			return Task.FromResult(entities);
 		}
 	}
 }

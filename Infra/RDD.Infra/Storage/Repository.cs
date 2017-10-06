@@ -62,6 +62,11 @@ namespace RDD.Infra.Storage
 			return Task.FromResult<IEnumerable<TEntity>>(entities.ToList());
 		}
 
+		public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
+		{
+			return Task.FromResult(entities);
+		}
+
 		public virtual void Add(TEntity entity)
 		{
 			_storageService.Add(entity);
