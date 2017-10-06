@@ -229,52 +229,6 @@ namespace RDD.Domain.Models
 			return (await GetAsync(query)).Items;
 		}
 
-		public virtual PropertySelector<TEntity> HandleIncludes(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields)
-		{
-			//On n'inclut pas les propriétés qui ne viennent pas de la BDD
-			includes.Remove(t => t.AuthorizedOperations);
-			//includes = helper.Remove(includes, t => t.Culture);
-			//includes = helper.Remove(includes, t => t.Application);
-
-			return includes;
-		}
-		/// <summary>
-		/// Permet d'automatiser l'include des fields d'une propriété (sous entité) d'un TEntity
-		/// </summary>
-		/// <param name="includes">Les includes actuels auxquels il faut ajouter les includes de la sous entité</param>
-		/// <param name="verb">Le verbe HTTP joué</param>
-		/// <param name="fieldName">Le nom du field de l'entité qui représente la sous entité (~nom de la propriété)</param>
-		/// <param name="subs">Les Fields de la sous entités = un sous ensemble des Fields du TEntity</param>
-		/// <param name="appInstance">Si la sous entité est gérée par la même application que l'entité principale, on transmet l'appInstance, sinon ça n'est pas nécessaire</param>
-		/// <returns>Les includes augmentés des includes de la sous entité</returns>
-		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, LambdaExpression selector, IRestCollection<TSubEntity> subs)
-			where TSubEntity : class, IEntityBase<TSubEntity, TSubKey>, new()
-			where TSubKey : IEquatable<TSubKey>
-		{
-			//On va d'abord chercher le Repo qui gère la sous entité
-			var subFields = fields.TransfertTo<TSubEntity>(selector);
-			var subIncludes = subs.HandleIncludes(new PropertySelector<TSubEntity>(), verb, subFields);
-
-			if (!subIncludes.IsEmpty)
-			{
-				includes.Add<TSubEntity>(subIncludes, selector);
-			}
-
-			return includes;
-		}
-		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, Expression<Func<TEntity, TSubEntity>> selector, IRestCollection<TSubEntity> subs)
-			where TSubEntity : class, IEntityBase<TSubEntity, TSubKey>, new()
-			where TSubKey : IEquatable<TSubKey>
-		{
-			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector, subs);
-		}
-		protected PropertySelector<TEntity> HandleSubIncludes<TSubEntity, TSubKey>(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields, Expression<Func<TEntity, IEnumerable<TSubEntity>>> selector, IRestCollection<TSubEntity> subs)
-			where TSubEntity : class, IEntityBase<TSubEntity, TSubKey>, new()
-			where TSubKey : IEquatable<TSubKey>
-		{
-			return HandleSubIncludes<TSubEntity, TSubKey>(includes, verb, fields, (LambdaExpression)selector, subs);
-		}
-
 		protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
 		{
 			var combinations = _combinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);

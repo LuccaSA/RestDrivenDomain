@@ -32,12 +32,6 @@ namespace RDD.Infra.Storage
 			}
 		}
 
-		public IQueryable<TEntity> Includes<TEntity>(IQueryable<TEntity> entities, PropertySelector<TEntity> includes)
-			where TEntity : class
-		{
-			return entities;
-		}
-
 		public IQueryable<TEntity> Set<TEntity>()
 			where TEntity : class, IEntityBase
 		{

@@ -14,8 +14,6 @@ namespace RDD.Domain
 	public interface IReadOnlyRestCollection<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		PropertySelector<TEntity> HandleIncludes(PropertySelector<TEntity> includes, HttpVerb verb, Field<TEntity> fields);
-
 		Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
 		Task<IEnumerable<TEntity>> GetAllAsync();
 

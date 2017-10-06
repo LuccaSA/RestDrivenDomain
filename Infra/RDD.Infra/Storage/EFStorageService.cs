@@ -27,16 +27,6 @@ namespace RDD.Infra.Storage
 			return _dbContext.Set<TEntity>();
 		}
 
-		public IQueryable<TEntity> Includes<TEntity>(IQueryable<TEntity> entities, PropertySelector<TEntity> includes)
-			where TEntity : class
-		{
-			foreach (var path in includes.ExtractPaths())
-			{
-				entities = entities.Include(path);
-			}
-			return entities;
-		}
-
 		public virtual void Add<TEntity>(TEntity entity)
 			where TEntity : class, IEntityBase
 		{
