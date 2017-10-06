@@ -2,10 +2,10 @@
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
-using RDD.Domain.Storage;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
+using RDD.Infra.Storage;
 using System;
 using System.Collections.Generic;
 using Xunit;

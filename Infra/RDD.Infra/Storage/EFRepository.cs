@@ -1,16 +1,12 @@
-﻿using RDD.Domain;
-using RDD.Domain.Storage;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain;
 using System.Collections.Generic;
-using System.Text;
-using RDD.Domain.Models.Querying;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDD.Infra.Storage
 {
-    public class EFRepository<TEntity> : Repository<TEntity>
+	public class EFRepository<TEntity> : Repository<TEntity>
 		where TEntity : class, IEntityBase
 	{
 		public EFRepository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)

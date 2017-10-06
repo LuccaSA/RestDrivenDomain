@@ -1,11 +1,12 @@
-﻿using RDD.Domain.Helpers;
+﻿using RDD.Domain;
+using RDD.Domain.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Domain.Storage
+namespace RDD.Infra.Storage
 {
 	public class InMemoryStorageService : IStorageService, IDisposable
 	{

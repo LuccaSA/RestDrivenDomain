@@ -1,4 +1,5 @@
-﻿using RDD.Domain.Exceptions;
+﻿using RDD.Domain;
+using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Models.Querying.Convertors;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Domain.Storage
+namespace RDD.Infra.Storage
 {
 	public class Repository<TEntity> : IRepository<TEntity>
 		where TEntity : class, IEntityBase
