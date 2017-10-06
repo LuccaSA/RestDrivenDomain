@@ -6,6 +6,7 @@ using System.Text;
 using RDD.Domain.Models.Querying;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace RDD.Infra.Storage
 {
@@ -15,14 +16,14 @@ namespace RDD.Infra.Storage
 		public EFRepository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)
 			: base(storageService, executionContext, combinationsHolder) { }
 
-		public override async Task<int> CountAsync(Query<TEntity> query)
+		protected override async Task<int> CountEntities(IQueryable<TEntity> entities)
 		{
-			return await QueryEntities(query).CountAsync();
+			return await entities.CountAsync();
 		}
 
-		public override async Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query)
+		protected override async Task<IEnumerable<TEntity>> EnumerateEntities(IQueryable<TEntity> entities)
 		{
-			return await QueryEntities(query).ToListAsync();
+			return await entities.ToListAsync();
 		}
 	}
 }

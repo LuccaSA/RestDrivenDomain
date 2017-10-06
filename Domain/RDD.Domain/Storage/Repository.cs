@@ -24,16 +24,41 @@ namespace RDD.Domain.Storage
 
 		public virtual Task<int> CountAsync(Query<TEntity> query)
 		{
-			var result = QueryEntities(query).Count();
+			var entities = Set(query);
 
-			return Task.FromResult<int>(result);
+			if (query.Options.NeedFilterRights)
+			{
+				entities = ApplyRights(entities, query);
+			}
+
+			entities = ApplyFilters(entities, query);
+
+			return CountEntities(entities);
+		}
+		protected virtual Task<int> CountEntities(IQueryable<TEntity> entities)
+		{
+			return Task.FromResult<int>(entities.Count());
 		}
 
 		public virtual Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query)
 		{
-			var result = QueryEntities(query).ToList();
+			var entities = Set(query);
 
-			return Task.FromResult<IEnumerable<TEntity>>(result);
+			if (query.Options.NeedFilterRights)
+			{
+				entities = ApplyRights(entities, query);
+			}
+
+			entities = ApplyFilters(entities, query);
+			entities = ApplyOrderBys(entities, query);
+			entities = ApplyPage(entities, query);
+			entities = ApplyIncludes(entities, query);
+
+			return EnumerateEntities(entities);
+		}
+		protected virtual Task<IEnumerable<TEntity>> EnumerateEntities(IQueryable<TEntity> entities)
+		{
+			return Task.FromResult<IEnumerable<TEntity>>(entities.ToList());
 		}
 
 		public virtual void Add(TEntity entity)
@@ -56,22 +81,6 @@ namespace RDD.Domain.Storage
 			return _storageService.Set<TEntity>();
 		}
 
-		protected virtual IQueryable<TEntity> QueryEntities(Query<TEntity> query)
-		{
-			var result = Set(query);
-
-			if (query.Options.NeedFilterRights)
-			{
-				result = ApplyRights(result, query);
-			}
-
-			result = ApplyFilters(result, query);
-			result = ApplyOrderBys(result, query);
-			result = ApplyPage(result, query);
-			result = ApplyIncludes(result, query);
-
-			return result;
-		}
 		protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
 		{
 			var operationIds = GetOperationIds(query.Verb);

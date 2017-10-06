@@ -145,9 +145,7 @@ namespace RDD.Domain.Models
 				//Si y'a plus d'items que le paging max ou que l'offset du paging n'est pas à 0, il faut compter la totalité des entités
 				if (query.Page.Offset > 0 || query.Page.Limit <= count)
 				{
-					var countQuery = new Query<TEntity>(query) { Page = new UnlimitedPage() };
-
-					count = await _repository.CountAsync(countQuery);
+					count = await _repository.CountAsync(query);
 				}
 
 				query.Page.TotalCount = count;
@@ -168,7 +166,7 @@ namespace RDD.Domain.Models
 			}
 
 			//Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-			if (query.Verb != HttpVerb.GET && count == 0 && items.Count() == 0 && await AnyAsync(query))
+			if (query.Verb != HttpVerb.GET && count == 0)
 			{
 				throw new NotFoundException(String.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, query.Verb));
 			}
