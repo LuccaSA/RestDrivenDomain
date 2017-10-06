@@ -20,14 +20,10 @@ namespace RDD.Infra.Contexts
 				}
 			}
 		}
-		public Stopwatch serverWatch { get; private set; }
 		public Stopwatch queryWatch { get; private set; }
 
 		public HttpExecutionContext()
 		{
-			serverWatch = new Stopwatch();
-			serverWatch.Start();
-
 			queryWatch = new Stopwatch();
 		}
 	}
