@@ -20,7 +20,7 @@ namespace RDD.Web.Controllers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		public WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+	    protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
 			: base(appController, helper) { }
 
 		protected virtual async Task<IActionResult> ProtectedPostAsync()
