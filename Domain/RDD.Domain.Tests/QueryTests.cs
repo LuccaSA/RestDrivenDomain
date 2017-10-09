@@ -10,9 +10,9 @@ namespace RDD.Domain.Tests
 {
 	public class QueryTests : SingleContextTests
 	{
-		IRepository<User> _repo;
+	    readonly IRepository<User> _repo;
 		IReadOnlyRestCollection<User> _collection;
-		IStorageService _storage;
+	    readonly IStorageService _storage;
 
 		public QueryTests()
 		{
