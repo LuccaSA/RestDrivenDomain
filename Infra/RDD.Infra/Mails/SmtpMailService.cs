@@ -53,35 +53,35 @@ namespace RDD.Infra.Mails
 					return;
 				}
 			}
-			catch (Exception E)
+			catch (Exception e)
 			{
 			}
 		}
 
-		public void SendExceptionMail(Exception E)
+		public void SendExceptionMail(Exception e)
 		{
 			try
 			{
 				var stackTrace = String.Empty;
 
 				//Si l'Exception est instanciée à la mano, y'a pas de StackTrace
-				if (E.StackTrace != null)
+				if (e.StackTrace != null)
 				{
-					stackTrace = E.StackTrace.Replace("\r\n", "<br />");
+					stackTrace = e.StackTrace.Replace("\r\n", "<br />");
 				}
 
-				var body = String.Format("Erreur : {0}<br /><br />{1}<br /><br />", E.Message, stackTrace);
+				var body = String.Format("Erreur : {0}<br /><br />{1}<br /><br />", e.Message, stackTrace);
 
-				if (E.InnerException != null)
+				if (e.InnerException != null)
 				{
 					var innerStackTrace = String.Empty;
 
-					if (E.InnerException.StackTrace != null)
+					if (e.InnerException.StackTrace != null)
 					{
-						innerStackTrace = E.InnerException.StackTrace.Replace("\r\n", "<br />");
+						innerStackTrace = e.InnerException.StackTrace.Replace("\r\n", "<br />");
 					}
 
-					body += String.Format("Inner : {0}<br /><br />{1}<br /><br />", E.InnerException.Message, innerStackTrace);
+					body += String.Format("Inner : {0}<br /><br />{1}<br /><br />", e.InnerException.Message, innerStackTrace);
 				}
 
 				try

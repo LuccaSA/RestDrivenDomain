@@ -27,7 +27,7 @@ namespace RDD.Web.Querying
 
 		public Query<TEntity> FromWebContext(IWebContext webContext, bool isCollectionCall)
 		{
-			var parameters = webContext.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(K => K.Key.ToLower(), K => K.Value);
+			var parameters = webContext.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
 
 			var fields = new FieldsParser().ParseFields<TEntity>(parameters, isCollectionCall);
 			var collectionFields = new CollectionFieldsParser().ParseFields<ISelection<TEntity>>(parameters, isCollectionCall);
