@@ -45,13 +45,9 @@ namespace RDD.Web.Querying
 				var stringValue = input[key];
 
 				PostedData data;
-				bool isJsonObject = false; //Par défaut on considère que ce sont des types simples séparés par des ,
-
-				//Mais ça peut être 1 ou plusieurs objets JSON séparés par des ,
-				if (stringValue.StartsWith("{"))
-				{
-					isJsonObject = true;
-				}
+			    //Par défaut on considère que ce sont des types simples séparés par des ,
+			    //Mais ça peut être 1 ou plusieurs objets JSON séparés par des ,
+                bool isJsonObject = stringValue.StartsWith("{");
 
 				if (isJsonObject)
 				{
