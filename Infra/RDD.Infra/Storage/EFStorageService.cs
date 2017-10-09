@@ -55,7 +55,7 @@ namespace RDD.Infra.Storage
 			_afterSaveChangesActions.Enqueue(action);
 		}
 
-		public async virtual Task SaveChangesAsync()
+		public virtual async Task SaveChangesAsync()
 		{
 			try
 			{

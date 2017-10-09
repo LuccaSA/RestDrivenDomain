@@ -92,7 +92,7 @@ namespace RDD.Domain.Models
             return await UpdateAsync(entity, datas, query);
 		}
 
-        public async virtual Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerb.PUT;
