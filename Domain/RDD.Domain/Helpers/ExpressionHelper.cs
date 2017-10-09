@@ -110,7 +110,7 @@ namespace RDD.Domain.Helpers
 		private static Expression BuildEnumerableMethod(Type tSource, Expression accessor, Expression predicate, string method)
 		{
 			var overload = typeof(Enumerable).GetMethods()
-									  .Single(mi => mi.Name == method && mi.GetParameters().Count() == 2).MakeGenericMethod(tSource);
+									  .Single(mi => mi.Name == method && mi.GetParameters().Length == 2).MakeGenericMethod(tSource);
 
 			var call = Expression.Call(
 				overload,

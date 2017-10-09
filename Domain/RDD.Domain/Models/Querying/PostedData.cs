@@ -97,7 +97,7 @@ namespace RDD.Domain.Models.Querying
 		public static PostedData ParseArray(JToken rawObject, string[] array)
 		{
 			var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-			for (var i = 0; i < array.Count(); i++)
+			for (var i = 0; i < array.Length; i++)
 			{
 				subs.Add(i.ToString(), new PostedData() { value = array[i] });
 			}
@@ -107,7 +107,7 @@ namespace RDD.Domain.Models.Querying
 		public static PostedData ParseArray(int[] array)
 		{
 			var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-			for (var i = 0; i < array.Count(); i++)
+			for (var i = 0; i < array.Length; i++)
 			{
 				subs.Add(i.ToString(), new PostedData() { value = array[i].ToString() });
 			}
@@ -116,13 +116,13 @@ namespace RDD.Domain.Models.Querying
 		}
 		public static PostedData ParseJSONArray(JToken rawObject, JToken[] array)
 		{
-			if (array.Count() > 0)
+			if (array.Length > 0)
 			{
 				//Si c'est un JObject[]
 				if (array[0].HasValues)
 				{
 					var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-					for (var i = 0; i < array.Count(); i++)
+					for (var i = 0; i < array.Length; i++)
 					{
 						subs.Add(i.ToString(), ParseJSON((JObject)array[i]));
 					}
@@ -222,7 +222,7 @@ namespace RDD.Domain.Models.Querying
 		}
 
 		public ICollection<string> Keys => subs == null ? null : subs.Keys;
-	    public int Count() { return subs.Count(); }
+	    public int Count() { return subs.Count; }
 		public bool HasSubs => subs.Count > 0;
 	}
 }
