@@ -13,7 +13,7 @@ namespace RDD.Domain.Models
 		public ICollection<Operation> AuthorizedOperations { get; set; }
 		public Dictionary<string, bool> AuthorizedActions { get; set; }
 
-		public EntityBase()
+	    protected EntityBase()
 		{
 			AuthorizedOperations = new HashSet<Operation>();
 			AuthorizedActions = new Dictionary<string, bool>();

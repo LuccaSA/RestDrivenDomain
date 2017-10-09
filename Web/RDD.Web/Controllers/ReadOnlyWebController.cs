@@ -17,7 +17,7 @@ namespace RDD.Web.Controllers
 		protected TAppController _appController;
 		protected ApiHelper<TEntity, TKey> _helper;
 
-		public ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+	    protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
 		{
 			_appController = appController;
 			_helper = helper;

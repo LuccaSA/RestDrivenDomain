@@ -11,7 +11,7 @@ namespace RDD.Domain.Attributes
 
 		public string Description => ResxManager.GetString(TermName, Thread.CurrentThread.CurrentCulture);
 
-	    public CulturedDescriptionAttribute(ResourceManager resxManager, string termName)
+	    protected CulturedDescriptionAttribute(ResourceManager resxManager, string termName)
 		{
 			ResxManager = resxManager;
 			TermName = termName;
