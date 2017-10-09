@@ -12,7 +12,7 @@ namespace RDD.Domain.Helpers
 			RawCulture = rawCulture;
 		}
 
-		public CultureInfo RawCulture { get; private set; }
+		public CultureInfo RawCulture { get; }
 
 		public int Id { get => RawCulture.LCID;
 		    set => throw new NotImplementedException();

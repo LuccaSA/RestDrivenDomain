@@ -5,7 +5,7 @@ namespace RDD.Domain.Exceptions
 {
 	public class HttpLikeException : Exception
 	{
-		public HttpStatusCode Status { get; private set; }
+		public HttpStatusCode Status { get; }
 
 		public override string Message => base.Message;
 

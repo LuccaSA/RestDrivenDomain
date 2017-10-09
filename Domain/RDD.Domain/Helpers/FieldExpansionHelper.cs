@@ -14,8 +14,8 @@ namespace RDD.Domain.Helpers
 	    private const char FIELD_SEPARATOR = '.';
 	    private const char SPACE = ' ';
 
-	    private Stack<string> prefixes { get; set; }
-	    private List<string> analyseResult { get; set; }
+	    private Stack<string> prefixes { get; }
+	    private List<string> analyseResult { get; }
 	    private string buffer { get; set; }
 
 		public FieldExpansionHelper()

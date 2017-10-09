@@ -18,11 +18,11 @@ namespace RDD.Web.Helpers
 		where TKey : IEquatable<TKey>
 	{
 		private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
-		private IContractResolver _jsonResolver { get; set; }
+		private IContractResolver _jsonResolver { get; }
 
-		public IWebContextWrapper WebContextWrapper { get; private set; }
-		public IExecutionContext Execution { get; private set; }
-		public IEntitySerializer Serializer { get; private set; }
+		public IWebContextWrapper WebContextWrapper { get; }
+		public IExecutionContext Execution { get; }
+		public IEntitySerializer Serializer { get; }
 
 		public ApiHelper(IContractResolver jsonResolver, IWebContextWrapper webContextWrapper, IExecutionContext execution, IEntitySerializer serializer)
 		{

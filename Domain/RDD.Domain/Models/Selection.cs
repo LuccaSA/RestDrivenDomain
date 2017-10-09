@@ -11,8 +11,8 @@ namespace RDD.Domain.Models
 	public class Selection<TEntity> : ISelection<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		public IEnumerable<TEntity> Items { get; private set; }
-		public int Count { get; private set; }
+		public IEnumerable<TEntity> Items { get; }
+		public int Count { get; }
 
 		public Selection(IEnumerable<TEntity> items, int count)
 		{

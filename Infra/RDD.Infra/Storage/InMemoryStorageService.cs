@@ -10,8 +10,8 @@ namespace RDD.Infra.Storage
 	public class InMemoryStorageService : IStorageService, IDisposable
 	{
 		protected Queue<Task> _afterAfterSaveChangesActions { get; set; }
-		public Dictionary<Type, IList> Cache { get; private set; }
-		public Dictionary<Type, int> Indexes { get; private set; }
+		public Dictionary<Type, IList> Cache { get; }
+		public Dictionary<Type, int> Indexes { get; }
 
 		public InMemoryStorageService()
 		{

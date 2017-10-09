@@ -13,7 +13,7 @@ namespace RDD.Infra.Tests
 	{
 		private readonly IAsyncService _asyncService;
 
-		private Mock<ICollection> _mock { get; set; }
+		private Mock<ICollection> _mock { get; }
 
 		public AsyncServiceTests()
 		{
