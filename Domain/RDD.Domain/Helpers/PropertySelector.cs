@@ -16,9 +16,9 @@ namespace RDD.Domain.Helpers
 		/// WARNING ! This property flattens collection (i.e : if the actual property type was 'string[]', this would return 'string')
 		/// </summary>
 		public Type EntityType { get; protected set; }
-		public PropertyInfo[] EntityProperties { get { return EntityType.GetFlattenProperties(BindingFlags.NonPublic); } }
+		public PropertyInfo[] EntityProperties => EntityType.GetFlattenProperties(BindingFlags.NonPublic);
 
-		public LambdaExpression Lambda { get; set; }
+	    public LambdaExpression Lambda { get; set; }
 		public ISet<PropertySelector> Children { get; protected set; }
 		public string Name
 		{
@@ -52,7 +52,6 @@ namespace RDD.Domain.Helpers
 		/// Pour les sous noeud, on instancie le type et on ajoutera les expressions via des .Add()
 		/// Ne pas modifier cette méthode, elle est utilisée  via Reflection, ou alors harmoniser la reflection en fonction
 		/// </summary>
-		/// <param name="entityType"></param>
 		public static PropertySelector<TEntity> New<TEntity>()
 		{
 			return new PropertySelector<TEntity>();
@@ -67,13 +66,13 @@ namespace RDD.Domain.Helpers
 			return (PropertySelector)typeof(PropertySelector).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { });
 		}
 
-		public int Count { get { return Children.Count; } }
+		public int Count => Children.Count;
 
-		public bool IsEmpty { get { return Count == 0; } }
+	    public bool IsEmpty => Count == 0;
 
-		public int CollectionCount { get { throw new NotImplementedException(); } }
+	    public int CollectionCount => throw new NotImplementedException();
 
-		public bool Contains(LambdaExpression expression)
+	    public bool Contains(LambdaExpression expression)
 		{
 			if (!ChildrenContains(expression))
 			{
@@ -163,9 +162,9 @@ namespace RDD.Domain.Helpers
 			return member.Member as PropertyInfo;
 		}
 
-		public bool HasChild { get { return Children.Any(); } }
+		public bool HasChild => Children.Any();
 
-		public PropertySelector this[Expression<Func<object, object>> key]
+	    public PropertySelector this[Expression<Func<object, object>> key]
 		{
 			get { return Children.Where(c => c.IsEqual(key)).FirstOrDefault(); }
 		}

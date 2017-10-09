@@ -9,12 +9,9 @@ namespace RDD.Domain.Attributes
 		string TermName { get; set; }
 		ResourceManager ResxManager { get; set; }
 
-		public string Description
-		{
-			get { return ResxManager.GetString(TermName, Thread.CurrentThread.CurrentCulture); }
-		}
+		public string Description => ResxManager.GetString(TermName, Thread.CurrentThread.CurrentCulture);
 
-		public CulturedDescriptionAttribute(ResourceManager resxManager, string termName)
+	    public CulturedDescriptionAttribute(ResourceManager resxManager, string termName)
 		{
 			ResxManager = resxManager;
 			TermName = termName;

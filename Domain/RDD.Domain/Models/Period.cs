@@ -9,11 +9,17 @@ namespace RDD.Domain.Models
 		public enum Mode { semaine, quizaine, mois };
 
 		public DateTime Start { get; set; }
-		public TimeSpan Duration { get { return End - Start; } set { End = Start.Add(value); } }
+		public TimeSpan Duration { get => End - Start;
+		    set => End = Start.Add(value);
+		}
 		public DateTime End { get; set; }
 
-		public DateTime StartsAt { get { return Start; } set { Start = value; } }
-		public DateTime EndsAt { get { return End; } set { End = value; } }
+		public DateTime StartsAt { get => Start;
+		    set => Start = value;
+		}
+		public DateTime EndsAt { get => End;
+		    set => End = value;
+		}
 
 		public Period(DateTime start, DateTime end)
 		{

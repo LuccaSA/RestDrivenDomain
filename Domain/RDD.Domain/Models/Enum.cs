@@ -30,8 +30,8 @@ namespace RDD.Domain.Models
 		/// </summary>
 		public int Id
 		{
-			get { return Convert.ToInt32(Value); }
-			set { Value = (TEnum)((object)value); }
+			get => Convert.ToInt32(Value);
+		    set => Value = (TEnum)((object)value);
 		}
 
 		/// <summary>
@@ -39,8 +39,8 @@ namespace RDD.Domain.Models
 		/// </summary>
 		public string Code
 		{
-			get { return Convert.ToString(Value); }
-			set { Value = value.Parse<TEnum>(); }
+			get => Convert.ToString(Value);
+		    set => Value = value.Parse<TEnum>();
 		}
 
 		/// <summary>

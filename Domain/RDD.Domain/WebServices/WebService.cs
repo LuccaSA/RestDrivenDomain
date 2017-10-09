@@ -15,12 +15,9 @@ namespace RDD.Domain.WebServices
 		public override string Name { get; set; }
 		public string Token { get; set; }
 
-		public Culture Culture
-		{
-			get { return new Culture(CultureInfo.GetCultureInfo("en-US")); }
-		}
+		public Culture Culture => new Culture(CultureInfo.GetCultureInfo("en-US"));
 
-		public ICollection<int> AppOperations { get; set; }
+	    public ICollection<int> AppOperations { get; set; }
 
 		public WebService()
 		{

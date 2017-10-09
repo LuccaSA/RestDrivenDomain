@@ -12,8 +12,8 @@ namespace RDD.Domain.Models.Querying
 	{
 		public string name;
 		public string value;
-		public List<PostedData> values { get { return subs.Values.ToList(); } }
-		public JToken rawObject;
+		public List<PostedData> values => subs.Values.ToList();
+	    public JToken rawObject;
 
 		//Pour un objet JSON, les subs sont les clé/valeur, pour un array JSON, les clés sont les index
 		public Dictionary<string, PostedData> subs { get; private set; }
@@ -194,18 +194,18 @@ namespace RDD.Domain.Models.Querying
 
 		public PostedData this[string key]
 		{
-			get { return subs[key]; }
-			set { subs[key] = value; }
+			get => subs[key];
+		    set => subs[key] = value;
 		}
 		public PostedData this[int index]
 		{
-			get { return subs[index.ToString()]; }
-			set { subs[index.ToString()] = value; }
+			get => subs[index.ToString()];
+		    set => subs[index.ToString()] = value;
 		}
 		public PostedData this[Enum key]
 		{
-			get { return subs[key.ToString()]; }
-			set { subs[key.ToString()] = value; }
+			get => subs[key.ToString()];
+		    set => subs[key.ToString()] = value;
 		}
 		public bool ContainsKey(string key)
 		{
@@ -221,8 +221,8 @@ namespace RDD.Domain.Models.Querying
 			return subs.Remove(key);
 		}
 
-		public ICollection<string> Keys { get { return subs == null ? null : subs.Keys; } }
-		public int Count() { return subs.Count(); }
-		public bool HasSubs { get { return subs.Count > 0; } }
+		public ICollection<string> Keys => subs == null ? null : subs.Keys;
+	    public int Count() { return subs.Count(); }
+		public bool HasSubs => subs.Count > 0;
 	}
 }
