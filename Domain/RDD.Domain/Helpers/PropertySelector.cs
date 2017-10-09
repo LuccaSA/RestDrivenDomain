@@ -105,7 +105,7 @@ namespace RDD.Domain.Helpers
 
 		public PropertySelector GetChild(LambdaExpression expression)
 		{
-			return Children.Where(c => c.IsEqual(expression)).FirstOrDefault();
+			return Children.FirstOrDefault(c => c.IsEqual(expression));
 		}
 
 		protected bool ChildrenContains(LambdaExpression expression)
@@ -166,7 +166,7 @@ namespace RDD.Domain.Helpers
 
 	    public PropertySelector this[Expression<Func<object, object>> key]
 		{
-			get { return Children.Where(c => c.IsEqual(key)).FirstOrDefault(); }
+			get { return Children.FirstOrDefault(c => c.IsEqual(key)); }
 		}
 
 		/// <summary>
@@ -202,7 +202,7 @@ namespace RDD.Domain.Helpers
 			var propertyType = property.PropertyType.GetEnumerableOrArrayElementType();
 
 			//On regarde si le child n'existe pas déjà, auquel cas pas besoin de le recréer à chaque fois !
-			var matchingChild = Children.Where(c => c.IsEqual(lambda)).FirstOrDefault();
+			var matchingChild = Children.FirstOrDefault(c => c.IsEqual(lambda));
 
 			if (matchingChild == null)
 			{
@@ -402,7 +402,7 @@ namespace RDD.Domain.Helpers
 			//Ici il va devrenir enfant d'un selecteur, donc il faut patcher son Lambda
 			child.Lambda = selector;
 
-			var matchingChild = Children.Where(c => c.Lambda.Body.Type == typeof(TSub)).FirstOrDefault();
+			var matchingChild = Children.FirstOrDefault(c => c.Lambda.Body.Type == typeof(TSub));
 
 			if (matchingChild == null)
 			{
@@ -432,7 +432,7 @@ namespace RDD.Domain.Helpers
 		/// <returns></returns>
 		public PropertySelector<TSub> TransfertTo<TSub>(LambdaExpression selector)
 		{
-			var matchingChild = Children.Where(c => c.IsEqual(selector)).FirstOrDefault();
+			var matchingChild = Children.FirstOrDefault(c => c.IsEqual(selector));
 
 			if (matchingChild == null)
 			{

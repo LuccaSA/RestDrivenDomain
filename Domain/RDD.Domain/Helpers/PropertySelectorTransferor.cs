@@ -28,9 +28,9 @@ namespace RDD.Domain.Helpers
 
 			_param = Expression.Parameter(_subType, "p");
 
-			_property = _entityType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-				.Where(p => p.Name.ToLower() == propertyName.ToLower())
-				.FirstOrDefault();
+			_property = _entityType
+				.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+				.FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
 
 			if (_property == null)
 			{

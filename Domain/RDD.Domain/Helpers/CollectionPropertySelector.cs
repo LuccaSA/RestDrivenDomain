@@ -18,7 +18,7 @@ namespace RDD.Domain.Helpers
 
 		private PropertyInfo GetEntityProperty(string propertyName)
 		{
-			var property = typeof(TEntity).GetProperties().Where(p => p.Name.ToLower() == propertyName.ToLower()).FirstOrDefault();
+			var property = typeof(TEntity).GetProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
 
 			if (property == null)
 			{

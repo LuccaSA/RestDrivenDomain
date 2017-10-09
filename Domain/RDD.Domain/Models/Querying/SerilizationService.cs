@@ -29,7 +29,7 @@ namespace RDD.Domain.Models.Querying
 			//Si on demande une propriété directe de T, alors on peut répondre
 			if (elements.Count() == 1)
 			{
-				var property = declaringType.GetPublicProperties().Where(p => p.Name.ToLower() == propertyName).FirstOrDefault();
+				var property = declaringType.GetPublicProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName);
 				if (property != null)
 				{
 					return ConvertWhereValues(values, property);
@@ -41,7 +41,7 @@ namespace RDD.Domain.Models.Querying
 			}
 			else //Ici on doit relancer la méthode avec le type suivant
 			{
-				var baseProperty = declaringType.GetPublicProperties().Where(p => p.Name.ToLower() == elements[0]).FirstOrDefault();
+				var baseProperty = declaringType.GetPublicProperties().FirstOrDefault(p => p.Name.ToLower() == elements[0]);
 				if (baseProperty != null)
 				{
 					return ConvertWhereValues(values, baseProperty.PropertyType, string.Join(".", elements.Skip(1)));
