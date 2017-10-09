@@ -30,7 +30,7 @@ namespace RDD.Domain.Helpers
 
 			_property = _entityType
 				.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-				.FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
+				.FirstOrDefault(p => String.Equals(p.Name, propertyName, StringComparison.CurrentCultureIgnoreCase));
 
 			if (_property == null)
 			{

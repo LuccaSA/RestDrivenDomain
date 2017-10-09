@@ -140,7 +140,7 @@ namespace RDD.Domain.Helpers
 
 		protected virtual PropertyInfo GetProperty(string propertyName)
 		{
-			var property = EntityProperties.FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
+			var property = EntityProperties.FirstOrDefault(p => String.Equals(p.Name, propertyName, StringComparison.CurrentCultureIgnoreCase));
 
 			if (property == null)
 			{
