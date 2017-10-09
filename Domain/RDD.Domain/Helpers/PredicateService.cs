@@ -151,7 +151,7 @@ namespace RDD.Domain.Helpers
 				// Include internal properties through BindingFlags
 				property = type
 					.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-					.FirstOrDefault(p => p.Name.ToLower() == member.ToLower());
+					.FirstOrDefault(p => String.Equals(p.Name, member, StringComparison.CurrentCultureIgnoreCase));
 
 				if (property == null)
 				{
@@ -203,7 +203,7 @@ namespace RDD.Domain.Helpers
 				// Include internal properties through BindingFlags
 				property = entityType
 					.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-					.FirstOrDefault(p => p.Name.ToLower() == member.ToLower());
+					.FirstOrDefault(p => String.Equals(p.Name, member, StringComparison.CurrentCultureIgnoreCase));
 
 				if (property == null)
 				{
