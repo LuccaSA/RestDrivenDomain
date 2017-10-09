@@ -1,5 +1,4 @@
-﻿using NExtends.Primitives.Types;
-using RDD.Domain;
+﻿using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using System;

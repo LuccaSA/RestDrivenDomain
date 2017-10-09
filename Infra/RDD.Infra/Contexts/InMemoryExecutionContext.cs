@@ -1,5 +1,4 @@
 ﻿using RDD.Domain;
-using System.Diagnostics;
 
 namespace RDD.Infra.Contexts
 {

@@ -1,10 +1,4 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RDD.Domain.Helpers;
 
 namespace RDD.Domain.Models.Querying
 {

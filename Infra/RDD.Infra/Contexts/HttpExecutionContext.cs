@@ -1,5 +1,4 @@
 ﻿using RDD.Domain;
-using System.Diagnostics;
 using System.Threading;
 
 namespace RDD.Infra.Contexts

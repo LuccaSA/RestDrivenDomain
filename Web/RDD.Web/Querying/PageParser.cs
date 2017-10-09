@@ -4,7 +4,6 @@ using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace RDD.Web.Querying
 {

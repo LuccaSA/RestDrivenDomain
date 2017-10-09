@@ -1,13 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json.Serialization;
-using RDD.Domain.Helpers;
-using RDD.Infra.Contexts;
-using RDD.Web.Helpers;
-using RDD.Web.Serialization;
-using RDD.Web.Tests.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using RDD.Web.Serialization;
 using Xunit;
 
 namespace RDD.Web.Tests
