@@ -23,7 +23,7 @@ namespace RDD.Web.Controllers
 			_helper = helper;
 		}
 
-		protected async virtual Task<IActionResult> ProtectedGetAsync()
+		protected virtual async Task<IActionResult> ProtectedGetAsync()
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 			var query = _helper.CreateQuery(HttpVerb.GET);
@@ -37,7 +37,7 @@ namespace RDD.Web.Controllers
 
 		// Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
 		// car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
-		protected async virtual Task<IActionResult> ProtectedGetAsync(TKey _id_)
+		protected virtual async Task<IActionResult> ProtectedGetAsync(TKey _id_)
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 			var query = _helper.CreateQuery(HttpVerb.GET, false);

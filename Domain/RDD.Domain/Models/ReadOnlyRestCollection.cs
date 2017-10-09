@@ -121,7 +121,7 @@ namespace RDD.Domain.Models
 			return (await GetAsync(new Query<TEntity>())).Items;
 		}
 
-		public async virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
+		public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
 		{
 			var count = 0;
 			IEnumerable<TEntity> items = new HashSet<TEntity>();
@@ -196,7 +196,7 @@ namespace RDD.Domain.Models
 		/// <param name="id"></param>
 		/// <param name="verb"></param>
 		/// <returns></returns>
-		public async virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
+		public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
 		{
 			var result = (await GetByIdsAsync(new List<TKey> { id }, query)).FirstOrDefault();
 
@@ -213,7 +213,7 @@ namespace RDD.Domain.Models
 		{
 			return await GetByIdsAsync(ids, new Query<TEntity> { Verb = verb });
 		}
-		public async virtual Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query)
+		public virtual async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query)
 		{
 			query.Filters.Add(new Filter<TEntity>(new PropertySelector<TEntity>(e => e.Id), FilterOperand.Equals, (IList)ids));
 

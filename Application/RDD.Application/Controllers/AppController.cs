@@ -21,7 +21,7 @@ namespace RDD.Application.Controllers
 			_storage = storage;
 		}
 
-		public async virtual Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query)
+		public virtual async Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query)
 		{
 			var entity = await _collection.CreateAsync(datas, query);
 
@@ -34,7 +34,7 @@ namespace RDD.Application.Controllers
 			return entity;
 		}
 
-		public async virtual Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query)
+		public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query)
 		{
 			var entity = await _collection.UpdateByIdAsync(id, datas, query);
 

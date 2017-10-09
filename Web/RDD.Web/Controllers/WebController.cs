@@ -23,7 +23,7 @@ namespace RDD.Web.Controllers
 		public WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
 			: base(appController, helper) { }
 
-		protected async virtual Task<IActionResult> ProtectedPostAsync()
+		protected virtual async Task<IActionResult> ProtectedPostAsync()
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 			var query = _helper.CreateQuery(HttpVerb.POST, false);
@@ -36,7 +36,7 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		protected async virtual Task<IActionResult> ProtectedPutAsync(TKey _id_)
+		protected virtual async Task<IActionResult> ProtectedPutAsync(TKey _id_)
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 
@@ -50,7 +50,7 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		protected async virtual Task<IActionResult> ProtectedPutAsync()
+		protected virtual async Task<IActionResult> ProtectedPutAsync()
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 			var query = _helper.CreateQuery(HttpVerb.PUT, false);
@@ -81,7 +81,7 @@ namespace RDD.Web.Controllers
 			return Ok(dataContainer.ToDictionary());
 		}
 
-		protected async virtual Task<IActionResult> ProtectedDeleteAsync(TKey _id_)
+		protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey _id_)
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 
@@ -90,7 +90,7 @@ namespace RDD.Web.Controllers
 			return Ok();
 		}
 
-		protected async virtual Task<IActionResult> ProtectedDeleteAsync()
+		protected virtual async Task<IActionResult> ProtectedDeleteAsync()
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 			var query = _helper.CreateQuery(HttpVerb.DELETE, true);

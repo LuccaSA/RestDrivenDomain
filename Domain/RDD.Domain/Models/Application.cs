@@ -7,6 +7,6 @@ namespace RDD.Domain.Models
 		public override string Id { get; set; }
 		public override string Name { get; set; }
 		public ICollection<Combination> Combinations { get; set; }
-		new public Dictionary<int, Operation> Operations { get; set; }
+		public new Dictionary<int, Operation> Operations { get; set; }
 	}
 }
