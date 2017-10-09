@@ -55,14 +55,14 @@ namespace RDD.Infra.Storage
 		{
 			CreateIfNotExist<TEntity>();
 
-			Cache[typeof(TEntity)].Add((object)entity);
+			Cache[typeof(TEntity)].Add(entity);
 		}
 
 		public void Remove<TEntity>(TEntity entity)
 			where TEntity : class, IEntityBase
 		{
 			CreateIfNotExist<TEntity>();
-			Cache[typeof(TEntity)].Remove((object)entity);
+			Cache[typeof(TEntity)].Remove(entity);
 		}
 
 		public void AddRange<TEntity>(IEnumerable<TEntity> entities)

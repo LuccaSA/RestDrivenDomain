@@ -153,7 +153,7 @@ namespace RDD.Domain.Models.Querying
 		}
 		public static PostedData ParseJSONArray(JArray array)
 		{
-			return ParseJSONArray(array, array.Select(el => (JToken)el).ToArray());
+			return ParseJSONArray(array, array.Select(el => el).ToArray());
 		}
 		private static PostedData ParseJSON(JObject jObject)
 		{

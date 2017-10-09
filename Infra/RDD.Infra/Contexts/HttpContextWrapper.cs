@@ -39,7 +39,7 @@ namespace RDD.Infra.Contexts
 			Items = new Dictionary<object, object>(context.Items);
 			QueryString = context.Request.Query;
 			Headers = context.Request.Headers;
-			Cookies = ((IEnumerable<KeyValuePair<string, string>>)context.Request.Cookies).ToDictionary();
+			Cookies = context.Request.Cookies.ToDictionary();
 			ApplicationPath = context.Request.Path;
 			PhysicalApplicationPath = context.Request.PathBase.Value;
 			UserHostAddress = context.Connection.RemoteIpAddress?.ToString();
