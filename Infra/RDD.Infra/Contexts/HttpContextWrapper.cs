@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace RDD.Infra.Contexts
 {
-    public class HttpContextWrapper : IWebContext, IWebContextWrapper
+    public class HttpContextWrapper : IWebContextWrapper
     {
         public Uri Url { get; private set; }
         public string RawUrl { get; private set; }

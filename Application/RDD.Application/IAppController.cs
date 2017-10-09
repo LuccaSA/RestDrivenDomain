@@ -6,13 +6,6 @@ using System.Threading.Tasks;
 
 namespace RDD.Application
 {
-    public interface IAppController<TCollection, TEntity, TKey> : IReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TEntity, TKey>
-        where TCollection : IRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
-        where TKey : IEquatable<TKey>
-    {
-    }
-
     public interface IAppController<TEntity, TKey> : IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>, new()
         where TKey : IEquatable<TKey>

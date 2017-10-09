@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra.Storage
 {
-    public class InMemoryStorageService : IStorageService, IDisposable
+    public class InMemoryStorageService : IStorageService
     {
         protected Queue<Task> _afterAfterSaveChangesActions { get; set; }
         public Dictionary<Type, IList> Cache { get; }
