@@ -213,7 +213,7 @@ namespace RDD.Domain.Helpers
 
 			foreach (var member in fields)
 			{
-				property = type.GetProperties().Where(p => p.Name.ToLower() == member.ToLower()).FirstOrDefault();
+				property = type.GetProperties().FirstOrDefault(p => p.Name.ToLower() == member.ToLower());
 
 				if (property == null)
 				{

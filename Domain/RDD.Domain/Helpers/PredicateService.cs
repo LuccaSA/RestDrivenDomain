@@ -149,9 +149,9 @@ namespace RDD.Domain.Helpers
 			foreach (var member in fields)
 			{
 				// Include internal properties through BindingFlags
-				property = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-					.Where(p => p.Name.ToLower() == member.ToLower())
-					.FirstOrDefault();
+				property = type
+					.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+					.FirstOrDefault(p => p.Name.ToLower() == member.ToLower());
 
 				if (property == null)
 				{
@@ -201,9 +201,9 @@ namespace RDD.Domain.Helpers
 				var member = fields[i];
 
 				// Include internal properties through BindingFlags
-				property = entityType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-					.Where(p => p.Name.ToLower() == member.ToLower())
-					.FirstOrDefault();
+				property = entityType
+					.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+					.FirstOrDefault(p => p.Name.ToLower() == member.ToLower());
 
 				if (property == null)
 				{
