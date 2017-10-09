@@ -5,7 +5,6 @@ using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
-using RDD.Infra.Contexts;
 using RDD.Web.Helpers;
 using RDD.Web.Models;
 using System;

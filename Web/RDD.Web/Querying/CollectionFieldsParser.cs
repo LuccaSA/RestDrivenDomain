@@ -1,8 +1,5 @@
-﻿using RDD.Domain;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Models.Querying;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RDD.Web.Querying
 {
