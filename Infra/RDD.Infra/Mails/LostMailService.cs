@@ -9,7 +9,7 @@ namespace RDD.Infra.Mails
 		{
 			//Silently does not send mail
 		}
-		public void SendExceptionMail(Exception E)
+		public void SendExceptionMail(Exception e)
 		{
 			//Silently does not send exception mail
 		}
