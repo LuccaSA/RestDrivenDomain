@@ -5,12 +5,6 @@ namespace RDD.Domain.Mocks
 {
 	public class CombinationsHolderMock : ICombinationsHolder
 	{
-		public IEnumerable<Combination> Combinations
-		{
-			get
-			{
-				return new List<Combination>();
-			}
-		}
+		public IEnumerable<Combination> Combinations => new List<Combination>();
 	}
 }

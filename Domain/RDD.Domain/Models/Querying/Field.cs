@@ -30,9 +30,9 @@ namespace RDD.Domain.Models.Querying
 		//	return (Field)typeof(Field).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { });
 		//}
 
-		public bool HasChild { get { return EntitySelector.HasChild; } }
-		public bool IsEmpty { get { return !HasChild; } }
-		public int Count { get { return EntitySelector.Count; } }
+		public bool HasChild => EntitySelector.HasChild;
+	    public bool IsEmpty => !HasChild;
+	    public int Count => EntitySelector.Count;
 	}
 
 	public class Field<TEntity> : Field

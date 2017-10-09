@@ -14,14 +14,18 @@ namespace RDD.Domain.Helpers
 
 		public CultureInfo RawCulture { get; private set; }
 
-		public int Id { get { return RawCulture.LCID; } set { throw new NotImplementedException(); } }
+		public int Id { get => RawCulture.LCID;
+		    set => throw new NotImplementedException();
+		}
 
-		public string Code { get { return RawCulture.Name; } }
+		public string Code => RawCulture.Name;
 
-		public string Name { get { return RawCulture.NativeName; } set { throw new NotImplementedException(); } }
+	    public string Name { get => RawCulture.NativeName;
+	        set => throw new NotImplementedException();
+	    }
 
-		public string EnglishName { get { return RawCulture.EnglishName; } }
+		public string EnglishName => RawCulture.EnglishName;
 
-		public int LCID { get { return RawCulture.LCID; } }
+	    public int LCID => RawCulture.LCID;
 	}
 }

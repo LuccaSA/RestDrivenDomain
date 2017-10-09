@@ -8,8 +8,8 @@ namespace RDD.Infra.Contexts
 		IPrincipal _curPrincipal;
 		public IPrincipal curPrincipal
 		{
-			get { return _curPrincipal; }
-			set
+			get => _curPrincipal;
+		    set
 			{
 				_curPrincipal = value;
 				if (_curPrincipal != null && _curPrincipal.Culture != null && _curPrincipal.Culture.RawCulture != null)

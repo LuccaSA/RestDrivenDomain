@@ -12,12 +12,12 @@ namespace RDD.Infra.Contexts
 		public string RawUrl { get; set; }
 		public string HttpMethod { get; set; }
 		public Dictionary<object, object> Items { get; set; }
-		IDictionary<object, object> IWebContext.Items { get { return Items; } }
-		public IEnumerable<KeyValuePair<string, StringValues>> QueryString { get; set; }
+		IDictionary<object, object> IWebContext.Items => Items;
+	    public IEnumerable<KeyValuePair<string, StringValues>> QueryString { get; set; }
 		public IEnumerable<KeyValuePair<string, StringValues>> Headers { get; set; }
 		public Dictionary<string, string> Cookies { get; set; }
-		IEnumerable<KeyValuePair<string, string>> IWebContext.Cookies { get { return Cookies; } }
-		public string ApplicationPath { get; set; }
+		IEnumerable<KeyValuePair<string, string>> IWebContext.Cookies => Cookies;
+	    public string ApplicationPath { get; set; }
 		public string PhysicalApplicationPath { get; set; }
 		public string UserHostAddress { get; set; }
 		public string Content { get; set; }

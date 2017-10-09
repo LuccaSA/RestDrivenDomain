@@ -6,9 +6,9 @@ namespace RDD.Domain.Models.Querying
 	public class Page
 	{
 		public const int MAX_LIMIT = 1000;
-		public static Page DEFAULT { get { return new Page(0, 10); } }
+		public static Page DEFAULT => new Page(0, 10);
 
-		public int Offset { get; private set; }
+	    public int Offset { get; private set; }
 		public int Limit { get; private set; }
 		public int TotalCount { get; set; }
 

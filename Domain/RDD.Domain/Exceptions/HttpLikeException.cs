@@ -7,9 +7,9 @@ namespace RDD.Domain.Exceptions
 	{
 		public HttpStatusCode Status { get; private set; }
 
-		public override string Message { get { return base.Message; } }
+		public override string Message => base.Message;
 
-		public override string StackTrace
+	    public override string StackTrace
 		{
 			get
 			{
