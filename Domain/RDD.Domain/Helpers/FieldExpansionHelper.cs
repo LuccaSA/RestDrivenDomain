@@ -6,29 +6,29 @@ namespace RDD.Domain.Helpers
 {
 	public class FieldExpansionHelper
 	{
-		const char MULTISELECT_START = '[';
-		const char MULTISELECT_END = ']';
-		const char FUNCTION_START = '(';
-		const char FUNCTION_END = ')';
-		const char PROPERTIES_SEPARATOR = ',';
-		const char FIELD_SEPARATOR = '.';
-		const char SPACE = ' ';
+	    private const char MULTISELECT_START = '[';
+	    private const char MULTISELECT_END = ']';
+	    private const char FUNCTION_START = '(';
+	    private const char FUNCTION_END = ')';
+	    private const char PROPERTIES_SEPARATOR = ',';
+	    private const char FIELD_SEPARATOR = '.';
+	    private const char SPACE = ' ';
 
-		Stack<string> prefixes { get; set; }
-		List<string> analyseResult { get; set; }
-		string buffer { get; set; }
+	    private Stack<string> prefixes { get; set; }
+	    private List<string> analyseResult { get; set; }
+	    private string buffer { get; set; }
 
 		public FieldExpansionHelper()
 			: this(new Stack<string>()) { }
 
-		FieldExpansionHelper(Stack<string> prefixes)
+	    private FieldExpansionHelper(Stack<string> prefixes)
 		{
 			this.prefixes = prefixes;
 			buffer = string.Empty;
 			analyseResult = new List<string>();
 		}
 
-		void EmptyBuffer()
+	    private void EmptyBuffer()
 		{
 			if (!string.IsNullOrWhiteSpace(buffer))
 			{
@@ -37,7 +37,7 @@ namespace RDD.Domain.Helpers
 			}
 		}
 
-		void FeedBuffer(char c) { buffer += c; }
+	    private void FeedBuffer(char c) { buffer += c; }
 
 		public List<string> Expand(string input)
 		{

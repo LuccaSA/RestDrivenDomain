@@ -15,7 +15,7 @@ namespace RDD.Domain.Helpers
 			return Factory((aggr, newExpr) => Expression.AndAlso(aggr, newExpr), filters);
 		}
 
-		static Expression<Func<TEntity, bool>> Factory<TEntity>(Func<Expression, Expression, Expression> aggregator, params Expression<Func<TEntity, bool>>[] filters)
+	    private static Expression<Func<TEntity, bool>> Factory<TEntity>(Func<Expression, Expression, Expression> aggregator, params Expression<Func<TEntity, bool>>[] filters)
 		{
 			if (filters.Length == 0)
 				return null;

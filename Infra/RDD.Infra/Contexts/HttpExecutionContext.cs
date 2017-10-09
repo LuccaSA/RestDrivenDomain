@@ -5,7 +5,7 @@ namespace RDD.Infra.Contexts
 {
 	public class HttpExecutionContext : IExecutionContext
 	{
-		IPrincipal _curPrincipal;
+	    private IPrincipal _curPrincipal;
 		public IPrincipal curPrincipal
 		{
 			get => _curPrincipal;
