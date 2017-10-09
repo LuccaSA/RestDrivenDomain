@@ -9,7 +9,7 @@ namespace RDD.Web.Serialization
 	public class CultureSerializer : PropertySerializer
 	{
 		public CultureSerializer()
-			: base() { }
+		{ }
 
 		public CultureSerializer(IEntitySerializer serializer)
 			: base(serializer) { }

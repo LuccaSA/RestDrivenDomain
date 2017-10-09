@@ -22,7 +22,7 @@ namespace RDD.Infra.Services
 		{
 			return Task.Factory.StartNew(() =>
 			{
-				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
+				ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
 
 				action();
 			});
@@ -35,9 +35,9 @@ namespace RDD.Infra.Services
 
 		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
 		{
-			Parallel.ForEach<TEntity>(entities, options, (entity) =>
+			Parallel.ForEach(entities, options, (entity) =>
 			{
-				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
+				ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
 
 				action(entity);
 			});

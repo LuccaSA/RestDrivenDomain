@@ -9,7 +9,7 @@ namespace RDD.Domain.Helpers
 
 		public Culture(CultureInfo rawCulture)
 		{
-			this.RawCulture = rawCulture;
+			RawCulture = rawCulture;
 		}
 
 		public CultureInfo RawCulture { get; private set; }

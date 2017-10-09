@@ -8,7 +8,7 @@ namespace RDD.Web.Serialization
 	public class OperationSerializer : PropertySerializer
 	{
 		public OperationSerializer()
-			: base() { }
+		{ }
 		public OperationSerializer(IEntitySerializer serializer)
 			: base(serializer) { }
 

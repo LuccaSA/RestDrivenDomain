@@ -30,7 +30,7 @@ namespace RDD.Domain.Exceptions
 		public HttpLikeException(HttpStatusCode status, string message, Exception innerException)
 			: base(message, innerException)
 		{
-			this.Status = status;
+			Status = status;
 		}
 
 		public static HttpLikeException Parse(Exception e)

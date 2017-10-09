@@ -53,7 +53,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 			}
 			else if (property.PropertyType.IsEnum)
 			{
-				return GetOrderyBy<int>(entities, orderBy.Property.Lambda as Expression<Func<TEntity, int>>, orderBy.Direction, isFirst);
+				return GetOrderyBy(entities, orderBy.Property.Lambda as Expression<Func<TEntity, int>>, orderBy.Direction, isFirst);
 			}
 			else
 			{

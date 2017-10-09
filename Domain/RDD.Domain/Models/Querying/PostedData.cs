@@ -20,9 +20,9 @@ namespace RDD.Domain.Models.Querying
 
 		public PostedData()
 		{
-			this.name = "this";
-			this.value = null;
-			this.subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+			name = "this";
+			value = null;
+			subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		//On veut garder une trace de l'objet JSON d'origine, pour pouvoir le caster en classe C# plus tard
@@ -41,11 +41,11 @@ namespace RDD.Domain.Models.Querying
 		{
 			if (value.GetType() == typeof(string[]))
 			{
-				return PostedData.ParseArray(null, (string[])value);
+				return ParseArray(null, (string[])value);
 			}
 			else if (value.GetType() == typeof(int[]))
 			{
-				return PostedData.ParseArray((int[])value);
+				return ParseArray((int[])value);
 			}
 			else
 			{
@@ -56,7 +56,7 @@ namespace RDD.Domain.Models.Querying
 		{
 			this.name = name;
 			this.value = value;
-			this.subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+			subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
 		}
 		public static PostedData Parse(string singleValue)
 		{
@@ -66,7 +66,7 @@ namespace RDD.Domain.Models.Querying
 		{
 			var dictionary = data.Split('&').ToDictionary(el => el.Split('=')[0], el => el.Split('=')[1]);
 
-			return PostedData.ParseDictionary(dictionary);
+			return ParseDictionary(dictionary);
 		}
 		/// <summary>
 		/// Quand on envoie un dico simple de string, string
@@ -75,7 +75,7 @@ namespace RDD.Domain.Models.Querying
 		/// <returns></returns>
 		public static PostedData ParseDictionary(Dictionary<string, string> data)
 		{
-			return PostedData.ParseDictionary(data.ToDictionary(el => el.Key, el => (object)el.Value));
+			return ParseDictionary(data.ToDictionary(el => el.Key, el => (object)el.Value));
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace RDD.Domain.Models.Querying
 
 			foreach (var element in data)
 			{
-				post.subs.Add(element.Key.ToLower(), PostedData.CreateInstance(element.Key, element.Value));
+				post.subs.Add(element.Key.ToLower(), CreateInstance(element.Key, element.Value));
 			}
 
 			return post;
@@ -124,14 +124,14 @@ namespace RDD.Domain.Models.Querying
 					var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
 					for (var i = 0; i < array.Count(); i++)
 					{
-						subs.Add(i.ToString(), PostedData.ParseJSON((JObject)array[i]));
+						subs.Add(i.ToString(), ParseJSON((JObject)array[i]));
 					}
 
 					return new PostedData(rawObject) { subs = subs };
 				}
 				else //JValue simple
 				{
-					return PostedData.ParseArray(rawObject, array.Select(jToken => ((JValue)jToken).Value<string>()).ToArray());
+					return ParseArray(rawObject, array.Select(jToken => ((JValue)jToken).Value<string>()).ToArray());
 				}
 			}
 			else
@@ -143,7 +143,7 @@ namespace RDD.Domain.Models.Querying
 		{
 			var rawObject = JsonConvert.DeserializeObject(data);
 
-			return PostedData.ParseJSON((JObject)rawObject);
+			return ParseJSON((JObject)rawObject);
 		}
 		public static PostedData ParseJSONArray(string data)
 		{
@@ -168,11 +168,11 @@ namespace RDD.Domain.Models.Querying
 				{
 					if (jValue.Type == JTokenType.Array)
 					{
-						post.subs.Add(element.Key.ToLower(), PostedData.ParseJSONArray((JArray)jValue));
+						post.subs.Add(element.Key.ToLower(), ParseJSONArray((JArray)jValue));
 					}
 					else //Objet neasted
 					{
-						post.subs.Add(element.Key.ToLower(), PostedData.ParseJSON((JObject)jValue));
+						post.subs.Add(element.Key.ToLower(), ParseJSON((JObject)jValue));
 					}
 				}
 				else //Value simple

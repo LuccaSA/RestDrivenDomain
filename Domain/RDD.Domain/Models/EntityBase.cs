@@ -30,7 +30,7 @@ namespace RDD.Domain.Models
 
 		public virtual TEntity Clone()
 		{
-			return (TEntity)this.MemberwiseClone();
+			return (TEntity)MemberwiseClone();
 		}
 	}
 }
