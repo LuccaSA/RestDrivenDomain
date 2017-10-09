@@ -6,7 +6,7 @@ namespace RDD.Web.Serialization
 {
 	public class PluralizationService
 	{
-		readonly Dictionary<string, string> _pluralsByName;
+	    private readonly Dictionary<string, string> _pluralsByName;
 
 		public PluralizationService()
 		{
