@@ -27,7 +27,7 @@ namespace RDD.Domain.Models.Querying
 			var elements = propertyName.Split('.');
 
 			//Si on demande une propriété directe de T, alors on peut répondre
-			if (elements.Count() == 1)
+			if (elements.Length == 1)
 			{
 				var property = declaringType.GetPublicProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName);
 				if (property != null)
