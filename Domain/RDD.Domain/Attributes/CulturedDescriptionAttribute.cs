@@ -6,8 +6,8 @@ namespace RDD.Domain.Attributes
 {
 	public abstract class CulturedDescriptionAttribute : Attribute
 	{
-	    private string TermName { get; set; }
-	    private ResourceManager ResxManager { get; set; }
+	    private string TermName { get; }
+	    private ResourceManager ResxManager { get; }
 
 		public string Description => ResxManager.GetString(TermName, Thread.CurrentThread.CurrentCulture);
 

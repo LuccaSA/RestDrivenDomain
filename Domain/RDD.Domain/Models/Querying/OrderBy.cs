@@ -7,8 +7,8 @@ namespace RDD.Domain.Models.Querying
 	public class OrderBy<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		public PropertySelector<TEntity> Property { get; private set; }
-		public SortDirection Direction { get; private set; }
+		public PropertySelector<TEntity> Property { get; }
+		public SortDirection Direction { get; }
 
 		public OrderBy(PropertySelector<TEntity> property, SortDirection direction)
 		{

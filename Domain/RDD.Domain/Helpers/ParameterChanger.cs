@@ -4,7 +4,7 @@ namespace RDD.Domain.Helpers
 {
 	public class ParameterChanger : ExpressionVisitor
 	{
-	    private ParameterExpression Parameter { get; set; }
+	    private ParameterExpression Parameter { get; }
 
 		public ParameterChanger(ParameterExpression parameter)
 		{

@@ -10,7 +10,7 @@ namespace RDD.Domain.Models.Querying
 	public class Query<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		public Stopwatch Watch { get; private set; }
+		public Stopwatch Watch { get; }
 		public HttpVerb Verb { get; set; }
 		public Field<TEntity> Fields { get; set; }
 		public Field<ISelection<TEntity>> CollectionFields { get; set; }

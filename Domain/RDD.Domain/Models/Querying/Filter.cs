@@ -8,9 +8,9 @@ namespace RDD.Domain.Models.Querying
 {
 	public class Filter<TEntity>
 	{
-		public PropertySelector<TEntity> Property { get; private set; }
-		public FilterOperand Operand { get; private set; }
-		public IList Values { get; private set; }
+		public PropertySelector<TEntity> Property { get; }
+		public FilterOperand Operand { get; }
+		public IList Values { get; }
 
 		public Filter(PropertySelector<TEntity> property, FilterOperand operand, IList values)
 		{

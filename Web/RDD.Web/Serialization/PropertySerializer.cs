@@ -11,7 +11,7 @@ namespace RDD.Web.Serialization
 {
 	public class PropertySerializer
 	{
-		private IEntitySerializer _serializer { get; set; }
+		private IEntitySerializer _serializer { get; }
 
 		public PropertySerializer() { throw new NotImplementedException(); }
 		public PropertySerializer(IEntitySerializer serializer)
