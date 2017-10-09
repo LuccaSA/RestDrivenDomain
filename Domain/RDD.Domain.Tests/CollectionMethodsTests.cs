@@ -2,6 +2,7 @@
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
@@ -66,12 +67,11 @@ namespace RDD.Domain.Tests
 				var user = new User { Id = 3 };
 				var repo = new Repository<User>(storage, _execution, combinationsHolder);
 				var users = new UsersCollection(repo, _execution, combinationsHolder);
+                var app = new UsersAppController(storage, users);
 
-				await users.CreateAsync(user);
+                await app.CreateAsync(PostedData.ParseJSON(@"{ ""id"": 3 }"), new Query<User>());
 
-				await storage.SaveChangesAsync();
-
-				await Assert.ThrowsAsync<NotFoundException>(() => users.UpdateAsync(0, new { name = "new name" }));
+                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateAsync(0, PostedData.ParseJSON(@"{ ""name"": ""new name"" }"), new Query<User>()));
 			}
 		}
 	}

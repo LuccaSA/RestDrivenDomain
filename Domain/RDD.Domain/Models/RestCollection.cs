@@ -67,12 +67,6 @@ namespace RDD.Domain.Models
 
 			return Task.CompletedTask;
 		}
-		public virtual Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null)
-		{
-			query.Options.NeedFilterRights = false;
-
-			return GetByIdAsync(entity.Id, query);
-		}
 
 		public virtual TEntity InstanciateEntity()
 		{
@@ -103,16 +97,6 @@ namespace RDD.Domain.Models
 
 			return entity;
 		}
-		public Task<TEntity> UpdateAsync(TKey id, object datas, Query<TEntity> query = null)
-		{
-			return UpdateAsync(id, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
-		}
-		public async Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query = null)
-		{
-			var entity = await GetByIdAsync(id, HttpVerb.PUT);
-
-			return await UpdateAsync(entity, datas, query);
-		}
 
 		protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas)
 		{
@@ -130,16 +114,6 @@ namespace RDD.Domain.Models
 		protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query)
 		{
 			return Task.CompletedTask;
-		}
-
-		public async Task DeleteAsync(TKey id)
-		{
-			var entity = await GetByIdAsync(id, HttpVerb.DELETE);
-
-			AttachOperationsToEntity(entity);
-			AttachActionsToEntity(entity);
-
-			await DeleteAsync(entity);
 		}
 
 		public virtual Task DeleteAsync(TEntity entity)

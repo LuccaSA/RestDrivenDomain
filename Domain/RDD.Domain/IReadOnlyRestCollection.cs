@@ -24,9 +24,7 @@ namespace RDD.Domain
 		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb);
 		Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
-		Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerb verb);
 		Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query);
 	}
 }

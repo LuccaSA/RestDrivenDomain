@@ -34,11 +34,7 @@ namespace RDD.Domain.Models
 		{
 			var operationsForAttach = new List<Operation>();//TODO  _appInstance.GetAllOperations<TEntity>();
 
-			_execution.queryWatch.Start();
-
 			AttachOperations(entities, operationsForAttach);
-
-			_execution.queryWatch.Stop();
 		}
 
 		/// <summary>
@@ -95,11 +91,7 @@ namespace RDD.Domain.Models
 		}
 		private void AttachActionsToEntities(IEnumerable<TEntity> list)
 		{
-			_execution.queryWatch.Start();
-
 			AttachActions(list);
-
-			_execution.queryWatch.Stop();
 		}
 
 		/// <summary>

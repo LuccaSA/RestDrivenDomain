@@ -5,17 +5,19 @@ VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Domain", "Domain\RDD.Domain\RDD.Domain.csproj", "{A604C88B-FC4F-4C11-8476-B1486A17F6FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Infra", "Infra\RDD.Infra\RDD.Infra.csproj", "{4B97D7E4-C446-4EA3-B771-CAD19E5FA065}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Infra", "Infra\RDD.Infra\RDD.Infra.csproj", "{4B97D7E4-C446-4EA3-B771-CAD19E5FA065}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Web", "Web\RDD.Web\RDD.Web.csproj", "{F88551DA-E423-46E2-AE01-D5FB17618892}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Web", "Web\RDD.Web\RDD.Web.csproj", "{F88551DA-E423-46E2-AE01-D5FB17618892}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Domain.Mocks", "Domain\RDD.Domain.Mocks\RDD.Domain.Mocks.csproj", "{FD53BFB9-1658-45CA-AC7A-2A4BC70A5978}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Domain.Mocks", "Domain\RDD.Domain.Mocks\RDD.Domain.Mocks.csproj", "{FD53BFB9-1658-45CA-AC7A-2A4BC70A5978}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Domain.Tests", "Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj", "{7B355B8F-EF90-4C28-A2D7-1B9180E1F8A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Domain.Tests", "Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj", "{7B355B8F-EF90-4C28-A2D7-1B9180E1F8A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Infra.Tests", "Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj", "{9EF0D70A-0C96-4B87-B7CA-D189290926E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Infra.Tests", "Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj", "{9EF0D70A-0C96-4B87-B7CA-D189290926E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Web.Tests", "Web\RDD.Web.Tests\RDD.Web.Tests.csproj", "{681A88B9-33AE-491D-8DBC-235A60C33DD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Web.Tests", "Web\RDD.Web.Tests\RDD.Web.Tests.csproj", "{681A88B9-33AE-491D-8DBC-235A60C33DD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Application", "Application\RDD.Application\RDD.Application.csproj", "{608BCCC2-BA7E-45B7-A41F-60980F110AD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{681A88B9-33AE-491D-8DBC-235A60C33DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{681A88B9-33AE-491D-8DBC-235A60C33DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{681A88B9-33AE-491D-8DBC-235A60C33DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{608BCCC2-BA7E-45B7-A41F-60980F110AD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{608BCCC2-BA7E-45B7-A41F-60980F110AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{608BCCC2-BA7E-45B7-A41F-60980F110AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{608BCCC2-BA7E-45B7-A41F-60980F110AD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

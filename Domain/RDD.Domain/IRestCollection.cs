@@ -17,7 +17,6 @@ namespace RDD.Domain
 		Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null);
 		Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null);
 		Task CreateAsync(TEntity entity, Query<TEntity> query = null);
-		Task<TEntity> GetEntityAfterCreateAsync(TEntity entity, Query<TEntity> query = null);
 		Task DeleteAsync(TEntity entity);
 	}
 
@@ -25,8 +24,6 @@ namespace RDD.Domain
 		where TEntity : class, IEntityBase<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query = null);
-		Task<TEntity> UpdateAsync(TKey id, object datas, Query<TEntity> query = null);
-		Task DeleteAsync(TKey id);
+		Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query = null);
 	}
 }
