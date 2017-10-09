@@ -6,8 +6,8 @@ namespace RDD.Domain.Contexts
 {
 	public class CultureContext : IDisposable
 	{
-		private CultureInfo _originalCulture;
-		private CultureInfo _originalUICulture;
+		private readonly CultureInfo _originalCulture;
+		private readonly CultureInfo _originalUICulture;
 
 		public CultureContext(CultureInfo culture)
 		{

@@ -9,7 +9,7 @@ namespace RDD.Infra.Services
 {
 	public class AsyncService : IAsyncService
 	{
-		private IWebContext _webContext;
+		private readonly IWebContext _webContext;
 
 		public static readonly ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
 

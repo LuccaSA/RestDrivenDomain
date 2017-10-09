@@ -10,9 +10,9 @@ namespace RDD.Domain.Tests
 {
 	public class PagingTests : SingleContextTests
 	{
-		IRepository<User> _repo;
-		IReadOnlyRestCollection<User> _collection;
-		IStorageService _storage;
+	    readonly IRepository<User> _repo;
+	    readonly IReadOnlyRestCollection<User> _collection;
+	    readonly IStorageService _storage;
 
 		public PagingTests()
 		{

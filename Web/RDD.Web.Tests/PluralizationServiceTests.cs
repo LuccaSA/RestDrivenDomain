@@ -5,7 +5,7 @@ namespace RDD.Web.Tests
 {
 	public class PluralizationServiceTests
 	{
-		private PluralizationService _service;
+		private readonly PluralizationService _service;
 
 		public PluralizationServiceTests()
 		{

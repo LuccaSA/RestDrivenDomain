@@ -7,9 +7,9 @@ namespace RDD.Infra.Mails
 {
 	public class SmtpMailService : IMailService
 	{
-		private SmtpServerInfo _serverInfo;
-		private ExceptionMailInfo _exceptionMailInfo;
-		private IWebContext _webContext;
+		private readonly SmtpServerInfo _serverInfo;
+		private readonly ExceptionMailInfo _exceptionMailInfo;
+		private readonly IWebContext _webContext;
 
 		public SmtpMailService(SmtpServerInfo serverInfo, ExceptionMailInfo exceptionMailInfo, IWebContext webContext)
 		{

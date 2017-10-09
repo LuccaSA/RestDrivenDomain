@@ -128,7 +128,7 @@ namespace RDD.Domain.Helpers
 
 		private class HasTypeVisitor<TKeep> : ExpressionVisitor
 		{
-			private Type _toKeep;
+			private readonly Type _toKeep;
 			private bool _HasType;
 			public HasTypeVisitor()
 			{

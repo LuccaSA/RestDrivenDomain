@@ -11,7 +11,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 	internal class FiltersConvertor<TEntity>
 		where TEntity : class, IEntityBase
 	{
-		private PredicateService<TEntity> _predicateService;
+		private readonly PredicateService<TEntity> _predicateService;
 
 		internal FiltersConvertor()
 		{

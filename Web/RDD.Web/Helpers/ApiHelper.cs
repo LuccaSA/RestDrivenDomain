@@ -17,7 +17,7 @@ namespace RDD.Web.Helpers
 		where TEntity : class, IEntityBase<TEntity, TKey>, new()
 		where TKey : IEquatable<TKey>
 	{
-		private QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
+		private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 		private IContractResolver _jsonResolver { get; set; }
 
 		public IWebContextWrapper WebContextWrapper { get; private set; }
