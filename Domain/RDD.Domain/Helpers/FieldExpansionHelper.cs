@@ -24,8 +24,8 @@ namespace RDD.Domain.Helpers
 		FieldExpansionHelper(Stack<string> prefixes)
 		{
 			this.prefixes = prefixes;
-			this.buffer = string.Empty;
-			this.analyseResult = new List<string>();
+			buffer = string.Empty;
+			analyseResult = new List<string>();
 		}
 
 		void EmptyBuffer()

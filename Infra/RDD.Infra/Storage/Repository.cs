@@ -38,7 +38,7 @@ namespace RDD.Infra.Storage
 		}
 		protected virtual Task<int> CountEntities(IQueryable<TEntity> entities)
 		{
-			return Task.FromResult<int>(entities.Count());
+			return Task.FromResult(entities.Count());
 		}
 
 		public virtual Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query)

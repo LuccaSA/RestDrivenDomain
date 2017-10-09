@@ -84,7 +84,7 @@ namespace RDD.Domain.Helpers
 
 				switch (binaryOperator)
 				{
-					case FilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new Type[] { expressionLeft.Type }, expressionRight, expressionLeft);
+					case FilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new[] { expressionLeft.Type }, expressionRight, expressionLeft);
 					case FilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
 					case FilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
 					case FilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
@@ -113,7 +113,7 @@ namespace RDD.Domain.Helpers
 			var entityType = typeof(TEntity);
 			var parameter = Expression.Parameter(entityType, "entity");
 			var expression = NestedPropertyAccessor(entityType, parameter, field);
-			var comparisonMethod = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
+			var comparisonMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
 			var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
 
 			var startsWithExpression = Expression.Call(Expression.Call(expression, toLowerMethod), comparisonMethod, Expression.Constant(value.ToLower(), typeof(string)));
@@ -125,7 +125,7 @@ namespace RDD.Domain.Helpers
 			var entityType = typeof(TEntity);
 			var parameter = Expression.Parameter(entityType, "entity");
 			var expression = NestedPropertyAccessor(entityType, parameter, field);
-			var comparisonMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
+			var comparisonMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
 			var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
 
 			var containsExpression = Expression.Call(Expression.Call(expression, toLowerMethod), comparisonMethod, Expression.Constant(value.ToLower(), typeof(string)));

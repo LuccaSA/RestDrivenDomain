@@ -70,7 +70,7 @@ namespace RDD.Infra.Storage
 		{
 			foreach (var entity in entities)
 			{
-				Add<TEntity>(entity);
+				Add(entity);
 			}
 		}
 
@@ -79,7 +79,7 @@ namespace RDD.Infra.Storage
 		{
 			foreach (var entity in entities)
 			{
-				Remove<TEntity>(entity);
+				Remove(entity);
 			}
 		}
 

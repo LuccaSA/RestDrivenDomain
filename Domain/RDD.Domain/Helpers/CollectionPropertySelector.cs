@@ -12,7 +12,6 @@ namespace RDD.Domain.Helpers
 	public class CollectionPropertySelector<TEntity> : PropertySelector<TEntity>
 	{
 		public CollectionPropertySelector()
-			: base()
 		{
 			EntityType = typeof(ISelection<>).MakeGenericType(typeof(TEntity));
 		}
@@ -46,7 +45,7 @@ namespace RDD.Domain.Helpers
 				
 				var lambda = Expression.Lambda(call, param);
 
-				var child = PropertySelector.NewFromType(EntityType);
+				var child = NewFromType(EntityType);
 				child.Lambda = lambda;
 				child.Subject = propertyName;
 
@@ -60,7 +59,7 @@ namespace RDD.Domain.Helpers
 
 		private MethodCallExpression GetExpressionCall(string specialMethod, DecimalRounding rouding, int depth, ParameterExpression param, PropertyInfo property)
 		{
-			var method = typeof(ISelection).GetMethod(specialMethod.ToFirstUpper(), new Type[] { typeof(PropertyInfo), typeof(DecimalRounding) });
+			var method = typeof(ISelection).GetMethod(specialMethod.ToFirstUpper(), new[] { typeof(PropertyInfo), typeof(DecimalRounding) });
 
 			return Expression.Call(param, method, new Expression[] { Expression.Constant(property), Expression.Constant(rouding) });
 		}

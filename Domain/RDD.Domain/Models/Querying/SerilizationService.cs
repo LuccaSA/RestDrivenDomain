@@ -171,7 +171,7 @@ namespace RDD.Domain.Models.Querying
 			if (genericTypeDefinition == typeof(ISelection<>))
 			{
 				return propertyType
-					.GetConstructor(new Type[] { typeof(ICollection<>).MakeGenericType(elementType) })
+					.GetConstructor(new[] { typeof(ICollection<>).MakeGenericType(elementType) })
 					.Invoke(new object[] { listResult });
 			}
 			throw new Exception(String.Format("Unhandled enumerable type {0}", propertyType.Name));

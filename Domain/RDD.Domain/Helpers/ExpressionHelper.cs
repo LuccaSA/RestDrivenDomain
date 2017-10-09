@@ -129,7 +129,7 @@ namespace RDD.Domain.Helpers
 		private class HasTypeVisitor<TKeep> : ExpressionVisitor
 		{
 			private Type _toKeep;
-			private bool _HasType = false;
+			private bool _HasType;
 			public HasTypeVisitor()
 			{
 				_toKeep = typeof(TKeep);
@@ -173,7 +173,7 @@ namespace RDD.Domain.Helpers
 
 		public bool Equals<TEntity>(Expression<Func<TEntity, object>> exp1, Expression<Func<TEntity, object>> exp2)
 		{
-			return GetPropertyFromPropertySelector<TEntity>(exp1) == GetPropertyFromPropertySelector<TEntity>(exp2);
+			return GetPropertyFromPropertySelector(exp1) == GetPropertyFromPropertySelector(exp2);
 		}
 
 		/// <summary>

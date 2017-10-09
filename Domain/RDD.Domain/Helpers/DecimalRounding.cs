@@ -42,16 +42,16 @@ namespace RDD.Domain.Helpers
 		{
 			switch (Type)
 			{
-				case DecimalRounding.RoudingType.Round:
+				case RoudingType.Round:
 					return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
 
-				case DecimalRounding.RoudingType.RoundEven:
+				case RoudingType.RoundEven:
 					return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
-				case DecimalRounding.RoudingType.Ceiling:
+				case RoudingType.Ceiling:
 					return (d) => Math.Ceiling(d);
 
-				case DecimalRounding.RoudingType.Floor:
+				case RoudingType.Floor:
 					return (d) => Math.Floor(d);
 
 				default:
@@ -63,16 +63,16 @@ namespace RDD.Domain.Helpers
 		{
 			switch (Type)
 			{
-				case DecimalRounding.RoudingType.Round:
+				case RoudingType.Round:
 					return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
 
-				case DecimalRounding.RoudingType.RoundEven:
+				case RoudingType.RoundEven:
 					return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
-				case DecimalRounding.RoudingType.Ceiling:
+				case RoudingType.Ceiling:
 					return (d) => Math.Ceiling(d);
 
-				case DecimalRounding.RoudingType.Floor:
+				case RoudingType.Floor:
 					return (d) => Math.Floor(d);
 
 				default:
@@ -86,12 +86,12 @@ namespace RDD.Domain.Helpers
 			var matchType = matches[2].Value;
 			var matchDecimals = matches[3].Value;
 
-			var rouding = DecimalRounding.Default;
+			var rouding = Default;
 
 			if (!String.IsNullOrEmpty(matchType))
 			{
-				DecimalRounding.RoudingType type;
-				if (!Enum.TryParse<RoudingType>(matchType, true, out type))
+				RoudingType type;
+				if (!Enum.TryParse(matchType, true, out type))
 				{
 					throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", matchType));
 				}

@@ -303,7 +303,7 @@ namespace RDD.Domain.Helpers
 				return null;
 			}
 
-			var result = PropertySelector.NewFromType(EntityType);
+			var result = NewFromType(EntityType);
 			result.Lambda = Lambda;
 
 			if (HasChild)
@@ -330,7 +330,7 @@ namespace RDD.Domain.Helpers
 				//NB : le vrai Include() typé ne fonctionne pas car il faut lui préciser le type de la propriété at compile time !
 				//Et de toute façon, en lisant la doc de l'include typé, on voit qu'il appelle aussi l'include non typé !
 				IEnumerable<string> elements = child.Lambda.Body.ToString().Split('.');
-				elements = elementsOfpath.Union(new string[] { elements.ElementAt(1) });
+				elements = elementsOfpath.Union(new[] { elements.ElementAt(1) });
 
 				//Si le noeud a des enfants, ce n'est qu'un intermédiaire, on va donc uniquement inclure ses enfants, il sera inclus nativement lui-même par EF
 				if (child.HasChild)
