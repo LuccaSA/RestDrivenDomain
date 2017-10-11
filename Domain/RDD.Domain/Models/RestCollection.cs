@@ -38,32 +38,36 @@ namespace RDD.Domain.Models
 
 		public Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
 		{
-			return CreateAsync(PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+            var postedData = PostedData.ParseJSON(JsonConvert.SerializeObject(datas));
+
+            return CreateAsync(postedData, query);
 		}
-		public async Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
+		public virtual Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
 		{
 			var entity = InstanciateEntity();
 
 			GetPatcher().PatchEntity(entity, datas);
 
-			await CheckRightsForCreateAsync(entity);
-
-			await CreateAsync(entity, query);
-
-			return entity;
+            return CreateAsync(entity);
 		}
-		public virtual Task CreateAsync(TEntity entity, Query<TEntity> query = null)
+		public virtual Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
-			ForgeEntity(entity);
-
-			ValidateEntity(entity, null);
-
-			_repository.Add(entity);
-
-			return Task.CompletedTask;
+            return CreateAsync(entity);
 		}
+        private async Task<TEntity> CreateAsync(TEntity entity)
+        {
+            await CheckRightsForCreateAsync(entity);
 
-		public virtual TEntity InstanciateEntity()
+            ForgeEntity(entity);
+
+            ValidateEntity(entity, null);
+
+            _repository.Add(entity);
+
+            return entity;
+        }
+
+        public virtual TEntity InstanciateEntity()
 		{
 			return new TEntity();
 		}

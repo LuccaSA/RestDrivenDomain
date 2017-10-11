@@ -16,7 +16,7 @@ namespace RDD.Domain
 	{
 		Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null);
 		Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null);
-		Task CreateAsync(TEntity entity, Query<TEntity> query = null);
+        Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null);
 		Task DeleteAsync(TEntity entity);
 	}
 
