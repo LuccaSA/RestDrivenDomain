@@ -44,7 +44,7 @@ namespace RDD.Web.Controllers
 			var query = _helper.CreateQuery(HttpVerb.PUT, false);
 			var datas = _helper.InputObjectsFromIncomingHTTPRequest().SingleOrDefault();
 
-			var entity = await _appController.UpdateAsync(_id_, datas, query);
+			var entity = await _appController.UpdateByIdAsync(_id_, datas, query);
 
 			var dataContainer = new Metadata(_helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _helper.Execution);
 
@@ -75,7 +75,7 @@ namespace RDD.Web.Controllers
 				throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
 			}
 
-			var entities = await _appController.UpdateAsync(datasByIds, query);
+			var entities = await _appController.UpdateByIdsAsync(datasByIds, query);
 
 			var dataContainer = new Metadata(_helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, _helper.Execution);
 
@@ -86,7 +86,7 @@ namespace RDD.Web.Controllers
 		{
 			_helper.WebContextWrapper.SetContext(HttpContext);
 
-			await _appController.DeleteAsync(_id_);
+			await _appController.DeleteByIdAsync(_id_);
 
 			return Ok();
 		}
@@ -114,7 +114,7 @@ namespace RDD.Web.Controllers
 				throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
 			}
 
-			await _appController.DeleteAsync(ids);
+			await _appController.DeleteByIdsAsync(ids);
 
 			return Ok();
 		}

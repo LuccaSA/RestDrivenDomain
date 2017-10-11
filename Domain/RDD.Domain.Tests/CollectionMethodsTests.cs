@@ -71,7 +71,7 @@ namespace RDD.Domain.Tests
 
                 await app.CreateAsync(PostedData.ParseJSON(@"{ ""id"": 3 }"), new Query<User>());
 
-                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateAsync(0, PostedData.ParseJSON(@"{ ""name"": ""new name"" }"), new Query<User>()));
+                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJSON(@"{ ""name"": ""new name"" }"), new Query<User>()));
 			}
 		}
 	}

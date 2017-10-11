@@ -35,60 +35,45 @@ namespace RDD.Application.Controllers
 			return entity;
 		}
 
-		public async virtual Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query)
+		public async virtual Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query)
 		{
-			var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerb.PUT });
-
-			entity = await _collection.UpdateAsync(entity, datas, query);
+			var entity = await _collection.UpdateByIdAsync(id, datas, query);
 
 			await _storage.SaveChangesAsync();
 
 			query.Options.NeedFilterRights = false;
+            query.Options.AttachActions = false;
+            query.Options.AttachOperations = false;
 
-			entity = await _collection.GetByIdAsync(entity.Id, query);
+            entity = await _collection.GetByIdAsync(id, query);
 
 			return entity;
 		}
 
-		public async Task<IEnumerable<TEntity>> UpdateAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query)
+		public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query)
 		{
-			var ids = datasByIds.Keys.ToList();
-			var entities = (await _collection.GetByIdsAsync(ids, new Query<TEntity> { Verb = HttpVerb.PUT }))
-				.ToDictionary(el => el.Id, el => el);
-
-			foreach (var kvp in datasByIds)
-			{
-				var entity = entities[kvp.Key];
-
-				await _collection.UpdateAsync(entity, kvp.Value, query);
-			}
+            var entities = await _collection.UpdateByIdsAsync(datasByIds, query);
 
 			await _storage.SaveChangesAsync();
 
 			query.Options.NeedFilterRights = false;
 
+            var ids = entities.Select(e => e.Id).ToList();
 			var result = await _collection.GetByIdsAsync(ids, query);
 
 			return result;
 		}
 
-		public async Task DeleteAsync(TKey id)
+		public async Task DeleteByIdAsync(TKey id)
 		{
-			var entity = await _collection.GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerb.DELETE });
-
-			await _collection.DeleteAsync(entity);
+			await _collection.DeleteByIdAsync(id);
 
 			await _storage.SaveChangesAsync();
 		}
 
-		public async Task DeleteAsync(IList<TKey> ids)
+		public async Task DeleteByIdsAsync(IList<TKey> ids)
 		{
-			var entities = await _collection.GetByIdsAsync(ids, new Query<TEntity> { Verb = HttpVerb.DELETE });
-
-			foreach (var entity in entities)
-			{
-				await _collection.DeleteAsync(entity);
-			}
+			await _collection.DeleteByIdsAsync(ids);
 
 			await _storage.SaveChangesAsync();
 		}

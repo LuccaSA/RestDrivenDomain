@@ -18,9 +18,9 @@ namespace RDD.Application
 		where TKey : IEquatable<TKey>
 	{
 		Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query);
-		Task<TEntity> UpdateAsync(TKey id, PostedData datas, Query<TEntity> query);
-		Task<IEnumerable<TEntity>> UpdateAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query);
-		Task DeleteAsync(TKey id);
-		Task DeleteAsync(IList<TKey> ids);
+		Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query);
+		Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query);
+		Task DeleteByIdAsync(TKey id);
+		Task DeleteByIdsAsync(IList<TKey> ids);
 	}
 }

@@ -74,30 +74,63 @@ namespace RDD.Domain.Models
 		protected virtual void ForgeEntity(TEntity entity) { }
 		protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
 
-		private Task<TEntity> UpdateAsync(TEntity entity, object datas, Query<TEntity> query = null)
+		public Task<TEntity> UpdateByIdAsync(TKey id, object datas, Query<TEntity> query = null)
 		{
-			return UpdateAsync(entity, PostedData.ParseJSON(JsonConvert.SerializeObject(datas)), query);
+            var postedData = PostedData.ParseJSON(JsonConvert.SerializeObject(datas));
+
+            return UpdateByIdAsync(id, postedData, query);
 		}
-		public async virtual Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query = null)
+		public async virtual Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query = null)
 		{
 			query = query ?? new Query<TEntity>();
+            query.Verb = HttpVerb.PUT;
+            query.Options.AttachActions = true;
+            query.Options.AttachOperations = true;
 
-			AttachOperationsToEntity(entity);
-			AttachActionsToEntity(entity);
+            var entity = await GetByIdAsync(id, query);
 
-			await OnBeforeUpdateEntity(entity, datas);
-			var oldEntity = entity.Clone();
-
-			GetPatcher().PatchEntity(entity, datas);
-
-			await OnAfterUpdateEntity(oldEntity, entity, datas, query);
-
-			ValidateEntity(entity, oldEntity);
-
-			return entity;
+            return await UpdateAsync(entity, datas, query);
 		}
 
-		protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas)
+        public async virtual Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query = null)
+        {
+            query = query ?? new Query<TEntity>();
+            query.Verb = HttpVerb.PUT;
+            query.Options.AttachActions = true;
+            query.Options.AttachOperations = true;
+
+            var ids = datasByIds.Keys.ToList();
+            var entities = (await GetByIdsAsync(ids, query))
+                .ToDictionary(el => el.Id, el => el);
+            var result = new HashSet<TEntity>();
+
+            foreach (var kvp in datasByIds)
+            {
+                var entity = entities[kvp.Key];
+                entity = await UpdateAsync(entity, kvp.Value, query);
+
+                result.Add(entity);
+            }
+
+            return result;
+        }
+
+        private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
+        {
+            await OnBeforeUpdateEntity(entity, datas);
+
+            var oldEntity = entity.Clone();
+
+            GetPatcher().PatchEntity(entity, datas);
+
+            await OnAfterUpdateEntity(oldEntity, entity, datas, query);
+
+            ValidateEntity(entity, oldEntity);
+
+            return entity;
+        }
+
+        protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas)
 		{
 			return Task.CompletedTask;
 		}
@@ -115,11 +148,21 @@ namespace RDD.Domain.Models
 			return Task.CompletedTask;
 		}
 
-		public virtual Task DeleteAsync(TEntity entity)
+		public async virtual Task DeleteByIdAsync(TKey id)
 		{
-			_repository.Remove(entity);
+            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerb.DELETE });
 
-			return Task.CompletedTask;
+            _repository.Remove(entity);
 		}
-	}
+
+        public async virtual Task DeleteByIdsAsync(IList<TKey> ids)
+        {
+            var entities = await GetByIdsAsync(ids, new Query<TEntity> { Verb = HttpVerb.DELETE });
+
+            foreach (var entity in entities)
+            {
+                _repository.Remove(entity);
+            }
+        }
+    }
 }
