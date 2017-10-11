@@ -1,5 +1,6 @@
 ﻿using RDD.Domain.Models.Querying;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RDD.Domain
