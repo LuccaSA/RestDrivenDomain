@@ -54,7 +54,7 @@ namespace RDD.Domain.Models
 		{
             return CreateAsync(entity);
 		}
-        private async Task<TEntity> CreateAsync(TEntity entity)
+        protected async Task<TEntity> CreateAsync(TEntity entity)
         {
             await CheckRightsForCreateAsync(entity);
 
@@ -115,7 +115,7 @@ namespace RDD.Domain.Models
             return result;
         }
 
-        private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
+        protected async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
         {
             await OnBeforeUpdateEntity(entity, datas);
 
