@@ -1,7 +1,7 @@
 ﻿namespace RDD.Domain
 {
-	public interface IExecutionContext
-	{
-		IPrincipal curPrincipal { get; set; }
-	}
+    public interface IExecutionContext
+    {
+        IPrincipal curPrincipal { get; set; }
+    }
 }

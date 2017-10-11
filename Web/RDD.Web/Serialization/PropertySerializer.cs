@@ -9,117 +9,117 @@ using System.Reflection;
 
 namespace RDD.Web.Serialization
 {
-	public class PropertySerializer
-	{
-		private IEntitySerializer _serializer { get; }
+    public class PropertySerializer
+    {
+        private IEntitySerializer _serializer { get; }
 
-		public PropertySerializer() { throw new NotImplementedException(); }
-		public PropertySerializer(IEntitySerializer serializer)
-		{
-			_serializer = serializer;
-		}
+        public PropertySerializer() { throw new NotImplementedException(); }
+        public PropertySerializer(IEntitySerializer serializer)
+        {
+            _serializer = serializer;
+        }
 
-		public virtual Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
-		{
-			var result = new Dictionary<string, object>();
+        public virtual Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
+        {
+            var result = new Dictionary<string, object>();
 
-			foreach (var child in fields.Children)
-			{
-				result.Add(child.GetCurrentProperty().Name, SerializeProperty(entity, child));
-			}
+            foreach (var child in fields.Children)
+            {
+                result.Add(child.GetCurrentProperty().Name, SerializeProperty(entity, child));
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		public virtual object SerializeProperty(object entity, PropertySelector field)
-		{
-			object value;
-			PropertyInfo prop = field.GetCurrentProperty();
+        public virtual object SerializeProperty(object entity, PropertySelector field)
+        {
+            object value;
+            PropertyInfo prop = field.GetCurrentProperty();
 
-			if (prop.Name == "Url")
-			{
-				var entityType = entity.GetType();
-				var typeForUrl = entityType;
+            if (prop.Name == "Url")
+            {
+                var entityType = entity.GetType();
+                var typeForUrl = entityType;
 
-				//Ici on suppose que c'est un héritage classique, genre BlogApplication : Application => Application
-				// Et on vérifie que entityType n'est pas une EntityBase
-				if (!typeof(IEntityBase).IsAssignableFrom(entityType) && entityType.BaseType != null && !entityType.BaseType.IsGenericType)
-				{
-					typeForUrl = entityType.BaseType;
-				}
+                //Ici on suppose que c'est un héritage classique, genre BlogApplication : Application => Application
+                // Et on vérifie que entityType n'est pas une EntityBase
+                if (!typeof(IEntityBase).IsAssignableFrom(entityType) && entityType.BaseType != null && !entityType.BaseType.IsGenericType)
+                {
+                    typeForUrl = entityType.BaseType;
+                }
 
-				value = string.Format(_serializer.GetUrlTemplateFromEntityType(typeForUrl), ((IEntityBase)entity).GetId());
-			}
-			else
-			{
-				value = prop.GetValue(entity, null);
+                value = string.Format(_serializer.GetUrlTemplateFromEntityType(typeForUrl), ((IEntityBase)entity).GetId());
+            }
+            else
+            {
+                value = prop.GetValue(entity, null);
 
-				if (value != null)
-				{
-					var propertyType = value.GetType();
+                if (value != null)
+                {
+                    var propertyType = value.GetType();
 
-					//Prop non valeur, on va sérialiser ses sous propriétés
-					if (!propertyType.IsValueType() && propertyType != typeof(object))
-					{
-						if (propertyType.IsSubclassOfInterface(typeof(IDictionary)))
-						{
-							var dictionary = value as IDictionary;
+                    //Prop non valeur, on va sérialiser ses sous propriétés
+                    if (!propertyType.IsValueType() && propertyType != typeof(object))
+                    {
+                        if (propertyType.IsSubclassOfInterface(typeof(IDictionary)))
+                        {
+                            var dictionary = value as IDictionary;
 
-							//Si le dictionnaire ne contient aucune entrée
-							//On le sérialise tel quel
-							if (dictionary != null && dictionary.Keys.Count > 0)
-							{
+                            //Si le dictionnaire ne contient aucune entrée
+                            //On le sérialise tel quel
+                            if (dictionary != null && dictionary.Keys.Count > 0)
+                            {
 
-								//Si c'st un dictionnaire de valeurs simples ou toutes nulles
-								//On le sérialise tel quel
-								var enumerator = dictionary.Values.GetEnumerator();
-								var isNullDictionary = true;
-								while (enumerator.MoveNext())
-								{
-									if (enumerator.Current != null)
-									{
-										isNullDictionary = false;
-										break;
-									}
-								}
-								if (!isNullDictionary && !enumerator.Current.GetType().IsValueType())
-								{
-									//Sinon on va descendre au niveau du type des valeurs pour continuer à les sérialiser
-									var result = new Dictionary<object, object>();
+                                //Si c'st un dictionnaire de valeurs simples ou toutes nulles
+                                //On le sérialise tel quel
+                                var enumerator = dictionary.Values.GetEnumerator();
+                                var isNullDictionary = true;
+                                while (enumerator.MoveNext())
+                                {
+                                    if (enumerator.Current != null)
+                                    {
+                                        isNullDictionary = false;
+                                        break;
+                                    }
+                                }
+                                if (!isNullDictionary && !enumerator.Current.GetType().IsValueType())
+                                {
+                                    //Sinon on va descendre au niveau du type des valeurs pour continuer à les sérialiser
+                                    var result = new Dictionary<object, object>();
 
-									foreach (var key in dictionary.Keys)
-									{
-										result.Add(
-											key,
-											dictionary[key] != null ? _serializer.SerializeEntity(dictionary[key], PropertySelector.NewFromType(dictionary[key].GetType())) : null
-										);
-									}
+                                    foreach (var key in dictionary.Keys)
+                                    {
+                                        result.Add(
+                                            key,
+                                            dictionary[key] != null ? _serializer.SerializeEntity(dictionary[key], PropertySelector.NewFromType(dictionary[key].GetType())) : null
+                                        );
+                                    }
 
-									value = result;
-								}
-							}
-						}
-						else if (propertyType.IsEnumerableOrArray())
-						{
-							var list = ((IEnumerable)value).Cast<object>();
-							var genericType = propertyType.GetEnumerableOrArrayElementType();
+                                    value = result;
+                                }
+                            }
+                        }
+                        else if (propertyType.IsEnumerableOrArray())
+                        {
+                            var list = ((IEnumerable)value).Cast<object>();
+                            var genericType = propertyType.GetEnumerableOrArrayElementType();
 
-							//Si c'est une liste d'élément valeur, on sort d'ici, car on la sérialize telle quelle
-							if (!genericType.IsValueType() && genericType != typeof(object))
-							{
+                            //Si c'est une liste d'élément valeur, on sort d'ici, car on la sérialize telle quelle
+                            if (!genericType.IsValueType() && genericType != typeof(object))
+                            {
 
-								value = _serializer.SerializeEntities(list, field);
-							}
-						}
-						else
-						{
-							value = _serializer.SerializeEntity(value, field);
-						}
-					}
-				}
-			}
+                                value = _serializer.SerializeEntities(list, field);
+                            }
+                        }
+                        else
+                        {
+                            value = _serializer.SerializeEntity(value, field);
+                        }
+                    }
+                }
+            }
 
-			return value;
-		}
-	}
+            return value;
+        }
+    }
 }

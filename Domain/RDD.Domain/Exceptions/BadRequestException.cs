@@ -2,12 +2,12 @@
 
 namespace RDD.Domain.Exceptions
 {
-	public class BadRequestException : HttpLikeException
-	{
-		public BadRequestException()
-			: base(HttpStatusCode.BadRequest) { }
+    public class BadRequestException : HttpLikeException
+    {
+        public BadRequestException()
+            : base(HttpStatusCode.BadRequest) { }
 
-		public BadRequestException(string message)
-			: base(HttpStatusCode.BadRequest, message) { }
-	}
+        public BadRequestException(string message)
+            : base(HttpStatusCode.BadRequest, message) { }
+    }
 }

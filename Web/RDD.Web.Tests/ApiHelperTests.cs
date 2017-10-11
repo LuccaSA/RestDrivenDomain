@@ -10,25 +10,25 @@ using Xunit;
 
 namespace RDD.Web.Tests
 {
-	public class ApiHelperTests
-	{
-		[Fact]
-		public void ConvertingFiltersShouldKeepTheEntityType()
-		{
-			var webContext = new InMemoryWebContext();
-			webContext.QueryString = new Dictionary<string, StringValues>() { { "id", "2" } };
-			webContext.Headers = new Dictionary<string, StringValues>();
+    public class ApiHelperTests
+    {
+        [Fact]
+        public void ConvertingFiltersShouldKeepTheEntityType()
+        {
+            var webContext = new InMemoryWebContext();
+            webContext.QueryString = new Dictionary<string, StringValues>() { { "id", "2" } };
+            webContext.Headers = new Dictionary<string, StringValues>();
 
-			var helper = new ApiHelper<User, int>(new CamelCasePropertyNamesContractResolver(), webContext, null, null);
-			var query = helper.CreateQuery(HttpVerb.GET);
+            var helper = new ApiHelper<User, int>(new CamelCasePropertyNamesContractResolver(), webContext, null, null);
+            var query = helper.CreateQuery(HttpVerb.GET);
 
-			Assert.Single(query.Filters);
+            Assert.Single(query.Filters);
 
-			var filter = query.Filters.ElementAt(0);
+            var filter = query.Filters.ElementAt(0);
 
-			Assert.Equal(typeof(PropertySelector<User>), filter.Property.GetType());
+            Assert.Equal(typeof(PropertySelector<User>), filter.Property.GetType());
 
-			Assert.True(filter.Property.Contains(u => u.Id));
-		}
-	}
+            Assert.True(filter.Property.Contains(u => u.Id));
+        }
+    }
 }

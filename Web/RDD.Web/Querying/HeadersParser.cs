@@ -5,37 +5,37 @@ using System.Collections.Generic;
 
 namespace RDD.Web.Querying
 {
-	public class HeadersParser
-	{
-		public Headers Parse(IEnumerable<KeyValuePair<string, StringValues>> requestHeaders)
-		{
-			var headers = new Headers();
+    public class HeadersParser
+    {
+        public Headers Parse(IEnumerable<KeyValuePair<string, StringValues>> requestHeaders)
+        {
+            var headers = new Headers();
 
-			headers.RawHeaders = requestHeaders;
+            headers.RawHeaders = requestHeaders;
 
-			foreach (var element in requestHeaders)
-			{
-				switch (element.Key)
-				{
-					case "If-Unmodified-Since":
-						DateTime unModifiedSince;
-						if (DateTime.TryParse(element.Value, out unModifiedSince))
-						{
-							headers.IfUnmodifiedSince = unModifiedSince;
-						}
-						break;
+            foreach (var element in requestHeaders)
+            {
+                switch (element.Key)
+                {
+                    case "If-Unmodified-Since":
+                        DateTime unModifiedSince;
+                        if (DateTime.TryParse(element.Value, out unModifiedSince))
+                        {
+                            headers.IfUnmodifiedSince = unModifiedSince;
+                        }
+                        break;
 
-					case "Authorization":
-						headers.Authorization = element.Value;
-						break;
+                    case "Authorization":
+                        headers.Authorization = element.Value;
+                        break;
 
-					case "Content-Type":
-						headers.ContentType = element.Value;
-						break;
-				}
-			}
+                    case "Content-Type":
+                        headers.ContentType = element.Value;
+                        break;
+                }
+            }
 
-			return headers;
-		}
-	}
+            return headers;
+        }
+    }
 }

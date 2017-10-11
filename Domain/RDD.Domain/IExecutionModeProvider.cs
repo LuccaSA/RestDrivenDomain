@@ -2,8 +2,8 @@
 
 namespace RDD.Domain
 {
-	public interface IExecutionModeProvider
-	{
-		ExecutionMode GetExecutionMode();
-	}
+    public interface IExecutionModeProvider
+    {
+        ExecutionMode GetExecutionMode();
+    }
 }

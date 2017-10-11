@@ -9,41 +9,41 @@ using Xunit;
 
 namespace RDD.Infra.Tests
 {
-	public class AsyncServiceTests
-	{
-		private readonly IAsyncService _asyncService;
+    public class AsyncServiceTests
+    {
+        private readonly IAsyncService _asyncService;
 
-		private Mock<ICollection> _mock { get; }
+        private Mock<ICollection> _mock { get; }
 
-		public AsyncServiceTests()
-		{
-			_asyncService = new AsyncService(new InMemoryWebContext());
+        public AsyncServiceTests()
+        {
+            _asyncService = new AsyncService(new InMemoryWebContext());
 
-			_mock = new Mock<ICollection>();
-			_mock.Setup(m => m.GetEnumerator()).Verifiable();
-		}
+            _mock = new Mock<ICollection>();
+            _mock.Setup(m => m.GetEnumerator()).Verifiable();
+        }
 
-		private void CallVerifiableMockMethod()
-		{
-			_mock.Object.GetEnumerator();
-		}
+        private void CallVerifiableMockMethod()
+        {
+            _mock.Object.GetEnumerator();
+        }
 
-		[Fact]
-		public async Task AsyncService_ShouldBeTestable_WhenCallingContinueAsync()
-		{
-			await _asyncService.ContinueAlone(() => CallVerifiableMockMethod());
+        [Fact]
+        public async Task AsyncService_ShouldBeTestable_WhenCallingContinueAsync()
+        {
+            await _asyncService.ContinueAlone(() => CallVerifiableMockMethod());
 
-			_mock.Verify(m => m.GetEnumerator(), Times.Once());
-		}
+            _mock.Verify(m => m.GetEnumerator(), Times.Once());
+        }
 
-		[Fact]
-		public void AsyncService_ShouldBeTestable_WhenCallingRunInParallel()
-		{
-			var list = new List<int> { 1, 2, 3 };
+        [Fact]
+        public void AsyncService_ShouldBeTestable_WhenCallingRunInParallel()
+        {
+            var list = new List<int> { 1, 2, 3 };
 
-			_asyncService.RunInParallel(list, (number) => CallVerifiableMockMethod());
+            _asyncService.RunInParallel(list, (number) => CallVerifiableMockMethod());
 
-			_mock.Verify(m => m.GetEnumerator(), Times.Exactly(3));
-		}
-	}
+            _mock.Verify(m => m.GetEnumerator(), Times.Exactly(3));
+        }
+    }
 }

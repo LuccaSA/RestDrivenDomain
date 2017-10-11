@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain
 {
-	public interface IReadOnlyRestCollection<TEntity>
-		where TEntity : class, IEntityBase
-	{
-		Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
-		Task<IEnumerable<TEntity>> GetAllAsync();
+    public interface IReadOnlyRestCollection<TEntity>
+        where TEntity : class, IEntityBase
+    {
+        Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
+        Task<IEnumerable<TEntity>> GetAllAsync();
 
-		Task<bool> AnyAsync(Query<TEntity> query);
-	}
+        Task<bool> AnyAsync(Query<TEntity> query);
+    }
 
-	public interface IReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity>
-		where TEntity : class, IEntityBase<TKey>
-		where TKey : IEquatable<TKey>
-	{
-		Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
-		Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query);
-	}
+    public interface IReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity>
+        where TEntity : class, IEntityBase<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
+        Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query);
+    }
 }
