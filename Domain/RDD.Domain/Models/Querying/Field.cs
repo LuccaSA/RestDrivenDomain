@@ -49,12 +49,9 @@ namespace RDD.Domain.Models.Querying
 			Add(expressions);
 		}
 
-		public bool Add(Expression<Func<TEntity, object>> field)
-		{
-			return EntitySelector.Add(field);
-		}
+		public bool Add(Expression<Func<TEntity, object>> field) => EntitySelector.Add(field);
 
-		public bool Add(params Expression<Func<TEntity, object>>[] expressions)
+        public bool Add(params Expression<Func<TEntity, object>>[] expressions)
 		{
 			return expressions.Select(expression =>
 			{
@@ -62,22 +59,13 @@ namespace RDD.Domain.Models.Querying
 			}).Aggregate((b1, b2) => b1 && b2);
 		}
 
-		public bool Contains(Expression<Func<TEntity, object>> expression)
-		{
-			return EntitySelector.Contains(expression);
-		}
+		public bool Contains(Expression<Func<TEntity, object>> expression) => EntitySelector.Contains(expression);
 
-		public bool ContainsEmpty(Expression<Func<TEntity, object>> expression)
-		{
-			return EntitySelector.ContainsEmpty(expression);
-		}
+        public bool ContainsEmpty(Expression<Func<TEntity, object>> expression) => EntitySelector.ContainsEmpty(expression);
 
-		public bool ContainsAny(params Expression<Func<TEntity, object>>[] expressions)
-		{
-			return ((PropertySelector<TEntity>)EntitySelector).ContainsAny(expressions);
-		}
+        public bool ContainsAny(params Expression<Func<TEntity, object>>[] expressions) => ((PropertySelector<TEntity>)EntitySelector).ContainsAny(expressions);
 
-		/// <summary>
+        /// <summary>
 		/// Permet de transférer un selecteur vers un enfant
 		/// NB : utiliser p. comme paramètre du selecteur
 		/// </summary>

@@ -31,10 +31,7 @@ namespace RDD.Domain.Models
 			return Task.CompletedTask;
 		}
 
-		protected virtual PatchEntityHelper GetPatcher()
-		{
-			return new PatchEntityHelper();
-		}
+		protected virtual PatchEntityHelper GetPatcher() => new PatchEntityHelper();
 
 		public Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
 		{
@@ -135,7 +132,7 @@ namespace RDD.Domain.Models
 			return Task.CompletedTask;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Called after entity update
 		/// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
 		/// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
@@ -143,10 +140,7 @@ namespace RDD.Domain.Models
 		/// <param name="oldEntity"></param>
 		/// <param name="entity"></param>
 		/// <param name="datas"></param>
-		protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query)
-		{
-			return Task.CompletedTask;
-		}
+		protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
 
 		public async virtual Task DeleteByIdAsync(TKey id)
 		{

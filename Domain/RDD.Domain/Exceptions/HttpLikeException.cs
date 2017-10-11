@@ -33,9 +33,6 @@ namespace RDD.Domain.Exceptions
 			Status = status;
 		}
 
-		public static HttpLikeException Parse(Exception e)
-		{
-			return e as HttpLikeException ?? new HttpLikeException(HttpStatusCode.InternalServerError, e);
-		}
-	}
+		public static HttpLikeException Parse(Exception e) => e as HttpLikeException ?? new HttpLikeException(HttpStatusCode.InternalServerError, e);
+    }
 }

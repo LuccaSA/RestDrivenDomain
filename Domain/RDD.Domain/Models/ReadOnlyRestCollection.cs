@@ -104,11 +104,9 @@ namespace RDD.Domain.Models
 			//AttachOperations(entities, operationsForAttach);
 		}
 
-		protected Task<bool> AnyAsync()
-		{
-			return AnyAsync(new Query<TEntity>());
-		}
-		public async Task<bool> AnyAsync(Query<TEntity> query)
+		protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
+
+        public async Task<bool> AnyAsync(Query<TEntity> query)
 		{
 			query.Options.NeedEnumeration = false;
 			query.Options.NeedCount = true;
@@ -116,12 +114,9 @@ namespace RDD.Domain.Models
 			return (await GetAsync(query)).Count > 0;
 		}
 
-		public async Task<IEnumerable<TEntity>> GetAllAsync()
-		{
-			return (await GetAsync(new Query<TEntity>())).Items;
-		}
+		public async Task<IEnumerable<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>())).Items;
 
-		public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
+        public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
 		{
 			var count = 0;
 			IEnumerable<TEntity> items = new HashSet<TEntity>();
@@ -182,12 +177,9 @@ namespace RDD.Domain.Models
 			catch { return null; }
 		}
 
-		public Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET)
-		{
-			return GetByIdAsync(id, new Query<TEntity>() { Verb = verb });
-		}
+		public Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET) => GetByIdAsync(id, new Query<TEntity>() { Verb = verb });
 
-		/// <summary>
+        /// <summary>
 		/// Si on ne trouve pas l'entité, on renvoie explicitement un NotFound
 		/// puisque c'était explicitement cette entité qui était visée
 		/// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
@@ -209,11 +201,9 @@ namespace RDD.Domain.Models
 			return result;
 		}
 
-		public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerb verb = HttpVerb.GET)
-		{
-			return await GetByIdsAsync(ids, new Query<TEntity> { Verb = verb });
-		}
-		public virtual async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query)
+		public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerb verb = HttpVerb.GET) => await GetByIdsAsync(ids, new Query<TEntity> { Verb = verb });
+
+        public virtual async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query)
 		{
 			query.Filters.Add(new Filter<TEntity>(new PropertySelector<TEntity>(e => e.Id), FilterOperand.Equals, (IList)ids));
 
