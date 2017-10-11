@@ -19,7 +19,7 @@ namespace RDD.Domain
 
 		// Required methods (subset of `System.Net.WebClient` methods).
 		string DownloadString(string address);
-		string UploadString(string address, string method);
+		string UploadString(string address, string data);
 		string UploadString(string address, string method, string data);
 
 		byte[] DownloadData(string address);
