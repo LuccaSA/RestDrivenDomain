@@ -24,22 +24,13 @@ namespace RDD.Domain.WebServices
 			AppOperations = new HashSet<int>();
 		}
 
-		public virtual HashSet<int> GetOperations(HashSet<int> operations)
-		{
-			return new HashSet<int>(AppOperations.Intersect(operations));
-		}
+		public virtual HashSet<int> GetOperations(HashSet<int> operations) => new HashSet<int>(AppOperations.Intersect(operations));
 
-		public virtual bool HasAnyOperations(HashSet<int> operations)
-		{
-			return GetOperations(operations).Any();
-		}
+        public virtual bool HasAnyOperations(HashSet<int> operations) => GetOperations(operations).Any();
 
-		public virtual bool HasOperation(int operation)
-		{
-			return GetOperations(new HashSet<int>() { operation }).Any();
-		}
+        public virtual bool HasOperation(int operation) => GetOperations(new HashSet<int>() { operation }).Any();
 
-		public virtual IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations)
+        public virtual IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations)
 		{
 			if (!HasAnyOperations(operations))
 			{

@@ -10,11 +10,9 @@ namespace RDD.Domain.Helpers
 	public class ExpressionHelper
 	{
 		// Utile pour les types créés à partir de Group By d'un autre type
-		public static Expression<Func<TOut, bool>> Transfert<TIn, TOut>(Expression<Func<TIn, bool>> expression)
-		{
-			return TransfertWithRename<TIn, TOut>(expression, new Dictionary<string, string>());
-		}
-		/// <summary>
+		public static Expression<Func<TOut, bool>> Transfert<TIn, TOut>(Expression<Func<TIn, bool>> expression) => TransfertWithRename<TIn, TOut>(expression, new Dictionary<string, string>());
+
+        /// <summary>
 		/// Permet de transférer un délégué d'un enfant vers son parent étant connu le nom de la propriété qui permet de passer du parent à l'enfant
 		/// </summary>
 		/// <typeparam name="TChild">Le type enfant</typeparam>
@@ -89,25 +87,15 @@ namespace RDD.Domain.Helpers
 				}
 			}
 		}
-		public static Expression BuildAny<TSource>(Expression accessor, Expression predicate)
-		{
-			return BuildAny(typeof(TSource), accessor, predicate);
-		}
-		public static Expression BuildAny(Type tSource, Expression accessor, Expression predicate)
-		{
-			return BuildEnumerableMethod(tSource, accessor, predicate, "Any");
-		}
+		public static Expression BuildAny<TSource>(Expression accessor, Expression predicate) => BuildAny(typeof(TSource), accessor, predicate);
 
-		public static Expression BuildWhere<TSource>(Expression accessor, Expression predicate)
-		{
-			return BuildWhere(typeof(TSource), accessor, predicate);
-		}
-		public static Expression BuildWhere(Type tSource, Expression accessor, Expression predicate)
-		{
-			return BuildEnumerableMethod(tSource, accessor, predicate, "Where");
-		}
+        public static Expression BuildAny(Type tSource, Expression accessor, Expression predicate) => BuildEnumerableMethod(tSource, accessor, predicate, "Any");
 
-		private static Expression BuildEnumerableMethod(Type tSource, Expression accessor, Expression predicate, string method)
+        public static Expression BuildWhere<TSource>(Expression accessor, Expression predicate) => BuildWhere(typeof(TSource), accessor, predicate);
+
+        public static Expression BuildWhere(Type tSource, Expression accessor, Expression predicate) => BuildEnumerableMethod(tSource, accessor, predicate, "Where");
+
+        private static Expression BuildEnumerableMethod(Type tSource, Expression accessor, Expression predicate, string method)
 		{
 			var overload = typeof(Enumerable).GetMethods()
 									  .Single(mi => mi.Name == method && mi.GetParameters().Length == 2).MakeGenericMethod(tSource);
@@ -171,12 +159,9 @@ namespace RDD.Domain.Helpers
 			return result;
 		}
 
-		public bool Equals<TEntity>(Expression<Func<TEntity, object>> exp1, Expression<Func<TEntity, object>> exp2)
-		{
-			return GetPropertyFromPropertySelector(exp1) == GetPropertyFromPropertySelector(exp2);
-		}
+		public bool Equals<TEntity>(Expression<Func<TEntity, object>> exp1, Expression<Func<TEntity, object>> exp2) => GetPropertyFromPropertySelector(exp1) == GetPropertyFromPropertySelector(exp2);
 
-		/// <summary>
+        /// <summary>
 		/// Récupère la propriété ciblée par une expression, notamment pour voir si 2 expressions sont égales = récupèrent la même propriété
 		/// </summary>
 		/// <typeparam name="TEntity"></typeparam>
@@ -202,11 +187,9 @@ namespace RDD.Domain.Helpers
 			var type = seed.Type;
 			return NestedPropertyAccessor(type, seed, field, out property);
 		}
-		public Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field, out PropertyInfo property)
-		{
-			return NestedPropertyAccessor(type, seed, field.Split('.'), out property);
-		}
-		private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string[] fields, out PropertyInfo property)
+		public Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field, out PropertyInfo property) => NestedPropertyAccessor(type, seed, field.Split('.'), out property);
+
+        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string[] fields, out PropertyInfo property)
 		{
 			property = null;
 			Expression body = seed;

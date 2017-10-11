@@ -58,11 +58,9 @@ namespace RDD.Domain.Models.Querying
 			this.value = value;
 			subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
 		}
-		public static PostedData Parse(string singleValue)
-		{
-			return new PostedData("this", singleValue);
-		}
-		public static PostedData ParseUrlEncoded(string data)
+		public static PostedData Parse(string singleValue) => new PostedData("this", singleValue);
+
+        public static PostedData ParseUrlEncoded(string data)
 		{
 			var dictionary = data.Split('&').ToDictionary(el => el.Split('=')[0], el => el.Split('=')[1]);
 
@@ -207,22 +205,13 @@ namespace RDD.Domain.Models.Querying
 			get => subs[key.ToString()];
 		    set => subs[key.ToString()] = value;
 		}
-		public bool ContainsKey(string key)
-		{
-			return subs.ContainsKey(key);
-		}
-		public bool ContainsKey(Enum key)
-		{
-			return subs.ContainsKey(key);
-		}
+		public bool ContainsKey(string key) => subs.ContainsKey(key);
+        public bool ContainsKey(Enum key) => subs.ContainsKey(key);
 
-		public bool Remove(string key)
-		{
-			return subs.Remove(key);
-		}
+        public bool Remove(string key) => subs.Remove(key);
 
-		public ICollection<string> Keys => subs == null ? null : subs.Keys;
-	    public int Count() { return subs.Count; }
-		public bool HasSubs => subs.Count > 0;
+        public ICollection<string> Keys => subs == null ? null : subs.Keys;
+	    public int Count() => subs.Count;
+        public bool HasSubs => subs.Count > 0;
 	}
 }

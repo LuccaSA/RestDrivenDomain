@@ -11,9 +11,6 @@ namespace RDD.Domain.Helpers
 			Parameter = parameter;
 		}
 
-		protected override Expression VisitParameter(ParameterExpression node)
-		{
-			return Parameter;
-		}
-	}
+		protected override Expression VisitParameter(ParameterExpression node) => Parameter;
+    }
 }

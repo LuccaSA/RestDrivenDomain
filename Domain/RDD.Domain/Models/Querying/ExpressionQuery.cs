@@ -21,9 +21,6 @@ namespace RDD.Domain.Models.Querying
 			Options = source.Options;
 		}
 
-		public override Expression<Func<TEntity, bool>> FiltersAsExpression()
-		{
-			return ExpressionFilters;
-		}
-	}
+		public override Expression<Func<TEntity, bool>> FiltersAsExpression() => ExpressionFilters;
+    }
 }
