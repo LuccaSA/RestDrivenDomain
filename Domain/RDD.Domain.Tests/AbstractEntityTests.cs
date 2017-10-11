@@ -1,43 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RDD.Domain.Tests.Models;
+﻿using RDD.Domain.Mocks;
 using RDD.Domain.Models;
-using RDD.Infra.Services;
-using RDD.Domain.Contexts;
-using Moq;
+using RDD.Domain.Tests.Models;
+using RDD.Infra.Storage;
+using System.Linq;
 using Xunit;
-using RDD.Domain.Mocks;
 
 namespace RDD.Domain.Tests
 {
-	internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
-	{
-		public AbstractClassCollection(IStorageService storage, IExecutionContext execution, Func<IStorageService> asyncStorage = null)
-			: base(storage, execution, asyncStorage) { }
-	}
+    internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
+    {
+        public AbstractClassCollection(IRepository<AbstractClass> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+            : base(repository, execution, combinationsHolder) { }
+    }
 
-	public class AbstractEntityTests
-	{
-		[Fact]
-		public void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
-		{
-			using (var storage = new InMemoryStorageService())
-			{
-				var execution = new ExecutionContextMock();
+    internal class ConcreteClassThreeCollection : ReadOnlyRestCollection<ConcreteClassThree, int>
+    {
+        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+            : base(repository, execution, combinationsHolder) { }
+    }
 
-				storage.Add(new ConcreteClassOne());
-				storage.Add(new ConcreteClassOne());
-				storage.Add(new ConcreteClassTwo());
+    public class AbstractEntityTests
+    {
+        [Fact]
+        public async void NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
+        {
+            var execution = new ExecutionContextMock();
+            var combinationHolder = new CombinationsHolderMock();
+            var storage = new InMemoryStorageService();
+            var repo = new OpenRepository<ConcreteClassThree>(storage, execution, combinationHolder);
 
-				var collection = new AbstractClassCollection(storage, execution);
+            repo.Add(new ConcreteClassThree());
+            repo.Add(new ConcreteClassThree());
 
-				var result = collection.GetAll();
+            var collection = new ConcreteClassThreeCollection(repo, execution, null);
 
-				Assert.Equal(3, result.Count());
-			}
-		}
-	}
+            var result = await collection.GetAllAsync();
+
+            Assert.Equal(2, result.Count());
+        }
+
+        [Fact]
+        public async void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
+        {
+            var execution = new ExecutionContextMock();
+            var combinationHolder = new CombinationsHolderMock();
+            var storage = new InMemoryStorageService();
+            var repo = new OpenRepository<AbstractClass>(storage, execution, combinationHolder);
+
+            repo.Add(new ConcreteClassOne());
+            repo.Add(new ConcreteClassOne());
+            repo.Add(new ConcreteClassTwo());
+
+            var collection = new AbstractClassCollection(repo, execution, combinationHolder);
+
+            var result = await collection.GetAllAsync();
+
+            Assert.Equal(3, result.Count());
+        }
+    }
 }

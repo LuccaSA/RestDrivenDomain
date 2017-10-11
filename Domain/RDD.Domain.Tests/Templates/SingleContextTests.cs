@@ -1,30 +1,31 @@
-﻿using RDD.Domain.Contexts;
-using RDD.Infra.BootStrappers;
-using RDD.Infra.Contexts;
-using RDD.Infra.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Mocks;
+using RDD.Domain.Tests.Models;
+using RDD.Infra.Storage;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Tests.Templates
 {
-	public class SingleContextTests
-	{
-		protected IDependencyInjectionResolver _resolver;
-		protected IStorageService _storage;
-		protected IExecutionContext _execution;
-		protected Func<IStorageService> _newStorage;
+    public class SingleContextTests
+    {
+        protected IDependencyInjectionResolver _resolver;
+        protected Func<string, IStorageService> _newStorage;
+        protected IExecutionContext _execution;
+        protected ICombinationsHolder _combinationsHolder;
 
-		public SingleContextTests()
-		{
-			TestsBootStrapper.ApplicationStart();
+        public SingleContextTests()
+        {
+            _newStorage = (name) => new EFStorageService(new DataContext(GetOptions(name)));
+            _execution = new ExecutionContextMock();
+            _combinationsHolder = new CombinationsHolderMock();
+        }
 
-			_resolver = Resolver.Current();
-			_newStorage = () => new InMemoryStorageService();
-			_storage = _newStorage();
-			_execution = new InMemoryExecutionContext();
-		}
-	}
+        private DbContextOptions<DataContext> GetOptions(string name)
+        {
+            return new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: name)
+                //                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                .Options;
+        }
+    }
 }

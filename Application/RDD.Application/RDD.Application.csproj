@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.0.0.42</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
+    <ProjectReference Include="..\..\Infra\RDD.Infra\RDD.Infra.csproj" />
+  </ItemGroup>
+  
+</Project>
