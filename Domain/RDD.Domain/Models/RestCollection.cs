@@ -54,12 +54,7 @@ namespace RDD.Domain.Models
 		}
 		public virtual Task CreateAsync(TEntity entity, Query<TEntity> query = null)
 		{
-			if (query == null)
-			{
-				query = new Query<TEntity>();
-			}
-
-			ForgeEntity(entity, query.Options);
+			ForgeEntity(entity);
 
 			ValidateEntity(entity, null);
 
@@ -72,7 +67,7 @@ namespace RDD.Domain.Models
 		{
 			return new TEntity();
 		}
-		protected virtual void ForgeEntity(TEntity entity, Options queryOptions) { }
+		protected virtual void ForgeEntity(TEntity entity) { }
 		protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
 
 		private Task<TEntity> UpdateAsync(TEntity entity, object datas, Query<TEntity> query = null)
