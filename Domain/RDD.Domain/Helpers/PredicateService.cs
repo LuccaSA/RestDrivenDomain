@@ -19,8 +19,7 @@ namespace RDD.Domain.Helpers
         {
             Type entityType = typeof(TEntity);
             ParameterExpression parameter = Expression.Parameter(entityType, "entity");
-            PropertyInfo property;
-            Expression expression = BuildBinaryExpressionRecursive(entityType, binaryOperator, parameter, field, value, out property);
+            Expression expression = BuildBinaryExpressionRecursive(entityType, binaryOperator, parameter, field, value, out PropertyInfo property);
 
             // Limitation à certains types
             if (binaryOperator == FilterOperand.Until || binaryOperator == FilterOperand.Since)
@@ -39,7 +38,7 @@ namespace RDD.Domain.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }
 
-    
+
         internal virtual Expression<Func<TEntity, bool>> BuildStartsExpression(string field, string value)
         {
             Type entityType = typeof(TEntity);
@@ -68,19 +67,14 @@ namespace RDD.Domain.Helpers
 
         private Expression BuildBinaryExpressionRecursive(Type entityType, FilterOperand binaryOperator, ParameterExpression parameter, string field, object value, out PropertyInfo property)
         {
-            string collectionAccessorField;
-            string subField;
-            Type collectionType;
-
-            if (IsQueryOnCollection(entityType, field, out collectionAccessorField, out subField, out collectionType))
+            if (IsQueryOnCollection(entityType, field, out string collectionAccessorField, out string subField, out Type collectionType))
             {
                 ParameterExpression collectionParameter = Expression.Parameter(collectionType, "subparam");
                 Expression collectionBinaryExpression = BuildBinaryExpressionRecursive(entityType, binaryOperator, collectionParameter, subField, value, out property);
 
                 Expression anyExpression = Expression.Lambda(typeof(Func<,>).MakeGenericType(collectionType, typeof(bool)), collectionBinaryExpression, collectionParameter);
 
-                PropertyInfo accessProperty;
-                Expression accessCollectionExpression = NestedPropertyAccessor(parameter.Type, parameter, collectionAccessorField, out accessProperty);
+                Expression accessCollectionExpression = NestedPropertyAccessor(parameter.Type, parameter, collectionAccessorField, out _);
                 return ExpressionHelper.BuildAny(collectionType, accessCollectionExpression, anyExpression);
             }
             Expression expressionLeft = NestedPropertyAccessor(parameter.Type, parameter, field, out property);
@@ -88,7 +82,7 @@ namespace RDD.Domain.Helpers
             // Hack pour le Between qui n'est pas binaire, mais plus performant de le faire ici plutot que 2 parcours récursifs, puis un AND sur les expressions
             if (binaryOperator == FilterOperand.Between)
             {
-                var period = (Period)value;
+                var period = (Period) value;
                 ConstantExpression expressionRightSince = value == null ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
                 ConstantExpression expressionRightUntil = value == null ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
                 BinaryExpression sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
@@ -110,7 +104,7 @@ namespace RDD.Domain.Helpers
 
             switch (binaryOperator)
             {
-                case FilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new[] { expressionLeft.Type }, expressionRight, expressionLeft);
+                case FilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new[] {expressionLeft.Type}, expressionRight, expressionLeft);
                 case FilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
                 case FilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
                 case FilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
@@ -142,13 +136,11 @@ namespace RDD.Domain.Helpers
             }
         }
 
-        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field)
-        {
-            PropertyInfo unusedFinalProperty;
-            return NestedPropertyAccessor(type, seed, field, out unusedFinalProperty);
-        }
+        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field) 
+            => NestedPropertyAccessor(type, seed, field, out _);
 
-        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field, out PropertyInfo property) => NestedPropertyAccessor(type, seed, field.Split('.'), out property);
+        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field, out PropertyInfo property) 
+            => NestedPropertyAccessor(type, seed, field.Split('.'), out property);
 
         private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string[] fields, out PropertyInfo property)
         {
@@ -202,7 +194,6 @@ namespace RDD.Domain.Helpers
 
         private bool IsQueryOnCollection(Type entityType, string field, out string collectionAccessorField, out string subField, out Type collectionType)
         {
-            PropertyInfo property = null;
             collectionAccessorField = "";
             subField = field;
             collectionType = typeof(object);
@@ -212,7 +203,7 @@ namespace RDD.Domain.Helpers
                 string member = fields[i];
 
                 // Include internal properties through BindingFlags
-                property = entityType
+                PropertyInfo property = entityType
                     .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
                     .FirstOrDefault(p => string.Equals(p.Name, member, StringComparison.CurrentCultureIgnoreCase));
 

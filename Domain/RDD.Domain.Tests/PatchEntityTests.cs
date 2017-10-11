@@ -14,7 +14,7 @@ namespace RDD.Domain.Tests
             var user = new User();
             var patcher = new PatchEntityHelper();
             
-            patcher.PatchEntity(user, PostedData.ParseJSON(json));
+            patcher.PatchEntity(user, PostedData.ParseJson(json));
         }
     }
 }

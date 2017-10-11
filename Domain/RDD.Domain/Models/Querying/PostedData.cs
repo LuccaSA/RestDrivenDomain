@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NExtends.Primitives;
 
 namespace RDD.Domain.Models.Querying
@@ -10,27 +10,55 @@ namespace RDD.Domain.Models.Querying
     //Objet pseudo-dynamic, permet de stocker ce qui arrive du client lors d'un POST/PUT
     public class PostedData
     {
-        public string name;
-        public string value;
-        public List<PostedData> values => subs.Values.ToList();
-        public JToken rawObject;
-
-        //Pour un objet JSON, les subs sont les clé/valeur, pour un array JSON, les clés sont les index
-        public Dictionary<string, PostedData> subs { get; private set; }
-
         public PostedData()
         {
-            name = "this";
-            value = null;
-            subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+            Name = "this";
+            Value = null;
+            Subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
         }
 
         //On veut garder une trace de l'objet JSON d'origine, pour pouvoir le caster en classe C# plus tard
-        public PostedData(JToken rawObject_)
+        public PostedData(JToken rawObject)
             : this()
         {
-            rawObject = rawObject_;
+            RawObject = rawObject;
         }
+
+        private PostedData(string name, string value)
+        {
+            Name = name;
+            Value = value;
+            Subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+        }
+ 
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public List<PostedData> Values => Subs.Values.ToList();
+        public JToken RawObject { get; set; }
+
+        //Pour un objet JSON, les subs sont les clé/valeur, pour un array JSON, les clés sont les index
+        public Dictionary<string, PostedData> Subs { get; private set; }
+
+        public PostedData this[string key]
+        {
+            get => Subs[key];
+            set => Subs[key] = value;
+        }
+
+        public PostedData this[int index]
+        {
+            get => Subs[index.ToString()];
+            set => Subs[index.ToString()] = value;
+        }
+
+        public PostedData this[Enum key]
+        {
+            get => Subs[key.ToString()];
+            set => Subs[key.ToString()] = value;
+        }
+
+        public ICollection<string> Keys => Subs?.Keys;
+        public bool HasSubs => Subs.Count > 0;
 
         /// <summary>
         /// Value peut être soit un string, soit un string[]
@@ -41,31 +69,24 @@ namespace RDD.Domain.Models.Querying
         {
             if (value.GetType() == typeof(string[]))
             {
-                return ParseArray(null, (string[])value);
+                return ParseArray(null, (string[]) value);
             }
-            else if (value.GetType() == typeof(int[]))
+            if (value.GetType() == typeof(int[]))
             {
-                return ParseArray((int[])value);
+                return ParseArray((int[]) value);
             }
-            else
-            {
-                return new PostedData(name, (string)value);
-            }
+            return new PostedData(name, (string) value);
         }
-        private PostedData(string name, string value)
-        {
-            this.name = name;
-            this.value = value;
-            subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-        }
+
         public static PostedData Parse(string singleValue) => new PostedData("this", singleValue);
 
         public static PostedData ParseUrlEncoded(string data)
         {
-            var dictionary = data.Split('&').ToDictionary(el => el.Split('=')[0], el => el.Split('=')[1]);
+            Dictionary<string, string> dictionary = data.Split('&').ToDictionary(el => el.Split('=')[0], el => el.Split('=')[1]);
 
             return ParseDictionary(dictionary);
         }
+
         /// <summary>
         /// Quand on envoie un dico simple de string, string
         /// </summary>
@@ -73,7 +94,7 @@ namespace RDD.Domain.Models.Querying
         /// <returns></returns>
         public static PostedData ParseDictionary(Dictionary<string, string> data)
         {
-            return ParseDictionary(data.ToDictionary(el => el.Key, el => (object)el.Value));
+            return ParseDictionary(data.ToDictionary(el => el.Key, el => (object) el.Value));
         }
 
         /// <summary>
@@ -85,34 +106,49 @@ namespace RDD.Domain.Models.Querying
         {
             var post = new PostedData();
 
-            foreach (var element in data)
+            foreach (KeyValuePair<string, object> element in data)
             {
-                post.subs.Add(element.Key.ToLower(), CreateInstance(element.Key, element.Value));
+                post.Subs.Add(element.Key.ToLower(), CreateInstance(element.Key, element.Value));
             }
 
             return post;
         }
+
         public static PostedData ParseArray(JToken rawObject, string[] array)
         {
             var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < array.Length; i++)
             {
-                subs.Add(i.ToString(), new PostedData() { value = array[i] });
+                subs.Add(i.ToString(), new PostedData
+                {
+                    Value = array[i]
+                });
             }
 
-            return new PostedData(rawObject) { subs = subs };
+            return new PostedData(rawObject)
+            {
+                Subs = subs
+            };
         }
+
         public static PostedData ParseArray(int[] array)
         {
             var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < array.Length; i++)
             {
-                subs.Add(i.ToString(), new PostedData() { value = array[i].ToString() });
+                subs.Add(i.ToString(), new PostedData
+                {
+                    Value = array[i].ToString()
+                });
             }
 
-            return new PostedData() { subs = subs };
+            return new PostedData
+            {
+                Subs = subs
+            };
         }
-        public static PostedData ParseJSONArray(JToken rawObject, JToken[] array)
+
+        public static PostedData ParseJsonArray(JToken rawObject, JToken[] array)
         {
             if (array.Length > 0)
             {
@@ -122,42 +158,43 @@ namespace RDD.Domain.Models.Querying
                     var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
                     for (var i = 0; i < array.Length; i++)
                     {
-                        subs.Add(i.ToString(), ParseJSON((JObject)array[i]));
+                        subs.Add(i.ToString(), ParseJson((JObject) array[i]));
                     }
 
-                    return new PostedData(rawObject) { subs = subs };
+                    return new PostedData(rawObject)
+                    {
+                        Subs = subs
+                    };
                 }
-                else //JValue simple
-                {
-                    return ParseArray(rawObject, array.Select(jToken => ((JValue)jToken).Value<string>()).ToArray());
-                }
+                return ParseArray(rawObject, array.Select(jToken => ((JValue) jToken).Value<string>()).ToArray());
             }
-            else
-            {
-                return new PostedData(rawObject);
-            }
+            return new PostedData(rawObject);
         }
-        public static PostedData ParseJSON(string data)
-        {
-            var rawObject = JsonConvert.DeserializeObject(data);
 
-            return ParseJSON((JObject)rawObject);
+        public static PostedData ParseJson(string data)
+        {
+            object rawObject = JsonConvert.DeserializeObject(data);
+
+            return ParseJson((JObject) rawObject);
         }
-        public static PostedData ParseJSONArray(string data)
+
+        public static PostedData ParseJsonArray(string data)
         {
             var array = JsonConvert.DeserializeObject<JObject[]>(data);
 
-            return ParseJSONArray(data, array);
+            return ParseJsonArray(data, array);
         }
-        public static PostedData ParseJSONArray(JArray array)
+
+        public static PostedData ParseJsonArray(JArray array)
         {
-            return ParseJSONArray(array, array.Select(el => el).ToArray());
+            return ParseJsonArray(array, array.Select(el => el).ToArray());
         }
-        private static PostedData ParseJSON(JObject jObject)
+
+        private static PostedData ParseJson(JObject jObject)
         {
             var post = new PostedData(jObject);
 
-            foreach (var element in jObject)
+            foreach (KeyValuePair<string, JToken> element in jObject)
             {
                 JToken jValue = element.Value;
 
@@ -166,11 +203,11 @@ namespace RDD.Domain.Models.Querying
                 {
                     if (jValue.Type == JTokenType.Array)
                     {
-                        post.subs.Add(element.Key.ToLower(), ParseJSONArray((JArray)jValue));
+                        post.Subs.Add(element.Key.ToLower(), ParseJsonArray((JArray) jValue));
                     }
                     else //Objet neasted
                     {
-                        post.subs.Add(element.Key.ToLower(), ParseJSON((JObject)jValue));
+                        post.Subs.Add(element.Key.ToLower(), ParseJson((JObject) jValue));
                     }
                 }
                 else //Value simple
@@ -178,11 +215,11 @@ namespace RDD.Domain.Models.Querying
                     //Cas particulier pour les dates
                     if (jValue.Type == JTokenType.Date)
                     {
-                        post.subs.Add(element.Key.ToLower(), new PostedData(element.Key, ((DateTime)jValue).ToISOz()));
+                        post.Subs.Add(element.Key.ToLower(), new PostedData(element.Key, ((DateTime) jValue).ToISOz()));
                     }
                     else
                     {
-                        post.subs.Add(element.Key.ToLower(), new PostedData(element.Key, jValue.Value<string>()));
+                        post.Subs.Add(element.Key.ToLower(), new PostedData(element.Key, jValue.Value<string>()));
                     }
                 }
             }
@@ -190,28 +227,9 @@ namespace RDD.Domain.Models.Querying
             return post;
         }
 
-        public PostedData this[string key]
-        {
-            get => subs[key];
-            set => subs[key] = value;
-        }
-        public PostedData this[int index]
-        {
-            get => subs[index.ToString()];
-            set => subs[index.ToString()] = value;
-        }
-        public PostedData this[Enum key]
-        {
-            get => subs[key.ToString()];
-            set => subs[key.ToString()] = value;
-        }
-        public bool ContainsKey(string key) => subs.ContainsKey(key);
-        public bool ContainsKey(Enum key) => subs.ContainsKey(key);
-
-        public bool Remove(string key) => subs.Remove(key);
-
-        public ICollection<string> Keys => subs == null ? null : subs.Keys;
-        public int Count() => subs.Count;
-        public bool HasSubs => subs.Count > 0;
+        public bool ContainsKey(string key) => Subs.ContainsKey(key);
+        public bool ContainsKey(Enum key) => Subs.ContainsKey(key);
+        public bool Remove(string key) => Subs.Remove(key);
+        public int Count() => Subs.Count;
     }
 }

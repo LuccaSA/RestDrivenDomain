@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Resources;
 using System.Threading;
 
@@ -24,9 +25,9 @@ namespace RDD.Domain.Attributes
         /// <returns>The enum Description if it exists, else an empty string</returns>
         public static string GetName(Enum enumValue)
         {
-            var type = enumValue.GetType();
-            var memInfo = type.GetMember(enumValue.ToString());
-            var attributes = memInfo[0].GetCustomAttributes(typeof(CulturedDescriptionAttribute), false);
+            Type type = enumValue.GetType();
+            MemberInfo[] memInfo = type.GetMember(enumValue.ToString());
+            object[] attributes = memInfo[0].GetCustomAttributes(typeof(CulturedDescriptionAttribute), false);
             return (attributes.Length > 0) ? ((CulturedDescriptionAttribute)attributes[0]).Description : String.Empty;
         }
     }

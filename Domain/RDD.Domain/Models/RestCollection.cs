@@ -21,7 +21,7 @@ namespace RDD.Domain.Models
 
         public Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
         {
-            PostedData postedData = PostedData.ParseJSON(JsonConvert.SerializeObject(datas));
+            PostedData postedData = PostedData.ParseJson(JsonConvert.SerializeObject(datas));
 
             return CreateAsync(postedData, query);
         }
@@ -35,19 +35,22 @@ namespace RDD.Domain.Models
             return CreateAsync(entity);
         }
 
-        public virtual Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
-        {
-            return CreateAsync(entity);
-        }
-        protected async Task<TEntity> CreateAsync(TEntity entity)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
         {
             await CheckRightsForCreateAsync(entity);
 
             ForgeEntity(entity);
 
+            ValidateEntity(entity, null);
+
+            Repository.Add(entity);
+
+            return entity;
+        }
+
         public Task<TEntity> UpdateByIdAsync(TKey id, object datas, Query<TEntity> query = null)
         {
-            PostedData postedData = PostedData.ParseJSON(JsonConvert.SerializeObject(datas));
+            PostedData postedData = PostedData.ParseJson(JsonConvert.SerializeObject(datas));
 
             return UpdateByIdAsync(id, postedData, query);
         }
@@ -72,8 +75,8 @@ namespace RDD.Domain.Models
             query.Options.AttachOperations = true;
 
             List<TKey> ids = datasByIds.Keys.ToList();
-            Dictionary<TKey, TEntity> entities = (await GetByIdsAsync(ids, query))
-                .ToDictionary(el => el.Id, el => el);
+            Dictionary<TKey, TEntity> entities = (await GetByIdsAsync(ids, query)).ToDictionary(el => el.Id, el => el);
+
             var result = new HashSet<TEntity>();
 
             foreach (KeyValuePair<TKey, PostedData> kvp in datasByIds)
@@ -89,28 +92,35 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdAsync(TKey id)
         {
-            TEntity entity = await GetByIdAsync(id, new Query<TEntity> {Verb = HttpVerb.DELETE});
+            TEntity entity = await GetByIdAsync(id, new Query<TEntity>
+            {
+                Verb = HttpVerb.DELETE
+            });
 
-            _repository.Remove(entity);
+            Repository.Remove(entity);
         }
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity> {Verb = HttpVerb.DELETE});
+            IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity>
+            {
+                Verb = HttpVerb.DELETE
+            });
 
             foreach (TEntity entity in entities)
             {
-                _repository.Remove(entity);
+                Repository.Remove(entity);
             }
         }
+        public virtual TEntity InstanciateEntity() => new TEntity();
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
-            IEnumerable<int> operationIds = _combinationsHolder.Combinations
+            IEnumerable<int> operationIds = CombinationsHolder.Combinations
                 .Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
                 .Select(c => c.Operation.Id);
 
-            if (!_execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
+            if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
             {
                 throw new HttpLikeException(HttpStatusCode.Unauthorized, string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
             }
@@ -120,6 +130,25 @@ namespace RDD.Domain.Models
 
         protected virtual PatchEntityHelper GetPatcher() => new PatchEntityHelper();
 
+        protected virtual void ForgeEntity(TEntity entity)
+        {
+        }
+
+        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity)
+        {
+        }
+        protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas) => Task.CompletedTask;
+
+        /// <summary>
+        /// Called after entity update
+        /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
+        /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
+        /// </summary>
+        /// <param name="oldEntity"></param>
+        /// <param name="entity"></param>
+        /// <param name="datas"></param>
+        protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
+
         private async Task<TEntity> CreateAsync(TEntity entity)
         {
             await CheckRightsForCreateAsync(entity);
@@ -128,22 +157,9 @@ namespace RDD.Domain.Models
 
             ValidateEntity(entity, null);
 
-            _repository.Add(entity);
+            Repository.Add(entity);
 
             return entity;
-        }
-
-        public virtual TEntity InstanciateEntity()
-        {
-            return new TEntity();
-        }
-
-        protected virtual void ForgeEntity(TEntity entity)
-        {
-        }
-
-        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity)
-        {
         }
 
         private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
@@ -160,20 +176,5 @@ namespace RDD.Domain.Models
 
             return entity;
         }
-
-        protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Called after entity update
-        /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
-        /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
-        /// </summary>
-        /// <param name="oldEntity"></param>
-        /// <param name="entity"></param>
-        /// <param name="datas"></param>
-        protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
     }
 }

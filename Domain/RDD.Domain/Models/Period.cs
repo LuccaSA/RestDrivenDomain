@@ -40,19 +40,13 @@ namespace RDD.Domain.Models
         /// <param name="idWidget">Widget TimeSheet</param>
         /// <param name="dt">Any date (used to calculate the period)</param>
         /// <returns>Period which includes dt</returns>
-        public static Period getPeriodDates(Mode mode, DateTime dt)
+        public static Period GetPeriodDates(Mode mode, DateTime dt)
         {
             DateTime dtStart, dtEnd;
 
             switch (mode)
             {
-                default:
-                case Mode.semaine:
-                    dtStart = dt.PreviousOrCurrent(DayOfWeek.Monday);
-                    dtEnd = dt.NextOrCurrent(DayOfWeek.Sunday);
-                    break;
-
-                case Mode.quizaine:
+                case Mode.Quizaine:
                     if (dt.Day <= 15)
                     {
                         dtStart = new DateTime(dt.Year, dt.Month, 1);
@@ -65,16 +59,21 @@ namespace RDD.Domain.Models
                     }
                     break;
 
-                case Mode.mois:
+                case Mode.Mois:
                     dtStart = new DateTime(dt.Year, dt.Month, 1);
                     dtEnd = new DateTime(dt.Year, dt.Month, DateTime.DaysInMonth(dt.Year, dt.Month));
+                    break;
+
+                default:
+                    dtStart = dt.PreviousOrCurrent(DayOfWeek.Monday);
+                    dtEnd = dt.NextOrCurrent(DayOfWeek.Sunday);
                     break;
             }
 
             return new Period(dtStart, dtEnd);
         }
 
-        public static List<Period> getPastDateRanges(Mode mode, DateTime dtStart, int nbPeriod, bool includeDtStart)
+        public static List<Period> GetPastDateRanges(Mode mode, DateTime dtStart, int nbPeriod, bool includeDtStart)
         {
             // we want to include dtStart => add one day
             DateTime prevDtStart = includeDtStart ? dtStart.AddDays(1) : dtStart;
@@ -84,7 +83,7 @@ namespace RDD.Domain.Models
             for (var i = 0; i < nbPeriod; i++)
             {
                 // Date we look => last date of previous range
-                Period period = getPeriodDates(mode, prevDtStart.AddDays(-1));
+                Period period = GetPeriodDates(mode, prevDtStart.AddDays(-1));
 
                 dateRanges.Add(new Period(period.Start, period.End));
 
@@ -130,9 +129,9 @@ namespace RDD.Domain.Models
 
         public enum Mode
         {
-            semaine,
-            quizaine,
-            mois
+            Semaine,
+            Quizaine,
+            Mois
         }
     }
 }

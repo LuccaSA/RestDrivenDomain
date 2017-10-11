@@ -4,13 +4,13 @@ namespace RDD.Domain.Helpers
 {
     public class ParameterChanger : ExpressionVisitor
     {
-        private ParameterExpression Parameter { get; }
+        private readonly ParameterExpression _parameter;
 
         public ParameterChanger(ParameterExpression parameter)
         {
-            Parameter = parameter;
+            _parameter = parameter;
         }
 
-        protected override Expression VisitParameter(ParameterExpression node) => Parameter;
+        protected override Expression VisitParameter(ParameterExpression node) => _parameter;
     }
 }

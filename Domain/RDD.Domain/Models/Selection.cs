@@ -31,42 +31,39 @@ namespace RDD.Domain.Models
             {
                 return Items.Sum(i => (int)property.GetValue(i));
             }
-            else if (property.PropertyType == typeof(int?))
+            if (property.PropertyType == typeof(int?))
             {
                 return Items.Sum(i => (int?)property.GetValue(i) ?? 0);
             }
-            else if (property.PropertyType == typeof(double))
+            if (property.PropertyType == typeof(double))
             {
                 Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
-                var sum = Items.Sum(i => (double)property.GetValue(i));
+                double sum = Items.Sum(i => (double)property.GetValue(i));
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(double?))
+            if (property.PropertyType == typeof(double?))
             {
                 Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
-                var sum = Items.Sum(i => (double?)property.GetValue(i) ?? 0);
+                double sum = Items.Sum(i => (double?)property.GetValue(i) ?? 0);
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(decimal))
+            if (property.PropertyType == typeof(decimal))
             {
                 Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
-                var sum = Items.Sum(i => (decimal)property.GetValue(i));
+                decimal sum = Items.Sum(i => (decimal)property.GetValue(i));
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(decimal?))
+            if (property.PropertyType == typeof(decimal?))
             {
                 Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
-                var sum = Items.Sum(i => (decimal?)property.GetValue(i) ?? 0);
+                decimal sum = Items.Sum(i => (decimal?)property.GetValue(i) ?? 0);
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(TimeSpan))
+            if (property.PropertyType == typeof(TimeSpan))
             {
                 return new TimeSpan(Items.Sum(i => ((TimeSpan)property.GetValue(i)).Ticks));
             }
-            else
-            {
-                throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
-            }
+            throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
 
         public object Min(PropertyInfo property, DecimalRounding rounding)
@@ -80,46 +77,43 @@ namespace RDD.Domain.Models
             {
                 return Items.Min(i => (int)property.GetValue(i));
             }
-            else if (property.PropertyType == typeof(int?))
+            if (property.PropertyType == typeof(int?))
             {
                 return Items.Min(i => (int?)property.GetValue(i) ?? 0);
             }
-            else if (property.PropertyType == typeof(double))
+            if (property.PropertyType == typeof(double))
             {
                 Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
-                var sum = Items.Min(i => (double)property.GetValue(i));
+                double sum = Items.Min(i => (double)property.GetValue(i));
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(double?))
+            if (property.PropertyType == typeof(double?))
             {
                 Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
-                var sum = Items.Min(i => (double?)property.GetValue(i) ?? 0);
+                double sum = Items.Min(i => (double?)property.GetValue(i) ?? 0);
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(decimal))
+            if (property.PropertyType == typeof(decimal))
             {
                 Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
-                var sum = Items.Min(i => (decimal)property.GetValue(i));
+                decimal sum = Items.Min(i => (decimal)property.GetValue(i));
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(decimal?))
+            if (property.PropertyType == typeof(decimal?))
             {
                 Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
-                var sum = Items.Min(i => (decimal?)property.GetValue(i) ?? 0);
+                decimal sum = Items.Min(i => (decimal?)property.GetValue(i) ?? 0);
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(DateTime))
+            if (property.PropertyType == typeof(DateTime))
             {
                 return Items.Min(i => (DateTime)property.GetValue(i));
             }
-            else if (property.PropertyType == typeof(DateTime?))
+            if (property.PropertyType == typeof(DateTime?))
             {
                 return Items.Min(i => (DateTime?)property.GetValue(i));
             }
-            else
-            {
-                throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
-            }
+            throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
 
         public object Max(PropertyInfo property, DecimalRounding rounding)
@@ -133,46 +127,43 @@ namespace RDD.Domain.Models
             {
                 return Items.Max(i => (int)property.GetValue(i));
             }
-            else if (property.PropertyType == typeof(int?))
+            if (property.PropertyType == typeof(int?))
             {
                 return Items.Max(i => (int?)property.GetValue(i) ?? 0);
             }
-            else if (property.PropertyType == typeof(double))
+            if (property.PropertyType == typeof(double))
             {
                 Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
-                var sum = Items.Max(i => (double)property.GetValue(i));
+                double sum = Items.Max(i => (double)property.GetValue(i));
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(double?))
+            if (property.PropertyType == typeof(double?))
             {
                 Func<double, double> roundFunction = rounding.GetDoubleRoundingFunction();
-                var sum = Items.Max(i => (double?)property.GetValue(i) ?? 0);
+                double sum = Items.Max(i => (double?)property.GetValue(i) ?? 0);
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(decimal))
+            if (property.PropertyType == typeof(decimal))
             {
                 Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
-                var sum = Items.Max(i => (decimal)property.GetValue(i));
+                decimal sum = Items.Max(i => (decimal)property.GetValue(i));
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(decimal?))
+            if (property.PropertyType == typeof(decimal?))
             {
                 Func<decimal, decimal> roundFunction = rounding.GetDecimalRoundingFunction();
-                var sum = Items.Max(i => (decimal?)property.GetValue(i) ?? 0);
+                decimal sum = Items.Max(i => (decimal?)property.GetValue(i) ?? 0);
                 return roundFunction(sum);
             }
-            else if (property.PropertyType == typeof(DateTime))
+            if (property.PropertyType == typeof(DateTime))
             {
                 return Items.Max(i => (DateTime)property.GetValue(i));
             }
-            else if (property.PropertyType == typeof(DateTime?))
+            if (property.PropertyType == typeof(DateTime?))
             {
                 return Items.Max(i => (DateTime?)property.GetValue(i));
             }
-            else
-            {
-                throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
-            }
+            throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
     }
 }

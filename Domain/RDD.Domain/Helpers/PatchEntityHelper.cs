@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
-using NExtends.Primitives;
-using NExtends.Primitives.Types;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models.Querying;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using Newtonsoft.Json;
+using NExtends.Primitives;
+using NExtends.Primitives.Types;
+using RDD.Domain.Exceptions;
+using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain.Helpers
 {
@@ -22,34 +23,34 @@ namespace RDD.Domain.Helpers
         /// <param name="datas"></param>
         public void PatchEntity(object entity, PostedData datas)
         {
-            var entityType = Nullable.GetUnderlyingType(entity.GetType()) ?? entity.GetType();
-            var props = entityType.GetProperties();
+            Type entityType = Nullable.GetUnderlyingType(entity.GetType()) ?? entity.GetType();
+            PropertyInfo[] props = entityType.GetProperties();
 
             //On modifie propriété par propriété
-            foreach (var key in datas.Keys)
+            foreach (string key in datas.Keys)
             {
-                var property = props.FirstOrDefault(p => p.Name.ToLower() == key);
+                PropertyInfo property = props.FirstOrDefault(p => p.Name.ToLower() == key);
 
                 if (property == null)
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("Property {0} does not exist on type {1}", key, entityType.Name));
+                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Property {0} does not exist on type {1}", key, entityType.Name));
                 }
 
                 //Si la propriété n'est pas publique, alors on indique qu'on ne peut pas la modifier
-                var propertySetter = property.GetSetMethod();
+                MethodInfo propertySetter = property.GetSetMethod();
 
                 if (propertySetter == null)
                 {
-                    throw new HttpLikeException(HttpStatusCode.Forbidden, String.Format("Property {0} of type {1} is not writable", property.Name, entityType.Name));
+                    throw new HttpLikeException(HttpStatusCode.Forbidden, string.Format("Property {0} of type {1} is not writable", property.Name, entityType.Name));
                 }
 
-                var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                var subType = propertyType.GetEnumerableOrArrayElementType();
+                Type propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                Type subType = propertyType.GetEnumerableOrArrayElementType();
 
                 //Si c'est un type du domaine, on doit aller chercher les entités via leur repo, pour garantir qu'ils seront récupérés via le contexte courant (et pas créé au moment du commit)
                 if (typeof(IEntityBase).IsAssignableFrom(subType))
                 {
-                    var entityBaseType = subType.GetInterfaces().FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEntityBase<>));
+                    Type entityBaseType = subType.GetInterfaces().FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEntityBase<>));
                     if (entityBaseType != null)
                     {
                         //Collection de Type du domaine (1-N ou N-N)
@@ -57,51 +58,49 @@ namespace RDD.Domain.Helpers
                         {
                             // Si on envoi un tableau d'objets non vides, on récupère ces objets puis on les affecte à la propriété
                             // Le else est utilisé pour gérer l'écrasement lorsqu'on envoi un tableau vide
-                            if (datas[key].subs.Values.Any())
+                            if (datas[key].Subs.Values.Any())
                             {
-                                var entitiesGetter = GetSimpleEntitiesGetter(datas[key].subs.Values.First(), subType, entityBaseType);
+                                Func<PostedData, IEnumerable<object>> entitiesGetter = GetSimpleEntitiesGetter(datas[key].Subs.Values.First(), subType, entityBaseType);
 
-                                var attachedEntities = entitiesGetter(datas[key]);
-                                var values = new SerializationService().CastEnumerableIntoStrongType(property.PropertyType, attachedEntities);
-                                propertySetter.Invoke(entity, new[] { values });
+                                IEnumerable<object> attachedEntities = entitiesGetter(datas[key]);
+                                object values = new SerializationService().CastEnumerableIntoStrongType(property.PropertyType, attachedEntities);
+                                propertySetter.Invoke(entity, new[] {values});
                             }
                             else
                             {
-                                var values = new SerializationService().CastEnumerableIntoStrongType(property.PropertyType, new HashSet<object>());
-                                propertySetter.Invoke(entity, new[] { values });
+                                object values = new SerializationService().CastEnumerableIntoStrongType(property.PropertyType, new HashSet<object>());
+                                propertySetter.Invoke(entity, new[] {values});
                             }
                         }
                         else //Type du domaine (N-1)
                         {
-                            var entityGetter = GetSimpleEntityGetter(datas[key], subType, entityBaseType);
+                            Func<PostedData, object> entityGetter = GetSimpleEntityGetter(datas[key], subType, entityBaseType);
 
-                            var attachedEntity = entityGetter(datas[key]);
-                            propertySetter.Invoke(entity, new[] { attachedEntity });
+                            object attachedEntity = entityGetter(datas[key]);
+                            propertySetter.Invoke(entity, new[] {attachedEntity});
                         }
                     }
                 }
                 else if (
-                    (
-                        propertyType.IsGenericType
-                        && propertyType.GetInterface("IEnumerable") != null // Il ne suffit pas d'être générique pour être une collection (eg EnumClient<UneEnum>)
-                        && propertyType.GetGenericTypeDefinition() != typeof(Dictionary<,>) // Un dictionnaire est un objet d'objets JSON et non un tableau d'objets
-                    )
+                    propertyType.IsGenericType
+                    && propertyType.GetInterface("IEnumerable") != null // Il ne suffit pas d'être générique pour être une collection (eg EnumClient<UneEnum>)
+                    && propertyType.GetGenericTypeDefinition() != typeof(Dictionary<,>)
                     || propertyType.IsArray // Les types [] ne sont pas des Generic mais doivent être traités de la même manière
                 ) //Collection d'objets qui ne sont pas du Domaine (ou complexType)
                 {
-                    var jsonString = String.Join(",", datas[key].subs.Values.Select(v => v.rawObject != null ? v.rawObject.ToString() : (v.value != null ? v.value.ToString() : "null")));
+                    string jsonString = string.Join(",", datas[key].Subs.Values.Select(v => v.RawObject != null ? v.RawObject.ToString() : (v.Value != null ? v.Value.ToString() : "null")));
 
                     if (property.PropertyType.IsEnumerableOrArray())
                     {
                         jsonString = "[" + jsonString + "]";
                     }
-                    var propValue = JsonConvert.DeserializeObject(jsonString, property.PropertyType);
-                    propertySetter.Invoke(entity, new[] { propValue });
+                    object propValue = JsonConvert.DeserializeObject(jsonString, property.PropertyType);
+                    propertySetter.Invoke(entity, new[] {propValue});
                 }
                 else if (datas[key].HasSubs) //Type non générique mais potentiellement complexType
                 {
                     //On récupère le sous objet
-                    var subEntity = property.GetValue(entity);
+                    object subEntity = property.GetValue(entity);
 
                     //S'il est NULL, il faut l'instancier
                     if (subEntity == null)
@@ -121,57 +120,56 @@ namespace RDD.Domain.Helpers
                             propertyType = propertyType.BaseType;
                         }
                         // On récupère les génériques
-                        var genericArguments = propertyType.GetGenericArguments();
+                        Type[] genericArguments = propertyType.GetGenericArguments();
 
                         // On construit l'objet
-                        foreach (var sub in datas[key].subs)
+                        foreach (KeyValuePair<string, PostedData> sub in datas[key].Subs)
                         {
                             // Une clé JSON est forcément une string - voir http://json.org/
                             // En revanche côté serveur il peut être utile d'avoir des dictionnaires de int,
                             // c'est pourquoi on convertit la clé vers genericArguments[0] au lieu de string
-                            var dicKey = sub.Key.ChangeType(genericArguments[0], CultureInfo.InvariantCulture);
-                            var dicValue = sub.Value.rawObject != null ? JsonConvert.DeserializeObject(sub.Value.rawObject.ToString(), genericArguments[1]) : null;
+                            object dicKey = sub.Key.ChangeType(genericArguments[0], CultureInfo.InvariantCulture);
+                            object dicValue = sub.Value.RawObject != null ? JsonConvert.DeserializeObject(sub.Value.RawObject.ToString(), genericArguments[1]) : null;
 
                             // Si c'est un type valeur
                             if (dicValue == null && genericArguments[1].IsValueType)
                             {
-                                if (sub.Value.value != null)
+                                if (sub.Value.Value != null)
                                 {
                                     // On ne peut pas convertir un String en Nullable<int>
                                     // On récupère donc le générique (par exemple int)
                                     if (genericArguments[1].IsGenericType)
                                     {
-                                        dicValue = sub.Value.value.ChangeType(genericArguments[1].GenericTypeArguments[0], CultureInfo.InvariantCulture);
+                                        dicValue = sub.Value.Value.ChangeType(genericArguments[1].GenericTypeArguments[0], CultureInfo.InvariantCulture);
                                     }
                                     else
                                     {
-                                        dicValue = sub.Value.value.ChangeType(genericArguments[1], CultureInfo.InvariantCulture);
+                                        dicValue = sub.Value.Value.ChangeType(genericArguments[1], CultureInfo.InvariantCulture);
                                     }
                                 }
                                 // Il est impossible de setter à NULL une propriété non nullable
                                 else if (!genericArguments[1].IsTypeNullable())
                                 {
-                                    throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("You cannot set a non nullable value to NULL (Property {0})", key));
+                                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("You cannot set a non nullable value to NULL (Property {0})", key));
                                 }
                             }
 
                             dictionary[dicKey] = dicValue;
-
                         }
 
                         // Enfin, on patch
-                        propertySetter.Invoke(entity, new[] { dictionary });
+                        propertySetter.Invoke(entity, new[] {dictionary});
                     }
                     else
                     {
                         PatchEntity(subEntity, datas[key]);
 
-                        propertySetter.Invoke(entity, new[] { subEntity });
+                        propertySetter.Invoke(entity, new[] {subEntity});
                     }
                 }
                 else //Type simple, on envoie la valeur
                 {
-                    propertySetter.Invoke(entity, new[] { datas[key].value == null ? null : datas[key].value.ChangeType(propertyType, CultureInfo.InvariantCulture) });
+                    propertySetter.Invoke(entity, new[] {datas[key].Value == null ? null : datas[key].Value.ChangeType(propertyType, CultureInfo.InvariantCulture)});
                 }
             }
         }
@@ -194,7 +192,7 @@ namespace RDD.Domain.Helpers
             //}
             //else
             //{
-                return (s) => s.rawObject.ToObject(subType);
+            return s => s.RawObject.ToObject(subType);
 //            }
         }
 
@@ -216,8 +214,8 @@ namespace RDD.Domain.Helpers
             //}
             //else
             //{
-                return (s) => s.subs.Values.Select(el => el.rawObject.ToObject(subType));
-        //    }
+            return s => s.Subs.Values.Select(el => el.RawObject.ToObject(subType));
+            //    }
         }
     }
 }

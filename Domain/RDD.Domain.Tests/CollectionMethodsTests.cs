@@ -69,9 +69,9 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _execution, combinationsHolder);
                 var app = new UsersAppController(storage, users);
 
-                await app.CreateAsync(PostedData.ParseJSON(@"{ ""id"": 3 }"), new Query<User>());
+                await app.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), new Query<User>());
 
-                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJSON(@"{ ""name"": ""new name"" }"), new Query<User>()));
+                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJson(@"{ ""name"": ""new name"" }"), new Query<User>()));
             }
         }
     }

@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using NExtends.Primitives.Types;
 using RDD.Application;
 using RDD.Domain;
@@ -7,11 +12,6 @@ using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
 using RDD.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace RDD.Web.Controllers
 {
@@ -21,40 +21,43 @@ namespace RDD.Web.Controllers
         where TKey : IEquatable<TKey>
     {
         protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
-            : base(appController, helper) { }
+            : base(appController, helper)
+        {
+        }
 
         protected virtual async Task<IActionResult> ProtectedPostAsync()
         {
-            _helper.WebContextWrapper.SetContext(HttpContext);
-            var query = _helper.CreateQuery(HttpVerb.POST, false);
-            var datas = _helper.InputObjectsFromIncomingHTTPRequest().SingleOrDefault();
+            Helper.WebContextWrapper.SetContext(HttpContext);
 
-            var entity = await _appController.CreateAsync(datas, query);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.POST, false);
+            PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
-            var dataContainer = new Metadata(_helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _helper.Execution);
+            TEntity entity = await AppController.CreateAsync(datas, query);
+
+            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
 
             return Ok(dataContainer.ToDictionary());
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync(TKey _id_)
+        protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
         {
-            _helper.WebContextWrapper.SetContext(HttpContext);
+            Helper.WebContextWrapper.SetContext(HttpContext);
 
-            var query = _helper.CreateQuery(HttpVerb.PUT, false);
-            var datas = _helper.InputObjectsFromIncomingHTTPRequest().SingleOrDefault();
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.PUT, false);
+            PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
-            var entity = await _appController.UpdateByIdAsync(_id_, datas, query);
+            TEntity entity = await AppController.UpdateByIdAsync(id, datas, query);
 
-            var dataContainer = new Metadata(_helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _helper.Execution);
+            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
 
             return Ok(dataContainer.ToDictionary());
         }
 
         protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
-            _helper.WebContextWrapper.SetContext(HttpContext);
-            var query = _helper.CreateQuery(HttpVerb.PUT, false);
-            var datas = _helper.InputObjectsFromIncomingHTTPRequest();
+            Helper.WebContextWrapper.SetContext(HttpContext);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.PUT, false);
+            List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (datas.Any(d => !d.ContainsKey("id")))
@@ -67,34 +70,35 @@ namespace RDD.Web.Controllers
             //Il faut que les id soient convertibles en TKey
             try
             {
-                datasByIds = datas.ToDictionary(el => (TKey)TypeExtensions.Convert<TKey>(el["id"].value), el => el);
+                datasByIds = datas.ToDictionary(el => (TKey) TypeExtensions.Convert<TKey>(el["id"].Value), el => el);
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
-            var entities = await _appController.UpdateByIdsAsync(datasByIds, query);
+            IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
 
-            var dataContainer = new Metadata(_helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, _helper.Execution);
+            var dataContainer = new Metadata(Helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, Helper.Execution);
 
             return Ok(dataContainer.ToDictionary());
         }
 
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey _id_)
+        protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            _helper.WebContextWrapper.SetContext(HttpContext);
+            Helper.WebContextWrapper.SetContext(HttpContext);
 
-            await _appController.DeleteByIdAsync(_id_);
+            await AppController.DeleteByIdAsync(id);
 
             return Ok();
         }
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
-            _helper.WebContextWrapper.SetContext(HttpContext);
-            var query = _helper.CreateQuery(HttpVerb.DELETE, true);
-            var datas = _helper.InputObjectsFromIncomingHTTPRequest();
+            Helper.WebContextWrapper.SetContext(HttpContext);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.DELETE);
+
+            List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
             if (datas.Any(d => !d.ContainsKey("id")))
             {
@@ -106,14 +110,14 @@ namespace RDD.Web.Controllers
             //Il faut que les id soient convertibles en TKey
             try
             {
-                ids = datas.Select(el => (TKey)TypeExtensions.Convert<TKey>(el["id"].value)).ToList();
+                ids = datas.Select(el => (TKey) TypeExtensions.Convert<TKey>(el["id"].Value)).ToList();
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
-            await _appController.DeleteByIdsAsync(ids);
+            await AppController.DeleteByIdsAsync(ids);
 
             return Ok();
         }

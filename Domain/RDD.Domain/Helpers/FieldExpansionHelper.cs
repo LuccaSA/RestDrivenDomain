@@ -6,82 +6,76 @@ namespace RDD.Domain.Helpers
 {
     public class FieldExpansionHelper
     {
-        private const char MULTISELECT_START = '[';
-        private const char MULTISELECT_END = ']';
-        private const char FUNCTION_START = '(';
-        private const char FUNCTION_END = ')';
-        private const char PROPERTIES_SEPARATOR = ',';
-        private const char FIELD_SEPARATOR = '.';
-        private const char SPACE = ' ';
-
-        private Stack<string> prefixes { get; }
-        private List<string> analyseResult { get; }
-        private string buffer { get; set; }
-
         public FieldExpansionHelper()
-            : this(new Stack<string>()) { }
+            : this(new Stack<string>())
+        {
+        }
 
         private FieldExpansionHelper(Stack<string> prefixes)
         {
-            this.prefixes = prefixes;
-            buffer = string.Empty;
-            analyseResult = new List<string>();
+            _prefixes = prefixes;
+            _buffer = string.Empty;
+            _analyseResult = new List<string>();
         }
 
-        private void EmptyBuffer()
-        {
-            if (!string.IsNullOrWhiteSpace(buffer))
-            {
-                analyseResult.Add(string.Join(string.Empty, prefixes.Reverse()) + buffer);
-                buffer = string.Empty;
-            }
-        }
+        private const char _multiselectStart = '[';
+        private const char _multiselectEnd = ']';
+        private const char _functionStart = '(';
+        private const char _functionEnd = ')';
+        private const char _propertiesSeparator = ',';
+        private const char _fieldSeparator = '.';
+        private const char _space = ' ';
 
-        private void FeedBuffer(char c) { buffer += c; }
+        private readonly Stack<string> _prefixes;
+        private readonly List<string> _analyseResult;
+        private string _buffer;
 
         public List<string> Expand(string input)
         {
             var isInsideFunction = false;
             var level = 0;
 
-            foreach (var character in input)
+            foreach (char character in input)
             {
                 switch (character)
                 {
-                    case MULTISELECT_START:
+                    case _multiselectStart:
                         if (level++ == 0)
                         {
-                            prefixes.Push(buffer + FIELD_SEPARATOR);
-                            buffer = string.Empty;
+                            _prefixes.Push(_buffer + _fieldSeparator);
+                            _buffer = string.Empty;
                         }
                         else
                         {
                             FeedBuffer(character);
                         }
                         break;
-                    case MULTISELECT_END:
+                    case _multiselectEnd:
                         if (--level == 0)
                         {
-                            if (level < 0) { throw new FormatException("Le champ fields est mal renseigné."); }
-                            analyseResult.AddRange(new FieldExpansionHelper(prefixes).Expand(buffer));
-                            buffer = string.Empty;
-                            prefixes.Pop();
+                            if (level < 0)
+                            {
+                                throw new FormatException("Le champ fields est mal renseigné.");
+                            }
+                            _analyseResult.AddRange(new FieldExpansionHelper(_prefixes).Expand(_buffer));
+                            _buffer = string.Empty;
+                            _prefixes.Pop();
                         }
                         else
                         {
                             FeedBuffer(character);
                         }
                         break;
-                    case FUNCTION_START:
+                    case _functionStart:
                         isInsideFunction = true;
                         FeedBuffer(character);
                         break;
-                    case FUNCTION_END:
+                    case _functionEnd:
                         isInsideFunction = false;
                         FeedBuffer(character);
                         EmptyBuffer();
                         break;
-                    case PROPERTIES_SEPARATOR:
+                    case _propertiesSeparator:
                         if (level == 0 && !isInsideFunction)
                         {
                             EmptyBuffer();
@@ -91,7 +85,7 @@ namespace RDD.Domain.Helpers
                             FeedBuffer(character);
                         }
                         break;
-                    case SPACE:
+                    case _space:
                         break;
                     default:
                         FeedBuffer(character);
@@ -104,8 +98,21 @@ namespace RDD.Domain.Helpers
                 throw new FormatException("Le champ fields est mal renseigné.");
             }
             EmptyBuffer();
-            return analyseResult;
+            return _analyseResult;
+        }
+
+        private void EmptyBuffer()
+        {
+            if (!string.IsNullOrWhiteSpace(_buffer))
+            {
+                _analyseResult.Add(string.Join(string.Empty, _prefixes.Reverse()) + _buffer);
+                _buffer = string.Empty;
+            }
+        }
+
+        private void FeedBuffer(char c)
+        {
+            _buffer += c;
         }
     }
 }
-
