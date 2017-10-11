@@ -1,0 +1,37 @@
+@echo off
+SET pathToLocalPackages= REM <======= DEFINE the path to your local packages manager
+
+SETLOCAL enableDelayedExpansion
+SET "domain=..\Domain\RDD.Domain\RDD.Domain.csproj"
+SET "infra=..\Infra\RDD.Infra\RDD.Infra.csproj"
+SET "application=..\Application\RDD.Application\RDD.Application.csproj"
+SET "web=..\Web\RDD.Web\RDD.Web.csproj "
+
+CALL :UpVersionPackageOfFile %domain%
+CALL :UpVersionPackageOfFile %infra%
+CALL :UpVersionPackageOfFile %application%
+CALL :UpVersionPackageOfFile %web%
+
+dotnet pack %domain% -o %pathToLocalPackages%
+dotnet pack %infra% -o %pathToLocalPackages%
+dotnet pack %application% -o %pathToLocalPackages%
+dotnet pack %web% -o %pathToLocalPackages%
+
+PAUSE
+EXIT
+
+:UpVersionPackageOfFile
+FOR /f %%i IN ('XML.EXE sel -t -v "//Version" %~1') DO SET var=%%i
+ECHO Previous number was %var%
+
+for /F "tokens=1-4 delims=. " %%a in ("%var%") DO (
+	set "pre=%%a.%%b.%%c"
+	set /a upVersion=%%d+1
+)
+
+SET "newVersion=%pre%.%upVersion%"
+ECHO New number was %newVersion%
+
+TYPE "%~1"| repl "(<Version>).*(</Version>)" "$1!newVersion!$2" > %~1.new
+MOVE /y %~1.new %~1
+EXIT /B 0
