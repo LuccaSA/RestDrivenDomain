@@ -4,20 +4,20 @@ using System.Collections.Generic;
 
 namespace RDD.Infra
 {
-	public interface IWebContext : IDisposable
-	{
-		Uri Url { get; }
-		string RawUrl { get; }
-		IEnumerable<KeyValuePair<string, StringValues>> QueryString { get; }
-		IEnumerable<KeyValuePair<string, StringValues>> Headers { get; }
-		IEnumerable<KeyValuePair<string, string>> Cookies { get; }
-		string GetCookie(string cookieName);
-		IDictionary<object, object> Items { get; }
-		string ApplicationPath { get; }
-		string PhysicalApplicationPath { get; }
-		Dictionary<string, string> GetQueryNameValuePairs();
-		string UserHostAddress { get; }
-		string Content { get; }
-		string ContentType { get; }
-	}
+    public interface IWebContext : IDisposable
+    {
+        Uri Url { get; }
+        string RawUrl { get; }
+        IEnumerable<KeyValuePair<string, StringValues>> QueryString { get; }
+        IEnumerable<KeyValuePair<string, StringValues>> Headers { get; }
+        IEnumerable<KeyValuePair<string, string>> Cookies { get; }
+        string GetCookie(string cookieName);
+        IDictionary<object, object> Items { get; }
+        string ApplicationPath { get; }
+        string PhysicalApplicationPath { get; }
+        Dictionary<string, string> GetQueryNameValuePairs();
+        string UserHostAddress { get; }
+        string Content { get; }
+        string ContentType { get; }
+    }
 }

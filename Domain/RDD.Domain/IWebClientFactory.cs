@@ -1,7 +1,7 @@
 ﻿namespace RDD.Domain
 {
-	public interface IWebClientFactory
-	{
-		IWebClient Create();
-	}
+    public interface IWebClientFactory
+    {
+        IWebClient Create();
+    }
 }

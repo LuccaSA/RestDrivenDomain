@@ -1,4 +1,4 @@
 ﻿namespace RDD.Domain
 {
-	public interface IIncludable { }
+    public interface IIncludable { }
 }

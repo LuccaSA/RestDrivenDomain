@@ -3,8 +3,8 @@ using RDD.Domain.Helpers;
 
 namespace RDD.Infra.Helpers
 {
-	public class DevExecutionModeProvider : IExecutionModeProvider
-	{
-		public ExecutionMode GetExecutionMode() { return ExecutionMode.Dev; }
-	}
+    public class DevExecutionModeProvider : IExecutionModeProvider
+    {
+        public ExecutionMode GetExecutionMode() { return ExecutionMode.Dev; }
+    }
 }
