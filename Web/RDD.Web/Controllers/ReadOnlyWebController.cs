@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
@@ -7,47 +6,49 @@ using RDD.Web.Helpers;
 using RDD.Web.Models;
 using System;
 using System.Threading.Tasks;
+using RDD.Domain.Models.Querying;
 
 namespace RDD.Web.Controllers
 {
-	public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
-		where TAppController : IReadOnlyAppController<TEntity, TKey>
-		where TEntity : class, IEntityBase<TEntity, TKey>, new()
-		where TKey : IEquatable<TKey>
-	{
-		protected TAppController _appController;
-		protected ApiHelper<TEntity, TKey> _helper;
+    public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
+        where TAppController : IReadOnlyAppController<TEntity, TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TKey : IEquatable<TKey>
+    {
+        protected TAppController AppController { get; }
+        protected ApiHelper<TEntity, TKey> Helper { get; }
 
-		public ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
-		{
-			_appController = appController;
-			_helper = helper;
-		}
+        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+        {
+            AppController = appController;
+            Helper = helper;
+        }
 
-		protected async virtual Task<IActionResult> ProtectedGetAsync()
-		{
-			_helper.WebContextWrapper.SetContext(HttpContext);
-			var query = _helper.CreateQuery(HttpVerb.GET);
+        protected virtual async Task<IActionResult> ProtectedGetAsync()
+        {
+            Helper.WebContextWrapper.SetContext(HttpContext);
 
-			var selection = await _appController.GetAsync(query);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.GET);
 
-			var dataContainer = new Metadata(_helper.Serializer.SerializeSelection(selection, query), query.Options, query.Page, _helper.Execution);
+            ISelection<TEntity> selection = await AppController.GetAsync(query);
 
-			return Ok(dataContainer.ToDictionary());
-		}
+            var dataContainer = new Metadata(Helper.Serializer.SerializeSelection(selection, query), query.Options, query.Page, Helper.Execution);
 
-		// Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
-		// car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
-		protected async virtual Task<IActionResult> ProtectedGetAsync(TKey _id_)
-		{
-			_helper.WebContextWrapper.SetContext(HttpContext);
-			var query = _helper.CreateQuery(HttpVerb.GET, false);
+            return Ok(dataContainer.ToDictionary());
+        }
 
-			var entity = await _appController.GetByIdAsync(_id_, query);
+        // Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
+        // car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
+        protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
+        {
+            Helper.WebContextWrapper.SetContext(HttpContext);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.GET, false);
 
-			var dataContainer = new Metadata(_helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, _helper.Execution);
+            TEntity entity = await AppController.GetByIdAsync(id, query);
 
-			return Ok(dataContainer.ToDictionary());
-		}
-	}
+            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
+
+            return Ok(dataContainer.ToDictionary());
+        }
+    }
 }

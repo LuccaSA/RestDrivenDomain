@@ -1,230 +1,235 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NExtends.Primitives;
 
 namespace RDD.Domain.Models.Querying
 {
-	//Objet pseudo-dynamic, permet de stocker ce qui arrive du client lors d'un POST/PUT
-	public class PostedData
-	{
-		public string name;
-		public string value;
-		public List<PostedData> values { get { return subs.Values.ToList(); } }
-		public JToken rawObject;
+    //Objet pseudo-dynamic, permet de stocker ce qui arrive du client lors d'un POST/PUT
+    public class PostedData
+    {
+        public PostedData()
+        {
+            Name = "this";
+            Value = null;
+            Subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+        }
 
-		//Pour un objet JSON, les subs sont les clé/valeur, pour un array JSON, les clés sont les index
-		public Dictionary<string, PostedData> subs { get; private set; }
+        //On veut garder une trace de l'objet JSON d'origine, pour pouvoir le caster en classe C# plus tard
+        public PostedData(JToken rawObject)
+            : this()
+        {
+            RawObject = rawObject;
+        }
 
-		public PostedData()
-		{
-			this.name = "this";
-			this.value = null;
-			this.subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-		}
+        private PostedData(string name, string value)
+        {
+            Name = name;
+            Value = value;
+            Subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+        }
+ 
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public List<PostedData> Values => Subs.Values.ToList();
+        public JToken RawObject { get; set; }
 
-		//On veut garder une trace de l'objet JSON d'origine, pour pouvoir le caster en classe C# plus tard
-		public PostedData(JToken rawObject_)
-			: this()
-		{
-			rawObject = rawObject_;
-		}
+        //Pour un objet JSON, les subs sont les clé/valeur, pour un array JSON, les clés sont les index
+        public Dictionary<string, PostedData> Subs { get; private set; }
 
-		/// <summary>
-		/// Value peut être soit un string, soit un string[]
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		public static PostedData CreateInstance(string name, object value)
-		{
-			if (value.GetType() == typeof(string[]))
-			{
-				return PostedData.ParseArray(null, (string[])value);
-			}
-			else if (value.GetType() == typeof(int[]))
-			{
-				return PostedData.ParseArray((int[])value);
-			}
-			else
-			{
-				return new PostedData(name, (string)value);
-			}
-		}
-		private PostedData(string name, string value)
-		{
-			this.name = name;
-			this.value = value;
-			this.subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-		}
-		public static PostedData Parse(string singleValue)
-		{
-			return new PostedData("this", singleValue);
-		}
-		public static PostedData ParseUrlEncoded(string data)
-		{
-			var dictionary = data.Split('&').ToDictionary(el => el.Split('=')[0], el => el.Split('=')[1]);
+        public PostedData this[string key]
+        {
+            get => Subs[key];
+            set => Subs[key] = value;
+        }
 
-			return PostedData.ParseDictionary(dictionary);
-		}
-		/// <summary>
-		/// Quand on envoie un dico simple de string, string
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public static PostedData ParseDictionary(Dictionary<string, string> data)
-		{
-			return PostedData.ParseDictionary(data.ToDictionary(el => el.Key, el => (object)el.Value));
-		}
+        public PostedData this[int index]
+        {
+            get => Subs[index.ToString()];
+            set => Subs[index.ToString()] = value;
+        }
 
-		/// <summary>
-		/// Quand on envoie un dico avec éventuellement des string[] en value
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public static PostedData ParseDictionary(Dictionary<string, object> data)
-		{
-			var post = new PostedData();
+        public PostedData this[Enum key]
+        {
+            get => Subs[key.ToString()];
+            set => Subs[key.ToString()] = value;
+        }
 
-			foreach (var element in data)
-			{
-				post.subs.Add(element.Key.ToLower(), PostedData.CreateInstance(element.Key, element.Value));
-			}
+        public ICollection<string> Keys => Subs?.Keys;
+        public bool HasSubs => Subs.Count > 0;
 
-			return post;
-		}
-		public static PostedData ParseArray(JToken rawObject, string[] array)
-		{
-			var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-			for (var i = 0; i < array.Count(); i++)
-			{
-				subs.Add(i.ToString(), new PostedData() { value = array[i] });
-			}
+        /// <summary>
+        /// Value peut être soit un string, soit un string[]
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public static PostedData CreateInstance(string name, object value)
+        {
+            if (value.GetType() == typeof(string[]))
+            {
+                return ParseArray(null, (string[]) value);
+            }
+            if (value.GetType() == typeof(int[]))
+            {
+                return ParseArray((int[]) value);
+            }
+            return new PostedData(name, (string) value);
+        }
 
-			return new PostedData(rawObject) { subs = subs };
-		}
-		public static PostedData ParseArray(int[] array)
-		{
-			var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-			for (var i = 0; i < array.Count(); i++)
-			{
-				subs.Add(i.ToString(), new PostedData() { value = array[i].ToString() });
-			}
+        public static PostedData Parse(string singleValue) => new PostedData("this", singleValue);
 
-			return new PostedData() { subs = subs };
-		}
-		public static PostedData ParseJSONArray(JToken rawObject, JToken[] array)
-		{
-			if (array.Count() > 0)
-			{
-				//Si c'est un JObject[]
-				if (array[0].HasValues)
-				{
-					var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
-					for (var i = 0; i < array.Count(); i++)
-					{
-						subs.Add(i.ToString(), PostedData.ParseJSON((JObject)array[i]));
-					}
+        public static PostedData ParseUrlEncoded(string data)
+        {
+            Dictionary<string, string> dictionary = data.Split('&').ToDictionary(el => el.Split('=')[0], el => el.Split('=')[1]);
 
-					return new PostedData(rawObject) { subs = subs };
-				}
-				else //JValue simple
-				{
-					return PostedData.ParseArray(rawObject, array.Select(jToken => ((JValue)jToken).Value<string>()).ToArray());
-				}
-			}
-			else
-			{
-				return new PostedData(rawObject);
-			}
-		}
-		public static PostedData ParseJSON(string data)
-		{
-			var rawObject = JsonConvert.DeserializeObject(data);
+            return ParseDictionary(dictionary);
+        }
 
-			return PostedData.ParseJSON((JObject)rawObject);
-		}
-		public static PostedData ParseJSONArray(string data)
-		{
-			var array = JsonConvert.DeserializeObject<JObject[]>(data);
+        /// <summary>
+        /// Quand on envoie un dico simple de string, string
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static PostedData ParseDictionary(Dictionary<string, string> data)
+        {
+            return ParseDictionary(data.ToDictionary(el => el.Key, el => (object) el.Value));
+        }
 
-			return ParseJSONArray(data, array);
-		}
-		public static PostedData ParseJSONArray(JArray array)
-		{
-			return ParseJSONArray(array, array.Select(el => (JToken)el).ToArray());
-		}
-		private static PostedData ParseJSON(JObject jObject)
-		{
-			var post = new PostedData(jObject);
+        /// <summary>
+        /// Quand on envoie un dico avec éventuellement des string[] en value
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static PostedData ParseDictionary(Dictionary<string, object> data)
+        {
+            var post = new PostedData();
 
-			foreach (var element in jObject)
-			{
-				JToken jValue = element.Value;
+            foreach (KeyValuePair<string, object> element in data)
+            {
+                post.Subs.Add(element.Key.ToLower(), CreateInstance(element.Key, element.Value));
+            }
 
-				//object JSON neasted ou array, attention au array vide
-				if (jValue.Type == JTokenType.Object || jValue.Type == JTokenType.Array)
-				{
-					if (jValue.Type == JTokenType.Array)
-					{
-						post.subs.Add(element.Key.ToLower(), PostedData.ParseJSONArray((JArray)jValue));
-					}
-					else //Objet neasted
-					{
-						post.subs.Add(element.Key.ToLower(), PostedData.ParseJSON((JObject)jValue));
-					}
-				}
-				else //Value simple
-				{
-					//Cas particulier pour les dates
-					if (jValue.Type == JTokenType.Date)
-					{
-						post.subs.Add(element.Key.ToLower(), new PostedData(element.Key, ((DateTime)jValue).ToISOz()));
-					}
-					else
-					{
-						post.subs.Add(element.Key.ToLower(), new PostedData(element.Key, jValue.Value<string>()));
-					}
-				}
-			}
+            return post;
+        }
 
-			return post;
-		}
+        public static PostedData ParseArray(JToken rawObject, string[] array)
+        {
+            var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < array.Length; i++)
+            {
+                subs.Add(i.ToString(), new PostedData
+                {
+                    Value = array[i]
+                });
+            }
 
-		public PostedData this[string key]
-		{
-			get { return subs[key]; }
-			set { subs[key] = value; }
-		}
-		public PostedData this[int index]
-		{
-			get { return subs[index.ToString()]; }
-			set { subs[index.ToString()] = value; }
-		}
-		public PostedData this[Enum key]
-		{
-			get { return subs[key.ToString()]; }
-			set { subs[key.ToString()] = value; }
-		}
-		public bool ContainsKey(string key)
-		{
-			return subs.ContainsKey(key);
-		}
-		public bool ContainsKey(Enum key)
-		{
-			return subs.ContainsKey(key);
-		}
+            return new PostedData(rawObject)
+            {
+                Subs = subs
+            };
+        }
 
-		public bool Remove(string key)
-		{
-			return subs.Remove(key);
-		}
+        public static PostedData ParseArray(int[] array)
+        {
+            var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < array.Length; i++)
+            {
+                subs.Add(i.ToString(), new PostedData
+                {
+                    Value = array[i].ToString()
+                });
+            }
 
-		public ICollection<string> Keys { get { return subs == null ? null : subs.Keys; } }
-		public int Count() { return subs.Count(); }
-		public bool HasSubs { get { return subs.Count > 0; } }
-	}
+            return new PostedData
+            {
+                Subs = subs
+            };
+        }
+
+        public static PostedData ParseJsonArray(JToken rawObject, JToken[] array)
+        {
+            if (array.Length > 0)
+            {
+                //Si c'est un JObject[]
+                if (array[0].HasValues)
+                {
+                    var subs = new Dictionary<string, PostedData>(StringComparer.OrdinalIgnoreCase);
+                    for (var i = 0; i < array.Length; i++)
+                    {
+                        subs.Add(i.ToString(), ParseJson((JObject) array[i]));
+                    }
+
+                    return new PostedData(rawObject)
+                    {
+                        Subs = subs
+                    };
+                }
+                return ParseArray(rawObject, array.Select(jToken => ((JValue) jToken).Value<string>()).ToArray());
+            }
+            return new PostedData(rawObject);
+        }
+
+        public static PostedData ParseJson(string data)
+        {
+            object rawObject = JsonConvert.DeserializeObject(data);
+
+            return ParseJson((JObject) rawObject);
+        }
+
+        public static PostedData ParseJsonArray(string data)
+        {
+            var array = JsonConvert.DeserializeObject<JObject[]>(data);
+
+            return ParseJsonArray(data, array);
+        }
+
+        public static PostedData ParseJsonArray(JArray array)
+        {
+            return ParseJsonArray(array, array.Select(el => el).ToArray());
+        }
+
+        private static PostedData ParseJson(JObject jObject)
+        {
+            var post = new PostedData(jObject);
+
+            foreach (KeyValuePair<string, JToken> element in jObject)
+            {
+                JToken jValue = element.Value;
+
+                //object JSON neasted ou array, attention au array vide
+                if (jValue.Type == JTokenType.Object || jValue.Type == JTokenType.Array)
+                {
+                    if (jValue.Type == JTokenType.Array)
+                    {
+                        post.Subs.Add(element.Key.ToLower(), ParseJsonArray((JArray) jValue));
+                    }
+                    else //Objet neasted
+                    {
+                        post.Subs.Add(element.Key.ToLower(), ParseJson((JObject) jValue));
+                    }
+                }
+                else //Value simple
+                {
+                    //Cas particulier pour les dates
+                    if (jValue.Type == JTokenType.Date)
+                    {
+                        post.Subs.Add(element.Key.ToLower(), new PostedData(element.Key, ((DateTime) jValue).ToISOz()));
+                    }
+                    else
+                    {
+                        post.Subs.Add(element.Key.ToLower(), new PostedData(element.Key, jValue.Value<string>()));
+                    }
+                }
+            }
+
+            return post;
+        }
+
+        public bool ContainsKey(string key) => Subs.ContainsKey(key);
+        public bool ContainsKey(Enum key) => Subs.ContainsKey(key);
+        public bool Remove(string key) => Subs.Remove(key);
+        public int Count() => Subs.Count;
+    }
 }

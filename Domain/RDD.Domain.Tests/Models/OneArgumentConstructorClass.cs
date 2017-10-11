@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RDD.Domain.Tests.Models
+﻿namespace RDD.Domain.Tests.Models
 {
-	public class OneArgumentConstructorClass : IFakeInterface
-	{
-		public OneArgumentConstructorClass(string argumentOne)
-		{ }
-	}
+    public class OneArgumentConstructorClass : IFakeInterface
+    {
+        public OneArgumentConstructorClass(string argumentOne)
+        { }
+    }
 }

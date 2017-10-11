@@ -2,8 +2,8 @@
 
 namespace RDD.Infra
 {
-	public interface IWebContextWrapper : IWebContext
-	{
-		void SetContext(HttpContext context);
-	}
+    public interface IWebContextWrapper : IWebContext
+    {
+        void SetContext(HttpContext context);
+    }
 }

@@ -1,68 +1,72 @@
-﻿using NExtends.Primitives;
-using RDD.Domain.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NExtends.Primitives;
+using RDD.Domain.Exceptions;
 
 namespace RDD.Domain.Helpers
 {
-	public class CollectionPropertySelector<TEntity> : PropertySelector<TEntity>
-	{
-		public CollectionPropertySelector()
-			: base()
-		{
-			EntityType = typeof(ISelection<>).MakeGenericType(typeof(TEntity));
-		}
+    public class CollectionPropertySelector<TEntity> : PropertySelector<TEntity>
+    {
+        public CollectionPropertySelector()
+        {
+            EntityType = typeof(ISelection<>).MakeGenericType(typeof(TEntity));
+        }
 
-		private PropertyInfo GetEntityProperty(string propertyName)
-		{
-			var property = typeof(TEntity).GetProperties().Where(p => p.Name.ToLower() == propertyName.ToLower()).FirstOrDefault();
+        public override void Parse(string element, List<string> tail, int depth)
+        {
+            var specialMethods = new HashSet<string>
+            {
+                "sum",
+                "min",
+                "max"
+            };
 
-			if (property == null)
-			{
-				throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, String.Format("Unknown property {0} on type ISelection", propertyName));
-			}
+            if (specialMethods.Any(element.StartsWith))
+            {
+                string specialMethod = element.StartsWith("sum") ? "sum" : element.StartsWith("min") ? "min" : "max";
+                GroupCollection matches = Regex.Match(element, string.Format("{0}\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)", specialMethod)).Groups;
+                string propertyName = matches[1].Value;
+                PropertyInfo property = GetEntityProperty(propertyName);
+                DecimalRounding rouding = DecimalRounding.Parse(element);
+                ParameterExpression param = Expression.Parameter(EntityType, "p".Repeat(depth));
 
-			return property;
-		}
+                MethodCallExpression call = GetExpressionCall(specialMethod, rouding, param, property);
 
-		public override void Parse(string element, List<string> tail, int depth)
-		{
-			var specialMethods = new HashSet<string>() { "sum", "min", "max" };
+                LambdaExpression lambda = Expression.Lambda(call, param);
 
-			if (specialMethods.Any(m => element.StartsWith(m)))
-			{
-				var specialMethod = element.StartsWith("sum") ? "sum" : element.StartsWith("min") ? "min" : "max";
-				var matches = Regex.Match(element, String.Format("{0}\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)", specialMethod)).Groups;
-				var propertyName = matches[1].Value;
-				var property = GetEntityProperty(propertyName);
-				var rouding = DecimalRounding.Parse(element);
-				var param = Expression.Parameter(EntityType, "p".Repeat(depth));
+                PropertySelector child = NewFromType(EntityType);
+                child.Lambda = lambda;
+                child.Subject = propertyName;
 
-				var call = GetExpressionCall(specialMethod, rouding, depth, param, property);
-				
-				var lambda = Expression.Lambda(call, param);
+                Children.Add(child);
+            }
+            else
+            {
+                base.Parse(element, tail, depth);
+            }
+        }
 
-				var child = PropertySelector.NewFromType(EntityType);
-				child.Lambda = lambda;
-				child.Subject = propertyName;
+        private PropertyInfo GetEntityProperty(string propertyName)
+        {
+            PropertyInfo property = typeof(TEntity).GetProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName, StringComparison.CurrentCultureIgnoreCase));
 
-				Children.Add(child);
-			}
-			else
-			{
-				base.Parse(element, tail, depth);
-			}
-		}
+            if (property == null)
+            {
+                throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, string.Format("Unknown property {0} on type ISelection", propertyName));
+            }
 
-		private MethodCallExpression GetExpressionCall(string specialMethod, DecimalRounding rouding, int depth, ParameterExpression param, PropertyInfo property)
-		{
-			var method = typeof(ISelection).GetMethod(specialMethod.ToFirstUpper(), new Type[] { typeof(PropertyInfo), typeof(DecimalRounding) });
+            return property;
+        }
 
-			return Expression.Call(param, method, new Expression[] { Expression.Constant(property), Expression.Constant(rouding) });
-		}
-	}
+        private MethodCallExpression GetExpressionCall(string specialMethod, DecimalRounding rouding, ParameterExpression param, PropertyInfo property)
+        {
+            MethodInfo method = typeof(ISelection).GetMethod(specialMethod.ToFirstUpper(), new[] {typeof(PropertyInfo), typeof(DecimalRounding)});
+
+            return Expression.Call(param, method, new Expression[] {Expression.Constant(property), Expression.Constant(rouding)});
+        }
+    }
 }

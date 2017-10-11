@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RDD.Domain
+﻿namespace RDD.Domain
 {
-	public interface ICloneable<T>
-	{
-		T Clone();
-	}
+    public interface ICloneable<T>
+    {
+        T Clone();
+    }
 }

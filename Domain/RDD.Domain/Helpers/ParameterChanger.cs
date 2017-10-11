@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace RDD.Domain.Helpers
 {
-	public class ParameterChanger : ExpressionVisitor
-	{
-		ParameterExpression Parameter { get; set; }
+    public class ParameterChanger : ExpressionVisitor
+    {
+        private readonly ParameterExpression _parameter;
 
-		public ParameterChanger(ParameterExpression parameter)
-		{
-			Parameter = parameter;
-		}
+        public ParameterChanger(ParameterExpression parameter)
+        {
+            _parameter = parameter;
+        }
 
-		protected override Expression VisitParameter(ParameterExpression node)
-		{
-			return Parameter;
-		}
-	}
+        protected override Expression VisitParameter(ParameterExpression node) => _parameter;
+    }
 }

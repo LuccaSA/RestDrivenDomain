@@ -1,31 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RDD.Domain.Helpers
 {
-	public class Culture
-	{
-		public Culture() { }
+    public class Culture
+    {
+        public Culture()
+        {
+        }
 
-		public Culture(CultureInfo rawCulture)
-		{
-			this.RawCulture = rawCulture;
-		}
+        public Culture(CultureInfo rawCulture)
+        {
+            RawCulture = rawCulture;
+        }
 
-		public CultureInfo RawCulture { get; private set; }
+        public CultureInfo RawCulture { get; }
 
-		public int Id { get { return RawCulture.LCID; } set { throw new NotImplementedException(); } }
+        public int Id
+        {
+            get => RawCulture.LCID;
+            set => throw new NotImplementedException();
+        }
 
-		public string Code { get { return RawCulture.Name; } }
+        public string Code => RawCulture.Name;
 
-		public string Name { get { return RawCulture.NativeName; } set { throw new NotImplementedException(); } }
+        public string Name
+        {
+            get => RawCulture.NativeName;
+            set => throw new NotImplementedException();
+        }
 
-		public string EnglishName { get { return RawCulture.EnglishName; } }
+        public string EnglishName => RawCulture.EnglishName;
 
-		public int LCID { get { return RawCulture.LCID; } }
-	}
+        public int LCID => RawCulture.LCID;
+    }
 }

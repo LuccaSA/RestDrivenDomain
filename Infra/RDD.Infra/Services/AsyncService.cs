@@ -7,40 +7,40 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra.Services
 {
-	public class AsyncService : IAsyncService
-	{
-		private IWebContext _webContext;
+    public class AsyncService : IAsyncService
+    {
+        private readonly IWebContext _webContext;
 
-		public static readonly ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
+        public static readonly ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
 
-		public AsyncService(IWebContext webContext)
-		{
-			_webContext = webContext;
-		}
+        public AsyncService(IWebContext webContext)
+        {
+            _webContext = webContext;
+        }
 
-		public Task ContinueAlone(Action action)
-		{
-			return Task.Factory.StartNew(() =>
-			{
-				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
+        public Task ContinueAlone(Action action)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
 
-				action();
-			});
-		}
+                action();
+            });
+        }
 
-		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action)
-		{
-			RunInParallel(entities, new ParallelOptions(), action);
-		}
+        public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action)
+        {
+            RunInParallel(entities, new ParallelOptions(), action);
+        }
 
-		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
-		{
-			Parallel.ForEach<TEntity>(entities, options, (entity) =>
-			{
-				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
+        public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
+        {
+            Parallel.ForEach(entities, options, (entity) =>
+            {
+                ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
 
-				action(entity);
-			});
-		}
-	}
+                action(entity);
+            });
+        }
+    }
 }

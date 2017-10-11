@@ -2,7 +2,7 @@
 
 namespace RDD.Infra.Net
 {
-	public class WrappedWebClient : System.Net.WebClient, IWebClient
-	{
-	}
+    public class WrappedWebClient : System.Net.WebClient, IWebClient
+    {
+    }
 }
