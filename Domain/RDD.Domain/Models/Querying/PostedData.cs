@@ -33,7 +33,7 @@ namespace RDD.Domain.Models.Querying
  
         public string Name { get; set; }
         public string Value { get; set; }
-        public List<PostedData> Values => Subs.Values.ToList();
+        public IEnumerable<PostedData> Values => Subs.Values;
         public JToken RawObject { get; set; }
 
         //Pour un objet JSON, les subs sont les clé/valeur, pour un array JSON, les clés sont les index

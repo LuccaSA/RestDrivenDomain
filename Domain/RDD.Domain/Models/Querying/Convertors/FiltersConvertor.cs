@@ -25,8 +25,7 @@ namespace RDD.Domain.Models.Querying.Convertors
         /// <returns></returns>
         internal Expression<Func<TEntity, bool>> Convert(List<Filter<TEntity>> filters)
         {
-            var feed = PredicateBuilder.True<TEntity>();
-            var type = typeof(TEntity);
+            Expression<Func<TEntity, bool>> feed = PredicateBuilder.True<TEntity>();
 
             foreach (var filter in filters)
             {
@@ -38,7 +37,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 
         private Expression<Func<TEntity, bool>> ToEntityExpression(Filter<TEntity> filter, IList values)
         {
-            var property = filter.Property.Children.ElementAt(0);
+            PropertySelector property = filter.Property.Children.ElementAt(0);
 
             switch (filter.Operand)
             {
@@ -70,7 +69,7 @@ namespace RDD.Domain.Models.Querying.Convertors
                     }
             }
 
-            throw new IndexOutOfRangeException(String.Format("Unhandled filter condition type {0}", filter.Operand));
+            throw new ArgumentOutOfRangeException(String.Format("Unhandled filter condition type {0}", filter.Operand));
         }
     }
 }

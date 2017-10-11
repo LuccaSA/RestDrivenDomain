@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
+using System.Runtime.Serialization;
 using NExtends.Primitives;
 using NExtends.Primitives.Types;
 
@@ -34,14 +35,14 @@ namespace RDD.Domain.Models.Querying
                 {
                     return ConvertWhereValues(values, property);
                 }
-                throw new Exception(string.Format("Property {0} does not exist on type {1}", propertyName, declaringType.Name));
+                throw new SerializationException(string.Format("Property {0} does not exist on type {1}", propertyName, declaringType.Name));
             }
             PropertyInfo baseProperty = declaringType.GetPublicProperties().FirstOrDefault(p => p.Name.ToLower() == elements[0]);
             if (baseProperty != null)
             {
                 return ConvertWhereValues(values, baseProperty.PropertyType, string.Join(".", elements.Skip(1)));
             }
-            throw new Exception(string.Format("Property {0} does not exist on type {1}", elements[0], declaringType.Name));
+            throw new SerializationException(string.Format("Property {0} does not exist on type {1}", elements[0], declaringType.Name));
         }
 
         public IList ConvertWhereValues(ICollection<string> values, PropertyInfo property)
@@ -105,7 +106,7 @@ namespace RDD.Domain.Models.Querying
             }
             catch
             {
-                throw new Exception(string.Format("String {0} is not compatible with type {1}", realStringValue, propertyType.Name));
+                throw new SerializationException(string.Format("String {0} is not compatible with type {1}", realStringValue, propertyType.Name));
             }
         }
 

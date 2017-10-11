@@ -29,12 +29,17 @@ namespace RDD.Infra.Contexts
             return QueryString.ToDictionary(k => k.Key, k => String.Join(",", k.Value.ToArray()));
         }
 
-        public string GetCookie(string cookieName)
-        {
-            return Cookies.ContainsKey(cookieName) ? Cookies[cookieName] : null;
-        }
-        public void SetContext(HttpContext context) { }
+        public string GetCookie(string cookieName) 
+            => Cookies.ContainsKey(cookieName) ? Cookies[cookieName] : null;
 
-        public void Dispose() { }
+        public void SetContext(HttpContext context)
+        {
+            // Not used
+        }
+
+        public void Dispose()
+        {
+            // Cleanup
+        }
     }
 }
