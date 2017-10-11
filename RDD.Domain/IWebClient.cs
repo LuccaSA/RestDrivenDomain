@@ -19,12 +19,21 @@ namespace RDD.Domain
 
 		// Required methods (subset of `System.Net.WebClient` methods).
 		string DownloadString(string address);
-		string UploadString(string address, string method);
+		string UploadString(string address, string data);
 		string UploadString(string address, string method, string data);
 
 		byte[] DownloadData(string address);
 		byte[] UploadFile(string address, string method, string fileName);
 		byte[] UploadData(string address, string method, byte[] data);
 		byte[] UploadValues(string address, string method, NameValueCollection data);
-	}
+
+        Task<string> DownloadStringTaskAsync(string address);
+        Task<string> UploadStringTaskAsync(string address, string data);
+        Task<string> UploadStringTaskAsync(string address, string method, string data);
+
+        Task<byte[]> DownloadDataTaskAsync(string address);
+        Task<byte[]> UploadFileTaskAsync(string address, string method, string fileName);
+        Task<byte[]> UploadDataTaskAsync(string address, string method, byte[] data);
+        Task<byte[]> UploadValuesTaskAsync(string address, string method, NameValueCollection data);
+    }
 }
