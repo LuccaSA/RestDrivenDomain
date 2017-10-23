@@ -92,18 +92,22 @@ after_build:
 - cmd: >-
     "C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe" end /d:"sonar.login=%SONAR_TOKEN%"
 - cmd: >-
-    dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o artifacts
+    dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o ..\..\artifacts
 - cmd: >-
-    dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o artifacts
+    dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o ..\..\artifacts
 - cmd: >-
-    dotnet pack Web\RDD.Web\RDD.Web.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o artifacts
+    dotnet pack Web\RDD.Web\RDD.Web.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o ..\..\artifacts
 
 test_script:
-- OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
+- echo Starting test coverage with OpenCover
+- C:\ProgramData\chocolatey\bin\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
+- C:\ProgramData\chocolatey\bin\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- C:\ProgramData\chocolatey\bin\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Web\RDD.Web.Tests\RDD.Web.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- echo Sending to codecov
 - codecov -f coverage-opencover.xml
 
 artifacts:
-  - path: RestDrivenDomain\artifacts\*.nupkg
+  - path: artifacts\*.nupkg
     name: lib
 
 deploy:
