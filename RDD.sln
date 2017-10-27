@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Domain", "Domain\RDD.Domain\RDD.Domain.csproj", "{A604C88B-FC4F-4C11-8476-B1486A17F6FF}"
 EndProject
@@ -17,7 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Infra.Tests", "Infra\RD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Web.Tests", "Web\RDD.Web.Tests\RDD.Web.Tests.csproj", "{681A88B9-33AE-491D-8DBC-235A60C33DD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDD.Application", "Application\RDD.Application\RDD.Application.csproj", "{608BCCC2-BA7E-45B7-A41F-60980F110AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Application", "Application\RDD.Application\RDD.Application.csproj", "{608BCCC2-BA7E-45B7-A41F-60980F110AD9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{505AAC10-0297-43ED-8097-22B0CB65030B}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
