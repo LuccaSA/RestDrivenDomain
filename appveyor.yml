@@ -21,58 +21,20 @@ skip_branch_with_pr: true
 configuration: Release
 platform: Any CPU
 
+notifications:
+- provider: Slack
+  auth_token:
+    secure: Y3i58yrHTt57qU64K8VsB06JMBZr7+9I44tYOd3oyWKnR+vpDilZKpiblJgwM2jHUQ88DzmBaeYzQIS9cA00oaamvT+zc/XizDsL7QBbisE=
+  channel: '#build-opensource'
+
 install:
-  # Get last commit tag to compute version
-  - ps: '$NearestTag = git.exe describe --tags $(git.exe rev-list --tags --max-count=1)'
-  - ps: >- 
-     if($NearestTag -eq $null)
-     {
-        $NearestVersion = $env:APPVEYOR_BUILD_VERSION
-     }
-     else
-     {
-        $NearestVersion =  $NearestTag.TrimStart("v")
-     }
-
-  # Release build : Git Tag (v4.2) + build number 
-  # Pull request build : Last tag on branch + build number + '-dev-' + PR number
-  # Commit on non PR branch : Last tag on branch + build number + '-beta' 
-  - ps: >- 
-      if ($env:APPVEYOR_REPO_TAG -eq "true")
-      {
-        $ComputedVersion = "$($env:appveyor_repo_tag_name.TrimStart("v")).$($env:APPVEYOR_BUILD_NUMBER)"
-      }
-      elseif($env:APPVEYOR_PULL_REQUEST_NUMBER)
-      {
-        $ComputedVersion = "$NearestVersion.$($env:APPVEYOR_BUILD_NUMBER)-dev-$($env:APPVEYOR_PULL_REQUEST_NUMBER)"
-      }
-      else
-      {
-        $ComputedVersion = "$NearestVersion.$($env:APPVEYOR_BUILD_NUMBER)-beta"
-      }
-
-  - ps: >- 
-      if ($env:APPVEYOR_REPO_TAG -eq "true")
-      {
-        $env:deploy_public = "true"
-      }
-      else
-      {
-        $env:deploy_unstable = "true"
-      }
-
-  - ps: 'Write-Host "Computed version = $ComputedVersion"' 
-  - ps: 'Update-AppveyorBuild -Version "$ComputedVersion"'
+  - ps: wget "https://raw.githubusercontent.com/rducom/ALM/master/build/ComputeVersion.ps1" -outfile "ComputeVersion.ps1"
+  - ps: . .\ComputeVersion.ps1
+  - ps: $version = Compute "Web\RDD.Web\RDD.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
+  - ps: Update-AppveyorBuild -Version $version.Semver
   - choco install "msbuild-sonarqube-runner" -y
   - choco install opencover.portable
   - choco install codecov
-  - ps: >- 
-
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
 
 before_build:
 - dotnet restore
@@ -83,20 +45,15 @@ before_build:
     C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=preview" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.pullRequest=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%"
     )
 
-build:
-  parallel: true
-  project: RDD.sln
-  verbosity: minimal
+build_script:
+- ps: msbuild "RDD.sln" /m /verbosity:minimal /property:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
 - cmd: >-
     "C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe" end /d:"sonar.login=%SONAR_TOKEN%"
-- cmd: >-
-    dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o ..\..\artifacts
-- cmd: >-
-    dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o ..\..\artifacts
-- cmd: >-
-    dotnet pack Web\RDD.Web\RDD.Web.csproj --configuration %CONFIGURATION% /p:Version="%APPVEYOR_BUILD_VERSION%" -o ..\..\artifacts
+- ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Web\RDD.Web\RDD.Web.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 
 test_script:
 - echo Starting test coverage with OpenCover
