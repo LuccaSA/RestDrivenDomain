@@ -53,6 +53,7 @@ after_build:
     "C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe" end /d:"sonar.login=%SONAR_TOKEN%"
 - ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Application\RDD.Application\RDD.Application.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Web\RDD.Web\RDD.Web.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 
 test_script:

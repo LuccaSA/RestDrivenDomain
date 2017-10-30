@@ -14,5 +14,6 @@ param(
     dotnet build .\RDD.sln $props
     dotnet pack .\Domain\RDD.Domain\RDD.Domain.csproj --configuration Debug $propack -o $nuget_path
     dotnet pack .\Infra\RDD.Infra\RDD.Infra.csproj --configuration Debug $propack -o $nuget_path
+    dotnet pack .\Application\RDD.Application\RDD.Application.csproj --configuration Debug $propack -o $nuget_path
     dotnet pack .\Web\RDD.Web\RDD.Web.csproj --configuration Debug $propack -o $nuget_path
  
