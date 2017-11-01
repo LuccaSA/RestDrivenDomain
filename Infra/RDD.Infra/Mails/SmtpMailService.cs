@@ -53,7 +53,7 @@ namespace RDD.Infra.Mails
                     return;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
         }

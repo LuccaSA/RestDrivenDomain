@@ -20,23 +20,23 @@ namespace RDD.Application.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        protected TCollection _collection;
+        protected TCollection Collection { get; }
 
         public ReadOnlyAppController(TCollection collection)
         {
-            _collection = collection;
+            Collection = collection;
         }
 
         public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
         {
-            var selection = await _collection.GetAsync(query);
+            var selection = await Collection.GetAsync(query);
 
             return selection;
         }
 
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
-            var entity = await _collection.GetByIdAsync(id, query);
+            var entity = await Collection.GetByIdAsync(id, query);
 
             return entity;
         }

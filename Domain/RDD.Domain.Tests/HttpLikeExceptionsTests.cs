@@ -6,10 +6,6 @@ namespace RDD.Domain.Tests
 {
     public class HttpLikeExceptionsTests
     {
-        public HttpLikeExceptionsTests()
-        {
-        }
-
         [Fact]
         public void Exception_SHOULD_work_WHEN_WithStatusAndMessage()
         {

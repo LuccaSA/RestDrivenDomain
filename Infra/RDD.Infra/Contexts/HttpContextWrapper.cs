@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace RDD.Infra.Contexts
 {
-    public class HttpContextWrapper : IWebContext, IWebContextWrapper
+    public class HttpContextWrapper : IWebContextWrapper
     {
         public Uri Url { get; private set; }
         public string RawUrl { get; private set; }
@@ -28,8 +28,6 @@ namespace RDD.Infra.Contexts
         public string UserHostAddress { get; private set; }
         public string Content { get; private set; }
         public string ContentType { get; private set; }
-
-        public HttpContextWrapper() { }
 
         public void SetContext(HttpContext context)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RDD.Domain.Models
 {
-    public abstract class EntityBase<TEntity, TKey> : IEntityBase<TEntity, TKey>, IIncludable
+    public abstract class EntityBase<TEntity, TKey> : IEntityBase<TEntity, TKey>
         where TEntity : class
         where TKey : IEquatable<TKey>
     {

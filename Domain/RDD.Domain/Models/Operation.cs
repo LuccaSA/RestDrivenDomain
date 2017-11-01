@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RDD.Domain.Models
+﻿namespace RDD.Domain.Models
 {
     public class Operation
     {
