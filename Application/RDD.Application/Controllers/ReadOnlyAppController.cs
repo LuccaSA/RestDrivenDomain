@@ -5,6 +5,16 @@ using System.Threading.Tasks;
 
 namespace RDD.Application.Controllers
 {
+    public class ReadOnlyAppController<TEntity, TKey> : ReadOnlyAppController<IReadOnlyRestCollection<TEntity, TKey>, TEntity, TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TKey : IEquatable<TKey>
+    {
+        public ReadOnlyAppController(IReadOnlyRestCollection<TEntity, TKey> collection) 
+            : base(collection)
+        {
+        }
+    }
+
     public class ReadOnlyAppController<TCollection, TEntity, TKey> : IReadOnlyAppController<TCollection, TEntity, TKey>
         where TCollection : IReadOnlyRestCollection<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>, new()

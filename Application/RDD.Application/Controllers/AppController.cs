@@ -8,6 +8,16 @@ using System.Threading.Tasks;
 
 namespace RDD.Application.Controllers
 {
+    public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey> 
+        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TKey : IEquatable<TKey>
+    {
+        public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection) 
+            : base(storage, collection)
+        {
+        }
+    }
+
     public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TCollection, TEntity, TKey>
         where TCollection : IRestCollection<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>, new()
