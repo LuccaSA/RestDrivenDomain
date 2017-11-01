@@ -6,6 +6,6 @@ namespace RDD.Domain.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public Func<string> CultureLabel { get; set; }
+        //public Func<string> CultureLabel { get; set; }
     }
 }

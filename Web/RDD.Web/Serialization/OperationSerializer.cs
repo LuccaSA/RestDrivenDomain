@@ -14,12 +14,12 @@ namespace RDD.Web.Serialization
 
         public override object SerializeProperty(object entity, PropertySelector field)
         {
-            Expression<Func<Operation, Func<string>>> exp = o => o.CultureLabel;
+            //Expression<Func<Operation, Func<string>>> exp = o => o.CultureLabel;
 
-            if (field.IsEqual(exp))
-            {
-                return ((Operation)entity).CultureLabel();
-            }
+            //if (field.IsEqual(exp))
+            //{
+            //    return ((Operation)entity).CultureLabel();
+            //}
 
             return base.SerializeProperty(entity, field);
         }
