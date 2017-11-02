@@ -11,11 +11,12 @@ using RDD.Web.Serialization;
 
 namespace RDD.Web.Helpers
 {
-    /// <summary>
-    ///  Extension methods for setting up RDD services in an Microsoft.Extensions.DependencyInjection.IServiceCollection.
-    /// </summary>
     public static class RddServiceCollectionExtensions
     {
+        /// <summary>
+        /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
+        /// </summary>
+        /// <param name="services"></param>
         public static void AddRdd(this IServiceCollection services)
         {
             services.AddScoped<IWebContextWrapper, HttpContextWrapper>();
