@@ -4,13 +4,12 @@ namespace RDD.Domain.Helpers
 {
     [Flags]
     public enum HttpVerb
-    {
-        GET = 1,
-        POST = 2,
-        PUT = 4,
-        DELETE = 8,
-
-        ALL = GET | POST | PUT | DELETE,
-        ALL_NO_DELETE = GET | POST | PUT
+    { 
+        None = 0,
+        Get = 1 << 0,
+        Post = 1 << 1,
+        Put = 1 << 2,
+        Delete = 1 << 3,
+        All = Get | Post | Put | Delete
     };
 }

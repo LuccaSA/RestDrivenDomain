@@ -24,16 +24,16 @@ namespace RDD.Domain.Tests
         [Fact]
         public void Cloning_query_should_not_clone_verb()
         {
-            var query = new Query<User> { Verb = HttpVerb.PUT };
+            var query = new Query<User> { Verb = HttpVerb.Put };
             var result = new Query<User>(query);
 
-            Assert.Equal(HttpVerb.GET, result.Verb);
+            Assert.Equal(HttpVerb.Get, result.Verb);
         }
 
         [Fact]
         public void Cloning_query_should_not_clone_stopwatch()
         {
-            var query = new Query<User> { Verb = HttpVerb.PUT };
+            var query = new Query<User> { Verb = HttpVerb.Put };
             var result = new Query<User>(query);
 
             Assert.NotEqual(query.Watch, result.Watch);

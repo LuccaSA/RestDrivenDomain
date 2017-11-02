@@ -58,7 +58,7 @@ namespace RDD.Domain.Models
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerb.PUT;
+            query.Verb = HttpVerb.Put;
             query.Options.AttachActions = true;
             query.Options.AttachOperations = true;
 
@@ -70,7 +70,7 @@ namespace RDD.Domain.Models
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerb.PUT;
+            query.Verb = HttpVerb.Put;
             query.Options.AttachActions = true;
             query.Options.AttachOperations = true;
 
@@ -94,7 +94,7 @@ namespace RDD.Domain.Models
         {
             TEntity entity = await GetByIdAsync(id, new Query<TEntity>
             {
-                Verb = HttpVerb.DELETE
+                Verb = HttpVerb.Delete
             });
 
             Repository.Remove(entity);
@@ -104,7 +104,7 @@ namespace RDD.Domain.Models
         {
             IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity>
             {
-                Verb = HttpVerb.DELETE
+                Verb = HttpVerb.Delete
             });
 
             foreach (TEntity entity in entities)
@@ -117,7 +117,7 @@ namespace RDD.Domain.Models
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
             IEnumerable<int> operationIds = CombinationsHolder.Combinations
-                .Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
+                .Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.Post)
                 .Select(c => c.Operation.Id);
 
             if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))

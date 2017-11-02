@@ -23,7 +23,7 @@ namespace RDD.Domain.Models.Querying
         public Query()
         {
             Watch = new Stopwatch();
-            Verb = HttpVerb.GET;
+            Verb = HttpVerb.Get;
             Fields = new Field<TEntity>();
             CollectionFields = new Field<ISelection<TEntity>>();
             Filters = new List<Filter<TEntity>>();

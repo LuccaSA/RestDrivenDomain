@@ -35,11 +35,47 @@ namespace RDD.Web.Controllers
         {
         }
 
+        public Task<IActionResult> PostAsync()
+        {
+            if ((AllowedMethods & HttpVerb.Post) == HttpVerb.Post)
+            {
+                return ProtectedPostAsync();
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> PutByIdAsync(TKey id)
+        {
+            if ((AllowedMethods & HttpVerb.Put) == HttpVerb.Put)
+            {
+                return ProtectedPutAsync(id);
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> PutAsync()
+        {
+            if ((AllowedMethods & HttpVerb.Put) == HttpVerb.Put)
+            {
+                return ProtectedPutAsync();
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> DeleteByIdAsync(TKey id)
+        {
+            if ((AllowedMethods & HttpVerb.Delete) == HttpVerb.Delete)
+            {
+                return ProtectedDeleteAsync(id);
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
         protected virtual async Task<IActionResult> ProtectedPostAsync()
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.POST, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Post, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.CreateAsync(datas, query);
@@ -53,7 +89,7 @@ namespace RDD.Web.Controllers
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.PUT, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Put, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, datas, query);
@@ -66,7 +102,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.PUT, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Put, false);
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
@@ -106,7 +142,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.DELETE);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Delete);
 
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
