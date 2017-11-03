@@ -6,10 +6,10 @@ namespace RDD.Domain.Helpers
     public enum HttpVerbs
     {
         None = 0,
-        Get = 0x1,
-        Post = 0x2,
-        Put = 0x4,
-        Delete = 0x8,
+        Get = 1,
+        Post = 1 << 1,
+        Put = 1 << 2,
+        Delete = 1 << 3,
         All = Get | Post | Put | Delete
     }
 }
