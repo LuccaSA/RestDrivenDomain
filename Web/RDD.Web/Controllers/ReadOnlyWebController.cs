@@ -34,11 +34,11 @@ namespace RDD.Web.Controllers
             Helper = helper;
         }
 
-        protected virtual HttpVerb AllowedMethods => HttpVerb.None;
+        protected virtual HttpVerbs AllowedMethods => HttpVerbs.None;
 
         public Task<IActionResult> GetAsync()
         {
-            if ((AllowedMethods & HttpVerb.Get) == HttpVerb.Get)
+            if ((AllowedMethods & HttpVerbs.Get) == HttpVerbs.Get)
             {
                 return ProtectedGetAsync();
             }
@@ -47,7 +47,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> GetByIdAsync(TKey id)
         {
-            if ((AllowedMethods & HttpVerb.Get) == HttpVerb.Get)
+            if ((AllowedMethods & HttpVerbs.Get) == HttpVerbs.Get)
             {
                 return ProtectedGetAsync(id);
             }
@@ -58,7 +58,7 @@ namespace RDD.Web.Controllers
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Get);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
@@ -72,7 +72,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Get, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 

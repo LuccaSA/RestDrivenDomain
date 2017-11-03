@@ -20,7 +20,7 @@ namespace RDD.Web.Tests
             webContext.Headers = new Dictionary<string, StringValues>();
 
             var helper = new ApiHelper<User, int>(new CamelCasePropertyNamesContractResolver(), webContext, null, null);
-            var query = helper.CreateQuery(HttpVerb.Get);
+            var query = helper.CreateQuery(HttpVerbs.Get);
 
             Assert.Single(query.Filters);
 

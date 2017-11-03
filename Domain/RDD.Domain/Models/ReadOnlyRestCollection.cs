@@ -70,7 +70,7 @@ namespace RDD.Domain.Models
             }
 
             //Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-            if (query.Verb != HttpVerb.Get && count == 0)
+            if (query.Verb != HttpVerbs.Get && count == 0)
             {
                 throw new NotFoundException(string.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, query.Verb));
             }
@@ -126,9 +126,9 @@ namespace RDD.Domain.Models
         /// On ne filtre qu'en écriture, pas en lecture
         /// </summary>
         /// <returns></returns>
-        protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerb verb)
+        protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerbs verb)
         {
-            if (verb == HttpVerb.Get)
+            if (verb == HttpVerbs.Get)
             {
                 return query;
             }
@@ -225,17 +225,17 @@ namespace RDD.Domain.Models
             }
         }
 
-        public Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.Get) => GetByIdAsync(id, new Query<TEntity>
+        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get) => GetByIdAsync(id, new Query<TEntity>
         {
             Verb = verb
         });
 
-        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerb verb = HttpVerb.Get) => await GetByIdsAsync(ids, new Query<TEntity>
+        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerbs verb = HttpVerbs.Get) => await GetByIdsAsync(ids, new Query<TEntity>
         {
             Verb = verb
         });
 
-        protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
+        protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
         {
             IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
 

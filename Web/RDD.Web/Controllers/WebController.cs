@@ -37,7 +37,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PostAsync()
         {
-            if ((AllowedMethods & HttpVerb.Post) == HttpVerb.Post)
+            if ((AllowedMethods & HttpVerbs.Post) == HttpVerbs.Post)
             {
                 return ProtectedPostAsync();
             }
@@ -46,7 +46,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PutByIdAsync(TKey id)
         {
-            if ((AllowedMethods & HttpVerb.Put) == HttpVerb.Put)
+            if ((AllowedMethods & HttpVerbs.Put) == HttpVerbs.Put)
             {
                 return ProtectedPutAsync(id);
             }
@@ -55,7 +55,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PutAsync()
         {
-            if ((AllowedMethods & HttpVerb.Put) == HttpVerb.Put)
+            if ((AllowedMethods & HttpVerbs.Put) == HttpVerbs.Put)
             {
                 return ProtectedPutAsync();
             }
@@ -64,7 +64,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> DeleteByIdAsync(TKey id)
         {
-            if ((AllowedMethods & HttpVerb.Delete) == HttpVerb.Delete)
+            if ((AllowedMethods & HttpVerbs.Delete) == HttpVerbs.Delete)
             {
                 return ProtectedDeleteAsync(id);
             }
@@ -75,7 +75,7 @@ namespace RDD.Web.Controllers
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Post, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.CreateAsync(datas, query);
@@ -89,7 +89,7 @@ namespace RDD.Web.Controllers
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Put, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, datas, query);
@@ -102,7 +102,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Put, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
@@ -142,7 +142,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
             Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Delete);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
 
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 

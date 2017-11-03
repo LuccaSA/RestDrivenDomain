@@ -11,7 +11,7 @@ namespace RDD.Domain.Models.Querying
         where TEntity : class, IEntityBase
     {
         public Stopwatch Watch { get; }
-        public HttpVerb Verb { get; set; }
+        public HttpVerbs Verb { get; set; }
         public Field<TEntity> Fields { get; set; }
         public Field<ISelection<TEntity>> CollectionFields { get; set; }
         public List<Filter<TEntity>> Filters { get; set; }
@@ -23,7 +23,7 @@ namespace RDD.Domain.Models.Querying
         public Query()
         {
             Watch = new Stopwatch();
-            Verb = HttpVerb.Get;
+            Verb = HttpVerbs.Get;
             Fields = new Field<TEntity>();
             CollectionFields = new Field<ISelection<TEntity>>();
             Filters = new List<Filter<TEntity>>();
