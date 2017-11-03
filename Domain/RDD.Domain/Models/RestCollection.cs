@@ -35,7 +35,7 @@ namespace RDD.Domain.Models
             return CreateAsync(entity);
         }
 
-        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
         {
             await CheckRightsForCreateAsync(entity);
 
@@ -47,8 +47,6 @@ namespace RDD.Domain.Models
 
             return entity;
         }
-
-        private Task<TEntity> CreateAsync(TEntity entity) => CreateAsync(entity, null); 
 
         public Task<TEntity> UpdateByIdAsync(TKey id, object datas, Query<TEntity> query = null)
         {
