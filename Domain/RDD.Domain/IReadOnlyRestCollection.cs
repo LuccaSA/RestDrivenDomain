@@ -1,23 +1,17 @@
-﻿using RDD.Domain.Models.Querying;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain
 {
-    public interface IReadOnlyRestCollection<TEntity>
-        where TEntity : class, IEntityBase
-    {
-        Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
-        Task<IEnumerable<TEntity>> GetAllAsync();
-
-        Task<bool> AnyAsync(Query<TEntity> query);
-    }
-
-    public interface IReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity>
+    public interface IReadOnlyRestCollection<TEntity, TKey> 
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
+        Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<bool> AnyAsync(Query<TEntity> query);
         Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
         Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query);
     }

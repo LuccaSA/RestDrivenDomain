@@ -11,7 +11,7 @@ namespace RDD.Domain.Tests
     public class QueryTests : SingleContextTests
     {
         private readonly IRepository<User> _repo;
-        private IReadOnlyRestCollection<User> _collection;
+        private IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
 
         public QueryTests()

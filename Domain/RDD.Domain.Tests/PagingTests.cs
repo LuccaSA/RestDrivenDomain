@@ -11,7 +11,7 @@ namespace RDD.Domain.Tests
     public class PagingTests : SingleContextTests
     {
         private readonly IRepository<User> _repo;
-        private readonly IReadOnlyRestCollection<User> _collection;
+        private readonly IReadOnlyRestCollection<User,int> _collection;
         private readonly IStorageService _storage;
 
         public PagingTests()
