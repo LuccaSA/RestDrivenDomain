@@ -22,7 +22,7 @@ namespace RDD.Web.Serialization
             _defaultSerializer = new PropertySerializer(this);
             _mappings = new Dictionary<Type, PropertySerializer>();
 
-            Map<Culture, CultureSerializer>((s) => new CultureSerializer(s));
+            Map<Culture, CultureSerializer>(s => new CultureSerializer(s));
         }
 
         protected void Map<TEntity, TSerializer>(Func<IEntitySerializer, TSerializer> Initiator)

@@ -15,7 +15,7 @@ namespace RDD.Domain.Tests.Templates
 
         public SingleContextTests()
         {
-            _newStorage = (name) => new EFStorageService(new DataContext(GetOptions(name)));
+            _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
             _execution = new ExecutionContextMock();
             _combinationsHolder = new CombinationsHolderMock();
         }

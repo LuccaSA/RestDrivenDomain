@@ -41,7 +41,7 @@ namespace RDD.Infra.Tests
         {
             var list = new List<int> { 1, 2, 3 };
 
-            _asyncService.RunInParallel(list, (number) => CallVerifiableMockMethod());
+            _asyncService.RunInParallel(list, number => CallVerifiableMockMethod());
 
             _mock.Verify(m => m.GetEnumerator(), Times.Exactly(3));
         }

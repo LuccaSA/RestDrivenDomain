@@ -43,10 +43,10 @@ namespace RDD.Domain.Helpers
             switch (Type)
             {
                 case RoudingType.Round:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
 
                 case RoudingType.RoundEven:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
                 case RoudingType.Ceiling:
                     return Math.Ceiling;
@@ -64,10 +64,10 @@ namespace RDD.Domain.Helpers
             switch (Type)
             {
                 case RoudingType.Round:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
 
                 case RoudingType.RoundEven:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
                 case RoudingType.Ceiling:
                     return Math.Ceiling;

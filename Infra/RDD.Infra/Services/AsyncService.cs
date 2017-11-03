@@ -35,7 +35,7 @@ namespace RDD.Infra.Services
 
         public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
         {
-            Parallel.ForEach(entities, options, (entity) =>
+            Parallel.ForEach(entities, options, entity =>
             {
                 ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, _webContext, (key, value) => value);
 
