@@ -17,7 +17,7 @@ namespace RDD.Application.Controllers
         }
     }
 
-    public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TCollection, TEntity, TKey>
+    public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TEntity, TKey>
         where TCollection : IRestCollection<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>, new()
         where TKey : IEquatable<TKey>
