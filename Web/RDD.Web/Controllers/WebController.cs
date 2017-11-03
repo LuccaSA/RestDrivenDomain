@@ -37,7 +37,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PostAsync()
         {
-            if ((AllowedMethods & HttpVerbs.Post) == HttpVerbs.Post)
+            if ((AllowedHttpVerbs & HttpVerbs.Post) == HttpVerbs.Post)
             {
                 return ProtectedPostAsync();
             }
@@ -46,7 +46,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PutByIdAsync(TKey id)
         {
-            if ((AllowedMethods & HttpVerbs.Put) == HttpVerbs.Put)
+            if ((AllowedHttpVerbs & HttpVerbs.Put) == HttpVerbs.Put)
             {
                 return ProtectedPutAsync(id);
             }
@@ -55,7 +55,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PutAsync()
         {
-            if ((AllowedMethods & HttpVerbs.Put) == HttpVerbs.Put)
+            if ((AllowedHttpVerbs & HttpVerbs.Put) == HttpVerbs.Put)
             {
                 return ProtectedPutAsync();
             }
@@ -64,7 +64,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> DeleteByIdAsync(TKey id)
         {
-            if ((AllowedMethods & HttpVerbs.Delete) == HttpVerbs.Delete)
+            if ((AllowedHttpVerbs & HttpVerbs.Delete) == HttpVerbs.Delete)
             {
                 return ProtectedDeleteAsync(id);
             }

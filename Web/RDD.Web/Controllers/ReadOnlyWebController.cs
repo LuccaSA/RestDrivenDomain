@@ -34,11 +34,11 @@ namespace RDD.Web.Controllers
             Helper = helper;
         }
 
-        protected virtual HttpVerbs AllowedMethods => HttpVerbs.None;
+        protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
         public Task<IActionResult> GetAsync()
         {
-            if ((AllowedMethods & HttpVerbs.Get) == HttpVerbs.Get)
+            if ((AllowedHttpVerbs & HttpVerbs.Get) == HttpVerbs.Get)
             {
                 return ProtectedGetAsync();
             }
@@ -47,7 +47,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> GetByIdAsync(TKey id)
         {
-            if ((AllowedMethods & HttpVerbs.Get) == HttpVerbs.Get)
+            if ((AllowedHttpVerbs & HttpVerbs.Get) == HttpVerbs.Get)
             {
                 return ProtectedGetAsync(id);
             }
