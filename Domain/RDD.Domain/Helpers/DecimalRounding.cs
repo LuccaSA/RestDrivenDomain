@@ -49,10 +49,10 @@ namespace RDD.Domain.Helpers
                     return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
                 case RoudingType.Ceiling:
-                    return (d) => Math.Ceiling(d);
+                    return Math.Ceiling;
 
                 case RoudingType.Floor:
-                    return (d) => Math.Floor(d);
+                    return Math.Floor;
 
                 default:
                     throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", Type.ToString()));
@@ -70,10 +70,10 @@ namespace RDD.Domain.Helpers
                     return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
                 case RoudingType.Ceiling:
-                    return (d) => Math.Ceiling(d);
+                    return Math.Ceiling;
 
                 case RoudingType.Floor:
-                    return (d) => Math.Floor(d);
+                    return Math.Floor;
 
                 default:
                     throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", Type.ToString()));

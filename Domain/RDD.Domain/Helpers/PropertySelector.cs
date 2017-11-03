@@ -362,7 +362,7 @@ namespace RDD.Domain.Helpers
 
         public bool ContainsAny(params Expression<Func<TEntity, object>>[] expressions)
         {
-            return expressions.Any(e => Contains(e));
+            return expressions.Any(Contains);
         }
 
         public bool Add(params Expression<Func<TEntity, object>>[] expressions)

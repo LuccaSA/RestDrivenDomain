@@ -43,10 +43,7 @@ namespace RDD.Domain.Models.Querying
 
         public bool Add(params Expression<Func<TEntity, object>>[] expressions)
         {
-            return expressions.Select(expression =>
-            {
-                return Add(expression);
-            }).Aggregate((b1, b2) => b1 && b2);
+            return expressions.Select(Add).Aggregate((b1, b2) => b1 && b2);
         }
 
         public bool Contains(Expression<Func<TEntity, object>> expression) => EntitySelector.Contains(expression);
