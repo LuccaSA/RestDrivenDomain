@@ -56,8 +56,6 @@ namespace RDD.Web.Controllers
         
         protected virtual async Task<IActionResult> ProtectedGetAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
@@ -71,7 +69,6 @@ namespace RDD.Web.Controllers
         // car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
         protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);

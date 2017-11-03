@@ -4,8 +4,6 @@ using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
-using RDD.Infra;
-using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
 
@@ -19,8 +17,6 @@ namespace RDD.Web.Helpers
         /// <param name="services"></param>
         public static void AddRdd(this IServiceCollection services)
         {
-            services.AddScoped<IWebContextWrapper, HttpContextWrapper>();
-            services.AddScoped<IWebContext, HttpContextWrapper>();
             services.AddScoped(typeof(ApiHelper<,>));
             services.AddSingleton<IContractResolver, CamelCasePropertyNamesContractResolver>();
             services.AddScoped<IEntitySerializer, EntitySerializer>();
