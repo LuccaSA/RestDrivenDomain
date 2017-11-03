@@ -37,7 +37,7 @@ namespace RDD.Domain.Models
         /// <summary>
         /// Calculates the period (Start and End dates) for a given date, based on the displayMode parameter
         /// </summary>
-        /// <param name="idWidget">Widget TimeSheet</param>
+        /// <param name="mode">Mode</param>
         /// <param name="dt">Any date (used to calculate the period)</param>
         /// <returns>Period which includes dt</returns>
         public static Period GetPeriodDates(Mode mode, DateTime dt)

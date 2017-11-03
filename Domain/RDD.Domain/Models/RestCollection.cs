@@ -35,7 +35,7 @@ namespace RDD.Domain.Models
             return CreateAsync(entity);
         }
 
-        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query)
         {
             await CheckRightsForCreateAsync(entity);
 
@@ -47,6 +47,8 @@ namespace RDD.Domain.Models
 
             return entity;
         }
+
+        private Task<TEntity> CreateAsync(TEntity entity) => CreateAsync(entity, null); 
 
         public Task<TEntity> UpdateByIdAsync(TKey id, object datas, Query<TEntity> query = null)
         {
@@ -144,23 +146,8 @@ namespace RDD.Domain.Models
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
-        /// <param name="oldEntity"></param>
-        /// <param name="entity"></param>
-        /// <param name="datas"></param>
         protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
 
-        private async Task<TEntity> CreateAsync(TEntity entity)
-        {
-            await CheckRightsForCreateAsync(entity);
-
-            ForgeEntity(entity);
-
-            ValidateEntity(entity, null);
-
-            Repository.Add(entity);
-
-            return entity;
-        }
 
         private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
         {

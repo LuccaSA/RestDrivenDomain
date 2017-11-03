@@ -20,16 +20,6 @@ namespace RDD.Domain.Models.Querying
 
         protected Type EntityType { get; set; }
         public PropertySelector EntitySelector { get; protected set; }
-
-        //public static Field<TEntity> New<TEntity>()
-        //{
-        //    return new Field<TEntity>();
-        //}
-        //public static Field NewFromType(Type entityType)
-        //{
-        //    return (Field)typeof(Field).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { });
-        //}
-
         public bool HasChild => EntitySelector.HasChild;
         public bool IsEmpty => !HasChild;
         public int Count => EntitySelector.Count;

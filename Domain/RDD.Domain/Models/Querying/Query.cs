@@ -29,7 +29,7 @@ namespace RDD.Domain.Models.Querying
             Filters = new List<Filter<TEntity>>();
             OrderBys = new Queue<OrderBy<TEntity>>();
             Options = new Options();
-            Page = Page.DEFAULT;
+            Page = Page.Default;
         }
         public Query(params Filter<TEntity>[] filters)
             : this()

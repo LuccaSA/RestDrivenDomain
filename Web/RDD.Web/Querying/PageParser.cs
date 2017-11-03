@@ -17,14 +17,14 @@ namespace RDD.Web.Querying
                 return Parse(parameters[Reserved.paging.ToString()]);
             }
 
-            return Page.DEFAULT;
+            return Page.Default;
         }
 
         protected Page Parse(string paging)
         {
             if (paging == "1") //...&paging=1 <=> &paging=0,100
             {
-                return Page.DEFAULT;
+                return Page.Default;
             }
             else //...&paging=x,y
             {

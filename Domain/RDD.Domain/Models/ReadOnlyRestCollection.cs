@@ -83,9 +83,6 @@ namespace RDD.Domain.Models
         /// puisque c'était explicitement cette entité qui était visée
         /// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="id"></param>
-        /// <param name="verb"></param>
         /// <returns></returns>
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
