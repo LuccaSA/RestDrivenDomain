@@ -2,6 +2,8 @@
 using System;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace RDD.Infra.Mails
 {
@@ -9,13 +11,13 @@ namespace RDD.Infra.Mails
     {
         private readonly SmtpServerInfo _serverInfo;
         private readonly ExceptionMailInfo _exceptionMailInfo;
-        private readonly IWebContext _webContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SmtpMailService(SmtpServerInfo serverInfo, ExceptionMailInfo exceptionMailInfo, IWebContext webContext)
+        public SmtpMailService(SmtpServerInfo serverInfo, ExceptionMailInfo exceptionMailInfo, IHttpContextAccessor httpContextAccessor)
         {
             _serverInfo = serverInfo;
             _exceptionMailInfo = exceptionMailInfo;
-            _webContext = webContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void SendMail(string from, string to, string subject, string body, bool forceSend = false)
@@ -88,9 +90,11 @@ namespace RDD.Infra.Mails
                 {
                     var Detail = new Func<string, string, string>((k, v) => String.Format("{0} : {1}<br /><br />", k, v));
 
-                    body += Detail("Page REST", _webContext.RawUrl);
-                    body += Detail("Page", _webContext.Url.ToString());
-                    body += Detail("Host Address", _webContext.UserHostAddress);
+                    var url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl();
+
+                    body += Detail("Page REST", url);
+                    body += Detail("Page",(new Uri(url)).ToString());
+                    body += Detail("Host Address", _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString());
                 }
                 catch { } // No context
 

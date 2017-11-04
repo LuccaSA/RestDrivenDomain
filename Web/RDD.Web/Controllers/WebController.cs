@@ -73,8 +73,6 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedPostAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
@@ -87,8 +85,6 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
@@ -101,7 +97,6 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
@@ -132,8 +127,6 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
             await AppController.DeleteByIdAsync(id);
 
             return Ok();
@@ -141,7 +134,6 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
 
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
