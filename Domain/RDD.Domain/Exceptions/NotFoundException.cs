@@ -1,13 +1,20 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace RDD.Domain.Exceptions
 {
-    public class NotFoundException : HttpLikeException
-    {
-        public NotFoundException()
-            : base(HttpStatusCode.NotFound) { }
+    public class NotFoundException : FunctionalException
+    { 
+        public NotFoundException(string message) 
+            : base(message)
+        {
+        }
 
-        public NotFoundException(string message)
-            : base(HttpStatusCode.NotFound, message) { }
+        public NotFoundException(string message, Exception innerException) 
+            : base(message, innerException)
+        {
+        }
+
+        public override HttpStatusCode StatusCode => HttpStatusCode.NotFound;
     }
 }

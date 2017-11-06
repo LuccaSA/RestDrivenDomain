@@ -122,7 +122,7 @@ namespace RDD.Domain.Models
 
             if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
             {
-                throw new HttpLikeException(HttpStatusCode.Unauthorized, string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
+                throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
             }
 
             return Task.CompletedTask;

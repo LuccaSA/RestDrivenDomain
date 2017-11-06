@@ -136,7 +136,7 @@ namespace RDD.Domain.Models
             HashSet<int> operationIds = GetOperationIds(query, verb);
             if (!operationIds.Any())
             {
-                throw new UnreachableEntityTypeException<TEntity>();
+                throw new MissingCombinationException(typeof(TEntity));
             }
             if (!Execution.curPrincipal.HasAnyOperations(operationIds))
             {

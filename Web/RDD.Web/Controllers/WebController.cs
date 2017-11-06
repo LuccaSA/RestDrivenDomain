@@ -103,7 +103,7 @@ namespace RDD.Web.Controllers
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, "PUT on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new FunctionalException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             Dictionary<TKey, PostedData> datasByIds;
@@ -115,7 +115,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new FunctionalException(string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
@@ -140,7 +140,7 @@ namespace RDD.Web.Controllers
 
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, "DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new FunctionalException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             IList<TKey> ids;
@@ -152,7 +152,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new FunctionalException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             await AppController.DeleteByIdsAsync(ids);

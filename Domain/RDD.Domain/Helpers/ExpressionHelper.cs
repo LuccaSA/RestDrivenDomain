@@ -200,12 +200,12 @@ namespace RDD.Domain.Helpers
 
                 if (property == null)
                 {
-                    throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, String.Format("Unknown property {0} on type {1}", member, type.Name));
+                    throw new FunctionalException(String.Format("Unknown property {0} on type {1}", member, type.Name));
                 }
 
                 if (!property.CanRead)
                 {
-                    throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, String.Format("Property {0} of type {1} is set only", member, type.Name));
+                    throw new FunctionalException(String.Format("Property {0} of type {1} is set only", member, type.Name));
                 }
 
                 body = Expression.PropertyOrField(body, member);

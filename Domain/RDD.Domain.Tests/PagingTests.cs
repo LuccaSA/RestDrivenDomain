@@ -4,6 +4,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -38,9 +39,9 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public void Paging_should_limit_to_1000_result()
+        public async Task Paging_should_limit_to_1000_result()
         {
-            Assert.ThrowsAsync<OutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<OutOfRangeException>(async () =>
             {
                 var users = User.GetManyRandomUsers(2000);
                 _repo.AddRange(users);
