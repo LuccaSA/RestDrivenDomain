@@ -124,7 +124,7 @@ namespace RDD.Infra.Storage
 
         protected virtual HashSet<int> GetOperationIds(HttpVerbs verb)
         {
-            var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
+            var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && (c.Verb & verb) == verb);
 
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }

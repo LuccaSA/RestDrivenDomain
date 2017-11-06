@@ -19,7 +19,7 @@ namespace RDD.Domain.Models
             Execution = execution;
             CombinationsHolder = combinationsHolder;
         }
-
+        
         protected ICombinationsHolder CombinationsHolder { get; }
         protected IExecutionContext Execution { get; }
         protected IRepository<TEntity> Repository { get; }
@@ -237,7 +237,7 @@ namespace RDD.Domain.Models
 
         protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
         {
-            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
+            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && (c.Verb & verb) == verb);
 
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }

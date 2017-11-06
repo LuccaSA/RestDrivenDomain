@@ -117,7 +117,7 @@ namespace RDD.Domain.Models
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
             IEnumerable<int> operationIds = CombinationsHolder.Combinations
-                .Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerbs.Post)
+                .Where(c => c.Subject == typeof(TEntity) && (c.Verb & HttpVerbs.Post) == HttpVerbs.Post)
                 .Select(c => c.Operation.Id);
 
             if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
