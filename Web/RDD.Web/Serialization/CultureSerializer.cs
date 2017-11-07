@@ -11,8 +11,8 @@ namespace RDD.Web.Serialization
         public CultureSerializer()
         { }
 
-        public CultureSerializer(IEntitySerializer serializer)
-            : base(serializer) { }
+        public CultureSerializer(IEntitySerializer serializer, IUrlProvider urlProvider)
+            : base(serializer, urlProvider) { }
 
         public override Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
         {

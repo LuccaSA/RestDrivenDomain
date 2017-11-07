@@ -11,12 +11,15 @@ namespace RDD.Web.Serialization
 {
     public class PropertySerializer
     {
+        private readonly IUrlProvider _urlProvider;
+
         private IEntitySerializer _serializer { get; }
 
         public PropertySerializer() { throw new NotImplementedException(); }
-        public PropertySerializer(IEntitySerializer serializer)
+        public PropertySerializer(IEntitySerializer serializer, IUrlProvider urlProvider)
         {
             _serializer = serializer;
+            _urlProvider = urlProvider;
         }
 
         public virtual Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
@@ -48,7 +51,7 @@ namespace RDD.Web.Serialization
                     typeForUrl = entityType.BaseType;
                 }
 
-                value = string.Format(_serializer.GetUrlTemplateFromEntityType(typeForUrl), ((IEntityBase)entity).GetId());
+                value = string.Format(_urlProvider.GetUrlTemplateFromEntityType(typeForUrl), ((IEntityBase)entity).GetId());
             }
             else
             {

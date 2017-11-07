@@ -1,4 +1,5 @@
-﻿using NExtends.Primitives.Types;
+﻿using Microsoft.AspNetCore.Http;
+using NExtends.Primitives.Types;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
@@ -14,15 +15,13 @@ namespace RDD.Web.Serialization
     {
         private readonly Dictionary<Type, PropertySerializer> _mappings;
         private readonly PropertySerializer _defaultSerializer;
-        protected PluralizationService _pluralizationService;
 
-        public EntitySerializer()
+        public EntitySerializer(IUrlProvider urlProvider)
         {
-            _pluralizationService = new PluralizationService();
-            _defaultSerializer = new PropertySerializer(this);
+            _defaultSerializer = new PropertySerializer(this, urlProvider);
             _mappings = new Dictionary<Type, PropertySerializer>();
 
-            Map<Culture, CultureSerializer>(s => new CultureSerializer(s));
+            Map<Culture, CultureSerializer>(s => new CultureSerializer(s, urlProvider));
         }
 
         protected void Map<TEntity, TSerializer>(Func<IEntitySerializer, TSerializer> Initiator)
@@ -36,13 +35,6 @@ namespace RDD.Web.Serialization
         {
             var key = _mappings.Keys.FirstOrDefault(k => k.IsAssignableFrom(TEntity));
             return key != null ? _mappings[key] : _defaultSerializer;
-        }
-
-        public virtual string GetUrlTemplateFromEntityType(Type entityType)
-        {
-            var apiRadical = _pluralizationService.GetPlural(entityType.Name).ToLower();
-
-            return String.Format("api/v3/{0}/{{0}}", apiRadical);
         }
 
         public Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
