@@ -155,18 +155,7 @@ namespace RDD.Domain.Models
             //    SetOperationsOnEntities(entities, entities.ToDictionary(o => o.Id, o => ops), operations);
             //}
         }
-
-        protected void SetOperationsOnEntities(ICollection<TEntity> list, Dictionary<TKey, HashSet<int>> entityPerms, List<Operation> operations)
-        {
-            foreach (TEntity el in list)
-            {
-                if (entityPerms.ContainsKey(el.Id))
-                {
-                    el.AuthorizedOperations = operations.Where(op => entityPerms[el.Id].Contains(op.Id)).ToList();
-                }
-            }
-        }
-
+        
         /// <summary>
         /// Permet d'attacher des actions personnalisées en complément des opérations
         /// </summary>
