@@ -36,10 +36,7 @@ namespace RDD.Web.Querying
             {
                 options.ImpersonatedPrincipal = int.Parse(parameters[Reserved.principal.ToString() + ".id"]);
             }
-
-            options.AttachActions = fields.Contains(e => e.AuthorizedActions);
-            options.AttachOperations = options.AttachActions || fields.Contains(e => e.AuthorizedOperations);
-
+            
             //No Warnings
             if (parameters.ContainsKey(Reserved.nowarning.ToString()))
             {
