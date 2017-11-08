@@ -3,7 +3,7 @@ using System.Net;
 
 namespace RDD.Domain.Exceptions
 {
-    public class NotFoundException : FunctionalException
+    public class NotFoundException : BusinessException
     { 
         public NotFoundException(string message) 
             : base(message)

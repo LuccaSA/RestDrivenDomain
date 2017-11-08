@@ -3,7 +3,7 @@ using System.Net;
 
 namespace RDD.Domain.Exceptions
 {
-    public class UnauthorizedException : FunctionalException
+    public class UnauthorizedException : BusinessException
     {
         public UnauthorizedException(string message) : base(message)
         {

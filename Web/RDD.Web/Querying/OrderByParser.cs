@@ -41,13 +41,13 @@ namespace RDD.Web.Querying
                     }
                     else
                     {
-                        throw new FunctionalException("Order direction must match asc or desc");
+                        throw new BusinessException("Order direction must match asc or desc");
                     }
                 }
             }
             else
             {
-                throw new FunctionalException("Orders must contains order direction (asc or desc) for each field");
+                throw new BusinessException("Orders must contains order direction (asc or desc) for each field");
             }
 
             return queue;

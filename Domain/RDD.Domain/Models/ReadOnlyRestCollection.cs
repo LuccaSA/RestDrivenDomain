@@ -136,7 +136,7 @@ namespace RDD.Domain.Models
             HashSet<int> operationIds = GetOperationIds(query, verb);
             if (!operationIds.Any())
             {
-                throw new MissingCombinationException(typeof(TEntity));
+                throw new UnreachableCombinationException(typeof(TEntity));
             }
             if (!Execution.curPrincipal.HasAnyOperations(operationIds))
             {
@@ -237,7 +237,7 @@ namespace RDD.Domain.Models
 
         protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
         {
-            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && (c.Verb & verb) == verb);
+            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
 
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }

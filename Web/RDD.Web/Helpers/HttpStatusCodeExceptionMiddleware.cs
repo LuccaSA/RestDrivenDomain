@@ -49,7 +49,6 @@ namespace RDD.Web.Helpers
                     context.Response.Clear();
                     context.Response.StatusCode = 500;
                     context.Response.ContentType = "application/json";
-
                 }
             }
         }

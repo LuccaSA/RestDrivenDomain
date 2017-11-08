@@ -2,7 +2,7 @@
 
 namespace RDD.Domain.Exceptions
 {
-    public class OutOfRangeException : FunctionalException
+    public class OutOfRangeException : BusinessException
     { 
         public OutOfRangeException(string message) : base(message)
         {

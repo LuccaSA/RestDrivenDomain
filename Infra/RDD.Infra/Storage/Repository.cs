@@ -92,7 +92,7 @@ namespace RDD.Infra.Storage
             var operationIds = GetOperationIds(query.Verb);
             if (!operationIds.Any())
             {
-                throw new MissingCombinationException(typeof(TEntity));
+                throw new UnreachableCombinationException(typeof(TEntity));
             }
             
             return ExecutionContext.curPrincipal
@@ -124,7 +124,7 @@ namespace RDD.Infra.Storage
 
         protected virtual HashSet<int> GetOperationIds(HttpVerbs verb)
         {
-            var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && (c.Verb & verb) == verb);
+            var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
 
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }
