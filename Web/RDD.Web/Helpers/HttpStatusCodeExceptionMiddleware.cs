@@ -1,20 +1,24 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RDD.Domain.Exceptions;
 
 namespace RDD.Web.Helpers
 {
     public class HttpStatusCodeExceptionMiddleware
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<HttpStatusCodeExceptionMiddleware> _logger;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly IOptions<ExceptionHttpStatusCodeOption> _options;
+        private readonly RequestDelegate _next;  
 
-        public HttpStatusCodeExceptionMiddleware(RequestDelegate next, ILogger<HttpStatusCodeExceptionMiddleware> logger)
+        public HttpStatusCodeExceptionMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, IOptions<ExceptionHttpStatusCodeOption> options)
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next));
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _options = options;
+            _next = next ?? throw new ArgumentNullException(nameof(next));  
         }
 
         public async Task Invoke(HttpContext context)
@@ -27,7 +31,8 @@ namespace RDD.Web.Helpers
             {
                 if (context.Response.HasStarted)
                 {
-                    _logger.LogWarning("The response has already started, the http status code middleware will not be executed.");
+                    var logger = _loggerFactory.CreateLogger<HttpStatusCodeExceptionMiddleware>();
+                    logger.LogWarning("The response has already started, the http status code middleware will not be executed.");
                     throw;
                 }
 
@@ -46,8 +51,13 @@ namespace RDD.Web.Helpers
                 }
                 else
                 {
+                    HttpStatusCode? overridenStatus = null;
+                    if (_options?.Value?.StatusCodeMapping != null)
+                    {
+                        overridenStatus = _options?.Value?.StatusCodeMapping(ex);
+                    }
                     context.Response.Clear();
-                    context.Response.StatusCode = 500;
+                    context.Response.StatusCode = overridenStatus.HasValue ? (int)overridenStatus.Value : 500;
                     context.Response.ContentType = "application/json";
                 }
             }

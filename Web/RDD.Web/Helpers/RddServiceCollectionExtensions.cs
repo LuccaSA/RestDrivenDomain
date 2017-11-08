@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json.Serialization;
 using RDD.Application;
 using RDD.Application.Controllers;
@@ -20,12 +21,14 @@ namespace RDD.Web.Helpers
         public static void AddRdd(this IServiceCollection services)
         {
             // register base services
-            services.AddScoped(typeof(ApiHelper<,>));
-            services.AddSingleton<IContractResolver, CamelCasePropertyNamesContractResolver>();
-            services.AddScoped<IEntitySerializer, EntitySerializer>();
-            services.AddScoped(typeof(IAppController<,>), typeof(AppController<,>));
-            services.AddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(ApiHelper<,>))
+                .AddSingleton<IContractResolver, CamelCasePropertyNamesContractResolver>()
+                .AddScoped<IEntitySerializer, EntitySerializer>()
+                .AddScoped(typeof(IAppController<,>), typeof(AppController<,>))
+                .AddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>))
+                .AddScoped(typeof(IRepository<>), typeof(Repository<>))
+
+                .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         /// <summary>
@@ -38,4 +41,5 @@ namespace RDD.Web.Helpers
             return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
+     
 }
