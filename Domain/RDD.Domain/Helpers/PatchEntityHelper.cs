@@ -33,7 +33,7 @@ namespace RDD.Domain.Helpers
 
                 if (property == null)
                 {
-                    throw new BusinessException(string.Format("Property {0} does not exist on type {1}", key, entityType.Name));
+                    throw new BadRequestException(string.Format("Property {0} does not exist on type {1}", key, entityType.Name));
                 }
 
                 //Si la propriété n'est pas publique, alors on indique qu'on ne peut pas la modifier
@@ -41,7 +41,7 @@ namespace RDD.Domain.Helpers
 
                 if (propertySetter == null)
                 {
-                    throw new BusinessException(string.Format("Property {0} of type {1} is not writable", property.Name, entityType.Name));
+                    throw new BadRequestException(string.Format("Property {0} of type {1} is not writable", property.Name, entityType.Name));
                 }
 
                 Type propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
@@ -150,7 +150,7 @@ namespace RDD.Domain.Helpers
                                 // Il est impossible de setter à NULL une propriété non nullable
                                 else if (!genericArguments[1].IsTypeNullable())
                                 {
-                                    throw new BusinessException(string.Format("You cannot set a non nullable value to NULL (Property {0})", key));
+                                    throw new BadRequestException(string.Format("You cannot set a non nullable value to NULL (Property {0})", key));
                                 }
                             }
 

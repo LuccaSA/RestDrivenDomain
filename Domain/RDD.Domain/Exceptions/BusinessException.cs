@@ -5,9 +5,8 @@ namespace RDD.Domain.Exceptions
 {
     /// <summary>
     /// Should be used for functional exceptions.
-    /// Will be translated as HttpStatusCode.BadRequest : 400
     /// </summary>
-    public class BusinessException : Exception, IStatusCodeException
+    public abstract class BusinessException : Exception, IStatusCodeException
     {
         public BusinessException(string message) 
             : base(message)
@@ -19,6 +18,6 @@ namespace RDD.Domain.Exceptions
         {
         }
 
-        public virtual HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
+        public abstract HttpStatusCode StatusCode { get; }
     }
 }

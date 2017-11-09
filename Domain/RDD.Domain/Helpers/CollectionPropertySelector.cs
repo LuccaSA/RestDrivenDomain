@@ -56,7 +56,7 @@ namespace RDD.Domain.Helpers
 
             if (property == null)
             {
-                throw new BusinessException(string.Format("Unknown property {0} on type ISelection", propertyName));
+                throw new BadRequestException(string.Format("Unknown property {0} on type ISelection", propertyName));
             }
 
             return property;

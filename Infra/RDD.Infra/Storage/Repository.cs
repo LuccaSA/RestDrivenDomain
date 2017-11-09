@@ -92,7 +92,7 @@ namespace RDD.Infra.Storage
             var operationIds = GetOperationIds(query.Verb);
             if (!operationIds.Any())
             {
-                throw new UnreachableCombinationException(typeof(TEntity));
+                throw new UnreachableEntityException(typeof(TEntity));
             }
             
             return ExecutionContext.curPrincipal

@@ -145,7 +145,7 @@ namespace RDD.Domain.Helpers
 
             if (property == null)
             {
-                throw new BusinessException(string.Format("Unknown property {0} on type {1}", propertyName, EntityType.Name));
+                throw new BadRequestException(string.Format("Unknown property {0} on type {1}", propertyName, EntityType.Name));
             }
 
             return property;

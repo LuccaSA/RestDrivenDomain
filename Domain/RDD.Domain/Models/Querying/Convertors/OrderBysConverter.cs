@@ -15,7 +15,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 
             if (!safeCopy.Any())
             {
-                throw new BusinessException("There should be at least one orderBy instruction");
+                throw new BadRequestException("There should be at least one orderBy instruction");
             }
 
             var first = safeCopy.Dequeue();

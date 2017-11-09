@@ -103,7 +103,7 @@ namespace RDD.Web.Controllers
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new BusinessException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new BadRequestException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             Dictionary<TKey, PostedData> datasByIds;
@@ -115,7 +115,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new BusinessException(string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new BadRequestException(string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
@@ -140,7 +140,7 @@ namespace RDD.Web.Controllers
 
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new BusinessException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new BadRequestException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             IList<TKey> ids;
@@ -152,7 +152,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new BusinessException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new BadRequestException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             await AppController.DeleteByIdsAsync(ids);
