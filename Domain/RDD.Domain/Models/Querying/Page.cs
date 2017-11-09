@@ -5,7 +5,7 @@ namespace RDD.Domain.Models.Querying
 {
     public class Page
     {
-        public const int MAX_LIMIT = 1000;
+        protected const int MAX_LIMIT = 1000;
         public static Page Default => new Page(0, 10);
 
         public int Offset { get; }
@@ -15,7 +15,7 @@ namespace RDD.Domain.Models.Querying
         public Page(int offset, int limit)
             : this(offset, limit, MAX_LIMIT) { }
 
-        public Page(int offset, int limit, int maxLimit)
+        protected Page(int offset, int limit, int maxLimit)
         {
             var offsetConnditions = offset >= 0;
             if (!offsetConnditions)
