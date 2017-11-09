@@ -15,7 +15,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 
             if (!safeCopy.Any())
             {
-                throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, "There should be at least one orderBy instruction");
+                throw new BadRequestException("There should be at least one orderBy instruction");
             }
 
             var first = safeCopy.Dequeue();

@@ -7,8 +7,6 @@ namespace RDD.Domain
     {
         string Name { get; }
         string Url { get; }
-        ICollection<Operation> AuthorizedOperations { get; set; }
-        Dictionary<string, bool> AuthorizedActions { get; set; }
     }
 
     public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey> { }

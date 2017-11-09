@@ -117,12 +117,12 @@ namespace RDD.Domain.Models
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
             IEnumerable<int> operationIds = CombinationsHolder.Combinations
-                .Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerbs.Post)
+                .Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(HttpVerbs.Post))
                 .Select(c => c.Operation.Id);
 
             if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
             {
-                throw new HttpLikeException(HttpStatusCode.Unauthorized, string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
+                throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
             }
 
             return Task.CompletedTask;

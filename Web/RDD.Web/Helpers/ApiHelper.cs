@@ -77,7 +77,7 @@ namespace RDD.Web.Helpers
                     break;
 
                 default:
-                    throw new HttpLikeException(HttpStatusCode.UnsupportedMediaType, string.Format("Unsupported media type {0}", contentType));
+                    throw new UnsupportedContentTypeException(string.Format("Unsupported media type {0}", contentType));
             }
             return objects;
         }

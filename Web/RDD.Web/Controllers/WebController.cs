@@ -37,7 +37,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PostAsync()
         {
-            if ((AllowedHttpVerbs & HttpVerbs.Post) == HttpVerbs.Post)
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
             {
                 return ProtectedPostAsync();
             }
@@ -46,7 +46,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PutByIdAsync(TKey id)
         {
-            if ((AllowedHttpVerbs & HttpVerbs.Put) == HttpVerbs.Put)
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync(id);
             }
@@ -55,7 +55,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> PutAsync()
         {
-            if ((AllowedHttpVerbs & HttpVerbs.Put) == HttpVerbs.Put)
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync();
             }
@@ -64,7 +64,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> DeleteByIdAsync(TKey id)
         {
-            if ((AllowedHttpVerbs & HttpVerbs.Delete) == HttpVerbs.Delete)
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
             {
                 return ProtectedDeleteAsync(id);
             }
@@ -103,7 +103,7 @@ namespace RDD.Web.Controllers
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, "PUT on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new BadRequestException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             Dictionary<TKey, PostedData> datasByIds;
@@ -115,7 +115,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new BadRequestException(string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
@@ -140,7 +140,7 @@ namespace RDD.Web.Controllers
 
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, "DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new BadRequestException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             IList<TKey> ids;
@@ -152,7 +152,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new BadRequestException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             await AppController.DeleteByIdsAsync(ids);
