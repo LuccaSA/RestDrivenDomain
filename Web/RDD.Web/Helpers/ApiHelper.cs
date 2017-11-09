@@ -29,7 +29,6 @@ namespace RDD.Web.Helpers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 
-        //public IWebContextWrapper WebContextWrapper { get; }
         public IExecutionContext Execution { get; }
         public IEntitySerializer Serializer { get; }
 
