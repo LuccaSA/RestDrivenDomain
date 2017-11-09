@@ -9,13 +9,13 @@ namespace RDD.Infra.Storage
 {
     public class InMemoryStorageService : IStorageService
     {
-        protected Queue<Task> AfterAfterSaveChangesActions { get; }
+        protected Queue<Task> AfterSaveChangesActions { get; }
         public Dictionary<Type, IList> Cache { get; }
         public Dictionary<Type, int> Indexes { get; }
 
         public InMemoryStorageService()
         {
-            AfterAfterSaveChangesActions = new Queue<Task>();
+            AfterSaveChangesActions = new Queue<Task>();
             Cache = new Dictionary<Type, IList>();
             Indexes = new Dictionary<Type, int>();
         }
@@ -85,7 +85,7 @@ namespace RDD.Infra.Storage
 
         public void AddAfterSaveChangesAction(Task action)
         {
-            AfterAfterSaveChangesActions.Enqueue(action);
+            AfterSaveChangesActions.Enqueue(action);
         }
 
         public async Task SaveChangesAsync()
@@ -108,9 +108,9 @@ namespace RDD.Infra.Storage
                 Indexes[type] = index;
             }
 
-            while(AfterAfterSaveChangesActions.Any())
+            while(AfterSaveChangesActions.Any())
             {
-                await AfterAfterSaveChangesActions.Dequeue();
+                await AfterSaveChangesActions.Dequeue();
             }
         }
         public void Dispose() { }
