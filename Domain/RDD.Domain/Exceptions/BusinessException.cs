@@ -8,12 +8,12 @@ namespace RDD.Domain.Exceptions
     /// </summary>
     public abstract class BusinessException : Exception, IStatusCodeException
     {
-        public BusinessException(string message) 
+        protected BusinessException(string message) 
             : base(message)
         {
         }
 
-        public BusinessException(string message, Exception innerException) 
+        protected BusinessException(string message, Exception innerException) 
             : base(message,  innerException)
         {
         }

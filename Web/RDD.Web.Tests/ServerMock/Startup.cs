@@ -68,7 +68,7 @@ namespace RDD.Web.Tests.ServerMock
                 routes.MapRoute(
                     name: "default_route",
                     template: "{controller}/{action}/{id?}",
-                    defaults: new { controller = "Ping", action = "Status" });
+                    defaults: new { controller = "Ping", action = "Status" });  
             });
         }
     }

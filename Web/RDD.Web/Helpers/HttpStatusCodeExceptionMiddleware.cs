@@ -38,28 +38,38 @@ namespace RDD.Web.Helpers
 
                 if (ex is IStatusCodeException eStatus)
                 {
-                    int httpCode = (int) eStatus.StatusCode;
-                    context.Response.Clear();
-                    context.Response.StatusCode = httpCode;
-                    context.Response.ContentType = "application/json";
-
-                    // We provide detailled logs only with functional exceptions
-                    if (httpCode >= 400 && httpCode < 500)
-                    {
-                        await context.Response.WriteAsync(ex.Message);
-                    }
+                    await StatusCodeExceptionResponse(context, ex, eStatus);
                 }
                 else
                 {
-                    HttpStatusCode? overridenStatus = null;
-                    if (_options?.Value?.StatusCodeMapping != null)
-                    {
-                        overridenStatus = _options?.Value?.StatusCodeMapping(ex);
-                    }
-                    context.Response.Clear();
-                    context.Response.StatusCode = overridenStatus.HasValue ? (int)overridenStatus.Value : 500;
-                    context.Response.ContentType = "application/json";
+                    StandardExceptionResponse(context, ex);
                 }
+            }
+        }
+
+        private void StandardExceptionResponse(HttpContext context, Exception ex)
+        {
+            HttpStatusCode? overridenStatus = null;
+            if (_options?.Value?.StatusCodeMapping != null)
+            {
+                overridenStatus = _options?.Value?.StatusCodeMapping(ex);
+            }
+            context.Response.Clear();
+            context.Response.StatusCode = overridenStatus.HasValue ? (int)overridenStatus.Value : 500;
+            context.Response.ContentType = "application/json";
+        }
+
+        private static async Task StatusCodeExceptionResponse(HttpContext context, Exception ex, IStatusCodeException eStatus)
+        {
+            int httpCode = (int)eStatus.StatusCode;
+            context.Response.Clear();
+            context.Response.StatusCode = httpCode;
+            context.Response.ContentType = "application/json";
+
+            // We provide detailled logs only with functional exceptions
+            if (httpCode >= 400 && httpCode < 500)
+            {
+                await context.Response.WriteAsync(ex.Message);
             }
         }
     }
