@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RDD.Domain;
+using System;
 
 namespace RDD.Web.Serialization
 {
@@ -16,9 +17,14 @@ namespace RDD.Web.Serialization
             _httpContextAccessor = httpContextAccessor;
         }
 
+        protected virtual Type GetEntityType(IEntityBase entity)
+        {
+            return entity.GetType();
+        }
+
         public virtual string GetEntityUrl(IEntityBase entity)
         {
-            var entityType = entity.GetType();
+            var entityType = GetEntityType(entity);
 
             var entityName = _pluralizationService.GetPlural(entityType.Name).ToLower();
             var request = _httpContextAccessor.HttpContext.Request;

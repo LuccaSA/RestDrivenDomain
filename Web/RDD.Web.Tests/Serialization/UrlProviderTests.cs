@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
+using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Web.Serialization;
 using RDD.Web.Tests.Models;
@@ -44,9 +46,36 @@ namespace RDD.Web.Tests.Serialization
             Assert.Equal("https://mon.domain.com/api/usertests/10", result);
         }
 
+        [Fact]
+        public void GetEntityUrl_should_return_valid_url_with_inheritance_if_needed()
+        {
+            var entity = new UserTest();
+
+            var urlProvider = new UserTestUrlProvider(httpContextAccessor);
+            var result = urlProvider.GetEntityUrl(entity);
+
+            Assert.Equal("https://mon.domain.com/api/users/10", result);
+        }
+
         private class UserTest : User
         {
             public override int Id { get => 10; }
+        }
+
+        private class UserTestUrlProvider : UrlProvider
+        {
+            public UserTestUrlProvider(IHttpContextAccessor httpContextAccessor)
+                : base(httpContextAccessor) { }
+
+            protected override Type GetEntityType(IEntityBase entity)
+            {
+                if (entity is UserTest)
+                {
+                    return typeof(User);
+                }
+
+                return base.GetEntityType(entity);
+            }
         }
     }
 }
