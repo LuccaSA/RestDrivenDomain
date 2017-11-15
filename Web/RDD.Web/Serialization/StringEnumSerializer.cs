@@ -8,7 +8,7 @@ namespace RDD.Web.Serialization
     public class StringEnumSerializer : PropertySerializer
     {
         public StringEnumSerializer() { }
-        public StringEnumSerializer(IEntitySerializer serializer) : base(serializer) { }
+        public StringEnumSerializer(IEntitySerializer serializer, IUrlProvider urlProvider) : base(serializer, urlProvider) { }
 
         public override object SerializeProperty(object entity, PropertySelector field)
         {

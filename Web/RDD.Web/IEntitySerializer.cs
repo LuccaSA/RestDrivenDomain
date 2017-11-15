@@ -8,7 +8,6 @@ namespace RDD.Web
 {
     public interface IEntitySerializer
     {
-        string GetUrlTemplateFromEntityType(Type entityType);
         Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
             where TEntity : class, IEntityBase;
         List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field<TEntity> fields);

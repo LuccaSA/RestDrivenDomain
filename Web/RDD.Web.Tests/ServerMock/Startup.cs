@@ -8,6 +8,7 @@ using RDD.Domain;
 using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
+using RDD.Web.Serialization;
 
 namespace RDD.Web.Tests.ServerMock
 {
@@ -41,6 +42,7 @@ namespace RDD.Web.Tests.ServerMock
             });
 
             services.AddSingleton<ICombinationsHolder, CombinationsHolder>();
+            services.AddSingleton<IUrlProvider, UrlProvider>();
             services.AddScoped<IStorageService, EFStorageService>();
 
             services.AddScoped<ExchangeRateController>();
