@@ -145,7 +145,7 @@ namespace RDD.Domain.Helpers
 
             if (property == null)
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown property {0} on type {1}", propertyName, EntityType.Name));
+                throw new BadRequestException(string.Format("Unknown property {0} on type {1}", propertyName, EntityType.Name));
             }
 
             return property;
@@ -362,7 +362,7 @@ namespace RDD.Domain.Helpers
 
         public bool ContainsAny(params Expression<Func<TEntity, object>>[] expressions)
         {
-            return expressions.Any(e => Contains(e));
+            return expressions.Any(Contains);
         }
 
         public bool Add(params Expression<Func<TEntity, object>>[] expressions)

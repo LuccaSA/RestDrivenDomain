@@ -1,5 +1,4 @@
 ﻿using RDD.Domain;
-using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
@@ -8,73 +7,83 @@ using System.Threading.Tasks;
 
 namespace RDD.Application.Controllers
 {
-    public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TCollection, TEntity, TKey>
+    public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey> 
+        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TKey : IEquatable<TKey>
+    {
+        public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection) 
+            : base(storage, collection)
+        {
+        }
+    }
+
+    public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TEntity, TKey>
         where TCollection : IRestCollection<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        protected IStorageService _storage;
+        protected IStorageService Storage { get; }
 
         public AppController(IStorageService storage, TCollection collection)
             : base(collection)
         {
-            _storage = storage;
+            Storage = storage;
         }
 
         public virtual async Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query)
         {
-            var entity = await _collection.CreateAsync(datas, query);
+            var entity = await Collection.CreateAsync(datas, query);
 
-            await _storage.SaveChangesAsync();
+            await Storage.SaveChangesAsync();
 
             query.Options.NeedFilterRights = false;
 
-            entity = await _collection.GetByIdAsync(entity.Id, query);
+            entity = await Collection.GetByIdAsync(entity.Id, query);
 
             return entity;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query)
         {
-            var entity = await _collection.UpdateByIdAsync(id, datas, query);
+            var entity = await Collection.UpdateByIdAsync(id, datas, query);
 
-            await _storage.SaveChangesAsync();
+            await Storage.SaveChangesAsync();
 
             query.Options.NeedFilterRights = false;
             query.Options.AttachActions = false;
             query.Options.AttachOperations = false;
 
-            entity = await _collection.GetByIdAsync(id, query);
+            entity = await Collection.GetByIdAsync(id, query);
 
             return entity;
         }
 
         public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query)
         {
-            var entities = await _collection.UpdateByIdsAsync(datasByIds, query);
+            var entities = await Collection.UpdateByIdsAsync(datasByIds, query);
 
-            await _storage.SaveChangesAsync();
+            await Storage.SaveChangesAsync();
 
             query.Options.NeedFilterRights = false;
 
             var ids = entities.Select(e => e.Id).ToList();
-            var result = await _collection.GetByIdsAsync(ids, query);
+            var result = await Collection.GetByIdsAsync(ids, query);
 
             return result;
         }
 
         public async Task DeleteByIdAsync(TKey id)
         {
-            await _collection.DeleteByIdAsync(id);
+            await Collection.DeleteByIdAsync(id);
 
-            await _storage.SaveChangesAsync();
+            await Storage.SaveChangesAsync();
         }
 
         public async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            await _collection.DeleteByIdsAsync(ids);
+            await Collection.DeleteByIdsAsync(ids);
 
-            await _storage.SaveChangesAsync();
+            await Storage.SaveChangesAsync();
         }
     }
 }

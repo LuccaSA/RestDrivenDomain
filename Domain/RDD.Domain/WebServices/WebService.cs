@@ -34,7 +34,7 @@ namespace RDD.Domain.WebServices
         {
             if (!HasAnyOperations(operations))
             {
-                throw new HttpLikeException(HttpStatusCode.Unauthorized, String.Format("Web service {0} does not have any permission on type {1}", Name, typeof(TEntity).Name));
+                throw new UnauthorizedException(String.Format("Web service {0} does not have any permission on type {1}", Name, typeof(TEntity).Name));
             }
 
             return entities;

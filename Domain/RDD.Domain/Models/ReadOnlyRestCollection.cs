@@ -19,7 +19,7 @@ namespace RDD.Domain.Models
             Execution = execution;
             CombinationsHolder = combinationsHolder;
         }
-
+        
         protected ICombinationsHolder CombinationsHolder { get; }
         protected IExecutionContext Execution { get; }
         protected IRepository<TEntity> Repository { get; }
@@ -70,7 +70,7 @@ namespace RDD.Domain.Models
             }
 
             //Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-            if (query.Verb != HttpVerb.GET && count == 0)
+            if (query.Verb != HttpVerbs.Get && count == 0)
             {
                 throw new NotFoundException(string.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, query.Verb));
             }
@@ -83,9 +83,6 @@ namespace RDD.Domain.Models
         /// puisque c'était explicitement cette entité qui était visée
         /// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="id"></param>
-        /// <param name="verb"></param>
         /// <returns></returns>
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
@@ -129,9 +126,9 @@ namespace RDD.Domain.Models
         /// On ne filtre qu'en écriture, pas en lecture
         /// </summary>
         /// <returns></returns>
-        protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerb verb)
+        protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerbs verb)
         {
-            if (verb == HttpVerb.GET)
+            if (verb == HttpVerbs.Get)
             {
                 return query;
             }
@@ -139,7 +136,7 @@ namespace RDD.Domain.Models
             HashSet<int> operationIds = GetOperationIds(query, verb);
             if (!operationIds.Any())
             {
-                throw new UnreachableEntityTypeException<TEntity>();
+                throw new UnreachableEntityException(typeof(TEntity));
             }
             if (!Execution.curPrincipal.HasAnyOperations(operationIds))
             {
@@ -158,18 +155,7 @@ namespace RDD.Domain.Models
             //    SetOperationsOnEntities(entities, entities.ToDictionary(o => o.Id, o => ops), operations);
             //}
         }
-
-        protected void SetOperationsOnEntities(ICollection<TEntity> list, Dictionary<TKey, HashSet<int>> entityPerms, List<Operation> operations)
-        {
-            foreach (TEntity el in list)
-            {
-                if (entityPerms.ContainsKey(el.Id))
-                {
-                    el.AuthorizedOperations = operations.Where(op => entityPerms[el.Id].Contains(op.Id)).ToList();
-                }
-            }
-        }
-
+        
         /// <summary>
         /// Permet d'attacher des actions personnalisées en complément des opérations
         /// </summary>
@@ -228,19 +214,19 @@ namespace RDD.Domain.Models
             }
         }
 
-        public Task<TEntity> GetByIdAsync(TKey id, HttpVerb verb = HttpVerb.GET) => GetByIdAsync(id, new Query<TEntity>
+        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get) => GetByIdAsync(id, new Query<TEntity>
         {
             Verb = verb
         });
 
-        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerb verb = HttpVerb.GET) => await GetByIdsAsync(ids, new Query<TEntity>
+        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerbs verb = HttpVerbs.Get) => await GetByIdsAsync(ids, new Query<TEntity>
         {
             Verb = verb
         });
 
-        protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerb verb)
+        protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
         {
-            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
+            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
 
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }

@@ -15,7 +15,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 
             if (!safeCopy.Any())
             {
-                throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, "There should be at least one orderBy instruction");
+                throw new BadRequestException("There should be at least one orderBy instruction");
             }
 
             var first = safeCopy.Dequeue();
@@ -25,7 +25,7 @@ namespace RDD.Domain.Models.Querying.Convertors
 
         private IQueryable<TEntity> Convert(IQueryable<TEntity> entities, OrderBy<TEntity> first, Queue<OrderBy<TEntity>> orderBys)
         {
-            var result = OrderBy(entities, first, true);
+            var result = OrderBy(entities, first);
 
             foreach (var orderBy in orderBys)
             {

@@ -11,7 +11,7 @@ namespace RDD.Domain.Tests
     public class QueryTests : SingleContextTests
     {
         private readonly IRepository<User> _repo;
-        private IReadOnlyRestCollection<User> _collection;
+        private IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
 
         public QueryTests()
@@ -24,16 +24,16 @@ namespace RDD.Domain.Tests
         [Fact]
         public void Cloning_query_should_not_clone_verb()
         {
-            var query = new Query<User> { Verb = HttpVerb.PUT };
+            var query = new Query<User> { Verb = HttpVerbs.Put };
             var result = new Query<User>(query);
 
-            Assert.Equal(HttpVerb.GET, result.Verb);
+            Assert.Equal(HttpVerbs.Get, result.Verb);
         }
 
         [Fact]
         public void Cloning_query_should_not_clone_stopwatch()
         {
-            var query = new Query<User> { Verb = HttpVerb.PUT };
+            var query = new Query<User> { Verb = HttpVerbs.Put };
             var result = new Query<User>(query);
 
             Assert.NotEqual(query.Watch, result.Watch);

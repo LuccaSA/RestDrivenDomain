@@ -3,21 +3,13 @@ using System.Collections.Generic;
 
 namespace RDD.Domain.Models
 {
-    public abstract class EntityBase<TEntity, TKey> : IEntityBase<TEntity, TKey>, IIncludable
+    public abstract class EntityBase<TEntity, TKey> : IEntityBase<TEntity, TKey>
         where TEntity : class
         where TKey : IEquatable<TKey>
     {
         public abstract TKey Id { get; set; }
         public abstract string Name { get; set; }
         public string Url { get; set; }
-        public ICollection<Operation> AuthorizedOperations { get; set; }
-        public Dictionary<string, bool> AuthorizedActions { get; set; }
-
-        protected EntityBase()
-        {
-            AuthorizedOperations = new HashSet<Operation>();
-            AuthorizedActions = new Dictionary<string, bool>();
-        }
 
         public virtual object GetId() => Id;
 

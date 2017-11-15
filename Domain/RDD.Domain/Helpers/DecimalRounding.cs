@@ -43,19 +43,18 @@ namespace RDD.Domain.Helpers
             switch (Type)
             {
                 case RoudingType.Round:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
 
                 case RoudingType.RoundEven:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
                 case RoudingType.Ceiling:
-                    return (d) => Math.Ceiling(d);
+                    return Math.Ceiling;
 
                 case RoudingType.Floor:
-                    return (d) => Math.Floor(d);
-
+                    return Math.Floor;
                 default:
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", Type.ToString()));
+                    throw new NotImplementedException(string.Format("Unknown rounding strategy '{0}'", Type.ToString()));
             }
         }
 
@@ -64,19 +63,19 @@ namespace RDD.Domain.Helpers
             switch (Type)
             {
                 case RoudingType.Round:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.AwayFromZero);
 
                 case RoudingType.RoundEven:
-                    return (d) => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
+                    return d => Math.Round(d, NumberOfDecimals, MidpointRounding.ToEven);
 
                 case RoudingType.Ceiling:
-                    return (d) => Math.Ceiling(d);
+                    return Math.Ceiling;
 
                 case RoudingType.Floor:
-                    return (d) => Math.Floor(d);
+                    return Math.Floor;
 
                 default:
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", Type.ToString()));
+                    throw new NotImplementedException(String.Format("Unknown rounding strategy '{0}'", Type.ToString()));
             }
         }
 
@@ -90,23 +89,13 @@ namespace RDD.Domain.Helpers
 
             if (!String.IsNullOrEmpty(matchType))
             {
-                RoudingType type;
-                if (!Enum.TryParse(matchType, true, out type))
-                {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown rounding strategy '{0}'", matchType));
-                }
-
+                var type = (RoudingType)Enum.Parse(typeof(RoudingType), matchType, true);
                 rouding.Type = type;
             }
 
             if (!String.IsNullOrEmpty(matchDecimals))
             {
-                int numberOfDecimals;
-                if (!int.TryParse(matchDecimals, out numberOfDecimals))
-                {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Bad number of decimals value '{0}'", matchDecimals));
-                }
-
+                int numberOfDecimals = int.Parse(matchDecimals);
                 rouding.NumberOfDecimals = numberOfDecimals;
             }
 

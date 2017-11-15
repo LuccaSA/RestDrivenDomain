@@ -20,16 +20,6 @@ namespace RDD.Domain.Models.Querying
 
         protected Type EntityType { get; set; }
         public PropertySelector EntitySelector { get; protected set; }
-
-        //public static Field<TEntity> New<TEntity>()
-        //{
-        //    return new Field<TEntity>();
-        //}
-        //public static Field NewFromType(Type entityType)
-        //{
-        //    return (Field)typeof(Field).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { });
-        //}
-
         public bool HasChild => EntitySelector.HasChild;
         public bool IsEmpty => !HasChild;
         public int Count => EntitySelector.Count;
@@ -53,10 +43,7 @@ namespace RDD.Domain.Models.Querying
 
         public bool Add(params Expression<Func<TEntity, object>>[] expressions)
         {
-            return expressions.Select(expression =>
-            {
-                return Add(expression);
-            }).Aggregate((b1, b2) => b1 && b2);
+            return expressions.Select(Add).Aggregate((b1, b2) => b1 && b2);
         }
 
         public bool Contains(Expression<Func<TEntity, object>> expression) => EntitySelector.Contains(expression);

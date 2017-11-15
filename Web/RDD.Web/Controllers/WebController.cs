@@ -15,6 +15,16 @@ using RDD.Web.Models;
 
 namespace RDD.Web.Controllers
 {
+    public abstract class WebController<TEntity, TKey> : WebController<IAppController<TEntity, TKey>, TEntity, TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TKey : IEquatable<TKey>
+    {
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
+            : base(appController, helper)
+        {
+        }
+    }
+
     public abstract class WebController<TAppController, TEntity, TKey> : ReadOnlyWebController<TAppController, TEntity, TKey>
         where TAppController : IAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>, new()
@@ -25,11 +35,45 @@ namespace RDD.Web.Controllers
         {
         }
 
+        public Task<IActionResult> PostAsync()
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
+            {
+                return ProtectedPostAsync();
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> PutByIdAsync(TKey id)
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+            {
+                return ProtectedPutAsync(id);
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> PutAsync()
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+            {
+                return ProtectedPutAsync();
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> DeleteByIdAsync(TKey id)
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
+            {
+                return ProtectedDeleteAsync(id);
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
         protected virtual async Task<IActionResult> ProtectedPostAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.POST, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.CreateAsync(datas, query);
@@ -41,9 +85,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.PUT, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, datas, query);
@@ -55,14 +97,13 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.PUT, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, "PUT on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new BadRequestException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             Dictionary<TKey, PostedData> datasByIds;
@@ -74,7 +115,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new BadRequestException(string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
@@ -86,8 +127,6 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-
             await AppController.DeleteByIdAsync(id);
 
             return Ok();
@@ -95,14 +134,13 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
-            Helper.WebContextWrapper.SetContext(HttpContext);
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.DELETE);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
 
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
             if (datas.Any(d => !d.ContainsKey("id")))
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, "DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+                throw new BadRequestException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
             IList<TKey> ids;
@@ -114,7 +152,7 @@ namespace RDD.Web.Controllers
             }
             catch
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
+                throw new BadRequestException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
             await AppController.DeleteByIdsAsync(ids);

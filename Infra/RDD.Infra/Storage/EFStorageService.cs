@@ -11,59 +11,59 @@ namespace RDD.Infra.Storage
 {
     public class EFStorageService : IStorageService
     {
-        protected DbContext _dbContext { get; set; }
-        protected Queue<Task> _afterSaveChangesActions { get; set; }
+        protected DbContext DbContext { get; }
+        protected Queue<Task> AfterSaveChangesActions { get; }
 
         public EFStorageService(DbContext dbContext)
         {
-            _dbContext = dbContext;
-            _afterSaveChangesActions = new Queue<Task>();
+            DbContext = dbContext;
+            AfterSaveChangesActions = new Queue<Task>();
         }
 
         public virtual IQueryable<TEntity> Set<TEntity>()
             where TEntity : class, IEntityBase
         {
-            return _dbContext.Set<TEntity>();
+            return DbContext.Set<TEntity>();
         }
 
         public virtual void Add<TEntity>(TEntity entity)
             where TEntity : class, IEntityBase
         {
-            _dbContext.Set<TEntity>().Add(entity);
+            DbContext.Set<TEntity>().Add(entity);
         }
 
         public virtual void AddRange<TEntity>(IEnumerable<TEntity> entities)
             where TEntity : class, IEntityBase
         {
-            _dbContext.Set<TEntity>().AddRange(entities);
+            DbContext.Set<TEntity>().AddRange(entities);
         }
 
         public virtual void Remove<TEntity>(TEntity entity)
             where TEntity : class, IEntityBase
         {
-            _dbContext.Set<TEntity>().Remove(entity);
+            DbContext.Set<TEntity>().Remove(entity);
         }
 
         public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
             where TEntity : class
         {
-            _dbContext.Set<TEntity>().RemoveRange(entities);
+            DbContext.Set<TEntity>().RemoveRange(entities);
         }
 
         public void AddAfterSaveChangesAction(Task action)
         {
-            _afterSaveChangesActions.Enqueue(action);
+            AfterSaveChangesActions.Enqueue(action);
         }
 
         public virtual async Task SaveChangesAsync()
         {
             try
             {
-                await _dbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync();
 
-                while(_afterSaveChangesActions.Count > 0)
+                while(AfterSaveChangesActions.Count > 0)
                 {
-                    await _afterSaveChangesActions.Dequeue();
+                    await AfterSaveChangesActions.Dequeue();
                 }
             }
             catch (DbUpdateException ex)
@@ -95,11 +95,12 @@ namespace RDD.Infra.Storage
 
         public async Task<string> ExecuteScriptAsync(string script)
         {
-            return (await _dbContext.Database.ExecuteSqlCommandAsync(script)).ToString();
+            return (await DbContext.Database.ExecuteSqlCommandAsync(script)).ToString();
         }
+
         public void Dispose()
         {
-            _dbContext.Dispose();
+            DbContext.Dispose();
         }
     }
 }

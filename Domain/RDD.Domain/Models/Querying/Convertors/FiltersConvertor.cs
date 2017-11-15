@@ -24,7 +24,7 @@ namespace RDD.Domain.Models.Querying.Convertors
         /// </summary>
         /// <returns></returns>
         internal Expression<Func<TEntity, bool>> Convert(List<Filter<TEntity>> filters)
-        {
+        { 
             Expression<Func<TEntity, bool>> feed = PredicateBuilder.True<TEntity>();
 
             foreach (var filter in filters)

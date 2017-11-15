@@ -22,7 +22,7 @@ namespace RDD.Web.Serialization
             _defaultSerializer = new PropertySerializer(this);
             _mappings = new Dictionary<Type, PropertySerializer>();
 
-            Map<Culture, CultureSerializer>((s) => new CultureSerializer(s));
+            Map<Culture, CultureSerializer>(s => new CultureSerializer(s));
         }
 
         protected void Map<TEntity, TSerializer>(Func<IEntitySerializer, TSerializer> Initiator)
@@ -161,21 +161,23 @@ namespace RDD.Web.Serialization
             return new List<Dictionary<string, object>>();
         }
 
-        public Dictionary<string, object> SerializeException(HttpLikeException e)
+        public Dictionary<string, object> SerializeException<TException>(TException e)
+            where TException : Exception, IStatusCodeException
         {
             return new Dictionary<string, object>()
             {
-                { "Status", e.Status},
+                { "Status", e.StatusCode},
                 { "Message", e.Message},
                 { "Data", e.Data}
             };
         }
 
-        public Dictionary<string, object> SerializeExceptionWithStackTrace(HttpLikeException e)
+        public Dictionary<string, object> SerializeExceptionWithStackTrace<TException>(TException e)
+            where TException : Exception, IStatusCodeException
         {
             return new Dictionary<string, object>()
             {
-                { "Status", e.Status},
+                { "Status", e.StatusCode},
                 { "Message", e.Message},
                 { "Data", e.Data},
                 { "StackTrace", e.StackTrace}

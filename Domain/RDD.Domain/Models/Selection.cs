@@ -63,7 +63,7 @@ namespace RDD.Domain.Models
             {
                 return new TimeSpan(Items.Sum(i => ((TimeSpan)property.GetValue(i)).Ticks));
             }
-            throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
+            throw new NotImplementedException(String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
 
         public object Min(PropertyInfo property, DecimalRounding rounding)
@@ -113,7 +113,7 @@ namespace RDD.Domain.Models
             {
                 return Items.Min(i => (DateTime?)property.GetValue(i));
             }
-            throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
+            throw new NotImplementedException(String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
 
         public object Max(PropertyInfo property, DecimalRounding rounding)
@@ -163,7 +163,7 @@ namespace RDD.Domain.Models
             {
                 return Items.Max(i => (DateTime?)property.GetValue(i));
             }
-            throw new HttpLikeException(HttpStatusCode.NotImplemented, String.Format("Unhandled type {0}", property.PropertyType.Name));
+            throw new NotImplementedException(String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
     }
 }

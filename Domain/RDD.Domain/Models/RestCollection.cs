@@ -58,7 +58,7 @@ namespace RDD.Domain.Models
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerb.PUT;
+            query.Verb = HttpVerbs.Put;
             query.Options.AttachActions = true;
             query.Options.AttachOperations = true;
 
@@ -70,7 +70,7 @@ namespace RDD.Domain.Models
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerb.PUT;
+            query.Verb = HttpVerbs.Put;
             query.Options.AttachActions = true;
             query.Options.AttachOperations = true;
 
@@ -94,7 +94,7 @@ namespace RDD.Domain.Models
         {
             TEntity entity = await GetByIdAsync(id, new Query<TEntity>
             {
-                Verb = HttpVerb.DELETE
+                Verb = HttpVerbs.Delete
             });
 
             Repository.Remove(entity);
@@ -104,7 +104,7 @@ namespace RDD.Domain.Models
         {
             IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity>
             {
-                Verb = HttpVerb.DELETE
+                Verb = HttpVerbs.Delete
             });
 
             foreach (TEntity entity in entities)
@@ -117,12 +117,12 @@ namespace RDD.Domain.Models
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
             IEnumerable<int> operationIds = CombinationsHolder.Combinations
-                .Where(c => c.Subject == typeof(TEntity) && c.Verb == HttpVerb.POST)
+                .Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(HttpVerbs.Post))
                 .Select(c => c.Operation.Id);
 
             if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
             {
-                throw new HttpLikeException(HttpStatusCode.Unauthorized, string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
+                throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
             }
 
             return Task.CompletedTask;
@@ -144,23 +144,8 @@ namespace RDD.Domain.Models
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
-        /// <param name="oldEntity"></param>
-        /// <param name="entity"></param>
-        /// <param name="datas"></param>
         protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
 
-        private async Task<TEntity> CreateAsync(TEntity entity)
-        {
-            await CheckRightsForCreateAsync(entity);
-
-            ForgeEntity(entity);
-
-            ValidateEntity(entity, null);
-
-            Repository.Add(entity);
-
-            return entity;
-        }
 
         private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
         {

@@ -41,13 +41,13 @@ namespace RDD.Web.Querying
                     }
                     else
                     {
-                        throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, "Order direction must match asc or desc");
+                        throw new BadRequestException("Order direction must match asc or desc");
                     }
                 }
             }
             else
             {
-                throw new HttpLikeException(System.Net.HttpStatusCode.BadRequest, "Orders must contains order direction (asc or desc) for each field");
+                throw new BadRequestException("Orders must contains order direction (asc or desc) for each field");
             }
 
             return queue;
