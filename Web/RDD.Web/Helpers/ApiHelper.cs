@@ -29,7 +29,6 @@ namespace RDD.Web.Helpers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 
-        //public IWebContextWrapper WebContextWrapper { get; }
         public IExecutionContext Execution { get; }
         public IEntitySerializer Serializer { get; }
 
@@ -77,7 +76,7 @@ namespace RDD.Web.Helpers
                     break;
 
                 default:
-                    throw new HttpLikeException(HttpStatusCode.UnsupportedMediaType, string.Format("Unsupported media type {0}", contentType));
+                    throw new UnsupportedContentTypeException(string.Format("Unsupported media type {0}", contentType));
             }
             return objects;
         }

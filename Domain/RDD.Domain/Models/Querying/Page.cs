@@ -5,7 +5,7 @@ namespace RDD.Domain.Models.Querying
 {
     public class Page
     {
-        public const int MAX_LIMIT = 1000;
+        protected const int MAX_LIMIT = 1000;
         public static Page Default => new Page(0, 10);
 
         public int Offset { get; }
@@ -15,20 +15,18 @@ namespace RDD.Domain.Models.Querying
         public Page(int offset, int limit)
             : this(offset, limit, MAX_LIMIT) { }
 
-        public Page(int offset, int limit, int maxLimit)
+        protected Page(int offset, int limit, int maxLimit)
         {
             var offsetConnditions = offset >= 0;
             if (!offsetConnditions)
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest,
-                    "Paging offset should be greater than 0");
+                throw new OutOfRangeException("Paging offset should be greater than 0");
             }
 
             var limitConditions = limit >= 1 && limit <= maxLimit;
             if (!limitConditions)
             {
-                throw new HttpLikeException(HttpStatusCode.BadRequest,
-                    $"Paging limit should be between 1 and {maxLimit}");
+                throw new OutOfRangeException($"Paging limit should be between 1 and {maxLimit}");
             }
 
             Offset = offset;

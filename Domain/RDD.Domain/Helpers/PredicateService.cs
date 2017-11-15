@@ -31,7 +31,7 @@ namespace RDD.Domain.Helpers
                 }
                 if (propertyReturnType != typeof(DateTime))
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Operator '{2}' only allows dates to be compared, whereas property {0} is of type {1}.", field, property.GetType().Name, binaryOperator));
+                    throw new BadRequestException(string.Format("Operator '{2}' only allows dates to be compared, whereas property {0} is of type {1}.", field, property.GetType().Name, binaryOperator));
                 }
             }
 
@@ -156,12 +156,12 @@ namespace RDD.Domain.Helpers
 
                 if (property == null)
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown property {0} on type {1}", member, type.Name));
+                    throw new BadRequestException(string.Format("Unknown property {0} on type {1}", member, type.Name));
                 }
 
                 if (!property.CanRead)
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Property {0} of type {1} is set only", member, type.Name));
+                    throw new BadRequestException(string.Format("Property {0} of type {1} is set only", member, type.Name));
                 }
 
                 body = Expression.PropertyOrField(body, member);
@@ -209,12 +209,12 @@ namespace RDD.Domain.Helpers
 
                 if (property == null)
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Unknown property {0} on type {1}", member, entityType.Name));
+                    throw new BadRequestException(string.Format("Unknown property {0} on type {1}", member, entityType.Name));
                 }
 
                 if (!property.CanRead)
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, string.Format("Property {0} of type {1} is set only", member, entityType.Name));
+                    throw new BadRequestException(string.Format("Property {0} of type {1} is set only", member, entityType.Name));
                 }
 
 

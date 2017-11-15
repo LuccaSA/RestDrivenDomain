@@ -19,7 +19,7 @@ namespace RDD.Domain.Models
             Execution = execution;
             CombinationsHolder = combinationsHolder;
         }
-
+        
         protected ICombinationsHolder CombinationsHolder { get; }
         protected IExecutionContext Execution { get; }
         protected IRepository<TEntity> Repository { get; }
@@ -136,7 +136,7 @@ namespace RDD.Domain.Models
             HashSet<int> operationIds = GetOperationIds(query, verb);
             if (!operationIds.Any())
             {
-                throw new UnreachableEntityTypeException<TEntity>();
+                throw new UnreachableEntityException(typeof(TEntity));
             }
             if (!Execution.curPrincipal.HasAnyOperations(operationIds))
             {
@@ -155,18 +155,7 @@ namespace RDD.Domain.Models
             //    SetOperationsOnEntities(entities, entities.ToDictionary(o => o.Id, o => ops), operations);
             //}
         }
-
-        protected void SetOperationsOnEntities(ICollection<TEntity> list, Dictionary<TKey, HashSet<int>> entityPerms, List<Operation> operations)
-        {
-            foreach (TEntity el in list)
-            {
-                if (entityPerms.ContainsKey(el.Id))
-                {
-                    el.AuthorizedOperations = operations.Where(op => entityPerms[el.Id].Contains(op.Id)).ToList();
-                }
-            }
-        }
-
+        
         /// <summary>
         /// Permet d'attacher des actions personnalisées en complément des opérations
         /// </summary>
@@ -237,7 +226,7 @@ namespace RDD.Domain.Models
 
         protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
         {
-            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb == verb);
+            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
 
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }

@@ -38,7 +38,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> GetAsync()
         {
-            if ((AllowedHttpVerbs & HttpVerbs.Get) == HttpVerbs.Get)
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
                 return ProtectedGetAsync();
             }
@@ -47,7 +47,7 @@ namespace RDD.Web.Controllers
 
         public Task<IActionResult> GetByIdAsync(TKey id)
         {
-            if ((AllowedHttpVerbs & HttpVerbs.Get) == HttpVerbs.Get)
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
                 return ProtectedGetAsync(id);
             }

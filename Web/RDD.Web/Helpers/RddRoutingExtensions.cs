@@ -13,7 +13,7 @@ namespace RDD.Web.Helpers
         /// <param name="prefix">Optional route prefix ("/api/v2" in /api/v2/MyController/42) </param>
         public static void MapRddDefaultRoutes(this IRouteBuilder routes, string prefix = null)
         {
-            string cleanPrefix = !String.IsNullOrWhiteSpace(prefix) ? prefix.Trim().Trim('/') : string.Empty;
+            string cleanPrefix = !String.IsNullOrWhiteSpace(prefix) ? prefix.Trim().Trim('/') + '/' : string.Empty;
 
             routes.MapRoute("Get", cleanPrefix + "{controller}/", new { action = "GetAsync" });
             routes.MapRoute("GetById", cleanPrefix + "{controller}/{id}", new { action = "GetByIdAsync" });

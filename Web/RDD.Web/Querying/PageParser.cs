@@ -37,19 +37,19 @@ namespace RDD.Web.Querying
 
                     if (!Int32.TryParse(elements[0], out offset))
                     {
-                        throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("Offset value {0} not in correct format", elements[0]));
+                        throw new BadRequestException(String.Format("Offset value {0} not in correct format", elements[0]));
                     }
 
                     if (!Int32.TryParse(elements[1], out limit))
                     {
-                        throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("Limit value {0} not in correct format", elements[1]));
+                        throw new BadRequestException(String.Format("Limit value {0} not in correct format", elements[1]));
                     }
 
                     return new Page(offset, limit);
                 }
                 else
                 {
-                    throw new HttpLikeException(HttpStatusCode.BadRequest, String.Format("{0} does not respect limit=start,count format", paging));
+                    throw new BadRequestException(String.Format("{0} does not respect limit=start,count format", paging));
                 }
             }
         }
