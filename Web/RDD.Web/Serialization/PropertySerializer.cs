@@ -51,7 +51,8 @@ namespace RDD.Web.Serialization
                     typeForUrl = entityType.BaseType;
                 }
 
-                value = string.Format(_urlProvider.GetUrlTemplateFromEntityType(typeForUrl), ((IEntityBase)entity).GetId());
+                var entityBase = entity as IEntityBase;
+                value = _urlProvider.GetUrlTemplateFromEntityType(typeForUrl, entityBase) ;
             }
             else
             {

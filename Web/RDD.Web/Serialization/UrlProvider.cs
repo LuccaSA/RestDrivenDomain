@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using RDD.Domain;
 using System;
 
 namespace RDD.Web.Serialization
@@ -21,12 +22,12 @@ namespace RDD.Web.Serialization
             return DEFAULT_API_PREFIX;
         }
 
-        public virtual string GetUrlTemplateFromEntityType(Type entityType)
+        public virtual string GetUrlTemplateFromEntityType(Type entityType, IEntityBase entity)
         {
             var apiRadical = _pluralizationService.GetPlural(entityType.Name).ToLower();
             var request = _httpContextAccessor.HttpContext.Request;
 
-            return $"{request.Scheme}://{request.Host.Value}/{GetApiPrefix()}/{apiRadical}/{{0}}";
+            return $"{request.Scheme}://{request.Host.Value}/{GetApiPrefix()}/{apiRadical}/{entity.GetId()}";
         }
     }
 }
