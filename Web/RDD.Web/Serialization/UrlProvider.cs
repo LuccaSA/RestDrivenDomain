@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RDD.Domain;
-using System;
 
 namespace RDD.Web.Serialization
 {
