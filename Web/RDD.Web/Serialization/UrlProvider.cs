@@ -6,7 +6,7 @@ namespace RDD.Web.Serialization
 {
     public class UrlProvider : IUrlProvider
     {
-        private const string DEFAULT_API_PREFIX = "api";
+        protected virtual string ApiPrefix => "api";
 
         private readonly PluralizationService _pluralizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -17,17 +17,14 @@ namespace RDD.Web.Serialization
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public virtual string GetApiPrefix()
+        public virtual string GetEntityUrl(IEntityBase entity)
         {
-            return DEFAULT_API_PREFIX;
-        }
+            var entityType = entity.GetType();
 
-        public virtual string GetUrlTemplateFromEntityType(Type entityType, IEntityBase entity)
-        {
-            var apiRadical = _pluralizationService.GetPlural(entityType.Name).ToLower();
+            var entityName = _pluralizationService.GetPlural(entityType.Name).ToLower();
             var request = _httpContextAccessor.HttpContext.Request;
 
-            return $"{request.Scheme}://{request.Host.Value}/{GetApiPrefix()}/{apiRadical}/{entity.GetId()}";
+            return $"{request.Scheme}://{request.Host.Value}/{ApiPrefix}/{entityName}/{entity.GetId()}";
         }
     }
 }

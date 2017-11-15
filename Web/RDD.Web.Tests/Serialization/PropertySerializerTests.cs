@@ -63,7 +63,7 @@ namespace RDD.Web.Tests.Serialization
             public PrefixUrlProvider(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
             { }
 
-            public override string GetApiPrefix() => "api/lol";
+            protected override string ApiPrefix => "api/lol";
         }
     }
 }

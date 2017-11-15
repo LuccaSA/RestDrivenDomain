@@ -5,7 +5,6 @@ namespace RDD.Web
 {
     public interface IUrlProvider
     {
-        string GetUrlTemplateFromEntityType(Type entityType, IEntityBase entityId);
-        string GetApiPrefix();
+        string GetEntityUrl(IEntityBase entity);
     }
 }

@@ -38,21 +38,11 @@ namespace RDD.Web.Serialization
         {
             object value;
             PropertyInfo prop = field.GetCurrentProperty();
+            var entityBase = entity as IEntityBase;
 
-            if (prop.Name == "Url")
+            if (prop.Name == "Url" && entityBase != null)
             {
-                var entityType = entity.GetType();
-                var typeForUrl = entityType;
-
-                //Ici on suppose que c'est un héritage classique, genre BlogApplication : Application => Application
-                // Et on vérifie que entityType n'est pas une EntityBase
-                if (!typeof(IEntityBase).IsAssignableFrom(entityType) && entityType.BaseType != null && !entityType.BaseType.IsGenericType)
-                {
-                    typeForUrl = entityType.BaseType;
-                }
-
-                var entityBase = entity as IEntityBase;
-                value = _urlProvider.GetUrlTemplateFromEntityType(typeForUrl, entityBase) ;
+                value = _urlProvider.GetEntityUrl(entityBase) ;
             }
             else
             {
