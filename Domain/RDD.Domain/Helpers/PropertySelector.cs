@@ -1,13 +1,12 @@
-﻿using System;
+﻿using NExtends.Primitives.Strings;
+using NExtends.Primitives.Types;
+using RDD.Domain.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using NExtends.Primitives;
-using NExtends.Primitives.Types;
-using RDD.Domain.Exceptions;
 
 namespace RDD.Domain.Helpers
 {

@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using NExtends.Primitives;
+using NExtends.Primitives.DateTimes;
+using NExtends.Primitives.Strings;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
+using Newtonsoft.Json;
 
 namespace RDD.Web.Querying
 {
@@ -57,7 +59,7 @@ namespace RDD.Web.Querying
                 }
                 else
                 {
-                    data = PostedData.ParseJsonArray(JArray.Parse("[" + string.Join(", ", stringValue.Split(',').Select(p => p.ToJSON()).ToArray()) + "]"));
+                    data = PostedData.ParseJsonArray(JArray.Parse("[" + string.Join(", ", stringValue.Split(',').Select(p => JsonConvert.SerializeObject(p)).ToArray()) + "]"));
                 }
 
                 var type = FilterOperand.Equals;

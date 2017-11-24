@@ -1,11 +1,11 @@
-﻿using System;
+﻿using NExtends.Primitives.Strings;
+using RDD.Domain.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using NExtends.Primitives;
-using RDD.Domain.Exceptions;
 
 namespace RDD.Domain.Helpers
 {

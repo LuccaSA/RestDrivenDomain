@@ -1,4 +1,7 @@
-﻿using System;
+﻿using NExtends.Primitives.DateTimes;
+using NExtends.Primitives.Strings;
+using NExtends.Primitives.Types;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,8 +9,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
 using System.Runtime.Serialization;
-using NExtends.Primitives;
-using NExtends.Primitives.Types;
 
 namespace RDD.Domain.Models.Querying
 {
