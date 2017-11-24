@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using NExtends.Primitives.Strings;
+using NExtends.Primitives.Types;
+using RDD.Domain.Exceptions;
+using RDD.Domain.Models.Querying;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using Newtonsoft.Json;
-using NExtends.Primitives;
-using NExtends.Primitives.Types;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain.Helpers
 {

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NExtends.Primitives.DateTimes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NExtends.Primitives;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -228,7 +228,6 @@ namespace RDD.Domain.Models.Querying
         }
 
         public bool ContainsKey(string key) => Subs.ContainsKey(key);
-        public bool ContainsKey(Enum key) => Subs.ContainsKey(key);
         public bool Remove(string key) => Subs.Remove(key);
         public int Count() => Subs.Count;
     }

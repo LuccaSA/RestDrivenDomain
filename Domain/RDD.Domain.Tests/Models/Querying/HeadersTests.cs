@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
-using NExtends.Primitives;
+using NExtends.Primitives.Generics;
+using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using RDD.Web.Querying;
 
 namespace RDD.Domain.Tests.Models.Querying
 {

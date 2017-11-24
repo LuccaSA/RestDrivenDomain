@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NExtends.Primitives.DateTimes;
+using System;
 using System.Collections.Generic;
-using NExtends.Primitives;
 
 namespace RDD.Domain.Models
 {

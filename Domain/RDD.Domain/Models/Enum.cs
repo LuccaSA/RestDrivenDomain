@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Attributes;
+﻿using NExtends.Primitives.Enums;
+using RDD.Domain.Attributes;
 using System;
 using System.Linq;
-using NExtends.Primitives;
 
 namespace RDD.Domain.Models
 {
