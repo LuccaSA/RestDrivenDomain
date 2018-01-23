@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RDD.Application
 {
     public interface IAppController<TEntity, TKey> : IReadOnlyAppController<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query);

@@ -16,7 +16,7 @@ using RDD.Web.Models;
 namespace RDD.Web.Controllers
 {
     public abstract class WebController<TEntity, TKey> : WebController<IAppController<TEntity, TKey>, TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
@@ -27,7 +27,7 @@ namespace RDD.Web.Controllers
 
     public abstract class WebController<TAppController, TEntity, TKey> : ReadOnlyWebController<TAppController, TEntity, TKey>
         where TAppController : IAppController<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace RDD.Application.Controllers
 {
     public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey> 
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection) 
@@ -19,7 +19,7 @@ namespace RDD.Application.Controllers
 
     public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TEntity, TKey>
         where TCollection : IRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         protected IStorageService Storage { get; }

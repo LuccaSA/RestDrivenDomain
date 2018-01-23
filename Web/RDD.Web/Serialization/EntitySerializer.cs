@@ -25,7 +25,7 @@ namespace RDD.Web.Serialization
         }
 
         protected void Map<TEntity, TSerializer>(Func<IEntitySerializer, TSerializer> Initiator)
-            where TSerializer : PropertySerializer, new()
+            where TSerializer : PropertySerializer
         {
             var serializer = Initiator(this);
             _mappings.Add(typeof(TEntity), serializer);

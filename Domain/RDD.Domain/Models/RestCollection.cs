@@ -11,7 +11,7 @@ using RDD.Domain.Models.Querying;
 namespace RDD.Domain.Models
 {
     public class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
@@ -115,7 +115,13 @@ namespace RDD.Domain.Models
                 Repository.Remove(entity);
             }
         }
-        public virtual TEntity InstanciateEntity() => new TEntity();
+
+        /// <summary>
+        /// We dropped the new() constraint for all these reasons
+        /// https://blogs.msdn.microsoft.com/seteplia/2017/02/01/dissecting-the-new-constraint-in-c-a-perfect-example-of-a-leaky-abstraction/
+        /// </summary>
+        /// <returns></returns>
+        public virtual TEntity InstanciateEntity() => throw new NotImplementedException();
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
