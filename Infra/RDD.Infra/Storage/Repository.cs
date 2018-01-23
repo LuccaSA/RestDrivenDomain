@@ -27,7 +27,7 @@ namespace RDD.Infra.Storage
         {
             var entities = Set(query);
 
-            if (query.Options.NeedFilterRights)
+            if (query.Options.CheckRights)
             {
                 entities = ApplyRights(entities, query);
             }
@@ -45,7 +45,7 @@ namespace RDD.Infra.Storage
         {
             var entities = Set(query);
 
-            if (query.Options.NeedFilterRights)
+            if (query.Options.CheckRights)
             {
                 entities = ApplyRights(entities, query);
             }

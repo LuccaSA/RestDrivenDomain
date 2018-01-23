@@ -37,7 +37,12 @@ namespace RDD.Domain.Models
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
         {
-            await CheckRightsForCreateAsync(entity);
+            query = query ?? new Query<TEntity>();
+
+            if (query.Options.CheckRights)
+            {
+                await CheckRightsForCreateAsync(entity);
+            }
 
             ForgeEntity(entity);
 
