@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace RDD.Application.Controllers
 {
     public class ReadOnlyAppController<TEntity, TKey> : ReadOnlyAppController<IReadOnlyRestCollection<TEntity, TKey>, TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         public ReadOnlyAppController(IReadOnlyRestCollection<TEntity, TKey> collection) 
@@ -17,7 +17,7 @@ namespace RDD.Application.Controllers
 
     public class ReadOnlyAppController<TCollection, TEntity, TKey> : IReadOnlyAppController<TEntity, TKey>
         where TCollection : IReadOnlyRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected TCollection Collection { get; }

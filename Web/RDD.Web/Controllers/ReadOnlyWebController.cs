@@ -11,7 +11,7 @@ using RDD.Domain.Models.Querying;
 namespace RDD.Web.Controllers
 {
     public abstract class ReadOnlyWebController<TEntity, TKey> : ReadOnlyWebController<IReadOnlyAppController<TEntity, TKey>, TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
@@ -22,7 +22,7 @@ namespace RDD.Web.Controllers
 
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
         where TAppController : IReadOnlyAppController<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected TAppController AppController { get; }

@@ -10,7 +10,7 @@ using RDD.Domain.Models.Querying;
 namespace RDD.Domain.Models
 {
     public class ReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         public ReadOnlyRestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)

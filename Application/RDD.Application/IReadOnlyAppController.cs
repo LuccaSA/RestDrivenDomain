@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace RDD.Application
 {
     public interface IReadOnlyAppController<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);

@@ -14,7 +14,7 @@ using RDD.Web.Querying;
 namespace RDD.Web.Helpers
 {
     public class ApiHelper<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         public ApiHelper(IContractResolver jsonResolver, IExecutionContext execution, IEntitySerializer serializer, IHttpContextAccessor httpContextAccessor)
