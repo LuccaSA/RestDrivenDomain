@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
@@ -121,7 +120,10 @@ namespace RDD.Domain.Models
         /// https://blogs.msdn.microsoft.com/seteplia/2017/02/01/dissecting-the-new-constraint-in-c-a-perfect-example-of-a-leaky-abstraction/
         /// </summary>
         /// <returns></returns>
-        public virtual TEntity InstanciateEntity() => throw new NotImplementedException();
+        public virtual TEntity InstanciateEntity()
+        {
+            return System.Activator.CreateInstance<TEntity>();
+        }
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
