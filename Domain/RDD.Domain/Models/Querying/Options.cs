@@ -16,10 +16,9 @@ namespace RDD.Domain.Models.Querying
         public bool NeedEnumeration { get; set; }
 
         /// <summary>
-        /// Whether we need to filter entities based on what curPrincipal can see.
-        /// <para>ie: whether we execute FilterRights</para>
+        /// Should we FilterRights on GET request, or CheckRightForCreate on POST
         /// </summary>
-        public bool NeedFilterRights { get; set; }
+        public bool CheckRights { get; set; }
 
         public bool AttachOperations { get; set; }
         public bool AttachActions { get; set; }
@@ -33,7 +32,7 @@ namespace RDD.Domain.Models.Querying
         public Options()
         {
             NeedEnumeration = true;
-            NeedFilterRights = true;
+            CheckRights = true;
             WithWarnings = true;
         }
     }

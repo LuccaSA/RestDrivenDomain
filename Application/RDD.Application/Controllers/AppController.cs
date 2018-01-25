@@ -36,7 +36,7 @@ namespace RDD.Application.Controllers
 
             await Storage.SaveChangesAsync();
 
-            query.Options.NeedFilterRights = false;
+            query.Options.CheckRights = false;
 
             entity = await Collection.GetByIdAsync(entity.Id, query);
 
@@ -49,7 +49,7 @@ namespace RDD.Application.Controllers
 
             await Storage.SaveChangesAsync();
 
-            query.Options.NeedFilterRights = false;
+            query.Options.CheckRights = false;
             query.Options.AttachActions = false;
             query.Options.AttachOperations = false;
 
@@ -64,7 +64,7 @@ namespace RDD.Application.Controllers
 
             await Storage.SaveChangesAsync();
 
-            query.Options.NeedFilterRights = false;
+            query.Options.CheckRights = false;
 
             var ids = entities.Select(e => e.Id).ToList();
             var result = await Collection.GetByIdsAsync(ids, query);
