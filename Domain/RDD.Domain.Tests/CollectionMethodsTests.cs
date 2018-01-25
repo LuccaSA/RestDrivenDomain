@@ -9,6 +9,7 @@ using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -16,7 +17,7 @@ namespace RDD.Domain.Tests
     public class CollectionMethodsTests : SingleContextTests
     {
         [Fact]
-        public async void GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
+        public async Task GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -33,7 +34,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async void TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
+        public async Task TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -50,7 +51,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async void Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
+        public async Task Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -76,7 +77,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async void Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
+        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -90,7 +91,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async void Post_SHOULD_work_WHEN_InstantiateEntityIsOverriden()
+        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverriden()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -105,7 +106,7 @@ namespace RDD.Domain.Tests
 
 
         [Fact]
-        public async void Post_SHOULD_fail_WHEN_InstantiateEntityIsNotOverridenAndEntityHasParametersInConstructor()
+        public async Task Post_SHOULD_fail_WHEN_InstantiateEntityIsNotOverridenAndEntityHasParametersInConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -121,7 +122,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async void Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
+        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
