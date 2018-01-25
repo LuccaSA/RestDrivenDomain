@@ -74,5 +74,21 @@ namespace RDD.Domain.Tests
                 await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJson(@"{ ""name"": ""new name"" }"), new Query<User>()));
             }
         }
+
+        [Fact]
+        public async void Post_SHOULD_work_WHEN_instanceIsNotOverriden()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var repo = new Repository<User>(storage, _execution, null);
+                var users = new UsersCollection(repo, _execution, null);
+                var query = new Query<User>();
+                query.Options.NeedFilterRights = false;
+                
+                await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
+
+//                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJson(@"{ ""name"": ""new name"" }"), new Query<User>()));
+            }
+        }
     }
 }
