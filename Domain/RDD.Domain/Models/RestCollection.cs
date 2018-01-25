@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
     public class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>, new()
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
@@ -28,11 +27,11 @@ namespace RDD.Domain.Models
 
         public virtual Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
         {
-            TEntity entity = InstanciateEntity();
+            TEntity entity = InstanciateEntity(datas);
 
             GetPatcher().PatchEntity(entity, datas);
 
-            return CreateAsync(entity);
+            return CreateAsync(entity, query);
         }
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
@@ -115,7 +114,16 @@ namespace RDD.Domain.Models
                 Repository.Remove(entity);
             }
         }
-        public virtual TEntity InstanciateEntity() => new TEntity();
+
+        /// <summary>
+        /// We dropped the new() constraint for all these reasons
+        /// https://blogs.msdn.microsoft.com/seteplia/2017/02/01/dissecting-the-new-constraint-in-c-a-perfect-example-of-a-leaky-abstraction/
+        /// </summary>
+        /// <returns></returns>
+        public virtual TEntity InstanciateEntity(PostedData datas)
+        {
+            return System.Activator.CreateInstance<TEntity>();
+        }
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {

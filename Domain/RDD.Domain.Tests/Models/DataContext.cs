@@ -12,6 +12,7 @@ namespace RDD.Domain.Tests.Models
         public DbSet<ConcreteClassThree> ConcreteClassThree { get; }
         public DbSet<AbstractClass> AbstractClass { get; }
         public DbSet<User> User { get; }
+        public DbSet<UserWithParameters> UserWithParameters { get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,10 @@ namespace RDD.Domain.Tests.Models
             modelBuilder.Entity<User>().Ignore(u => u.Url);
             modelBuilder.Entity<User>().Ignore(u => u.Mail);
             modelBuilder.Entity<User>().Ignore(u => u.TwitterUri);
+
+            modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Url);
+            modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Mail);
+            modelBuilder.Entity<UserWithParameters>().Ignore(u => u.TwitterUri);
         }
     }
 }
