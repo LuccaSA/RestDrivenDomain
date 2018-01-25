@@ -19,7 +19,7 @@ namespace RDD.Web.Tests.Models
         public async Task<IEnumerable<IUser>> GetEnumerableAsync()
         {
             var query = new Query<IUser>();
-            query.Options.NeedFilterRights = false; //Don't care about rights check
+            query.Options.CheckRights = false; //Don't care about rights check
 
             return (await AppController.GetAsync(query)).Items;
         }
