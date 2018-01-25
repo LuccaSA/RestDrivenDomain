@@ -27,11 +27,11 @@ namespace RDD.Domain.Models
 
         public virtual Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
         {
-            TEntity entity = InstanciateEntity();
+            TEntity entity = InstanciateEntity(datas);
 
             GetPatcher().PatchEntity(entity, datas);
 
-            return CreateAsync(entity);
+            return CreateAsync(entity, query);
         }
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
@@ -120,7 +120,7 @@ namespace RDD.Domain.Models
         /// https://blogs.msdn.microsoft.com/seteplia/2017/02/01/dissecting-the-new-constraint-in-c-a-perfect-example-of-a-leaky-abstraction/
         /// </summary>
         /// <returns></returns>
-        public virtual TEntity InstanciateEntity()
+        public virtual TEntity InstanciateEntity(PostedData datas)
         {
             return System.Activator.CreateInstance<TEntity>();
         }

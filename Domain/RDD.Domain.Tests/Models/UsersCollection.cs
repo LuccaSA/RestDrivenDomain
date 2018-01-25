@@ -6,10 +6,5 @@ namespace RDD.Domain.Tests.Models
     {
         public UsersCollection(IRepository<User> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
             : base(repository, execution, combinationsHolder) { }
-
-        public override User InstanciateEntity()
-        {
-            return new User();
-        }
     }
 }

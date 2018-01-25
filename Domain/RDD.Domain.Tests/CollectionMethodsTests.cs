@@ -76,18 +76,64 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async void Post_SHOULD_work_WHEN_instanceIsNotOverriden()
+        public async void Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<User>(storage, _execution, null);
                 var users = new UsersCollection(repo, _execution, null);
                 var query = new Query<User>();
-                query.Options.NeedFilterRights = false;
+                query.Options.CheckRights = false;
+
+                await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
+            }
+        }
+
+        [Fact]
+        public async void Post_SHOULD_work_WHEN_InstantiateEntityIsOverriden()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var repo = new Repository<User>(storage, _execution, null);
+                var users = new UsersCollectionWithOverride(repo, _execution, null);
+                var query = new Query<User>();
+                query.Options.CheckRights = false;
                 
                 await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
+            }
+        }
 
-//                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJson(@"{ ""name"": ""new name"" }"), new Query<User>()));
+
+        [Fact]
+        public async void Post_SHOULD_fail_WHEN_InstantiateEntityIsNotOverridenAndEntityHasParametersInConstructor()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var repo = new Repository<UserWithParameters>(storage, _execution, null);
+                var users = new UsersCollectionWithParameters(repo, _execution, null);
+                var query = new Query<UserWithParameters>();
+                query.Options.CheckRights = false;
+
+                await Assert.ThrowsAsync<MissingMethodException>(
+                    () => users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query)
+                );
+            }
+        }
+
+        [Fact]
+        public async void Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var repo = new Repository<UserWithParameters>(storage, _execution, null);
+                var users = new UsersCollectionWithParametersAndOverride(repo, _execution, null);
+                var query = new Query<UserWithParameters>();
+                query.Options.CheckRights = false;
+
+                var result = await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3, ""name"": ""John"" }"), query);
+
+                Assert.Equal(3, result.Id);
+                Assert.Equal("John", result.Name);
             }
         }
     }
