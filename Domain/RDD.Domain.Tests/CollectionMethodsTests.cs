@@ -137,5 +137,26 @@ namespace RDD.Domain.Tests
                 Assert.Equal("John", result.Name);
             }
         }
+
+        [Fact]
+        public async Task AnyAsync_should_work()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var user = new User { Id = 2 };
+                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var query = new Query<User>();
+                query.Options.CheckRights = false;
+
+                await users.CreateAsync(user, query);
+
+                await storage.SaveChangesAsync();
+
+                var any = await users.AnyAsync(query);
+
+                Assert.True(any);
+            }
+        }
     }
 }
