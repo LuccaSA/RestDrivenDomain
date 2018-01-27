@@ -40,8 +40,9 @@ namespace RDD.Domain.Tests
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
-                var user = await controller.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
-                user = await controller.UpdateByIdAsync(3, PostedData.ParseJson(@"{ ""name"": ""newName"" }"), query);
+                await controller.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
+
+                var user = await controller.UpdateByIdAsync(3, PostedData.ParseJson(@"{ ""name"": ""newName"" }"), query);
 
                 Assert.Equal(3, user.Id);
             }
