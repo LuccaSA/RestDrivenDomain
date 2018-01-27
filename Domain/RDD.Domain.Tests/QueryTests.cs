@@ -4,6 +4,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Infra.Storage;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -37,6 +38,49 @@ namespace RDD.Domain.Tests
             var result = new Query<User>(query);
 
             Assert.NotEqual(query.Watch, result.Watch);
+        }
+
+        [Fact]
+        public async Task Stopwatch_should_work()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var repo = new Repository<User>(storage, _execution, null);
+                var users = new UsersCollection(repo, _execution, null);
+                var appController = new UsersAppController(storage, users);
+
+                //POST
+                var postQuery = new Query<User>();
+                postQuery.Options.CheckRights = false;
+
+                await appController.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), postQuery);
+
+                Assert.True(postQuery.Watch.ElapsedMilliseconds > 0);
+
+                //GET
+                var getQuery = new Query<User>();
+                getQuery.Options.CheckRights = false;
+
+                await appController.GetAsync(getQuery);
+
+                Assert.True(getQuery.Watch.ElapsedMilliseconds > 0);
+
+                //PUT
+                var putQuery = new Query<User>();
+                putQuery.Options.CheckRights = false;
+
+                await appController.UpdateByIdAsync(3, PostedData.ParseJson(@"{ ""name"": ""newName"" }"), putQuery);
+
+                Assert.True(putQuery.Watch.ElapsedMilliseconds > 0);
+
+                //DELETE
+                var deleteQuery = new Query<User>();
+                deleteQuery.Options.CheckRights = false;
+
+                await appController.DeleteByIdAsync(3, deleteQuery);
+
+                Assert.True(deleteQuery.Watch.ElapsedMilliseconds > 0);
+            }
         }
     }
 }

@@ -127,7 +127,9 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            await AppController.DeleteByIdAsync(id);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete, false);
+
+            await AppController.DeleteByIdAsync(id, query);
 
             return Ok();
         }
@@ -155,7 +157,7 @@ namespace RDD.Web.Controllers
                 throw new BadRequestException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
             }
 
-            await AppController.DeleteByIdsAsync(ids);
+            await AppController.DeleteByIdsAsync(ids, query);
 
             return Ok();
         }

@@ -41,6 +41,7 @@ namespace RDD.Domain.Models.Querying
         {
             Filters = new List<Filter<TEntity>>(source.Filters);
             OrderBys = new Queue<OrderBy<TEntity>>(source.OrderBys);
+            Options.CheckRights = source.Options.CheckRights;
         }
 
         public virtual Expression<Func<TEntity, bool>> FiltersAsExpression() => new FiltersConvertor<TEntity>().Convert(Filters);
