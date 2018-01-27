@@ -39,6 +39,12 @@ namespace RDD.Domain.Models
             var count = 0;
             IEnumerable<TEntity> items = new HashSet<TEntity>();
 
+            //Dans de rares cas on veut seulement le count des entités
+            if (query.Options.NeedCount && !query.Options.NeedEnumeration)
+            {
+                count = await Repository.CountAsync(query);
+            }
+            
             //En général on veut une énumération des entités
             if (query.Options.NeedEnumeration)
             {
