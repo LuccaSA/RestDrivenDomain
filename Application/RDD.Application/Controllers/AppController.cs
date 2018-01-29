@@ -36,10 +36,6 @@ namespace RDD.Application.Controllers
 
             await Storage.SaveChangesAsync();
 
-            query.Options.CheckRights = false;
-
-            entity = await Collection.GetByIdAsync(entity.Id, query);
-
             return entity;
         }
 
@@ -48,12 +44,6 @@ namespace RDD.Application.Controllers
             var entity = await Collection.UpdateByIdAsync(id, datas, query);
 
             await Storage.SaveChangesAsync();
-
-            query.Options.CheckRights = false;
-            query.Options.AttachActions = false;
-            query.Options.AttachOperations = false;
-
-            entity = await Collection.GetByIdAsync(id, query);
 
             return entity;
         }
@@ -64,12 +54,7 @@ namespace RDD.Application.Controllers
 
             await Storage.SaveChangesAsync();
 
-            query.Options.CheckRights = false;
-
-            var ids = entities.Select(e => e.Id).ToList();
-            var result = await Collection.GetByIdsAsync(ids, query);
-
-            return result;
+            return entities;
         }
 
         public async Task DeleteByIdAsync(TKey id)
