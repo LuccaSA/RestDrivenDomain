@@ -39,6 +39,10 @@ namespace RDD.Domain.Models.Querying.Convertors
         {
             var property = orderBy.Property.GetCurrentProperty();
 
+            if (property.PropertyType == typeof(string))
+            {
+                return GetOrderyBy(entities, orderBy.Property.Lambda as Expression<Func<TEntity, string>>, orderBy.Direction, isFirst);
+            }
             if (property.PropertyType == typeof(DateTime?))
             {
                 return GetOrderyBy(entities, orderBy.Property.Lambda as Expression<Func<TEntity, DateTime?>>, orderBy.Direction, isFirst);
