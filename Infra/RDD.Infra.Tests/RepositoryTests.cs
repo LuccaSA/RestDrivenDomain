@@ -11,7 +11,7 @@ namespace RDD.Infra.Tests
 {
     public class RepositoryTests : IClassFixture<RepositoryTestsFixture>
     {
-        private RepositoryTestsFixture _fixture;
+        private readonly RepositoryTestsFixture _fixture;
 
         public RepositoryTests(RepositoryTestsFixture fixture)
         {
