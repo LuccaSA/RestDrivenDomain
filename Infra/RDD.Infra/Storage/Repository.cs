@@ -23,8 +23,10 @@ namespace RDD.Infra.Storage
             CombinationsHolder = combinationsHolder;
         }
 
-        public virtual Task<int> CountAsync(Query<TEntity> query)
+        public virtual Task<int> CountAsync(Query<TEntity> query = null)
         {
+            query = query ?? new Query<TEntity>();
+
             var entities = Set(query);
 
             if (query.Options.CheckRights)
@@ -41,8 +43,10 @@ namespace RDD.Infra.Storage
             return Task.FromResult(entities.Count());
         }
 
-        public virtual Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query)
+        public virtual Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query = null)
         {
+            query = query ?? new Query<TEntity>();
+
             var entities = Set(query);
 
             if (query.Options.CheckRights)
@@ -62,7 +66,7 @@ namespace RDD.Infra.Storage
             return Task.FromResult<IEnumerable<TEntity>>(entities.ToList());
         }
 
-        public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
+        public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query = null)
         {
             return Task.FromResult(entities);
         }
