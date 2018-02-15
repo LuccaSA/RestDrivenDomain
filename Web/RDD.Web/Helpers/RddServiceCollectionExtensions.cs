@@ -22,7 +22,6 @@ namespace RDD.Web.Helpers
         {
             // register base services
             services.AddScoped(typeof(ApiHelper<,>))
-                .AddSingleton<IContractResolver, CamelCasePropertyNamesContractResolver>()
                 .AddScoped<IEntitySerializer, EntitySerializer>()
                 .AddScoped(typeof(IAppController<,>), typeof(AppController<,>))
                 .AddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>))
