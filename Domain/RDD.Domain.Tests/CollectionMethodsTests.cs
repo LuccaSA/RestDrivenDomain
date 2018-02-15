@@ -7,6 +7,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
+using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -156,6 +157,50 @@ namespace RDD.Domain.Tests
                 var any = await users.AnyAsync(query);
 
                 Assert.True(any);
+            }
+        }
+
+        [Fact]
+        public async Task Put_serializedEntity_should_work()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
+                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var query = new Query<User>();
+                query.Options.CheckRights = false;
+
+                await users.CreateAsync(user, query);
+
+                await storage.SaveChangesAsync();
+
+                await users.UpdateByIdAsync(2, user, query);
+
+                Assert.True(true);
+            }
+        }
+
+        [Fact]
+        public async Task Get_withFilters_shouldWork()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
+                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var query = new Query<User>();
+                query.Options.CheckRights = false;
+
+                await users.CreateAsync(user, query);
+
+                await storage.SaveChangesAsync();
+
+                query.Filters.Add(new Filter<User>(new PropertySelector<User>(u => u.TwitterUri), FilterOperand.Equals, new List<Uri>() { new Uri("https://twitter.com") }));
+
+                var results = await users.GetAsync(query);
+
+                Assert.Equal(1, results.Count);
             }
         }
     }
