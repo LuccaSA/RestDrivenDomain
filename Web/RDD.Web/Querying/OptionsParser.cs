@@ -7,12 +7,12 @@ namespace RDD.Web.Querying
     public class OptionsParser<TEntity>
         where TEntity : class, IEntityBase
     {
-        public Options Parse(Dictionary<string, string> parameters, Field<TEntity> fields, Field<ISelection<TEntity>> collectionFields)
+        public Options Parse(Dictionary<string, string> parameters, Field fields, Field collectionFields)
         {
             var options = new Options();
 
             //Si les fields demandent des propriétés sur la collection
-            if (collectionFields.Contains(c => c.Count))
+            if (collectionFields.Contains<ISelection<TEntity>>(c => c.Count))
             {
                 options.NeedCount = true;
 

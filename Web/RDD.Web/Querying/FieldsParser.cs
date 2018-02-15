@@ -8,7 +8,7 @@ namespace RDD.Web.Querying
 {
     public class FieldsParser
     {
-        public Field<TEntity> ParseFields<TEntity>(Dictionary<string, string> parameters, bool isCollectionCall)
+        public Field ParseFields<TEntity>(Dictionary<string, string> parameters, bool isCollectionCall)
         {
             if (parameters.ContainsKey(Reserved.fields.ToString()))
             {
@@ -22,23 +22,33 @@ namespace RDD.Web.Querying
             return new Field<TEntity>();
         }
 
-        public Field<TEntity> ParseFields<TEntity>(string fields)
+        public Field ParseFields<TEntity>(string fields)
         {
             var expandedFields = new FieldExpansionHelper().Expand(fields);
 
             return ParseFields<TEntity>(expandedFields);
         }
 
-        public Field<TEntity> ParseAllProperties<TEntity>()
+        public Field ParseAllProperties<TEntity>()
         {
-            var fields = typeof(TEntity).GetProperties().Select(p => p.Name).ToList();
-
-            return ParseFields<TEntity>(fields);
+            return ParseAllProperties(typeof(TEntity));
         }
 
-        public virtual Field<TEntity> ParseFields<TEntity>(List<string> fields)
+        public Field ParseAllProperties(Type entityType)
         {
-            var field = new Field<TEntity>();
+            var fields = entityType.GetProperties().Select(p => p.Name).ToList();
+
+            return ParseFields(entityType, fields);
+        }
+
+        public Field ParseFields<TEntity>(List<string> fields)
+        {
+            return ParseFields(typeof(TEntity), fields);
+        }
+        public virtual Field ParseFields(Type entityType, List<string> fields)
+        {
+            var field = new Field(entityType);
+
             foreach (var item in fields)
             {
                 if (!item.StartsWith("collection."))

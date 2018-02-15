@@ -12,8 +12,8 @@ namespace RDD.Domain.Models.Querying
     {
         public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }
-        public Field<TEntity> Fields { get; set; }
-        public Field<ISelection<TEntity>> CollectionFields { get; set; }
+        public Field Fields { get; set; }
+        public Field CollectionFields { get; set; }
         public List<Filter<TEntity>> Filters { get; set; }
         public Queue<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }

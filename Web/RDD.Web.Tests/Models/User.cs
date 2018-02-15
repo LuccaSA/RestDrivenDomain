@@ -7,6 +7,7 @@ namespace RDD.Web.Tests.Models
     {
         public override int Id { get; set; }
         public override string Name { get; set; }
+        public MyValueObject MyValueObject { get; set; }
 
         IUser ICloneable<IUser>.Clone()
         {
