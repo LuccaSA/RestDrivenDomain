@@ -18,7 +18,7 @@ namespace RDD.Web.Tests
                 HttpContext = new DefaultHttpContext()
             };
             httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("id", "2");
-            var helper = new ApiHelper<User, int>(new CamelCasePropertyNamesContractResolver(), null, null, httpContextAccessor);
+            var helper = new ApiHelper<User, int>(httpContextAccessor ,null, null);
             var query = helper.CreateQuery(HttpVerbs.Get);
 
             Assert.Single(query.Filters);

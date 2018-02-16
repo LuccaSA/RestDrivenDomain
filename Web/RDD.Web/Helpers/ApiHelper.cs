@@ -17,17 +17,15 @@ namespace RDD.Web.Helpers
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public ApiHelper(IContractResolver jsonResolver, IExecutionContext execution, IEntitySerializer serializer, IHttpContextAccessor httpContextAccessor)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
+
+        public ApiHelper(IHttpContextAccessor httpContextAccessor, IExecutionContext execution, IEntitySerializer serializer)
         {
-            _jsonResolver = jsonResolver;
             _httpContextAccessor = httpContextAccessor;
             Execution = execution;
             Serializer = serializer;
         }
-
-        private readonly IContractResolver _jsonResolver;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
 
         public IExecutionContext Execution { get; }
         public IEntitySerializer Serializer { get; }
@@ -40,8 +38,6 @@ namespace RDD.Web.Helpers
         }
 
         protected virtual ICollection<Expression<Func<TEntity, object>>> IgnoreList() => new HashSet<Expression<Func<TEntity, object>>>();
-
-        private IContractResolver GetJsonResolver() => _jsonResolver;
 
         public List<PostedData> InputObjectsFromIncomingHttpRequest()
         {
