@@ -10,8 +10,8 @@ namespace RDD.Web
     {
         Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
             where TEntity : class, IEntityBase;
-        List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field<TEntity> fields);
-        Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field<TEntity> fields);
+        List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field fields);
+        Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field fields);
 
         List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, PropertySelector fields);
         Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, PropertySelector fields);

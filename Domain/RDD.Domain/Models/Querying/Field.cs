@@ -23,6 +23,15 @@ namespace RDD.Domain.Models.Querying
         public bool HasChild => EntitySelector.HasChild;
         public bool IsEmpty => !HasChild;
         public int Count => EntitySelector.Count;
+
+        protected Field() { }
+        public Field(Type entityType)
+        {
+            EntityType = entityType;
+            EntitySelector = PropertySelector.NewFromType(entityType);
+        }
+
+        public bool Contains<TEntity>(Expression<Func<TEntity, object>> expression) => EntitySelector.Contains(expression);
     }
 
     public class Field<TEntity> : Field
@@ -45,8 +54,6 @@ namespace RDD.Domain.Models.Querying
         {
             return expressions.Select(Add).Aggregate((b1, b2) => b1 && b2);
         }
-
-        public bool Contains(Expression<Func<TEntity, object>> expression) => EntitySelector.Contains(expression);
 
         public bool ContainsEmpty(Expression<Func<TEntity, object>> expression) => EntitySelector.ContainsEmpty(expression);
 

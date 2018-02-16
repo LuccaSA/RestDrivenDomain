@@ -103,7 +103,7 @@ namespace RDD.Web.Serialization
             return result;
         }
 
-        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field<TEntity> fields)
+        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field fields)
         {
             return fields == null ? new Dictionary<string, object>() : SerializeEntity(entity, fields.EntitySelector);
         }
@@ -111,7 +111,7 @@ namespace RDD.Web.Serialization
         {
             return SerializeEntities(new List<TEntity> { entity }, fields).FirstOrDefault();
         }
-        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field<TEntity> fields)
+        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field fields)
         {
             return fields == null ? new List<Dictionary<string, object>>() : SerializeEntities(entities, fields.EntitySelector);
         }
@@ -130,7 +130,9 @@ namespace RDD.Web.Serialization
                         //Si c'est un entitybase mais qu'on ne demande aucun field particulier, on va renvoyer id, name, url
                         if (!fields.HasChild)
                         {
-                            if (entity.GetType().IsSubclassOfInterface(typeof(IEntityBase)))
+                            var entityType = entity.GetType();
+
+                            if (entityType.IsSubclassOfInterface(typeof(IEntityBase)))
                             {
                                 fields.Parse("id");
                                 fields.Parse("name");
@@ -138,7 +140,7 @@ namespace RDD.Web.Serialization
                             }
                             else
                             {
-                                fields = new FieldsParser().ParseAllProperties<TEntity>().EntitySelector;
+                                fields = new FieldsParser().ParseAllProperties(entityType).EntitySelector;
                             }
                         }
 
