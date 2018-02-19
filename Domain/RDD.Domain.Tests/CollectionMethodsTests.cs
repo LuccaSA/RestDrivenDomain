@@ -196,7 +196,7 @@ namespace RDD.Domain.Tests
 
                 await storage.SaveChangesAsync();
 
-                query.Filters.Add(new Filter<User>(new PropertySelector<User>(u => u.TwitterUri), FilterOperand.Equals, new List<Uri>() { new Uri("https://twitter.com") }));
+                query.Filters.Add(new Filter<User>(new PropertySelector<User>(u => u.TwitterUri.Host), FilterOperand.Equals, new List<string>() { "twitter.com" }));
 
                 var results = await users.GetAsync(query);
 

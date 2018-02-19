@@ -13,5 +13,14 @@ namespace RDD.Domain.Tests
             var selector = new CollectionPropertySelector<User>();
             selector.Parse(field);
         }
+
+        [Fact]
+        public void NeastedSelector_should_work()
+        {
+            var selector = new PropertySelector<User>(u => u.TwitterUri.Host);
+
+            Assert.True(selector.Contains(u => u.TwitterUri));
+            Assert.True(selector.Contains(u => u.TwitterUri.Host));
+        }
     }
 }

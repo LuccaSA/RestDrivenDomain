@@ -37,13 +37,13 @@ namespace RDD.Domain.Models.Querying.Convertors
 
         private Expression<Func<TEntity, bool>> ToEntityExpression(Filter<TEntity> filter, IList values)
         {
-            PropertySelector property = filter.Property.Children.ElementAt(0);
+            var propertyPath = filter.Property.Path;
 
             switch (filter.Operand)
             {
                 case FilterOperand.Equals:
                     {
-                        return _predicateService.BuildBinaryExpression(filter.Operand, property.Name, values);
+                        return _predicateService.BuildBinaryExpression(filter.Operand, propertyPath, values);
                     }
                 case FilterOperand.Between:
                 case FilterOperand.GreaterThan:
@@ -53,19 +53,19 @@ namespace RDD.Domain.Models.Querying.Convertors
                 case FilterOperand.Since:
                 case FilterOperand.Until:
                     {
-                        return _predicateService.OrFactory<TEntity, object>(value => _predicateService.BuildBinaryExpression(filter.Operand, property.Name, value), values);
+                        return _predicateService.OrFactory<TEntity, object>(value => _predicateService.BuildBinaryExpression(filter.Operand, propertyPath, value), values);
                     }
                 case FilterOperand.NotEqual:
                     {
-                        return _predicateService.AndFactory<TEntity, object>(value => _predicateService.BuildBinaryExpression(filter.Operand, property.Name, value), values);
+                        return _predicateService.AndFactory<TEntity, object>(value => _predicateService.BuildBinaryExpression(filter.Operand, propertyPath, value), values);
                     }
                 case FilterOperand.Starts:
                     {
-                        return _predicateService.OrFactory<TEntity, string>(value => _predicateService.BuildStartsExpression(property.Name, value), values);
+                        return _predicateService.OrFactory<TEntity, string>(value => _predicateService.BuildStartsExpression(propertyPath, value), values);
                     }
                 case FilterOperand.Like:
                     {
-                        return _predicateService.OrFactory<TEntity, string>(value => _predicateService.BuildLikeExpression(property.Name, value), values);
+                        return _predicateService.OrFactory<TEntity, string>(value => _predicateService.BuildLikeExpression(propertyPath, value), values);
                     }
             }
 
