@@ -12,6 +12,7 @@ namespace RDD.Domain.Tests.Models
         public MailAddress Mail { get; set; }
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
+        public Department Department { get; set; }
 
         public static IEnumerable<User> GetManyRandomUsers(int howMuch)
         {
