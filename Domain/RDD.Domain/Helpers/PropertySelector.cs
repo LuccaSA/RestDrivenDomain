@@ -44,6 +44,27 @@ namespace RDD.Domain.Helpers
             }
         }
 
+        public string Path
+        {
+            get
+            {
+                //Root
+                if (Lambda == null)
+                {
+                    return Children.ElementAt(0).Path;
+                }
+
+                //Intermediate
+                if (HasChild)
+                {
+                    return $"{Name}.{Children.ElementAt(0).Path}";
+                }
+
+                //Leaf
+                return Name;
+            }
+        }
+
         public string Subject { get; set; }
 
         public int LeafNumber
