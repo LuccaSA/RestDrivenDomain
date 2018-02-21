@@ -12,7 +12,7 @@ namespace RDD.Domain.Models.Querying
     public class Candidate<TEntity>
         where TEntity : class
     {
-        private JToken _structure;
+        private readonly JToken _structure;
 
         public Candidate(string json)
         {

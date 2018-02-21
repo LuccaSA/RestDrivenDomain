@@ -13,7 +13,6 @@ namespace RDD.Domain.Tests.Models.Querying
         [Fact]
         public void Candidate_should_exposeProperties()
         {
-            var user = new User();
             var candidate = new Candidate<User>(@"{ ""id"": 1, ""name"": ""User1"", ""salary"": 2000 }");
 
             Assert.True(candidate.HasValue(u => u.Id));
@@ -26,7 +25,6 @@ namespace RDD.Domain.Tests.Models.Querying
         [Fact]
         public void Candidate_should_exposeNeastedProperties()
         {
-            var user = new User();
             var candidate = new Candidate<User>(@"{ ""id"": 1, ""name"": ""User1"", ""department"": { ""id"": 2 } }");
 
             Assert.True(candidate.HasValue(u => u.Id));
@@ -41,7 +39,6 @@ namespace RDD.Domain.Tests.Models.Querying
         [Fact]
         public void Candidate_should_exposeMultipleNeastedProperties()
         {
-            var user = new User();
             var candidate = new Candidate<User>(@"{ ""id"": 1, ""department"": { ""id"": 2, ""name"": ""Dep2"" } }");
 
             Assert.True(candidate.HasValue(u => u.Id));
@@ -55,7 +52,6 @@ namespace RDD.Domain.Tests.Models.Querying
         [Fact]
         public void Candidate_should_exposeArrayProperties()
         {
-            var department = new Department();
             var candidate = new Candidate<Department>(@"{ ""id"": 1, ""users"": [ { ""id"": 2 }, { ""id"": 3 } ] }");
 
             Assert.True(candidate.HasValue(d => d.Id));
