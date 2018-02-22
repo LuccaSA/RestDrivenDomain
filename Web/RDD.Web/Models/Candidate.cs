@@ -1,22 +1,23 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RDD.Domain;
 using RDD.Domain.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
-namespace RDD.Domain.Models.Querying
+namespace RDD.Web.Models
 {
-    public class Candidate<TEntity>
+    public class Candidate<TEntity> : ICandidate<TEntity>
         where TEntity : class
     {
         private readonly JToken _structure;
+        public TEntity Value { get; private set; }
 
         public Candidate(string json)
         {
             _structure = JToken.Parse(json);
+            Value = JsonConvert.DeserializeObject<TEntity>(json);
         }
 
         private bool ContainsPath(JToken token, PropertySelector selector)
@@ -50,7 +51,7 @@ namespace RDD.Domain.Models.Querying
             }
         }
 
-        public bool HasValue(Expression<Func<TEntity, object>> expression)
+        public bool HasProperty(Expression<Func<TEntity, object>> expression)
         {
             var propertySelector = new PropertySelector<TEntity>(expression);
 

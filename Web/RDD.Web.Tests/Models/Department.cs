@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RDD.Domain.Tests.Models
+namespace RDD.Web.Tests.Models
 {
     public class Department
     {
