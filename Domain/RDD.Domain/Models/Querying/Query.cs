@@ -11,8 +11,8 @@ namespace RDD.Domain.Models.Querying
     {
         public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }
-        public Field Fields { get; set; }
-        public Field CollectionFields { get; set; }
+        public IEnumerable<Field> Fields { get; set; }
+        public IEnumerable<Field> CollectionFields { get; set; }
         public Filter<TEntity> Filter { get; set; }
         public Queue<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
@@ -23,9 +23,9 @@ namespace RDD.Domain.Models.Querying
         {
             Watch = new Stopwatch();
             Verb = HttpVerbs.Get;
-            Fields = new Field<TEntity>();
+            Fields = new HashSet<Field<TEntity>>();
             Filter = new Filter<TEntity>();
-            CollectionFields = new Field<ISelection<TEntity>>();
+            CollectionFields = new HashSet<Field<ISelection<TEntity>>>();
             OrderBys = new Queue<OrderBy<TEntity>>();
             Options = new Options();
             Page = Page.Default;

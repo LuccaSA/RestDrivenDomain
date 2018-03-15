@@ -21,7 +21,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingTheSameReferencedPropertyShouldWork()
         {
-            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelector.EqualityComparer());
+            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelectorEqualityComparer());
             var p1 = new PropertySelector<FakeClass>(fc => fc.A);
             var p1Val = 42;
 
@@ -33,7 +33,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingDifferentPropertyInstancesShouldWork()
         {
-            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelector.EqualityComparer());
+            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelectorEqualityComparer());
             var p1 = new PropertySelector<FakeClass>(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
@@ -46,7 +46,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingPropertyInstancesWithDifferentEntityNameButSamePropertyShouldWork()
         {
-            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelector.EqualityComparer());
+            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelectorEqualityComparer());
             var p1 = new PropertySelector<FakeClass>(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
@@ -59,7 +59,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingTwoDifferentPropertiesShouldFail()
         {
-            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelector.EqualityComparer());
+            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelectorEqualityComparer());
             var p1 = new PropertySelector<FakeClass>(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
@@ -72,7 +72,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingPropertiesWithTheSameNameFromTwoDifferentClassesShouldFail()
         {
-            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelector.EqualityComparer());
+            var dictionary = new Dictionary<PropertySelector, int>(new PropertySelectorEqualityComparer());
             var p1 = new PropertySelector<FakeClass>(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);

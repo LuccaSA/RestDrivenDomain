@@ -49,11 +49,8 @@ namespace RDD.Domain.Tests
 
             ps.Parse("stringToString.aProperty");
 
-            var propChild = ps.Children.First();
-            var dicoChild = propChild.Children.First();
-
-            Assert.Equal("p => p.StringToString", propChild.Lambda.ToString());
-            Assert.Equal(@"pp => pp.Item[""aProperty""]", dicoChild.Lambda.ToString());
+            Assert.Equal("p => p.StringToString", ps.Lambda.ToString());
+            Assert.Equal(@"pp => pp.Item[""aProperty""]", ps.Child.Lambda.ToString());
         }
     }
 }

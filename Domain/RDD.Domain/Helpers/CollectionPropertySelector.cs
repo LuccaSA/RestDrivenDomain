@@ -36,13 +36,7 @@ namespace RDD.Domain.Helpers
 
                 MethodCallExpression call = GetExpressionCall(specialMethod, rouding, param, property);
 
-                LambdaExpression lambda = Expression.Lambda(call, param);
-
-                PropertySelector child = NewFromType(EntityType);
-                child.Lambda = lambda;
-                child.Subject = propertyName;
-
-                Children.Add(child);
+                Lambda = Expression.Lambda(call, param);
             }
             else
             {

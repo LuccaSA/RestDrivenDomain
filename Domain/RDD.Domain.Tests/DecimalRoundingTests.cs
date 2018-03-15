@@ -91,7 +91,7 @@ namespace RDD.Domain.Tests
 
             selector.Parse(pattern);
 
-            Assert.Equal(58.01M, selector.Children.First().Lambda.Compile().DynamicInvoke(selection));
+            Assert.Equal(58.01M, selector.Lambda.Compile().DynamicInvoke(selection));
         }
     }
 }
