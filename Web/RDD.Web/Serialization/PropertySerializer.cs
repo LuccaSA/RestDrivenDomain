@@ -1,6 +1,7 @@
 ﻿using NExtends.Primitives.Types;
 using RDD.Domain;
 using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,13 +23,13 @@ namespace RDD.Web.Serialization
             _urlProvider = urlProvider;
         }
 
-        public virtual Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
+        public virtual Dictionary<string, object> SerializeProperties(object entity, IEnumerable<PropertySelector> fields)
         {
             var result = new Dictionary<string, object>();
 
-            foreach (var child in fields.Children)
+            foreach (var field in fields)
             {
-                result.Add(child.GetCurrentProperty().Name, SerializeProperty(entity, child));
+                result.Add(field.GetCurrentProperty().Name, SerializeProperty(entity, field));
             }
 
             return result;
@@ -84,7 +85,7 @@ namespace RDD.Web.Serialization
                                 {
                                     result.Add(
                                         key,
-                                        dictionary[key] != null ? _serializer.SerializeEntity(dictionary[key], PropertySelector.NewFromType(dictionary[key].GetType())) : null
+                                        dictionary[key] != null ? _serializer.SerializeEntity(dictionary[key], PropertySelector.NewFromType(dictionary[key].GetType(), field.Lambda)) : null
                                     );
                                 }
 
@@ -106,7 +107,15 @@ namespace RDD.Web.Serialization
                     }
                     else
                     {
-                        value = _serializer.SerializeEntity(value, field);
+                        //Si on est sur une feuille on sérialise l'objet en entier
+                        if (!field.HasChild)
+                        {
+                            value = _serializer.SerializeEntity(value, new HashSet<Field>());
+                        }
+                        else //Sinon on descend sur l'enfant
+                        {
+                            value = _serializer.SerializeEntity(value, field.Child);
+                        }
                     }
                 }
             }

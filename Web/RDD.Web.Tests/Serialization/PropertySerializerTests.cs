@@ -27,8 +27,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new EntitySerializer(urlProvider);
 
-            var propertySelector = new PropertySelector<User>();
-            propertySelector.Add(u => u.Url);
+            var propertySelector = new PropertySelector<User>(u => u.Url);
             var dico = serializer.SerializeEntity(entity, propertySelector);
 
             Assert.Equal("https://mon.domain.com/api/users/1", dico["Url"]);
@@ -52,8 +51,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new EntitySerializer(urlProvider);
 
-            var propertySelector = new PropertySelector<User>();
-            propertySelector.Add(u => u.Url);
+            var propertySelector = new PropertySelector<User>(u => u.Url);
             var dico = serializer.SerializeEntity(entity, propertySelector);
 
             Assert.Equal("https://mon.domain.com/api/lol/users/1", dico["Url"]);

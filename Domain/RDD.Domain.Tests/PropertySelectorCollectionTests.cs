@@ -11,9 +11,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsShouldWork()
         {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.DummyProp);
+            var collection = new PropertySelector<DummyClass>(d => d.DummyProp);
 
             Assert.True(collection.Contains(d => d.DummyProp));
         }
@@ -21,9 +19,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsWithDifferentVariableNameShouldWork()
         {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.DummyProp);
+            var collection = new PropertySelector<DummyClass>(d => d.DummyProp);
 
             Assert.True(collection.Contains(c => c.DummyProp));
         }
@@ -31,9 +27,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsWithDifferentPropsShouldFail()
         {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.DummyProp);
+            var collection = new PropertySelector<DummyClass>(d => d.DummyProp);
 
             Assert.False(collection.Contains(d => d.DummyProp2));
         }
@@ -41,9 +35,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SubContainsShouldWork()
         {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp));
+            var collection = new PropertySelector<DummyClass>(d => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp));
 
             Assert.True(collection.Contains(d => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp)));
         }
@@ -51,54 +43,9 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SubAbstractContainsShouldWork()
         {
-            var collection = new PropertySelector<DummyClassImpl>();
-
-            collection.Add(d => d.Children.Select(c => c.DummySubSubClass));
+            var collection = new PropertySelector<DummyClassImpl>(d => d.Children.Select(c => c.DummySubSubClass));
 
             Assert.True(collection.Contains(d => d.Children.Select(c => c.DummySubSubClass)));
-        }
-
-        [Fact]
-        public void SimpleRemoveShouldWork()
-        {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.DummyProp);
-
-            Assert.True(collection.Remove(d => d.DummyProp));
-        }
-
-        [Fact]
-        public void RemoveShouldNotRemoveOtherIncludes()
-        {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.BestChild.DummySubProp);
-            collection.Add(d => d.BestChild.DummySubProp2);
-            collection.Remove(d => d.BestChild.DummySubProp);
-
-            Assert.True(collection.Contains(d => d.BestChild.DummySubProp2), "La suppression de 'BestChild.DummySubProp' ne devrait pas supprimer 'BestChild.DummySubProp2'.");
-        }
-
-        [Fact]
-        public void RemoveShouldNotRemoveOtherIncludes2Level()
-        {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.BestChild.DummySubSubClass.DummySubSubProp);
-            collection.Remove(d => d.BestChild.DummySubSubClass.DummySubSubProp);
-
-            Assert.True(collection.Contains(d => d.BestChild.DummySubSubClass), "La suppression de 'BestChild.DummySubSubClass.DummySubSubProp' ne devrait pas supprimer 'BestChild.DummySubSubClass'.");
-        }
-
-        [Fact]
-        public void NullRefRemoveShouldWorkWithoutException()
-        {
-            var collection = new PropertySelector<DummyClass>();
-
-            collection.Add(d => d.DummyProp);
-
-            Assert.False(collection.Remove(d => d.Children.Select(c => c.DummySubProp)));
         }
 
         [Fact]

@@ -83,7 +83,7 @@ namespace RDD.Web.Helpers
             collectionAccessorField = null;
             subField = field;
             collectionType = typeof(object);
-            foreach (var child in field.Children)
+            while (subField != null)
             {
                 if (parentType.IsGenericType && (parentType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>) || parentType.GetGenericTypeDefinition() == typeof(Dictionary<,>)))
                 {
@@ -91,7 +91,7 @@ namespace RDD.Web.Helpers
                 }
 
                 // Include internal properties through BindingFlags
-                property = child.GetCurrentProperty();
+                property = subField.GetCurrentProperty();
 
                 if (!property.CanRead)
                 {
@@ -108,6 +108,7 @@ namespace RDD.Web.Helpers
                 }
 
                 parentType = property.PropertyType;
+                subField = subField.Child;
             }
 
             return false;
@@ -258,7 +259,7 @@ namespace RDD.Web.Helpers
         protected virtual Expression<Func<TEntity, bool>> Like(PropertySelector<TEntity> field, object value)
         {
             var parameter = Expression.Parameter(typeof(TEntity), "entity");
-            var expression = NestedPropertyAccessor(parameter, field.Children.FirstOrDefault());
+            var expression = NestedPropertyAccessor(parameter, field);
             var comparisonMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
             var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
             var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
@@ -298,7 +299,7 @@ namespace RDD.Web.Helpers
             PropertySelector subField;
             Type collectionType;
 
-            if (this.IsQueryOnCollection(parameter.Type, field, out collectionAccessorField, out subField, out collectionType))
+            if (IsQueryOnCollection(parameter.Type, field, out collectionAccessorField, out subField, out collectionType))
             {
                 var collectionParameter = Expression.Parameter(collectionType, "subparam");
                 var collectionBinaryExpression = BuildBinaryExpressionRecursive(binaryOperator, collectionParameter, subField, value, out property);
@@ -394,29 +395,29 @@ namespace RDD.Web.Helpers
         {
             property = null;
             Expression body = seed;
+            var currentField = field;
 
-            while (field.HasChild)
+            while (currentField != null)
             {
-                var child = field.Children.FirstOrDefault();
                 // Include internal properties through BindingFlags
                 property = type
                     .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .FirstOrDefault(p => p.Name.ToLower() == child.Name.ToLower());
+                    .FirstOrDefault(p => p.Name.ToLower() == currentField.Name.ToLower());
 
                 if (property == null)
                 {
-                    throw new QueryBuilderException($"Unknown property {child.Name} on type {type.Name}");
+                    throw new QueryBuilderException($"Unknown property {currentField.Name} on type {type.Name}");
                 }
 
                 if (!property.CanRead)
                 {
-                    throw new QueryBuilderException($"Property {child.Name} of type {type.Name} is set only");
+                    throw new QueryBuilderException($"Property {currentField.Name} of type {type.Name} is set only");
                 }
 
-                body = Expression.PropertyOrField(body, child.Name);
+                body = Expression.PropertyOrField(body, currentField.Name);
 
                 type = property.PropertyType;
-                field = child;
+                currentField = currentField.Child;
             }
 
             return body;

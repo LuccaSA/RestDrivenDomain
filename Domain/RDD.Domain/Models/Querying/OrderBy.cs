@@ -18,7 +18,7 @@ namespace RDD.Domain.Models.Querying
 
         public OrderBy(PropertySelector property, SortDirection direction = SortDirection.Ascending)
         {
-            Property = property.Children.First();
+            Property = property;
             Direction = direction;
         }
     }
