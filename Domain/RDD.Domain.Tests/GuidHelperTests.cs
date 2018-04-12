@@ -22,14 +22,7 @@ namespace RDD.Domain.Tests
         [InlineData("aabbccddeeff", "Incomplete Guid without dash")]
         public void InterpreteStringAsGuid_WHEN_WellFormedStringGuid(string input, string label)
         {
-            try
-            {
-                _helper.Complete(input);
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Fail for label: {label}", e);
-            }
+            _helper.Complete(input);
         }
     }
 }
