@@ -9,7 +9,7 @@ namespace RDD.Domain.Tests
 {
     public class GuidHelperTests
     {
-        private GuidHelper _helper;
+        private readonly GuidHelper _helper;
 
         public GuidHelperTests()
         {
