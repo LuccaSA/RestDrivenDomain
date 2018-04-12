@@ -1,6 +1,7 @@
 ﻿using NExtends.Primitives.DateTimes;
 using NExtends.Primitives.Strings;
 using NExtends.Primitives.Types;
+using RDD.Domain.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -102,6 +103,12 @@ namespace RDD.Domain.Models.Querying
                     culture = CultureInfo.InvariantCulture;
                 }
 
+                if (correctPropertyType == typeof(Guid))
+                {
+                    //In case stringValue is incomplete (ie: aabbccdd-eeff in a like clause)
+                    //We feed it with 0-based Guid
+                    return new GuidHelper().Complete(stringValue);
+                }
 
                 return realStringValue.ChangeType(correctPropertyType, culture);
             }

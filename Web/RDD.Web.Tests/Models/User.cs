@@ -12,6 +12,7 @@ namespace RDD.Web.Tests.Models
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
         public Department Department { get; set; }
+        public Guid PictureId { get; set; }
 
         IUser ICloneable<IUser>.Clone()
         {
