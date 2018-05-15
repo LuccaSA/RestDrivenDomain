@@ -50,6 +50,12 @@ namespace RDD.Infra.Storage
             return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
         }
 
+        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+            where TEntity : class, IEntityBase
+        {
+            return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
+        }
+
         public void Add<TEntity>(TEntity entity)
             where TEntity : class, IEntityBase
         {

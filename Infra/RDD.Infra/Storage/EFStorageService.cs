@@ -26,6 +26,12 @@ namespace RDD.Infra.Storage
             return DbContext.Set<TEntity>();
         }
 
+        public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+            where TEntity : class, IEntityBase
+        {
+            return await entities.ToListAsync();
+        }
+
         public virtual void Add<TEntity>(TEntity entity)
             where TEntity : class, IEntityBase
         {
