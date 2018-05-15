@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RDD.Domain.Mocks;
 using RDD.Domain.Tests.Models;
+using RDD.Infra;
 using RDD.Infra.Storage;
 using System;
 

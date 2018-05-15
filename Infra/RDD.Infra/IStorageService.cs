@@ -1,9 +1,10 @@
-﻿using System;
+﻿using RDD.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Domain
+namespace RDD.Infra
 {
     public interface IStorageService : IDisposable
     {

@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Models.Querying;
+using RDD.Infra;
 using RDD.Infra.Storage;
 using System.Linq;
 
