@@ -22,5 +22,18 @@ namespace RDD.Web.Tests
 
             helper.CreateQuery(HttpVerbs.Get);
         }
+
+        [Fact]
+        public void FilterKeywordsShouldBeCaseInsensitive()
+        {
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
+            var helper = new ApiHelper<User, int>(httpContextAccessor, null, null);
+
+            helper.CreateQuery(HttpVerbs.Get);
+        }
     }
 }
