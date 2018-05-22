@@ -13,7 +13,7 @@ namespace RDD.Web.Models
 
         public MetadataHeader(IExecutionContext execution)
         {
-            principal = execution.curPrincipal.Name;
+            principal = execution.curPrincipal?.Name;
         }
     }
 

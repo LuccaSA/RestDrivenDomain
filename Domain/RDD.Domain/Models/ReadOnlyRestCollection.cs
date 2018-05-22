@@ -144,6 +144,10 @@ namespace RDD.Domain.Models
             {
                 throw new UnreachableEntityException(typeof(TEntity));
             }
+            if (Execution.curPrincipal == null)
+            {
+                throw new UnauthorizedException("This collection does not allow anonymous session.");
+            }
             if (!Execution.curPrincipal.HasAnyOperations(operationIds))
             {
                 throw new UnauthorizedException(string.Format("You do not have sufficient permission to make a {0} on type {1}", verb, typeof(TEntity).Name));

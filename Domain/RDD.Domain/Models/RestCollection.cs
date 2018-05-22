@@ -131,6 +131,10 @@ namespace RDD.Domain.Models
                 .Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(HttpVerbs.Post))
                 .Select(c => c.Operation.Id);
 
+            if (Execution.curPrincipal == null)
+            {
+                throw new UnauthorizedException("This collection does not allow anonymous session.");
+            }
             if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
             {
                 throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
