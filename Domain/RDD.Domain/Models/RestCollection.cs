@@ -21,16 +21,13 @@ namespace RDD.Domain.Models
         public Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
         {
             PostedData postedData = PostedData.ParseJson(JsonConvert.SerializeObject(datas));
-
             return CreateAsync(postedData, query);
         }
 
         public virtual Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
         {
             TEntity entity = InstanciateEntity(datas);
-
             GetPatcher().PatchEntity(entity, datas);
-
             return CreateAsync(entity, query);
         }
 
@@ -53,7 +50,6 @@ namespace RDD.Domain.Models
         public Task<TEntity> UpdateByIdAsync(TKey id, object datas, Query<TEntity> query = null)
         {
             PostedData postedData = PostedData.ParseJson(JsonConvert.SerializeObject(datas));
-
             return UpdateByIdAsync(id, postedData, query);
         }
 
@@ -145,13 +141,9 @@ namespace RDD.Domain.Models
 
         protected virtual PatchEntityHelper GetPatcher() => new PatchEntityHelper();
 
-        protected virtual void ForgeEntity(TEntity entity)
-        {
-        }
+        protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity)
-        {
-        }
+        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas) => Task.CompletedTask;
 
         /// <summary>
@@ -161,15 +153,11 @@ namespace RDD.Domain.Models
         /// </summary>
         protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
 
-
         private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
         {
             await OnBeforeUpdateEntity(entity, datas);
-
             TEntity oldEntity = entity.Clone();
-
             GetPatcher().PatchEntity(entity, datas);
-
             await OnAfterUpdateEntity(oldEntity, entity, datas, query);
 
             ValidateEntity(entity, oldEntity);
