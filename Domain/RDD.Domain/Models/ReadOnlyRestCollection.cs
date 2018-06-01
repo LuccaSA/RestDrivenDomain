@@ -48,7 +48,7 @@ namespace RDD.Domain.Models
             //En général on veut une énumération des entités
             if (query.Options.NeedEnumeration)
             {
-                items = await Repository.EnumerateAsync(query);
+                items = await Repository.GetAsync(query);
 
                 count = items.Count();
 

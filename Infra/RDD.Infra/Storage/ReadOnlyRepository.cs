@@ -45,7 +45,7 @@ namespace RDD.Infra.Storage
             return Task.FromResult(entities.Count());
         }
 
-        public virtual Task<IEnumerable<TEntity>> EnumerateAsync(Query<TEntity> query)
+        public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
             var entities = Set(query);
 
