@@ -38,11 +38,17 @@ namespace RDD.Infra.Storage
 
             entities = ApplyFilters(entities, query);
 
-            return CountEntities(entities);
+            return CountEntities(entities, query);
         }
-        protected virtual Task<int> CountEntities(IQueryable<TEntity> entities)
+        protected virtual Task<int> CountEntities(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            return Task.FromResult(entities.Count());
+            query.Watch.Start();
+
+            var result = entities.Count();
+
+            query.Watch.Stop();
+
+            return Task.FromResult(result);
         }
 
         public virtual Task<IEnumerable<TEntity>> EnumerateAsync()
@@ -63,11 +69,17 @@ namespace RDD.Infra.Storage
             entities = ApplyPage(entities, query);
             entities = ApplyIncludes(entities, query);
 
-            return EnumerateEntities(entities);
+            return EnumerateEntities(entities, query);
         }
-        protected virtual Task<IEnumerable<TEntity>> EnumerateEntities(IQueryable<TEntity> entities)
+        protected virtual Task<IEnumerable<TEntity>> EnumerateEntities(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            return Task.FromResult<IEnumerable<TEntity>>(entities.ToList());
+            query.Watch.Start();
+
+            var result = entities.ToList();
+
+            query.Watch.Stop();
+
+            return Task.FromResult<IEnumerable<TEntity>>(result);
         }
 
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities)

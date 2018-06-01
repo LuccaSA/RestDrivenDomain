@@ -34,7 +34,11 @@ namespace RDD.Application.Controllers
         {
             var entity = await Collection.CreateAsync(datas, query);
 
+            query.Watch.Start();
+
             await Storage.SaveChangesAsync();
+
+            query.Watch.Stop();
 
             return entity;
         }
@@ -43,7 +47,11 @@ namespace RDD.Application.Controllers
         {
             var entity = await Collection.UpdateByIdAsync(id, datas, query);
 
+            query.Watch.Start();
+
             await Storage.SaveChangesAsync();
+
+            query.Watch.Stop();
 
             return entity;
         }
@@ -52,23 +60,35 @@ namespace RDD.Application.Controllers
         {
             var entities = await Collection.UpdateByIdsAsync(datasByIds, query);
 
+            query.Watch.Start();
+
             await Storage.SaveChangesAsync();
+
+            query.Watch.Stop();
 
             return entities;
         }
 
-        public async Task DeleteByIdAsync(TKey id)
+        public async Task DeleteByIdAsync(TKey id, Query<TEntity> query)
         {
-            await Collection.DeleteByIdAsync(id);
+            await Collection.DeleteByIdAsync(id, query);
+
+            query.Watch.Start();
 
             await Storage.SaveChangesAsync();
+
+            query.Watch.Stop();
         }
 
-        public async Task DeleteByIdsAsync(IList<TKey> ids)
+        public async Task DeleteByIdsAsync(IList<TKey> ids, Query<TEntity> query)
         {
-            await Collection.DeleteByIdsAsync(ids);
+            await Collection.DeleteByIdsAsync(ids, query);
+
+            query.Watch.Start();
 
             await Storage.SaveChangesAsync();
+
+            query.Watch.Stop();
         }
     }
 }

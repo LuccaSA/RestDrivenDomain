@@ -60,11 +60,13 @@ namespace RDD.Domain.Models
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerbs.Put;
-            query.Options.AttachActions = true;
-            query.Options.AttachOperations = true;
 
-            TEntity entity = await GetByIdAsync(id, query);
+            var getQuery = new Query<TEntity>(query);
+            getQuery.Verb = HttpVerbs.Put;
+            getQuery.Options.AttachActions = true;
+            getQuery.Options.AttachOperations = true;
+
+            TEntity entity = await GetByIdAsync(id, getQuery);
 
             return await UpdateAsync(entity, datas, query);
         }
@@ -92,22 +94,22 @@ namespace RDD.Domain.Models
             return result;
         }
 
-        public virtual async Task DeleteByIdAsync(TKey id)
+        public virtual async Task DeleteByIdAsync(TKey id, Query<TEntity> query)
         {
-            TEntity entity = await GetByIdAsync(id, new Query<TEntity>
-            {
-                Verb = HttpVerbs.Delete
-            });
+            query = query ?? new Query<TEntity>();
+            query.Verb = HttpVerbs.Delete;
+
+            TEntity entity = await GetByIdAsync(id, query);
 
             Repository.Remove(entity);
         }
 
-        public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
+        public virtual async Task DeleteByIdsAsync(IList<TKey> ids, Query<TEntity> query)
         {
-            IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity>
-            {
-                Verb = HttpVerbs.Delete
-            });
+            query = query ?? new Query<TEntity>();
+            query.Verb = HttpVerbs.Delete;
+
+            IEnumerable<TEntity> entities = await GetByIdsAsync(ids, query);
 
             foreach (TEntity entity in entities)
             {
