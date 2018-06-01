@@ -50,6 +50,12 @@ namespace RDD.Infra.Storage
             return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
         }
 
+        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+            where TEntity : class, IEntityBase
+        {
+            return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
+        }
+
         public void Add<TEntity>(TEntity entity)
             where TEntity : class, IEntityBase
         {
@@ -113,6 +119,9 @@ namespace RDD.Infra.Storage
                 await AfterSaveChangesActions.Dequeue();
             }
         }
-        public void Dispose() { }
+        public void Dispose()
+        {
+            //Nothing to dispose here
+        }
     }
 }

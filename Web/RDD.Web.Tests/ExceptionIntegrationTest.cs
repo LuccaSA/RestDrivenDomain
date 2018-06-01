@@ -46,7 +46,7 @@ namespace RDD.Web.Tests
         public async Task HttpCodeExceptionOption(Exception exception, HttpStatusCode expected)
         {
             var repo = new Mock<IRepository<ExchangeRate>>();
-            repo.Setup(r => r.EnumerateAsync(It.IsAny<Query<ExchangeRate>>()))
+            repo.Setup(r => r.GetAsync(It.IsAny<Query<ExchangeRate>>()))
                 .Throws(exception);
 
             SetupServer(service =>
