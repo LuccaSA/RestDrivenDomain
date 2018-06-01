@@ -119,6 +119,9 @@ namespace RDD.Infra.Storage
                 await AfterSaveChangesActions.Dequeue();
             }
         }
-        public void Dispose() { }
+        public void Dispose()
+        {
+            //Nothing to dispose here
+        }
     }
 }
