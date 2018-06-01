@@ -109,22 +109,17 @@ namespace RDD.Domain.Models
         public virtual async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query)
         {
             query.Filters.Add(new Filter<TEntity>(new PropertySelector<TEntity>(e => e.Id), FilterOperand.Equals, (IList) ids));
-
             return (await GetAsync(query)).Items;
         }
 
         protected void AttachOperationsToEntity(TEntity entity)
         {
-            AttachOperationsToEntities(new List<TEntity>
-            {
-                entity
-            });
+            AttachOperationsToEntities(new List<TEntity> { entity });
         }
 
         private void AttachOperationsToEntities(IEnumerable<TEntity> entities)
         {
             var operationsForAttach = new List<Operation>(); //TODO  _appInstance.GetAllOperations<TEntity>();
-
             AttachOperations(entities, operationsForAttach);
         }
 
@@ -143,6 +138,10 @@ namespace RDD.Domain.Models
             if (!operationIds.Any())
             {
                 throw new UnreachableEntityException(typeof(TEntity));
+            }
+            if (Execution.curPrincipal == null)
+            {
+                throw new UnauthorizedException("This collection does not allow anonymous session.");
             }
             if (!Execution.curPrincipal.HasAnyOperations(operationIds))
             {
@@ -166,16 +165,11 @@ namespace RDD.Domain.Models
         /// Permet d'attacher des actions personnalisées en complément des opérations
         /// </summary>
         /// <param name="list"></param>
-        internal virtual void AttachActions(IEnumerable<TEntity> list)
-        {
-        }
+        internal virtual void AttachActions(IEnumerable<TEntity> list)        {        }
 
         protected void AttachActionsToEntity(TEntity entity)
         {
-            AttachActionsToEntities(new HashSet<TEntity>
-            {
-                entity
-            });
+            AttachActionsToEntities(new HashSet<TEntity>            {                entity            });
         }
 
         private void AttachActionsToEntities(IEnumerable<TEntity> list)

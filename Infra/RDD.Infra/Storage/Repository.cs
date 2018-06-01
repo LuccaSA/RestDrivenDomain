@@ -106,9 +106,13 @@ namespace RDD.Infra.Storage
             {
                 throw new UnreachableEntityException(typeof(TEntity));
             }
-            
-            return ExecutionContext.curPrincipal
-                .ApplyRights(entities, operationIds);
+
+            if (ExecutionContext.curPrincipal == null)
+            {
+                throw new UnauthorizedException("This repository does not allow anonymous session.");
+            }
+
+            return ExecutionContext.curPrincipal.ApplyRights(entities, operationIds);
         }
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {
