@@ -40,9 +40,9 @@ before_build:
 - dotnet restore
 - cmd: >-
     IF "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" (
-    C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%"
+    C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net46\tools\SonarScanner.MSBuild.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%"
     ) ELSE (
-    C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=preview" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.pullRequest=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%"
+    C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net46\tools\SonarScanner.MSBuild.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=preview" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.pullRequest=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%"
     )
 
 build_script:
@@ -50,7 +50,7 @@ build_script:
 
 after_build:
 - cmd: >-
-    "C:\ProgramData\chocolatey\lib\msbuild-sonarqube-runner\tools\MSBuild.SonarQube.Runner.exe" end /d:"sonar.login=%SONAR_TOKEN%"
+    "C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net46\tools\SonarScanner.MSBuild.exe" end /d:"sonar.login=%SONAR_TOKEN%"
 - ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Application\RDD.Application\RDD.Application.csproj --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
