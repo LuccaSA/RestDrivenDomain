@@ -1,7 +1,10 @@
 import {AfterViewInit, Component, ElementRef} from '@angular/core';
 
+// declare var SwaggerUI: any;
 // import SwaggerUI from 'swagger-ui';
-const SwaggerUI = require("swagger-ui")
+// const SwaggerUI = require("swagger-ui")
+
+import { SwaggerUIBundle, SwaggerUIStandalonePreset } from 'swagger-ui-dist';
 
 @Component({
   selector: 'app-swagger',
@@ -14,13 +17,13 @@ export class SwaggerComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    const ui = SwaggerUI({
+    const ui = SwaggerUIBundle({
       dom_id: '#myDomId',
       url: '/swagger/v1/swagger.json',
       domNode: this.el.nativeElement.querySelector('.swagger-container'),
       deepLinking: true,
       presets: [
-        SwaggerUI.presets.apis
+        SwaggerUIBundle.presets.apis
       ],
     });
   }
