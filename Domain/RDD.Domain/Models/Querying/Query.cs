@@ -7,30 +7,20 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class Query<TEntity>
+    public class Query<TEntity> : Query
         where TEntity : class, IEntityBase
     {
-        public Stopwatch Watch { get; }
-        public HttpVerbs Verb { get; set; }
-        public Field Fields { get; set; }
-        public Field CollectionFields { get; set; }
-        public List<Filter<TEntity>> Filters { get; set; }
-        public Queue<OrderBy<TEntity>> OrderBys { get; set; }
-        public Page Page { get; set; }
-        public Headers Headers { get; set; }
-        public Options Options { get; set; }
-
         public Query()
         {
-            Watch = new Stopwatch();
-            Verb = HttpVerbs.Get;
             Fields = new Field<TEntity>();
             CollectionFields = new Field<ISelection<TEntity>>();
             Filters = new List<Filter<TEntity>>();
             OrderBys = new Queue<OrderBy<TEntity>>();
-            Options = new Options();
-            Page = Page.Default;
         }
+     
+        public List<Filter<TEntity>> Filters { get; set; }
+        public Queue<OrderBy<TEntity>> OrderBys { get; set; }
+
         public Query(params Filter<TEntity>[] filters)
             : this()
         {
@@ -44,5 +34,25 @@ namespace RDD.Domain.Models.Querying
         }
 
         public virtual Expression<Func<TEntity, bool>> FiltersAsExpression() => new FiltersConvertor<TEntity>().Convert(Filters);
+    }
+
+    public abstract class Query
+    {
+        protected Query()
+        {
+            Watch = new Stopwatch();
+            Verb = HttpVerbs.Get;
+            Options = new Options();
+            Page = Page.Default;
+        }
+
+        public Stopwatch Watch { get; }
+        public HttpVerbs Verb { get; set; }
+        public Page Page { get; set; }
+        public Headers Headers { get; set; }
+        public Options Options { get; set; }
+
+        public Field Fields { get; set; }
+        public Field CollectionFields { get; set; }
     }
 }
