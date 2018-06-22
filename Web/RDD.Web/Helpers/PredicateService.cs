@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using System.Reflection;
-using LinqKit;
+﻿using LinqKit;
 using NExtends.Primitives.Types;
+using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
-namespace RDD.Domain.Helpers
+namespace RDD.Web.Helpers
 {
     internal class PredicateService<TEntity>
         where TEntity : class, IEntityBase
@@ -52,7 +52,7 @@ namespace RDD.Domain.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(startsWithExpression, parameter);
         }
 
-        internal virtual Expression<Func<TEntity, bool>> BuildLikeExpression(string field, string value)
+        internal virtual Expression<Func<TEntity, bool>> BuildLikeExpression(string field, object value)
         {
             Type entityType = typeof(TEntity);
             ParameterExpression parameter = Expression.Parameter(entityType, "entity");

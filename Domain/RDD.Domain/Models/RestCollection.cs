@@ -70,7 +70,7 @@ namespace RDD.Domain.Models
             var result = new HashSet<TEntity>();
 
             var ids = candidatesByIds.Select(d => d.Key).ToList();
-            var expQuery = new ExpressionQuery<TEntity>(query, e => ids.Contains(e.Id));
+            var expQuery = new Query<TEntity>(query, e => ids.Contains(e.Id));
             var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
 
             foreach (KeyValuePair<TKey, ICandidate<TEntity, TKey>> kvp in candidatesByIds)
@@ -96,7 +96,7 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            var expQuery = new ExpressionQuery<TEntity>(e => ids.Contains(e.Id));
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id));
             expQuery.Verb = HttpVerbs.Delete;
 
             var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);

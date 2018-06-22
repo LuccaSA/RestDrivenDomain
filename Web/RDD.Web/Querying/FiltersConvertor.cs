@@ -1,12 +1,14 @@
 ﻿using LinqKit;
-using RDD.Domain.Helpers;
+using RDD.Domain;
+using RDD.Domain.Models.Querying;
+using RDD.Web.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Models.Querying.Convertors
+namespace RDD.Web.Querying
 {
     internal class FiltersConvertor<TEntity>
         where TEntity : class, IEntityBase
@@ -23,7 +25,7 @@ namespace RDD.Domain.Models.Querying.Convertors
         /// /api/users?manager.id=2&departement.id=4,5 devient manager.id == 2 AND ( department.id == 4 OR department.id == 5 )
         /// </summary>
         /// <returns></returns>
-        internal Expression<Func<TEntity, bool>> Convert(List<Filter<TEntity>> filters)
+        internal Expression<Func<TEntity, bool>> Convert(IEnumerable<Filter<TEntity>> filters)
         { 
             Expression<Func<TEntity, bool>> feed = PredicateBuilder.True<TEntity>();
 
@@ -65,7 +67,7 @@ namespace RDD.Domain.Models.Querying.Convertors
                     }
                 case FilterOperand.Like:
                     {
-                        return _predicateService.OrFactory<TEntity, string>(value => _predicateService.BuildLikeExpression(propertyPath, value), values);
+                        return _predicateService.OrFactory<TEntity, object>(value => _predicateService.BuildLikeExpression(propertyPath, value), values);
                     }
             }
 
