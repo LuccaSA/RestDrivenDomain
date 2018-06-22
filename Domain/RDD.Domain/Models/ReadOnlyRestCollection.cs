@@ -92,7 +92,7 @@ namespace RDD.Domain.Models
         /// <returns></returns>
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
-            TEntity result = (await GetAsync(new ExpressionQuery<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
+            TEntity result = (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
 
             if (result == null)
             {

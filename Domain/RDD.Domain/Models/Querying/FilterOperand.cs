@@ -51,6 +51,18 @@ namespace RDD.Domain.Models.Querying
         /// </summary>
         /// <example>files?size=lessthanorequal,50</example>
         [Description("Filter on expression inferior or equal to the second operand expression. usage : files?size=lessthanorequal,50")]
-        LessThanOrEqual
+        LessThanOrEqual,
+        /// <summary>
+        /// Filter on day and month equal to the second operand expression
+        /// </summary>
+        /// <example>users?dtContractStart=anniversary,2017-02-08</example>
+        [Description("Filter on day and month equal to the second operand expression. usage : users?dtContractStart=anniversary,2017-02-08")]
+        Anniversary,
+        /// <summary>
+        /// Filter on data for which specified property contains all following values
+        /// </summary>
+        /// <example>users?habilitations.roleId=containsall,59,77</example>
+        [Description("Filter on data for which specified property contains all following values. usage : users?habilitations.roleId=containsall,59,77")]
+        ContainsAll
     }
 }
