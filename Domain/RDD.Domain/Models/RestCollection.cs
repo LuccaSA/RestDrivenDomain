@@ -77,13 +77,12 @@ namespace RDD.Domain.Models
             query.Options.AttachOperations = true;
 
             List<TKey> ids = datasByIds.Keys.ToList();
-            Dictionary<TKey, TEntity> entities = (await GetByIdsAsync(ids, query)).ToDictionary(el => el.Id, el => el);
 
             var result = new HashSet<TEntity>();
 
             foreach (KeyValuePair<TKey, PostedData> kvp in datasByIds)
             {
-                TEntity entity = entities[kvp.Key];
+                var entity = await GetByIdAsync(kvp.Key, query);
                 entity = await UpdateAsync(entity, kvp.Value, query);
 
                 result.Add(entity);
@@ -104,13 +103,10 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity>
+            foreach (var id in ids)
             {
-                Verb = HttpVerbs.Delete
-            });
+                var entity = await GetByIdAsync(id, HttpVerbs.Delete);
 
-            foreach (TEntity entity in entities)
-            {
                 Repository.Remove(entity);
             }
         }
