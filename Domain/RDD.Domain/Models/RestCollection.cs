@@ -76,8 +76,6 @@ namespace RDD.Domain.Models
             query.Options.AttachActions = true;
             query.Options.AttachOperations = true;
 
-            List<TKey> ids = datasByIds.Keys.ToList();
-
             var result = new HashSet<TEntity>();
 
             foreach (KeyValuePair<TKey, PostedData> kvp in datasByIds)
