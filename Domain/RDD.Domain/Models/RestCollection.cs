@@ -76,14 +76,15 @@ namespace RDD.Domain.Models
             query.Options.AttachActions = true;
             query.Options.AttachOperations = true;
 
-            List<TKey> ids = datasByIds.Keys.ToList();
-            Dictionary<TKey, TEntity> entities = (await GetByIdsAsync(ids, query)).ToDictionary(el => el.Id, el => el);
-
             var result = new HashSet<TEntity>();
+
+            var ids = datasByIds.Select(d => d.Key).ToList();
+            var expQuery = new ExpressionQuery<TEntity>(query, e => ids.Contains(e.Id));
+            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
 
             foreach (KeyValuePair<TKey, PostedData> kvp in datasByIds)
             {
-                TEntity entity = entities[kvp.Key];
+                var entity = entities[kvp.Key];
                 entity = await UpdateAsync(entity, kvp.Value, query);
 
                 result.Add(entity);
@@ -104,13 +105,15 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            IEnumerable<TEntity> entities = await GetByIdsAsync(ids, new Query<TEntity>
-            {
-                Verb = HttpVerbs.Delete
-            });
+            var expQuery = new ExpressionQuery<TEntity>(e => ids.Contains(e.Id));
+            expQuery.Verb = HttpVerbs.Delete;
 
-            foreach (TEntity entity in entities)
+            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
+
+            foreach (var id in ids)
             {
+                var entity = entities[id];
+
                 Repository.Remove(entity);
             }
         }

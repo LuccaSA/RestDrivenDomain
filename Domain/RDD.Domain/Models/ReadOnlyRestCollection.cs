@@ -92,25 +92,14 @@ namespace RDD.Domain.Models
         /// <returns></returns>
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
-            TEntity result = (await GetByIdsAsync(new List<TKey>
-            {
-                id
-            }, query)).FirstOrDefault();
+            TEntity result = (await GetAsync(new ExpressionQuery<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
 
             if (result == null)
             {
-                //NB : si verb == PUT alors l'exception UnAuthorized sera levée lors du GetByIds
                 throw new NotFoundException(string.Format("Resource with ID {0} not found", id));
             }
 
             return result;
-        }
-
-        public virtual async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query)
-        {
-            query.Filters.Add(new Filter<TEntity>(new PropertySelector<TEntity>(e => e.Id), FilterOperand.Equals, (IList) ids));
-
-            return (await GetAsync(query)).Items;
         }
 
         protected void AttachOperationsToEntity(TEntity entity)
@@ -208,24 +197,7 @@ namespace RDD.Domain.Models
             }
         }
 
-        public async Task<IEnumerable<TEntity>> TryGetByIdsAsync(IEnumerable<object> id)
-        {
-            try
-            {
-                return await GetByIdsAsync(new List<TKey>(id.Cast<TKey>()));
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get) => GetByIdAsync(id, new Query<TEntity>
-        {
-            Verb = verb
-        });
-
-        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, HttpVerbs verb = HttpVerbs.Get) => await GetByIdsAsync(ids, new Query<TEntity>
         {
             Verb = verb
         });

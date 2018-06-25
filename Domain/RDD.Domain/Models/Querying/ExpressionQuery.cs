@@ -15,6 +15,7 @@ namespace RDD.Domain.Models.Querying
         public ExpressionQuery(Query<TEntity> source, Expression<Func<TEntity, bool>> filters)
             : this(filters)
         {
+            Verb = source.Verb;
             Fields = source.Fields;
             OrderBys = source.OrderBys;
             Page = source.Page;

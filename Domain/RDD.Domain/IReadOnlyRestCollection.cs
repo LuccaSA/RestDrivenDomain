@@ -13,6 +13,5 @@ namespace RDD.Domain
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<bool> AnyAsync(Query<TEntity> query);
         Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
-        Task<IEnumerable<TEntity>> GetByIdsAsync(IList<TKey> ids, Query<TEntity> query);
     }
 }
