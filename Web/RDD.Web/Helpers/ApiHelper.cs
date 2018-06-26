@@ -8,7 +8,9 @@ using Newtonsoft.Json.Serialization;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
+using RDD.Domain.Json;
 using RDD.Domain.Models.Querying;
+using RDD.Web.Models;
 using RDD.Web.Querying;
 
 namespace RDD.Web.Helpers
@@ -39,42 +41,61 @@ namespace RDD.Web.Helpers
 
         protected virtual ICollection<Expression<Func<TEntity, object>>> IgnoreList() => new HashSet<Expression<Func<TEntity, object>>>();
 
-        public List<PostedData> InputObjectsFromIncomingHttpRequest()
+        public virtual ICandidate<TEntity, TKey> CreateCandidate()
         {
-            var objects = new List<PostedData>();
-            string contentType = _httpContextAccessor.HttpContext.Request.ContentType.Split(';')[0];
             string rawInput = _httpContextAccessor.HttpContext.GetContent();
+            var jsonObject = ParseIntoObject(rawInput);
+
+            return new Candidate<TEntity, TKey>(rawInput, jsonObject);
+        }
+
+        public virtual IEnumerable<ICandidate<TEntity, TKey>> CreateCandidates()
+        {
+            string rawInput = _httpContextAccessor.HttpContext.GetContent();
+            var jsonObject = ParseIntoArray(rawInput);
+
+            //TODO : découper rawInput en autant d'éléments JSON
+            return jsonObject.Content.Select(el => new Candidate<TEntity, TKey>(rawInput, el as JsonObject));
+        }
+
+        public JsonArray ParseIntoArray(string rawInput)
+        {
+            var element = Parse(rawInput);
+            var result = element as JsonArray;
+            return result ?? new JsonArray { Content = new List<IJsonElement> { element } };
+        }
+
+        public JsonObject ParseIntoObject(string rawInput)
+        {
+            var element = Parse(rawInput) as JsonObject;
+            if (element == null)
+                throw new BadRequestException("Unsupported data type. Please send a JSON object");
+
+            return element;
+        }
+
+        IJsonElement Parse(string rawInput)
+        {
+            string contentType = _httpContextAccessor.HttpContext.Request.ContentType.Split(';')[0];
 
             switch (contentType)
             {
                 case "application/x-www-form-urlencoded":
                 case "text/plain":
-                {
-                    Dictionary<string, string> dictionaryInput = string.IsNullOrEmpty(rawInput) ? new Dictionary<string, string>() : rawInput.Split('&').Select(s => s.Split('=')).ToDictionary(p => p[0], p => p[1]);
-                    objects.Add(PostedData.ParseDictionary(dictionaryInput));
-                    break;
-                }
+                    //TODO : gérer ces 2 cases
+                    throw new NotImplementedException();
+
                 //ce content-type est le seul à pouvoir envoyer plus qu'un seul formulaire
                 case "application/json":
-                    if (rawInput.StartsWith("[")) //soit une collection
-                    {
-                        objects = PostedData.ParseJsonArray(rawInput).Subs.Values.ToList();
-                    }
-                    else //soit un élément simple
-                    {
-                        objects.Add(PostedData.ParseJson(rawInput));
-                    }
-                    break;
+                    return new JsonParser().Parse(rawInput);
 
                 //On récupère le fichier via HttpPostedFiles, donc on n'utilise pas formParams
                 case "multipart/form-data":
-                    objects.Add(new PostedData()); //Faut quand même qu'il y en ait 1 dans la liste
-                    break;
+                    return new JsonObject();
 
                 default:
-                    throw new UnsupportedContentTypeException(string.Format("Unsupported media type {0}", contentType));
+                    throw new UnsupportedContentTypeException($"Unsupported content type {contentType}");
             }
-            return objects;
         }
 
         /// <summary>

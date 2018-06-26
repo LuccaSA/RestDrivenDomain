@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain
 {
-    public interface IWebServicesCollection : IRestCollection<WebService, int>
+    public interface IWebServicesCollection : IReadOnlyRestCollection<WebService, int>
     {
         Task<IEnumerable<WebService>> GetByTokenAsync(string token);
     }

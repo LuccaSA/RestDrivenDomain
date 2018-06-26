@@ -2,6 +2,7 @@
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
+using RDD.Domain.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +14,20 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+        protected IPatcherProvider PatcherProvider { get; private set; }
+
+        public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder,
+            IPatcherProvider patcherProvider)
             : base(repository, execution, combinationsHolder)
         {
+            PatcherProvider = patcherProvider;
         }
 
-        public Task<TEntity> CreateAsync(object datas, Query<TEntity> query = null)
+        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
-            PostedData postedData = PostedData.ParseJson(JsonConvert.SerializeObject(datas));
+            TEntity entity = InstanciateEntity(candidate);
 
-            return CreateAsync(postedData, query);
-        }
-
-        public virtual Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query = null)
-        {
-            TEntity entity = InstanciateEntity(datas);
-
-            GetPatcher().PatchEntity(entity, datas);
+            GetPatcher().Patch(entity, candidate.JsonValue);
 
             return CreateAsync(entity, query);
         }
@@ -50,14 +48,7 @@ namespace RDD.Domain.Models
             return entity;
         }
 
-        public Task<TEntity> UpdateByIdAsync(TKey id, object datas, Query<TEntity> query = null)
-        {
-            PostedData postedData = PostedData.ParseJson(JsonConvert.SerializeObject(datas));
-
-            return UpdateByIdAsync(id, postedData, query);
-        }
-
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query = null)
+        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
@@ -66,10 +57,10 @@ namespace RDD.Domain.Models
 
             TEntity entity = await GetByIdAsync(id, query);
 
-            return await UpdateAsync(entity, datas, query);
+            return await UpdateAsync(entity, candidate, query);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
@@ -78,11 +69,11 @@ namespace RDD.Domain.Models
 
             var result = new HashSet<TEntity>();
 
-            var ids = datasByIds.Select(d => d.Key).ToList();
+            var ids = candidatesByIds.Select(d => d.Key).ToList();
             var expQuery = new ExpressionQuery<TEntity>(query, e => ids.Contains(e.Id));
             var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
 
-            foreach (KeyValuePair<TKey, PostedData> kvp in datasByIds)
+            foreach (KeyValuePair<TKey, ICandidate<TEntity, TKey>> kvp in candidatesByIds)
             {
                 var entity = entities[kvp.Key];
                 entity = await UpdateAsync(entity, kvp.Value, query);
@@ -123,7 +114,7 @@ namespace RDD.Domain.Models
         /// https://blogs.msdn.microsoft.com/seteplia/2017/02/01/dissecting-the-new-constraint-in-c-a-perfect-example-of-a-leaky-abstraction/
         /// </summary>
         /// <returns></returns>
-        public virtual TEntity InstanciateEntity(PostedData datas)
+        public virtual TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
         {
             return System.Activator.CreateInstance<TEntity>();
         }
@@ -142,34 +133,30 @@ namespace RDD.Domain.Models
             return Task.CompletedTask;
         }
 
-        protected virtual PatchEntityHelper GetPatcher() => new PatchEntityHelper();
+        protected virtual IPatcher GetPatcher() => new ObjectPatcher(PatcherProvider);
 
-        protected virtual void ForgeEntity(TEntity entity)
-        {
-        }
+        protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity)
-        {
-        }
-        protected virtual Task OnBeforeUpdateEntity(TEntity entity, PostedData datas) => Task.CompletedTask;
+        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
+
+        protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
         /// <summary>
         /// Called after entity update
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
-        protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, PostedData datas, Query<TEntity> query) => Task.CompletedTask;
+        protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
 
-
-        private async Task<TEntity> UpdateAsync(TEntity entity, PostedData datas, Query<TEntity> query)
+        private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            await OnBeforeUpdateEntity(entity, datas);
+            await OnBeforeUpdateEntity(entity, candidate);
 
             TEntity oldEntity = entity.Clone();
 
-            GetPatcher().PatchEntity(entity, datas);
+            GetPatcher().Patch(entity, candidate.JsonValue);
 
-            await OnAfterUpdateEntity(oldEntity, entity, datas, query);
+            await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 
             ValidateEntity(entity, oldEntity);
 

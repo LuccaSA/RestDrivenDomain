@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-using NExtends.Primitives.DateTimes;
+﻿using NExtends.Primitives.DateTimes;
 using NExtends.Primitives.Strings;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RDD.Web.Querying
 {
@@ -43,73 +40,35 @@ namespace RDD.Web.Querying
         private static List<Filter<TEntity>> Parse(Dictionary<string, string> input, IEnumerable<string> keys)
         {
             var list = new List<Filter<TEntity>>();
+            var service = new SerializationService();
 
             foreach (string key in keys)
             {
                 string stringValue = input[key];
+                var parts = stringValue.Split(',').ToList();
 
-                PostedData data;
-                //Par défaut on considère que ce sont des types simples séparés par des ,
-                //Mais ça peut être 1 ou plusieurs objets JSON séparés par des ,
-                bool isJsonObject = stringValue.StartsWith("{");
-
-                if (isJsonObject)
-                {
-                    data = PostedData.ParseJsonArray("[" + stringValue + "]");
-                }
-                else
-                {
-                    data = PostedData.ParseJsonArray(JArray.Parse("[" + string.Join(", ", stringValue.Split(',').Select(p => JsonConvert.SerializeObject(p)).ToArray()) + "]"));
-                }
-
-                var type = FilterOperand.Equals;
+                var operand = FilterOperand.Equals;
 
                 //si la premier attribut n'est pas un mot clé, on a un equals (mis par défaut plus haut) ex : id=20,30 ; sinon, on le reconnait dans le dico
                 //PS : dans le cas où data contient du JSON, alors .value peut être null
-                if (data[0].Value != null && _operands.ContainsKey(data[0].Value))
+                if (parts[0] != null && _operands.ContainsKey(parts[0]))
                 {
-                    type = _operands[data[0].Value];
-                    data.Subs.Remove("0"); //On vire l'entrée qui correspondait en fait au mot clé
+                    operand = _operands[parts[0]];
+                    parts.RemoveAt(0); //On vire l'entrée qui correspondait en fait au mot clé
                 }
 
-                var service = new SerializationService();
-                IList values = service.ConvertWhereValues(data.Values.Select(p => p.Value).ToList(), typeof(TEntity), key);
+                var values = service.ConvertWhereValues(parts, typeof(TEntity), key);
 
-                //cas spécial pour between et until
-                if (type == FilterOperand.Between)
+                //cas spécial pour between (filtre sur un department => decimals, != datetime)
+                if (operand == FilterOperand.Between && values.Count == 2 && (values[0] as DateTime?) != null)
                 {
-                    //cas général : c'est une période, mais pour un department on peut avoir 2 decimals
-                    if (values[0] is DateTime time)
-                    {
-                        values = new List<Period>
-                        {
-                            new Period(time, ((DateTime) values[1]).ToMidnightTimeIfEmpty())
-                        };
-                    }
-                }
-                else if (type == FilterOperand.Until)
-                {
-                    //cas général : c'est une date, mais pour un leave on peut avoir un int
-                    if (values[0] is DateTime time)
-                    {
-                        values = new List<DateTime>
-                        {
-                            time.ToMidnightTimeIfEmpty()
-                        };
-                    }
-                    else if (values[0] is int)
-                    {
-                        values = new List<int>
-                        {
-                            (int) values[0]
-                        };
-                    }
+                    values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                 }
 
                 var property = new PropertySelector<TEntity>();
                 property.Parse(key);
 
-                list.Add(new Filter<TEntity>(property, type, values));
+                list.Add(new Filter<TEntity>(property, operand, values));
             }
 
             return list;

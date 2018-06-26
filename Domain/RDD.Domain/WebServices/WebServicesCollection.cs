@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RDD.Domain.WebServices
 {
-    public class WebServicesCollection : RestCollection<WebService, int>, IWebServicesCollection
+    public class WebServicesCollection : ReadOnlyRestCollection<WebService, int>, IWebServicesCollection
     {
         public WebServicesCollection(IRepository<WebService> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
             : base(repository, execution, combinationsHolder) { }

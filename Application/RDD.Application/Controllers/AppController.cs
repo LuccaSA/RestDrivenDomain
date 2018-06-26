@@ -30,27 +30,27 @@ namespace RDD.Application.Controllers
             Storage = storage;
         }
 
-        public virtual async Task<TEntity> CreateAsync(PostedData datas, Query<TEntity> query)
+        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var entity = await Collection.CreateAsync(datas, query);
+            var entity = await Collection.CreateAsync(candidate, query);
 
             await Storage.SaveChangesAsync();
 
             return entity;
         }
 
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, PostedData datas, Query<TEntity> query)
+        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var entity = await Collection.UpdateByIdAsync(id, datas, query);
+            var entity = await Collection.UpdateByIdAsync(id, candidate, query);
 
             await Storage.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, PostedData> datasByIds, Query<TEntity> query)
+        public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
-            var entities = await Collection.UpdateByIdsAsync(datasByIds, query);
+            var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
 
             await Storage.SaveChangesAsync();
 

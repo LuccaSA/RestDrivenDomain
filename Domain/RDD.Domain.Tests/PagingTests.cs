@@ -17,7 +17,7 @@ namespace RDD.Domain.Tests
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
             _repo = new OpenRepository<User>(_storage, _execution, _combinationsHolder);
-            _collection = new UsersCollection(_repo, _execution, _combinationsHolder);
+            _collection = new UsersCollection(_repo, _execution, _combinationsHolder, _patcherProvider);
         }
 
         private readonly IRepository<User> _repo;

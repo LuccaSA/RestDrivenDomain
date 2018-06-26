@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Newtonsoft.Json;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
@@ -8,6 +9,7 @@ using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
+using RDD.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +26,7 @@ namespace RDD.Domain.Tests
             {
                 var user = new User { Id = 1 };
                 var repo = new OpenRepository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
 
                 await users.CreateAsync(user);
 
@@ -41,7 +43,7 @@ namespace RDD.Domain.Tests
             {
                 var user = new User { Id = 2 };
                 var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
 
                 await users.CreateAsync(user);
 
@@ -68,12 +70,12 @@ namespace RDD.Domain.Tests
 
                 var user = new User { Id = 3 };
                 var repo = new Repository<User>(storage, _execution, combinationsHolder);
-                var users = new UsersCollection(repo, _execution, combinationsHolder);
+                var users = new UsersCollection(repo, _execution, combinationsHolder, _patcherProvider);
                 var app = new UsersAppController(storage, users);
 
-                await app.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), new Query<User>());
+                await app.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), new Query<User>());
 
-                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, PostedData.ParseJson(@"{ ""name"": ""new name"" }"), new Query<User>()));
+                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, Candidate<User, int>.Parse(@"{ ""name"": ""new name"" }"), new Query<User>()));
             }
         }
 
@@ -83,11 +85,11 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<User>(storage, _execution, null);
-                var users = new UsersCollection(repo, _execution, null);
+                var users = new UsersCollection(repo, _execution, null, _patcherProvider);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
-                await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
+                await users.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
             }
         }
 
@@ -97,11 +99,11 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<User>(storage, _execution, null);
-                var users = new UsersCollectionWithOverride(repo, _execution, null);
+                var users = new UsersCollectionWithOverride(repo, _execution, null, _patcherProvider);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
                 
-                await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query);
+                await users.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
             }
         }
 
@@ -112,12 +114,12 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<UserWithParameters>(storage, _execution, null);
-                var users = new UsersCollectionWithParameters(repo, _execution, null);
+                var users = new UsersCollectionWithParameters(repo, _execution, null, _patcherProvider);
                 var query = new Query<UserWithParameters>();
                 query.Options.CheckRights = false;
 
                 await Assert.ThrowsAsync<MissingMethodException>(
-                    () => users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3 }"), query)
+                    () => users.CreateAsync(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3 }"), query)
                 );
             }
         }
@@ -128,11 +130,11 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<UserWithParameters>(storage, _execution, null);
-                var users = new UsersCollectionWithParametersAndOverride(repo, _execution, null);
+                var users = new UsersCollectionWithParametersAndOverride(repo, _execution, null, _patcherProvider);
                 var query = new Query<UserWithParameters>();
                 query.Options.CheckRights = false;
 
-                var result = await users.CreateAsync(PostedData.ParseJson(@"{ ""id"": 3, ""name"": ""John"" }"), query);
+                var result = await users.CreateAsync(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3, ""name"": ""John"" }"), query);
 
                 Assert.Equal(3, result.Id);
                 Assert.Equal("John", result.Name);
@@ -146,7 +148,7 @@ namespace RDD.Domain.Tests
             {
                 var user = new User { Id = 2 };
                 var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
@@ -167,7 +169,7 @@ namespace RDD.Domain.Tests
             {
                 var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
                 var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
@@ -175,7 +177,7 @@ namespace RDD.Domain.Tests
 
                 await storage.SaveChangesAsync();
 
-                await users.UpdateByIdAsync(2, user, query);
+                await users.UpdateByIdAsync(2, Candidate<User, int>.Parse(JsonConvert.SerializeObject(user)), query);
 
                 Assert.True(true);
             }
@@ -188,7 +190,7 @@ namespace RDD.Domain.Tests
             {
                 var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
                 var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder);
+                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
