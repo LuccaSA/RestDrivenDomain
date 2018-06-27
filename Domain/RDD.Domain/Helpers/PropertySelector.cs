@@ -533,7 +533,8 @@ namespace RDD.Domain.Helpers
             //Ici il va devrenir enfant d'un selecteur, donc il faut patcher son Lambda
             child.Lambda = selector;
 
-            var matchingChild = Children.Where(c => c.Lambda.Body.Type == typeof(TSub)).FirstOrDefault();
+            var matchingChild = Children
+                .FirstOrDefault(c => c.Lambda.Body.Type == typeof(TSub));
 
             if (matchingChild == null)
             {

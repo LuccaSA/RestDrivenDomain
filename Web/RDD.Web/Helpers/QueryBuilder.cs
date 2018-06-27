@@ -402,9 +402,9 @@ namespace RDD.Web.Helpers
             foreach (var field in fields)
             {
                 // Include internal properties through BindingFlags
-                property = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .Where(p => p.Name.ToLower() == field.Name.ToLower())
-                    .FirstOrDefault();
+                property = type
+                    .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+                    .FirstOrDefault(p => p.Name.ToLower() == field.Name.ToLower());
 
                 if (property == null)
                 {

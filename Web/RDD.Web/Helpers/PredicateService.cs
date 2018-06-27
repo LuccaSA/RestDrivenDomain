@@ -51,7 +51,9 @@ namespace RDD.Web.Helpers
                 case FilterOperand.Equals:
 
                     var type = typeof(TObject);
-                    var property = type.GetProperties().Where(p => p.Name.ToLower() == filterProperty.Name.ToLower()).FirstOrDefault();
+                    var property = type
+                        .GetProperties()
+                        .FirstOrDefault(p => p.Name.ToLower() == filterProperty.Name.ToLower());
 
                     var parameter = Expression.Parameter(type, "entity");
 
