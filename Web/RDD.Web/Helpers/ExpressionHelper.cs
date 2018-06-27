@@ -124,7 +124,8 @@ namespace RDD.Web.Helpers
             }
             public bool VisitRoot(Expression node)
             {
-                var visited = Visit(node);
+                Visit(node);
+
                 return _HasType;
             }
             public override Expression Visit(Expression node)
@@ -144,8 +145,6 @@ namespace RDD.Web.Helpers
 
         public ICollection<Expression<Func<TEntity, object>>> Remove<TEntity>(IEnumerable<Expression<Func<TEntity, object>>> source, Expression<Func<TEntity, object>> candidate)
         {
-            var currentIncludes = source;
-
             var result = new HashSet<Expression<Func<TEntity, object>>>();
 
             foreach (var exp in source)
