@@ -1,14 +1,15 @@
-﻿using RDD.Domain;
-using RDD.Domain.Models.Querying;
+﻿using Microsoft.AspNetCore.Http;
+using RDD.Domain;
+using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
 
 namespace RDD.Web.Querying
 {
-    public class QueryFactory<TEntity>
-        where TEntity : class
+    public class QueryFactory<TEntity, TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TKey : IEquatable<TKey>
     {
         protected HashSet<string> IgnoredFilters { get; set; }
 
@@ -25,7 +26,7 @@ namespace RDD.Web.Querying
             }
         }
 
-        public WebQuery<TEntity> FromWebContext(HttpContext httpContext, bool isCollectionCall)
+        public WebQuery<TEntity, TKey> FromWebContext(HttpContext httpContext, bool isCollectionCall)
         {
             var parameters = httpContext.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
 
@@ -37,10 +38,10 @@ namespace RDD.Web.Querying
             var page = new PageParser<TEntity>().Parse(parameters);
             var headers = new HeadersParser().Parse(httpContext.Request.Headers);
 
-            return new WebQuery<TEntity>()
+            return new WebQuery<TEntity, TKey>()
             {
                 Fields = fields,
-                Filters = new FiltersConvertor<TEntity>().Convert(filters),
+                Filters = new PredicateService<TEntity, TKey>(filters).GetEntityPredicate(new QueryBuilder<TEntity, TKey>()),
                 OrderBys = orderBys,
                 Options = options,
                 Page = page,

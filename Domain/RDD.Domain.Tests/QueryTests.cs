@@ -23,12 +23,12 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public void Cloning_query_should_not_clone_verb()
+        public void Cloning_query_should_clone_verb()
         {
             var query = new Query<User> { Verb = HttpVerbs.Put };
             var result = new Query<User>(query);
 
-            Assert.Equal(HttpVerbs.Get, result.Verb);
+            Assert.Equal(HttpVerbs.Put, result.Verb);
         }
 
         [Fact]

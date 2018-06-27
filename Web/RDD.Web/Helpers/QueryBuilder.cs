@@ -2,6 +2,7 @@
 using NExtends.Expressions;
 using NExtends.Primitives.Types;
 using RDD.Domain;
+using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Exceptions;
@@ -13,7 +14,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Lucca.Domain.Repositories
+namespace RDD.Web.Helpers
 {
     public class QueryBuilder<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
@@ -21,9 +22,9 @@ namespace Lucca.Domain.Repositories
     {
         private const int EF_EXPRESSION_TREE_MAX_DEPTH = 1000;
 
-        public virtual IQueryable<TEntity> OrderBy(IQueryable<TEntity> entities, string field, SortDirection direction, bool isFirst = true)
+        public virtual IQueryable<TEntity> OrderBy(IQueryable<TEntity> entities, PropertySelector<TEntity> field, SortDirection direction, bool isFirst = true)
         {
-            if (string.IsNullOrWhiteSpace(field)) { return entities; }
+            if (field == null) { return entities; }
 
             var type = typeof(TEntity);
             var parameter = Expression.Parameter(type, "entity");
@@ -86,47 +87,38 @@ namespace Lucca.Domain.Repositories
             }
         }
 
-        private bool IsQueryOnCollection(string field, out string collectionAccessorField, out string subField, out Type collectionType)
+        private bool IsQueryOnCollection(PropertySelector field, out CollectionPropertySelector<TEntity> collectionAccessorField, out PropertySelector subField, out Type collectionType)
         {
             return IsQueryOnCollection(typeof(TEntity), field, out collectionAccessorField, out subField, out collectionType);
         }
-        private bool IsQueryOnCollection(Type parentType, string field, out string collectionAccessorField, out string subField, out Type collectionType)
+        private bool IsQueryOnCollection(Type parentType, PropertySelector field, out CollectionPropertySelector<TEntity> collectionAccessorField, out PropertySelector subField, out Type collectionType)
         {
             PropertyInfo property = null;
-            collectionAccessorField = "";
+            collectionAccessorField = null;
             subField = field;
             collectionType = typeof(object);
-            var fields = field.Split('.');
-            for (int i = 0; i < fields.Length; i++)
+            foreach (var child in field.Children)
             {
                 if (parentType.IsGenericType && (parentType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>) || parentType.GetGenericTypeDefinition() == typeof(Dictionary<,>)))
                 {
                     return false;
                 }
 
-                var member = fields[i];
-
                 // Include internal properties through BindingFlags
-                property = parentType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .Where(p => p.Name.ToLower() == member.ToLower())
-                    .FirstOrDefault();
-
-                if (property == null)
-                {
-                    throw new QueryBuilderException($"Unknown property {member} on type {parentType.Name}");
-                }
+                property = child.GetCurrentProperty();
 
                 if (!property.CanRead)
                 {
-                    throw new QueryBuilderException($"Property {member} of type {parentType.Name} is set only");
+                    throw new QueryBuilderException($"Property {property.Name} of type {parentType.Name} is set only");
                 }
 
                 if (property.PropertyType.IsEnumerableOrArray())
                 {
-                    collectionAccessorField = string.Join(".", fields.Take(i + 1).ToArray());
-                    subField = string.Join(".", fields.Skip(i + 1).ToArray());
-                    collectionType = property.PropertyType.GetEnumerableOrArrayElementType();
-                    return true;
+                    throw new NotImplementedException();
+                    //collectionAccessorField = string.Join(".", fields.Take(i + 1).ToArray());
+                    //subField = string.Join(".", fields.Skip(i + 1).ToArray());
+                    //collectionType = property.PropertyType.GetEnumerableOrArrayElementType();
+                    //return true;
                 }
 
                 parentType = property.PropertyType;
@@ -165,7 +157,7 @@ namespace Lucca.Domain.Repositories
             return expression.Expand();
         }
 
-        public virtual Expression<Func<TEntity, bool>> Equals(string field, IList values)
+        public virtual Expression<Func<TEntity, bool>> Equals(PropertySelector<TEntity> field, IList values)
         {
             return BuildBinaryExpression(FilterOperand.Equals, field, values);
         }
@@ -175,88 +167,88 @@ namespace Lucca.Domain.Repositories
             return t => t.Id.Equals(key);
         }
 
-        public virtual Expression<Func<TEntity, bool>> NotEqual(string field, IList values)
+        public virtual Expression<Func<TEntity, bool>> NotEqual(PropertySelector<TEntity> field, IList values)
         {
             return AndFactory<object>(value => BuildBinaryExpression(FilterOperand.NotEqual, field, value), values);
         }
 
-        public Expression<Func<TEntity, bool>> Until(string field, IList values)
+        public Expression<Func<TEntity, bool>> Until(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => Until(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> Until(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> Until(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.Until, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> Since(string field, IList values)
+        public Expression<Func<TEntity, bool>> Since(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => Since(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> Since(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> Since(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.Since, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> Anniversary(string field, IList values)
+        public Expression<Func<TEntity, bool>> Anniversary(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => Anniversary(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> Anniversary(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> Anniversary(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.Anniversary, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> GreaterThan(string field, IList values)
+        public Expression<Func<TEntity, bool>> GreaterThan(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => GreaterThan(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> GreaterThan(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> GreaterThan(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.GreaterThan, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(string field, IList values)
+        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => GreaterThanOrEqual(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> GreaterThanOrEqual(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> GreaterThanOrEqual(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.GreaterThanOrEqual, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> LessThan(string field, IList values)
+        public Expression<Func<TEntity, bool>> LessThan(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => LessThan(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> LessThan(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> LessThan(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.LessThan, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> LessThanOrEqual(string field, IList values)
+        public Expression<Func<TEntity, bool>> LessThanOrEqual(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => LessThanOrEqual(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> LessThanOrEqual(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> LessThanOrEqual(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.LessThanOrEqual, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> Between(string field, IList values)
+        public Expression<Func<TEntity, bool>> Between(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<object>(value => Between(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> Between(string field, object value)
+        protected virtual Expression<Func<TEntity, bool>> Between(PropertySelector<TEntity> field, object value)
         {
             return BuildBinaryExpression(FilterOperand.Between, field, value);
         }
 
-        public Expression<Func<TEntity, bool>> Starts(string field, IList values)
+        public Expression<Func<TEntity, bool>> Starts(PropertySelector<TEntity> field, IList values)
         {
             return OrFactory<string>(value => Starts(field, value), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> Starts(string field, string value)
+        protected virtual Expression<Func<TEntity, bool>> Starts(PropertySelector<TEntity> field, string value)
         {
             var parameter = Expression.Parameter(typeof(TEntity), "entity");
             var expression = NestedPropertyAccessor(parameter, field);
@@ -268,28 +260,29 @@ namespace Lucca.Domain.Repositories
             return Expression.Lambda<Func<TEntity, bool>>(startsWithExpression, parameter);
         }
 
-        public Expression<Func<TEntity, bool>> ContainsAll(string field, IList values)
+        public Expression<Func<TEntity, bool>> ContainsAll(PropertySelector<TEntity> field, IList values)
         {
             return AndFactory<object>(value => BuildBinaryExpression(FilterOperand.ContainsAll, field, value), values);
         }
 
-        public Expression<Func<TEntity, bool>> Like(string field, IList values)
+        public Expression<Func<TEntity, bool>> Like(PropertySelector<TEntity> field, IList values)
         {
-            return OrFactory<string>(value => Like(field, value), values);
+            return OrFactory<object>(value => Like(field, value.ToString()), values);
         }
-        protected virtual Expression<Func<TEntity, bool>> Like(string field, string value)
+        protected virtual Expression<Func<TEntity, bool>> Like(PropertySelector<TEntity> field, object value)
         {
             var parameter = Expression.Parameter(typeof(TEntity), "entity");
             var expression = NestedPropertyAccessor(parameter, field);
             var comparisonMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
             var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
+            var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
 
-            var containsExpression = Expression.Call(Expression.Call(expression, toLowerMethod), comparisonMethod, Expression.Constant(value.ToLower(), typeof(string)));
+            var containsExpression = Expression.Call(Expression.Call(Expression.Call(expression, toStringMethod), toLowerMethod), comparisonMethod, Expression.Constant(value.ToString().ToLower(), typeof(string)));
 
             return Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
         }
 
-        private Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, string field, object value)
+        private Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, PropertySelector<TEntity> field, object value)
         {
             var type = typeof(TEntity);
             var parameter = Expression.Parameter(type, "entity");
@@ -313,10 +306,10 @@ namespace Lucca.Domain.Repositories
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }
 
-        private Expression BuildBinaryExpressionRecursive(FilterOperand binaryOperator, ParameterExpression parameter, string field, object value, out PropertyInfo property)
+        private Expression BuildBinaryExpressionRecursive(FilterOperand binaryOperator, ParameterExpression parameter, PropertySelector field, object value, out PropertyInfo property)
         {
-            string collectionAccessorField;
-            string subField;
+            CollectionPropertySelector<TEntity> collectionAccessorField;
+            PropertySelector subField;
             Type collectionType;
 
             if (this.IsQueryOnCollection(parameter.Type, field, out collectionAccessorField, out subField, out collectionType))
@@ -401,43 +394,43 @@ namespace Lucca.Domain.Repositories
             }
         }
 
-        private Expression NestedPropertyAccessor(ParameterExpression seed, string field)
+        private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector<TEntity> field)
         {
             PropertyInfo unusedFinalProperty;
             return NestedPropertyAccessor(seed, field, out unusedFinalProperty);
         }
-        private Expression NestedPropertyAccessor(ParameterExpression seed, string field, out PropertyInfo property)
+        private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector<TEntity> field, out PropertyInfo property)
         {
             var type = typeof(TEntity); //Ici on triche un peu en utilisant cette variable, car on est censé passer au moins 1 fois dans le foreach pour setter finalPropertyType proprement
             return NestedPropertyAccessor(type, seed, field, out property);
         }
-        protected virtual Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field, out PropertyInfo property)
+        protected virtual Expression NestedPropertyAccessor(Type type, ParameterExpression seed, PropertySelector field, out PropertyInfo property)
         {
-            return NestedPropertyAccessor(type, seed, field.Split('.'), out property);
+            return NestedPropertyAccessor(type, seed, field.Children, out property);
         }
-        protected Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string[] fields, out PropertyInfo property)
+        protected Expression NestedPropertyAccessor(Type type, ParameterExpression seed, ISet<PropertySelector> fields, out PropertyInfo property)
         {
             property = null;
             Expression body = seed;
 
-            foreach (var member in fields)
+            foreach (var field in fields)
             {
                 // Include internal properties through BindingFlags
                 property = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .Where(p => p.Name.ToLower() == member.ToLower())
+                    .Where(p => p.Name.ToLower() == field.Name.ToLower())
                     .FirstOrDefault();
 
                 if (property == null)
                 {
-                    throw new QueryBuilderException(String.Format("Unknown property {0} on type {1}", member, type.Name));
+                    throw new QueryBuilderException($"Unknown property {field.Name} on type {type.Name}");
                 }
 
                 if (!property.CanRead)
                 {
-                    throw new QueryBuilderException(String.Format("Property {0} of type {1} is set only", member, type.Name));
+                    throw new QueryBuilderException($"Property {field.Name} of type {type.Name} is set only");
                 }
 
-                body = Expression.PropertyOrField(body, member);
+                body = Expression.PropertyOrField(body, field.Name);
 
                 type = property.PropertyType;
             }

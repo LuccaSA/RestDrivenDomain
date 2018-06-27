@@ -16,11 +16,11 @@ using RDD.Web.Querying;
 namespace RDD.Web.Helpers
 {
     public class ApiHelper<TEntity, TKey>
-        where TEntity : class, IEntityBase<TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
+        private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
 
         public ApiHelper(IHttpContextAccessor httpContextAccessor, IExecutionContext execution, IEntitySerializer serializer)
         {
@@ -32,9 +32,9 @@ namespace RDD.Web.Helpers
         public IExecutionContext Execution { get; }
         public IEntitySerializer Serializer { get; }
 
-        public virtual WebQuery<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
+        public virtual WebQuery<TEntity, TKey> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {
-            WebQuery<TEntity> query = _queryFactory.FromWebContext(_httpContextAccessor.HttpContext, isCollectionCall);
+            WebQuery<TEntity, TKey> query = _queryFactory.FromWebContext(_httpContextAccessor.HttpContext, isCollectionCall);
             query.Verb = verb;
             return query;
         }

@@ -10,6 +10,7 @@ using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
 using RDD.Web.Models;
+using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -198,7 +199,7 @@ namespace RDD.Domain.Tests
 
                 await storage.SaveChangesAsync();
 
-                query.Filters.Add(new Filter<User, Uri>(u => u.TwitterUri, FilterOperand.Equals, new Uri("https://twitter.com")));
+                query = new Query<User>(query, u => u.TwitterUri == new Uri("https://twitter.com"));
 
                 var results = await users.GetAsync(query);
 
