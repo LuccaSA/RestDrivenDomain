@@ -38,13 +38,17 @@ namespace RDD.Domain.Models.Querying
         public Query(Query<TEntity> source)
             : this()
         {
+            Verb = source.Verb;
+            Fields = source.Fields;
             Filters = source.Filters;
-            OrderBys = new Queue<OrderBy<TEntity>>(source.OrderBys);
+            OrderBys = source.OrderBys;
+            Page = source.Page;
+            Options = source.Options;
         }
-
-        public void AddFilter(Expression<Func<TEntity, bool>> filter)
+        public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filters)
+            : this(source)
         {
-            Filters = NExtends.Expressions.BooleanExpression.AndAlso(Filters, filter);
+            Filters = filters;
         }
     }
 }

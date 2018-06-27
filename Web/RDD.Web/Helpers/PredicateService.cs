@@ -3,7 +3,7 @@ using NExtends.Primitives.Types;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
+using RDD.Web.Querying;
 using System;
 using System.Collections;
 using System.Linq;

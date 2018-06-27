@@ -5,6 +5,7 @@ using RDD.Domain;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Exceptions;
+using RDD.Web.Querying;
 using System;
 using System.Collections;
 using System.Collections.Generic;
