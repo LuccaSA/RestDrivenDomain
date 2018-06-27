@@ -18,7 +18,7 @@ namespace RDD.Web.Tests
                 HttpContext = new DefaultHttpContext()
             };
             httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
-            var helper = new ApiHelper<User, int>(httpContextAccessor ,null, null);
+            var helper = new ApiHelper<User, int>(httpContextAccessor, null, null);
 
             helper.CreateQuery(HttpVerbs.Get);
         }

@@ -1,235 +1,109 @@
 ﻿using LinqKit;
-using NExtends.Primitives.Types;
 using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models;
 using RDD.Web.Querying;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace RDD.Web.Helpers
 {
-    internal class PredicateService<TEntity>
-        where TEntity : class, IEntityBase
+    internal class PredicateService<TEntity, TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TKey : IEquatable<TKey>
     {
-        internal Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, string field, object value)
-        {
-            Type entityType = typeof(TEntity);
-            ParameterExpression parameter = Expression.Parameter(entityType, "entity");
-            Expression expression = BuildBinaryExpressionRecursive(entityType, binaryOperator, parameter, field, value, out PropertyInfo property);
+        private ICollection<Filter<TEntity>> _filters;
 
-            // Limitation à certains types
-            if (binaryOperator == FilterOperand.Until || binaryOperator == FilterOperand.Since)
+        public PredicateService(ICollection<Filter<TEntity>> filters)
+        {
+            _filters = filters;
+        }
+
+        public Expression<Func<TObject, bool>> GetPredicate<TObject>()
+            where TObject : class
+        {
+            var feed = PredicateBuilder.True<TObject>();
+
+            foreach (var filter in _filters)
             {
-                Type propertyReturnType = property.GetGetMethod().ReturnType;
-                if (propertyReturnType.IsGenericType)
+                var sub = PredicateBuilder.False<TObject>();
+
+                foreach (var value in filter.Values)
                 {
-                    propertyReturnType = propertyReturnType.GenericTypeArguments[0];
+                    sub = sub.Or(ToExpression<TObject>(filter, value).Expand());
                 }
-                if (propertyReturnType != typeof(DateTime))
-                {
-                    throw new BadRequestException(string.Format("Operator '{2}' only allows dates to be compared, whereas property {0} is of type {1}.", field, property.GetType().Name, binaryOperator));
-                }
+
+                feed = feed.And(sub.Expand());
             }
 
-            return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
+            return feed.Expand();
         }
 
-
-        internal virtual Expression<Func<TEntity, bool>> BuildStartsExpression(string field, string value)
+        private Expression<Func<TObject, bool>> ToExpression<TObject>(Filter<TEntity> filter, object value)
+            where TObject : class
         {
-            Type entityType = typeof(TEntity);
-            ParameterExpression parameter = Expression.Parameter(entityType, "entity");
-            Expression expression = NestedPropertyAccessor(entityType, parameter, field);
-            MethodInfo comparisonMethod = typeof(string).GetMethod("StartsWith", new[] {typeof(string)});
-            MethodInfo toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
+            var filterProperty = filter.Property;
+            var filterOperand = filter.Operand;
 
-            MethodCallExpression startsWithExpression = Expression.Call(Expression.Call(expression, toLowerMethod), comparisonMethod, Expression.Constant(value.ToLower(), typeof(string)));
-
-            return Expression.Lambda<Func<TEntity, bool>>(startsWithExpression, parameter);
-        }
-
-        internal virtual Expression<Func<TEntity, bool>> BuildLikeExpression(string field, object value)
-        {
-            Type entityType = typeof(TEntity);
-            ParameterExpression parameter = Expression.Parameter(entityType, "entity");
-            Expression expression = NestedPropertyAccessor(entityType, parameter, field);
-            MethodInfo comparisonMethod = typeof(string).GetMethod("Contains", new[] {typeof(string)});
-            MethodInfo toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
-
-            MethodCallExpression containsExpression = Expression.Call(Expression.Call(expression, toLowerMethod), comparisonMethod, Expression.Constant(value.ToLower(), typeof(string)));
-
-            return Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
-        }
-
-        private Expression BuildBinaryExpressionRecursive(Type entityType, FilterOperand binaryOperator, ParameterExpression parameter, string field, object value, out PropertyInfo property)
-        {
-            if (IsQueryOnCollection(entityType, field, out string collectionAccessorField, out string subField, out Type collectionType))
-            {
-                ParameterExpression collectionParameter = Expression.Parameter(collectionType, "subparam");
-                Expression collectionBinaryExpression = BuildBinaryExpressionRecursive(entityType, binaryOperator, collectionParameter, subField, value, out property);
-
-                Expression anyExpression = Expression.Lambda(typeof(Func<,>).MakeGenericType(collectionType, typeof(bool)), collectionBinaryExpression, collectionParameter);
-
-                Expression accessCollectionExpression = NestedPropertyAccessor(parameter.Type, parameter, collectionAccessorField, out _);
-                return ExpressionHelper.BuildAny(collectionType, accessCollectionExpression, anyExpression);
-            }
-            Expression expressionLeft = NestedPropertyAccessor(parameter.Type, parameter, field, out property);
-
-            // Hack pour le Between qui n'est pas binaire, mais plus performant de le faire ici plutot que 2 parcours récursifs, puis un AND sur les expressions
-            if (binaryOperator == FilterOperand.Between)
-            {
-                var period = (Period) value;
-                ConstantExpression expressionRightSince = value == null ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
-                ConstantExpression expressionRightUntil = value == null ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
-                BinaryExpression sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
-                BinaryExpression untilExpression = Expression.LessThanOrEqual(expressionLeft, expressionRightUntil);
-                return Expression.AndAlso(sinceExpression, untilExpression);
-            }
-
-            ConstantExpression expressionRight;
-            switch (binaryOperator)
+            switch (filterOperand)
             {
                 case FilterOperand.Equals:
-                    expressionRight = Expression.Constant(value);
-                    break;
-                default:
-                    //précision du type nécessaie pour les nullables
-                    expressionRight = Expression.Constant(value, expressionLeft.Type);
-                    break;
-            }
 
-            switch (binaryOperator)
-            {
-                case FilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new[] {expressionLeft.Type}, expressionRight, expressionLeft);
-                case FilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
-                case FilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
-                case FilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
+                    var type = typeof(TObject);
+                    var property = type.GetProperties().Where(p => p.Name.ToLower() == filterProperty.Name.ToLower()).FirstOrDefault();
 
-                case FilterOperand.Since:
-                case FilterOperand.GreaterThanOrEqual:
-                    if (value == null)
-                    {
-                        return Expression.Equal(expressionLeft, expressionRight);
-                    }
-                    else
-                    {
-                        return Expression.GreaterThanOrEqual(expressionLeft, expressionRight);
-                    }
+                    var parameter = Expression.Parameter(type, "entity");
 
-                case FilterOperand.Until:
-                case FilterOperand.LessThanOrEqual:
-                    if (value == null)
-                    {
-                        return Expression.Equal(expressionLeft, expressionRight);
-                    }
-                    else
-                    {
-                        return Expression.LessThanOrEqual(expressionLeft, expressionRight);
-                    }
+                    var body = Expression.PropertyOrField(parameter, filterProperty.Name);
+
+                    return Expression.Lambda<Func<TObject, bool>>(Expression.Equal(body, Expression.Constant(value, property.PropertyType)), parameter);
 
                 default:
-                    throw new NotImplementedException(string.Format("L'expression binaire n'est pas gérée pour l'opérateur fourni: '{0}'.", binaryOperator));
+                    throw new NotImplementedException();
             }
         }
 
-        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field) 
-            => NestedPropertyAccessor(type, seed, field, out _);
-
-        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string field, out PropertyInfo property) 
-            => NestedPropertyAccessor(type, seed, field.Split('.'), out property);
-
-        private Expression NestedPropertyAccessor(Type type, ParameterExpression seed, string[] fields, out PropertyInfo property)
+        /// <summary>
+        /// Fait des AND entre les where dont les différentes valeurs dont combinées via des OR
+        /// /api/users?manager.id=2&departement.id=4,5 devient manager.id == 2 AND ( department.id == 4 OR department.id == 5 )
+        /// </summary>
+        /// <returns></returns>
+        public Expression<Func<TEntity, bool>> GetEntityPredicate(QueryBuilder<TEntity, TKey> queryBuilder)
         {
-            property = null;
-            Expression body = seed;
-
-            foreach (string member in fields)
+            var feed = PredicateBuilder.True<TEntity>();
+            foreach (var filter in _filters)
             {
-                // Include internal properties through BindingFlags
-                property = type
-                    .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .FirstOrDefault(p => string.Equals(p.Name, member, StringComparison.CurrentCultureIgnoreCase));
-
-                if (property == null)
+                var expression = ToEntityExpression(queryBuilder, filter, filter.Values);
+                if (expression != null)
                 {
-                    throw new BadRequestException(string.Format("Unknown property {0} on type {1}", member, type.Name));
+                    feed = feed.And(expression.Expand());
                 }
-
-                if (!property.CanRead)
-                {
-                    throw new BadRequestException(string.Format("Property {0} of type {1} is set only", member, type.Name));
-                }
-
-                body = Expression.PropertyOrField(body, member);
-
-                type = property.PropertyType;
             }
 
-            return body;
+            return feed.Expand();
         }
 
-        internal Expression<Func<TEntity, bool>> AndFactory<TEntity, TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
+        private Expression<Func<TEntity, bool>> ToEntityExpression(QueryBuilder<TEntity, TKey> queryBuilder, Filter<TEntity> filter, IList value)
         {
-            Expression<Func<TEntity, bool>> expression = PredicateBuilder.True<TEntity>();
-            foreach (TProp val in values)
+            switch (filter.Operand)
             {
-                expression = expression.And(filter(val)).Expand();
-            }
-            return expression.Expand();
-        }
-
-        internal Expression<Func<TEntity, bool>> OrFactory<TEntity, TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
-        {
-            Expression<Func<TEntity, bool>> expression = PredicateBuilder.False<TEntity>();
-            foreach (TProp val in values)
-            {
-                expression = expression.Or(filter(val)).Expand();
-            }
-            return expression.Expand();
-        }
-
-        private bool IsQueryOnCollection(Type entityType, string field, out string collectionAccessorField, out string subField, out Type collectionType)
-        {
-            collectionAccessorField = "";
-            subField = field;
-            collectionType = typeof(object);
-            string[] fields = field.Split('.');
-            for (var i = 0; i < fields.Length; i++)
-            {
-                string member = fields[i];
-
-                // Include internal properties through BindingFlags
-                PropertyInfo property = entityType
-                    .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .FirstOrDefault(p => string.Equals(p.Name, member, StringComparison.CurrentCultureIgnoreCase));
-
-                if (property == null)
-                {
-                    throw new BadRequestException(string.Format("Unknown property {0} on type {1}", member, entityType.Name));
-                }
-
-                if (!property.CanRead)
-                {
-                    throw new BadRequestException(string.Format("Property {0} of type {1} is set only", member, entityType.Name));
-                }
-
-
-                if (property.PropertyType.IsEnumerableOrArray())
-                {
-                    collectionAccessorField = string.Join(".", fields.Take(i + 1).ToArray());
-                    subField = string.Join(".", fields.Skip(i + 1).ToArray());
-                    collectionType = property.PropertyType.GetEnumerableOrArrayElementType();
-                    return true;
-                }
-
-                entityType = property.PropertyType;
+                case FilterOperand.Equals: return queryBuilder.Equals(filter.Property, value);
+                case FilterOperand.NotEqual: return queryBuilder.NotEqual(filter.Property, value);
+                case FilterOperand.Starts: return queryBuilder.Starts(filter.Property, value);
+                case FilterOperand.Like: return queryBuilder.Like(filter.Property, value);
+                case FilterOperand.Between: return queryBuilder.Between(filter.Property, value);
+                case FilterOperand.Since: return queryBuilder.Since(filter.Property, value);
+                case FilterOperand.Until: return queryBuilder.Until(filter.Property, value);
+                case FilterOperand.Anniversary: return queryBuilder.Anniversary(filter.Property, value);
+                case FilterOperand.GreaterThan: return queryBuilder.GreaterThan(filter.Property, value);
+                case FilterOperand.GreaterThanOrEqual: return queryBuilder.GreaterThanOrEqual(filter.Property, value);
+                case FilterOperand.LessThan: return queryBuilder.LessThan(filter.Property, value);
+                case FilterOperand.LessThanOrEqual: return queryBuilder.LessThanOrEqual(filter.Property, value);
+                case FilterOperand.ContainsAll: return queryBuilder.ContainsAll(filter.Property, value);
             }
 
-            return false;
+            throw new IndexOutOfRangeException(String.Format("Unhandled where condition type {0}", filter.Operand));
         }
     }
 }

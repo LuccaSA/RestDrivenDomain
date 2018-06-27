@@ -4,10 +4,10 @@ using System.Linq.Expressions;
 namespace RDD.Domain.Helpers
 {
     /// <summary>
-    /// Ce visiteur permet de renvoyer le permier MemberAccess d'une LambdaExpression
-    /// d => d.Users.Select(u => u.Name) va renvoyer d => d.Users
-    /// </summary>
-    public class PropertySelectorRootLambdaExtractor : ExpressionVisitor
+	/// Ce visiteur permet de renvoyer le permier MemberAccess d'une LambdaExpression
+	/// d => d.Users.Select(u => u.Name) va renvoyer d => d.Users
+	/// </summary>
+	public class PropertySelectorRootLambdaExtractor : ExpressionVisitor
     {
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
