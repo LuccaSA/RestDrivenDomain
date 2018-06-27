@@ -13,7 +13,7 @@ namespace RDD.Web.Helpers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        private ICollection<Filter<TEntity>> _filters;
+        private readonly ICollection<Filter<TEntity>> _filters;
 
         public PredicateService(ICollection<Filter<TEntity>> filters)
         {
@@ -101,9 +101,9 @@ namespace RDD.Web.Helpers
                 case FilterOperand.LessThan: return queryBuilder.LessThan(filter.Property, value);
                 case FilterOperand.LessThanOrEqual: return queryBuilder.LessThanOrEqual(filter.Property, value);
                 case FilterOperand.ContainsAll: return queryBuilder.ContainsAll(filter.Property, value);
+                default:
+                    throw new NotImplementedException($"Unhandled operand : {filter.Operand}");
             }
-
-            throw new IndexOutOfRangeException(String.Format("Unhandled where condition type {0}", filter.Operand));
         }
     }
 }

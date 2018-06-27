@@ -16,10 +16,10 @@ namespace RDD.Domain.Helpers
     }
     public class PropertySelectorTransferor : ExpressionVisitor
     {
-        private Type _entityType;
-        private Type _subType;
-        private PropertyInfo _property;
-        private ParameterExpression _param;
+        private readonly Type _entityType;
+        private readonly Type _subType;
+        private readonly PropertyInfo _property;
+        private readonly ParameterExpression _param;
 
         public PropertySelectorTransferor(Type entityType, Type subType, string propertyName)
         {

@@ -10,7 +10,7 @@ namespace RDD.Domain.Helpers
 {
     public class PropertySelectorIncludablesExtractor : ExpressionVisitor
     {
-        private Func<PropertyInfo, bool> _IsIncludeCandidate;
+        private readonly Func<PropertyInfo, bool> _IsIncludeCandidate;
         private bool DefaultIsIncludeCandidate(PropertyInfo property)
         {
             return property.PropertyType.IsSubclassOfInterface(typeof(IIncludable))
