@@ -89,7 +89,7 @@ namespace RDD.Infra.Storage
         }
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            return entities.Where(query.Filters);
+            return entities.Where(query.Filter.Expression);
         }
         protected virtual IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
         {

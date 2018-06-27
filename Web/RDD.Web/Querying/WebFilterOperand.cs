@@ -6,7 +6,7 @@ namespace RDD.Web.Querying
     /// Opérateurs de comparaison d'expressions
     /// </summary>
     /// <see cref="https://msdn.microsoft.com/en-us/library/bb361179%28v=vs.110%29.aspx"/>
-    public enum FilterOperand
+    public enum WebFilterOperand
     {
         [Description("Filter on Equality. usage : users?name=equals,bob  or users?name=bob or users?name=bob,arnold")]
         Equals,

@@ -32,9 +32,9 @@ namespace RDD.Web.Helpers
         public IExecutionContext Execution { get; }
         public IEntitySerializer Serializer { get; }
 
-        public virtual WebQuery<TEntity, TKey> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
+        public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {
-            WebQuery<TEntity, TKey> query = _queryFactory.FromWebContext(_httpContextAccessor.HttpContext, isCollectionCall);
+            Query<TEntity> query = _queryFactory.FromWebContext(_httpContextAccessor.HttpContext, isCollectionCall);
             query.Verb = verb;
             return query;
         }
