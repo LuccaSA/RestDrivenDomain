@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Models.Querying
+namespace RDD.Web.Querying
 {
     public class Filter<TEntity>
     {
