@@ -10,10 +10,9 @@ using System.Linq;
 
 namespace RDD.Web.Querying
 {
-    public class WebFiltersParser<TEntity>
-        where TEntity : class, IEntityBase
+    public class WebFiltersParser
     {
-        private static readonly Dictionary<string, WebFilterOperand> _operands = new Dictionary<string, WebFilterOperand>
+        protected static readonly Dictionary<string, WebFilterOperand> Operands = new Dictionary<string, WebFilterOperand>
         {
             {"between", WebFilterOperand.Between},
             {"equals", WebFilterOperand.Equals},
@@ -27,7 +26,11 @@ namespace RDD.Web.Querying
             {"lessthan", WebFilterOperand.LessThan},
             {"lessthanorequal", WebFilterOperand.LessThanOrEqual}
         };
+    }
 
+    public class WebFiltersParser<TEntity> : WebFiltersParser
+        where TEntity : class, IEntityBase
+    {
         public List<WebFilter<TEntity>> Parse(Dictionary<string, string> input)
         {
             string[] reserved = Enum.GetNames(typeof(Reserved)).ToLower();
@@ -51,9 +54,9 @@ namespace RDD.Web.Querying
 
                 //si la premier attribut n'est pas un mot clé, on a un equals (mis par défaut plus haut) ex : id=20,30 ; sinon, on le reconnait dans le dico
                 //PS : dans le cas où data contient du JSON, alors .value peut être null
-                if (parts[0] != null && _operands.ContainsKey(parts[0]))
+                if (parts[0] != null && Operands.ContainsKey(parts[0]))
                 {
-                    operand = _operands[parts[0]];
+                    operand = Operands[parts[0]];
                     parts.RemoveAt(0); //On vire l'entrée qui correspondait en fait au mot clé
                 }
 
