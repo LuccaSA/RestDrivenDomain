@@ -13,9 +13,9 @@ namespace RDD.Web.Helpers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        private readonly ICollection<Filter<TEntity>> _filters;
+        private readonly IEnumerable<WebFilter<TEntity>> _filters;
 
-        public PredicateService(ICollection<Filter<TEntity>> filters)
+        public PredicateService(IEnumerable<WebFilter<TEntity>> filters)
         {
             _filters = filters;
         }
@@ -40,7 +40,7 @@ namespace RDD.Web.Helpers
             return feed.Expand();
         }
 
-        private Expression<Func<TObject, bool>> ToExpression<TObject>(Filter<TEntity> filter, object value)
+        private Expression<Func<TObject, bool>> ToExpression<TObject>(WebFilter<TEntity> filter, object value)
             where TObject : class
         {
             var filterProperty = filter.Property;
@@ -48,7 +48,7 @@ namespace RDD.Web.Helpers
 
             switch (filterOperand)
             {
-                case FilterOperand.Equals:
+                case WebFilterOperand.Equals:
 
                     var type = typeof(TObject);
                     var property = type
@@ -86,23 +86,23 @@ namespace RDD.Web.Helpers
             return feed.Expand();
         }
 
-        private Expression<Func<TEntity, bool>> ToEntityExpression(QueryBuilder<TEntity, TKey> queryBuilder, Filter<TEntity> filter, IList value)
+        private Expression<Func<TEntity, bool>> ToEntityExpression(QueryBuilder<TEntity, TKey> queryBuilder, WebFilter<TEntity> filter, IList value)
         {
             switch (filter.Operand)
             {
-                case FilterOperand.Equals: return queryBuilder.Equals(filter.Property, value);
-                case FilterOperand.NotEqual: return queryBuilder.NotEqual(filter.Property, value);
-                case FilterOperand.Starts: return queryBuilder.Starts(filter.Property, value);
-                case FilterOperand.Like: return queryBuilder.Like(filter.Property, value);
-                case FilterOperand.Between: return queryBuilder.Between(filter.Property, value);
-                case FilterOperand.Since: return queryBuilder.Since(filter.Property, value);
-                case FilterOperand.Until: return queryBuilder.Until(filter.Property, value);
-                case FilterOperand.Anniversary: return queryBuilder.Anniversary(filter.Property, value);
-                case FilterOperand.GreaterThan: return queryBuilder.GreaterThan(filter.Property, value);
-                case FilterOperand.GreaterThanOrEqual: return queryBuilder.GreaterThanOrEqual(filter.Property, value);
-                case FilterOperand.LessThan: return queryBuilder.LessThan(filter.Property, value);
-                case FilterOperand.LessThanOrEqual: return queryBuilder.LessThanOrEqual(filter.Property, value);
-                case FilterOperand.ContainsAll: return queryBuilder.ContainsAll(filter.Property, value);
+                case WebFilterOperand.Equals: return queryBuilder.Equals(filter.Property, value);
+                case WebFilterOperand.NotEqual: return queryBuilder.NotEqual(filter.Property, value);
+                case WebFilterOperand.Starts: return queryBuilder.Starts(filter.Property, value);
+                case WebFilterOperand.Like: return queryBuilder.Like(filter.Property, value);
+                case WebFilterOperand.Between: return queryBuilder.Between(filter.Property, value);
+                case WebFilterOperand.Since: return queryBuilder.Since(filter.Property, value);
+                case WebFilterOperand.Until: return queryBuilder.Until(filter.Property, value);
+                case WebFilterOperand.Anniversary: return queryBuilder.Anniversary(filter.Property, value);
+                case WebFilterOperand.GreaterThan: return queryBuilder.GreaterThan(filter.Property, value);
+                case WebFilterOperand.GreaterThanOrEqual: return queryBuilder.GreaterThanOrEqual(filter.Property, value);
+                case WebFilterOperand.LessThan: return queryBuilder.LessThan(filter.Property, value);
+                case WebFilterOperand.LessThanOrEqual: return queryBuilder.LessThanOrEqual(filter.Property, value);
+                case WebFilterOperand.ContainsAll: return queryBuilder.ContainsAll(filter.Property, value);
                 default:
                     throw new NotImplementedException($"Unhandled operand : {filter.Operand}");
             }

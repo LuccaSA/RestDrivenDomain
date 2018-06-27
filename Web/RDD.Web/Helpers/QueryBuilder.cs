@@ -145,7 +145,7 @@ namespace RDD.Web.Helpers
 
         public virtual Expression<Func<TEntity, bool>> Equals(PropertySelector<TEntity> field, IList values)
         {
-            return BuildBinaryExpression(FilterOperand.Equals, field, values);
+            return BuildBinaryExpression(WebFilterOperand.Equals, field, values);
         }
 
         public virtual Expression<Func<TEntity, bool>> Equals(TKey key)
@@ -155,7 +155,7 @@ namespace RDD.Web.Helpers
 
         public virtual Expression<Func<TEntity, bool>> NotEqual(PropertySelector<TEntity> field, IList values)
         {
-            return AndFactory<object>(value => BuildBinaryExpression(FilterOperand.NotEqual, field, value), values);
+            return AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.NotEqual, field, value), values);
         }
 
         public Expression<Func<TEntity, bool>> Until(PropertySelector<TEntity> field, IList values)
@@ -164,7 +164,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> Until(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.Until, field, value);
+            return BuildBinaryExpression(WebFilterOperand.Until, field, value);
         }
 
         public Expression<Func<TEntity, bool>> Since(PropertySelector<TEntity> field, IList values)
@@ -173,7 +173,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> Since(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.Since, field, value);
+            return BuildBinaryExpression(WebFilterOperand.Since, field, value);
         }
 
         public Expression<Func<TEntity, bool>> Anniversary(PropertySelector<TEntity> field, IList values)
@@ -182,7 +182,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> Anniversary(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.Anniversary, field, value);
+            return BuildBinaryExpression(WebFilterOperand.Anniversary, field, value);
         }
 
         public Expression<Func<TEntity, bool>> GreaterThan(PropertySelector<TEntity> field, IList values)
@@ -191,7 +191,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> GreaterThan(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.GreaterThan, field, value);
+            return BuildBinaryExpression(WebFilterOperand.GreaterThan, field, value);
         }
 
         public Expression<Func<TEntity, bool>> GreaterThanOrEqual(PropertySelector<TEntity> field, IList values)
@@ -200,7 +200,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> GreaterThanOrEqual(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.GreaterThanOrEqual, field, value);
+            return BuildBinaryExpression(WebFilterOperand.GreaterThanOrEqual, field, value);
         }
 
         public Expression<Func<TEntity, bool>> LessThan(PropertySelector<TEntity> field, IList values)
@@ -209,7 +209,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> LessThan(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.LessThan, field, value);
+            return BuildBinaryExpression(WebFilterOperand.LessThan, field, value);
         }
 
         public Expression<Func<TEntity, bool>> LessThanOrEqual(PropertySelector<TEntity> field, IList values)
@@ -218,7 +218,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> LessThanOrEqual(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.LessThanOrEqual, field, value);
+            return BuildBinaryExpression(WebFilterOperand.LessThanOrEqual, field, value);
         }
 
         public Expression<Func<TEntity, bool>> Between(PropertySelector<TEntity> field, IList values)
@@ -227,7 +227,7 @@ namespace RDD.Web.Helpers
         }
         protected virtual Expression<Func<TEntity, bool>> Between(PropertySelector<TEntity> field, object value)
         {
-            return BuildBinaryExpression(FilterOperand.Between, field, value);
+            return BuildBinaryExpression(WebFilterOperand.Between, field, value);
         }
 
         public Expression<Func<TEntity, bool>> Starts(PropertySelector<TEntity> field, IList values)
@@ -248,7 +248,7 @@ namespace RDD.Web.Helpers
 
         public Expression<Func<TEntity, bool>> ContainsAll(PropertySelector<TEntity> field, IList values)
         {
-            return AndFactory<object>(value => BuildBinaryExpression(FilterOperand.ContainsAll, field, value), values);
+            return AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.ContainsAll, field, value), values);
         }
 
         public Expression<Func<TEntity, bool>> Like(PropertySelector<TEntity> field, IList values)
@@ -268,7 +268,7 @@ namespace RDD.Web.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
         }
 
-        private Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, PropertySelector<TEntity> field, object value)
+        private Expression<Func<TEntity, bool>> BuildBinaryExpression(WebFilterOperand binaryOperator, PropertySelector<TEntity> field, object value)
         {
             var type = typeof(TEntity);
             var parameter = Expression.Parameter(type, "entity");
@@ -276,7 +276,7 @@ namespace RDD.Web.Helpers
             var expression = BuildBinaryExpressionRecursive(binaryOperator, parameter, field, value, out property);
 
             // Limitation à certains types
-            if (binaryOperator == FilterOperand.Until || binaryOperator == FilterOperand.Since)
+            if (binaryOperator == WebFilterOperand.Until || binaryOperator == WebFilterOperand.Since)
             {
                 var propertyReturnType = property.GetGetMethod().ReturnType;
                 if (propertyReturnType.IsGenericType)
@@ -292,7 +292,7 @@ namespace RDD.Web.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }
 
-        private Expression BuildBinaryExpressionRecursive(FilterOperand binaryOperator, ParameterExpression parameter, PropertySelector field, object value, out PropertyInfo property)
+        private Expression BuildBinaryExpressionRecursive(WebFilterOperand binaryOperator, ParameterExpression parameter, PropertySelector field, object value, out PropertyInfo property)
         {
             CollectionPropertySelector<TEntity> collectionAccessorField;
             PropertySelector subField;
@@ -314,7 +314,7 @@ namespace RDD.Web.Helpers
                 Expression expressionLeft = NestedPropertyAccessor(parameter.Type, parameter, field, out property);
 
                 // Hack pour le Between qui n'est pas binaire, mais plus performant de le faire ici plutot que 2 parcours récursifs, puis un AND sur les expressions
-                if (binaryOperator == FilterOperand.Between)
+                if (binaryOperator == WebFilterOperand.Between)
                 {
                     var period = (Period)value;
                     ConstantExpression expressionRightSince = (value == null) ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
@@ -325,7 +325,7 @@ namespace RDD.Web.Helpers
                 }
 
                 // Hack pour le Anniversary qui n'est pas binaire, mais plus simple de le faire ici plutot qu'ailleurs
-                if (binaryOperator == FilterOperand.Anniversary)
+                if (binaryOperator == WebFilterOperand.Anniversary)
                 {
                     var date = (DateTime)value;
                     ConstantExpression day = (value == null) ? Expression.Constant(null) : Expression.Constant(date.Day, typeof(int));
@@ -338,7 +338,7 @@ namespace RDD.Web.Helpers
                 ConstantExpression expressionRight;
                 switch (binaryOperator)
                 {
-                    case FilterOperand.Equals:
+                    case WebFilterOperand.Equals:
                         expressionRight = Expression.Constant(value);
                         break;
                     default:
@@ -349,13 +349,13 @@ namespace RDD.Web.Helpers
 
                 switch (binaryOperator)
                 {
-                    case FilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new Type[] { expressionLeft.Type }, expressionRight, expressionLeft);
-                    case FilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
-                    case FilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
-                    case FilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
+                    case WebFilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new Type[] { expressionLeft.Type }, expressionRight, expressionLeft);
+                    case WebFilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
+                    case WebFilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
+                    case WebFilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
 
-                    case FilterOperand.Since:
-                    case FilterOperand.GreaterThanOrEqual:
+                    case WebFilterOperand.Since:
+                    case WebFilterOperand.GreaterThanOrEqual:
                         if (value == null)
                         {
                             return Expression.Equal(expressionLeft, expressionRight);
@@ -363,8 +363,8 @@ namespace RDD.Web.Helpers
 
                         return Expression.GreaterThanOrEqual(expressionLeft, expressionRight);
 
-                    case FilterOperand.Until:
-                    case FilterOperand.LessThanOrEqual:
+                    case WebFilterOperand.Until:
+                    case WebFilterOperand.LessThanOrEqual:
                         if (value == null)
                         {
                             return Expression.Equal(expressionLeft, expressionRight);
@@ -372,7 +372,7 @@ namespace RDD.Web.Helpers
 
                         return Expression.LessThanOrEqual(expressionLeft, expressionRight);
 
-                    case FilterOperand.ContainsAll: return Expression.Equal(expressionLeft, expressionRight);
+                    case WebFilterOperand.ContainsAll: return Expression.Equal(expressionLeft, expressionRight);
 
                     default:
                         throw new NotImplementedException(string.Format("L'expression binaire n'est pas gérée pour l'opérateur fourni: '{0}'.", binaryOperator));
