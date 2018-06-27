@@ -29,10 +29,10 @@ namespace RDD.Domain.Helpers
 
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
-            return VisitLambda((LambdaExpression)node);
+            return VisitLambdaExpression((LambdaExpression)node);
         }
 
-        protected Expression VisitLambda(LambdaExpression node)
+        protected Expression VisitLambdaExpression(LambdaExpression node)
         {
             Expression visited = Expression.Empty();
 
@@ -71,11 +71,11 @@ namespace RDD.Domain.Helpers
             return null;
         }
 
-        protected Expression VisitMethodCall(MethodCallExpression node)
+        protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             var lambda = (LambdaExpression)node.Arguments[1];
 
-            var result = (LambdaExpression)VisitLambda(lambda);
+            var result = (LambdaExpression)VisitLambdaExpression(lambda);
 
             if (result != null)
             {
