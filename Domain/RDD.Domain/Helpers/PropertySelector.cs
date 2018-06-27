@@ -31,7 +31,7 @@ namespace RDD.Domain.Helpers
             var propertyType = EntityType.GetNeastedFuncType();
 
             //On regarde si le child n'existe pas déjà, auquel cas pas besoin de le recréer à chaque fois !
-            var matchingChild = Children.Where(c => c.IsEqual(lambda)).FirstOrDefault();
+            var matchingChild = Children.FirstOrDefault(c => c.IsEqual(lambda));
 
             if (matchingChild == null)
             {
@@ -169,7 +169,6 @@ namespace RDD.Domain.Helpers
 
         public bool ContainsEmpty(LambdaExpression expression)
         {
-            var selfContains = IsEqual(expression);
             var matchingChild = GetChild(expression);
 
             return matchingChild != null && matchingChild.IsEmpty;
@@ -177,7 +176,7 @@ namespace RDD.Domain.Helpers
 
         public PropertySelector GetChild(LambdaExpression expression)
         {
-            return Children.Where(c => c.IsEqual(expression)).FirstOrDefault();
+            return Children.FirstOrDefault(c => c.IsEqual(expression));
         }
 
         protected bool ChildrenContains(LambdaExpression expression)
@@ -238,7 +237,7 @@ namespace RDD.Domain.Helpers
 
         public PropertySelector this[Expression<Func<object, object>> key]
         {
-            get { return Children.Where(c => c.IsEqual(key)).FirstOrDefault(); }
+            get { return Children.FirstOrDefault(c => c.IsEqual(key)); }
         }
 
         /// <summary>
@@ -278,7 +277,7 @@ namespace RDD.Domain.Helpers
             propertyType = propertyType.GetEnumerableOrArrayElementType().GetEnumerableOrArrayElementType();
 
             //On regarde si le child n'existe pas déjà, auquel cas pas besoin de le recréer à chaque fois !
-            var matchingChild = Children.Where(c => c.IsEqual(lambda)).FirstOrDefault();
+            var matchingChild = Children.FirstOrDefault(c => c.IsEqual(lambda));
 
             if (matchingChild == null)
             {
@@ -564,33 +563,14 @@ namespace RDD.Domain.Helpers
         /// <returns></returns>
         public PropertySelector<TSub> TransfertTo<TSub>(LambdaExpression selector)
         {
-            var matchingChild = Children.Where(c => c.IsEqual(selector)).FirstOrDefault();
+            var matchingChild = Children.FirstOrDefault(c => c.IsEqual(selector));
 
             if (matchingChild == null)
             {
-                throw new Exception(String.Format("Child {0} not found on type {1}. Notice that you must use p. parameter in your selector !", selector.ToString(), typeof(TEntity).Name));
+                throw new ArgumentException($"Child {selector.ToString()} not found on type {typeof(TEntity).Name}. Notice that you must use p. parameter in your selector !", nameof(selector));
             }
 
             return (PropertySelector<TSub>)matchingChild;
-        }
-
-        /// <summary>
-        /// Transform Expression<Func<Tin,TOut>> expression to Expression<Func<Tin,object>> expression
-        /// </summary>
-        /// <typeparam name="Tin">type of func entry</typeparam>
-        /// <typeparam name="TOut">type of func out</typeparam>
-        /// <param name="expression">expression to transform</param>
-        /// <returns></returns>
-        private Expression<Func<TIn, object>> GetObjectExpression<TIn, TOut>(Expression<Func<TIn, TOut>> expression)
-        {
-            if (typeof(TOut).IsValueType)
-            {
-                return Expression.Lambda<Func<TIn, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters);
-            }
-            else
-            {
-                return Expression.Lambda<Func<TIn, object>>(expression.Body, expression.Parameters);
-            }
         }
 
         public PropertySelector<TBase> Cast<TBase>()

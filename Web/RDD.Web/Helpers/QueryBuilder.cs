@@ -74,23 +74,9 @@ namespace RDD.Web.Helpers
             {
                 return (direction == SortDirection.Descending) ? ((IOrderedQueryable<TEntity>)entities).ThenByDescending(mySortExpression)
                     : ((IOrderedQueryable<TEntity>)entities).ThenBy(mySortExpression);
-                // var collectionParameter = Expression.Parameter(collectionType, "subparam");
-                // var collectionEqualExpression = BuildEqualsRecursive(collectionParameter, subField, value);
-                // Expression anyExpression = Expression.Lambda(typeof(Func<,>).MakeGenericType(collectionType, typeof(bool)), collectionEqualExpression, collectionParameter);
-
-                // var accessCollectionExpression = new ExpressionHelper().NestedPropertyAccessor(parameter.Type, parameter, collectionAccessorField, out property);
-                // return ExpressionHelper.BuildAny(collectionType, accessCollectionExpression, anyExpression);
-                // }
-                // else
-                // {
-                // return Expression.Equal(new ExpressionHelper().NestedPropertyAccessor(parameter.Type, parameter, field, out property), Expression.Constant(value, property.PropertyType));
             }
         }
 
-        private bool IsQueryOnCollection(PropertySelector field, out CollectionPropertySelector<TEntity> collectionAccessorField, out PropertySelector subField, out Type collectionType)
-        {
-            return IsQueryOnCollection(typeof(TEntity), field, out collectionAccessorField, out subField, out collectionType);
-        }
         private bool IsQueryOnCollection(Type parentType, PropertySelector field, out CollectionPropertySelector<TEntity> collectionAccessorField, out PropertySelector subField, out Type collectionType)
         {
             PropertyInfo property = null;
