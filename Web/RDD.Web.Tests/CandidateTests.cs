@@ -10,7 +10,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void Candidate_should_exposeProperties()
         {
-            var candidate = new Candidate<User>(@"{ ""id"": 1, ""name"": ""User1"", ""salary"": 2000 }");
+            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 1, ""name"": ""User1"", ""salary"": 2000 }");
 
             Assert.True(candidate.HasProperty(u => u.Id));
             Assert.True(candidate.HasProperty(u => u.Name));
@@ -22,7 +22,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void Candidate_should_exposeNeastedProperties()
         {
-            var candidate = new Candidate<User>(@"{ ""id"": 1, ""name"": ""User1"", ""department"": { ""id"": 2 } }");
+            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 1, ""name"": ""User1"", ""department"": { ""id"": 2 } }");
 
             Assert.True(candidate.HasProperty(u => u.Id));
             Assert.True(candidate.HasProperty(u => u.Name));
@@ -36,7 +36,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void Candidate_should_exposeMultipleNeastedProperties()
         {
-            var candidate = new Candidate<User>(@"{ ""id"": 1, ""department"": { ""id"": 2, ""name"": ""Dep2"" } }");
+            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 1, ""department"": { ""id"": 2, ""name"": ""Dep2"" } }");
 
             Assert.True(candidate.HasProperty(u => u.Id));
             Assert.True(candidate.HasProperty(u => u.Department));
@@ -49,7 +49,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void Candidate_should_exposeArrayProperties()
         {
-            var candidate = new Candidate<Department>(@"{ ""id"": 1, ""users"": [ { ""id"": 2 }, { ""id"": 3 } ] }");
+            var candidate = Candidate<Department, int>.Parse(@"{ ""id"": 1, ""users"": [ { ""id"": 2 }, { ""id"": 3 } ] }");
 
             Assert.True(candidate.HasProperty(d => d.Id));
             Assert.True(candidate.HasProperty(d => d.Users));

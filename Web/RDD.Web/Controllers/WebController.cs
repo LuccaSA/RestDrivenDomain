@@ -74,9 +74,9 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedPostAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
-            PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
+            ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
-            TEntity entity = await AppController.CreateAsync(datas, query);
+            TEntity entity = await AppController.CreateAsync(candidate, query);
 
             var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
 
@@ -86,9 +86,9 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
-            PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
+            ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
-            TEntity entity = await AppController.UpdateByIdAsync(id, datas, query);
+            TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
 
             var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
 
@@ -98,27 +98,17 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
-            List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
+            IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
             //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
-            if (datas.Any(d => !d.ContainsKey("id")))
+            if (candidates.Any(c => !c.HasId()))
             {
                 throw new BadRequestException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
-            Dictionary<TKey, PostedData> datasByIds;
+            var candidatesByIds = candidates.ToDictionary(c => c.Id);
 
-            //Il faut que les id soient convertibles en TKey
-            try
-            {
-                datasByIds = datas.ToDictionary(el => (TKey) TypeExtensions.Convert<TKey>(el["id"].Value), el => el);
-            }
-            catch
-            {
-                throw new BadRequestException(string.Format("PUT on collection implies that each id be of type : {0}", typeof(TKey).Name));
-            }
-
-            IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
+            IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
 
             var dataContainer = new Metadata(Helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, Helper.Execution);
 
@@ -135,25 +125,15 @@ namespace RDD.Web.Controllers
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
+            IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
-            List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
-
-            if (datas.Any(d => !d.ContainsKey("id")))
+            //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
+            if (candidates.Any(c => !c.HasId()))
             {
                 throw new BadRequestException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
             }
 
-            IList<TKey> ids;
-
-            //Il faut que les id soient convertibles en TKey
-            try
-            {
-                ids = datas.Select(el => (TKey) TypeExtensions.Convert<TKey>(el["id"].Value)).ToList();
-            }
-            catch
-            {
-                throw new BadRequestException(string.Format("DELETE on collection implies that each id be of type : {0}", typeof(TKey).Name));
-            }
+            var ids = candidates.Select(c => c.Id).ToList();
 
             await AppController.DeleteByIdsAsync(ids);
 

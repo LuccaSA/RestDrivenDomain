@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RDD.Domain;
+using RDD.Domain.Patchers;
 using RDD.Infra;
 using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
@@ -45,6 +46,7 @@ namespace RDD.Web.Tests.ServerMock
             services.AddSingleton<ICombinationsHolder, CombinationsHolder>();
             services.AddSingleton<IUrlProvider, UrlProvider>();
             services.AddScoped<IStorageService, EFStorageService>();
+            services.AddScoped<IPatcherProvider, PatcherProvider>();
 
             services.AddScoped<ExchangeRateController>();
 
