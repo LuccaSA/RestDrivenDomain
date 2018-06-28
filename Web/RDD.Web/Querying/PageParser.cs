@@ -8,7 +8,7 @@ using System.Net;
 namespace RDD.Web.Querying
 {
     public class PageParser<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public Page Parse(Dictionary<string, string> parameters)
         {

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 namespace RDD.Domain.Models.Querying.Convertors
 {
     internal class FiltersConvertor<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         private readonly PredicateService<TEntity> _predicateService;
 

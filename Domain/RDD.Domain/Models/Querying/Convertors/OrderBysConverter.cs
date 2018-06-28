@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace RDD.Domain.Models.Querying.Convertors
 {
     public class OrderBysConverter<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public IQueryable<TEntity> Convert(IQueryable<TEntity> entities, Queue<OrderBy<TEntity>> orderBys)
         {

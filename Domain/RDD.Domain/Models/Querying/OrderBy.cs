@@ -8,7 +8,7 @@ namespace RDD.Domain.Models.Querying
     public enum SortDirection { Ascending, Descending };
 
     public class OrderBy<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public PropertySelector Property { get; }
         public SortDirection Direction { get; }

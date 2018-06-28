@@ -3,7 +3,7 @@
 namespace RDD.Domain
 {
     public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);

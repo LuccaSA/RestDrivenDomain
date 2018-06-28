@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace RDD.Infra.Storage
 {
     public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public Repository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)
             : base(storageService, executionContext, combinationsHolder) { }

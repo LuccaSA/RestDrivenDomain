@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 namespace RDD.Web.Querying
 {
     public class QueryFactory<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         protected HashSet<string> IgnoredFilters { get; set; }
 

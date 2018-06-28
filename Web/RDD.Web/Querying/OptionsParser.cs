@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace RDD.Web.Querying
 {
     public class OptionsParser<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public Options Parse(Dictionary<string, string> parameters, Field fields, Field collectionFields)
         {

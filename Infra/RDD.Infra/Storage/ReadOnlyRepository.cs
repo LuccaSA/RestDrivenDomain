@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace RDD.Infra.Storage
 {
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         protected IStorageService StorageService { get; }
         protected IExecutionContext ExecutionContext { get; }

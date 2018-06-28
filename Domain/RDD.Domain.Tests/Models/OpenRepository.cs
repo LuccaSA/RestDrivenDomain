@@ -6,7 +6,7 @@ using System.Linq;
 namespace RDD.Domain.Tests.Models
 {
     public class OpenRepository<TEntity> : Repository<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public OpenRepository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)
         : base(storageService, executionContext, combinationsHolder) { }
