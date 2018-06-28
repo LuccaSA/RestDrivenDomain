@@ -31,7 +31,9 @@ namespace RDD.Web.Querying
     public class WebFiltersParser<TEntity> : WebFiltersParser
         where TEntity : class, IEntityBase
     {
-        public List<WebFilter<TEntity>> Parse(Dictionary<string, string> input)
+        protected WebFiltersParser() { }
+
+        public static List<WebFilter<TEntity>> Parse(Dictionary<string, string> input)
         {
             string[] reserved = Enum.GetNames(typeof(Reserved)).ToLower();
 

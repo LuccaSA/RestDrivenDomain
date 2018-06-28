@@ -33,7 +33,7 @@ namespace RDD.Web.Querying
 
             var fields = new FieldsParser().ParseFields<TEntity>(parameters, isCollectionCall);
             var collectionFields = new CollectionFieldsParser().ParseFields<ISelection<TEntity>>(parameters, isCollectionCall);
-            var filters = new WebFiltersParser<TEntity>().Parse(parameters);
+            var filters = WebFiltersParser<TEntity>.Parse(parameters);
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             var options = new OptionsParser<TEntity>().Parse(parameters, fields, collectionFields);
             var page = new PageParser<TEntity>().Parse(parameters);
