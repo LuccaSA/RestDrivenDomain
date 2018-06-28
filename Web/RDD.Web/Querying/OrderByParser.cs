@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace RDD.Web.Querying
 {
     public class OrderByParser<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public Queue<OrderBy<TEntity>> Parse(Dictionary<string, string> parameters)
         {

@@ -13,7 +13,7 @@ using RDD.Domain.Models.Querying;
 namespace RDD.Domain.Helpers
 {
     internal class PredicateService<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         internal Expression<Func<TEntity, bool>> BuildBinaryExpression(FilterOperand binaryOperator, string field, object value)
         {

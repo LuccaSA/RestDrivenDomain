@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 namespace RDD.Domain.Models.Querying
 {
     public class Query<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }

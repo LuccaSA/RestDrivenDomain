@@ -9,7 +9,7 @@ namespace RDD.Web
     public interface IEntitySerializer
     {
         Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
-            where TEntity : class, IEntityBase;
+            where TEntity : class;
         List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field fields);
         Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field fields);
 

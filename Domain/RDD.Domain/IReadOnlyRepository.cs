@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace RDD.Domain
 {
     public interface IReadOnlyRepository<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         Task<int> CountAsync(Query<TEntity> query);
         Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query);

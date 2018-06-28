@@ -11,7 +11,7 @@ using System.Linq;
 namespace RDD.Web.Querying
 {
     public class FiltersParser<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         private static readonly Dictionary<string, FilterOperand> _operands = new Dictionary<string, FilterOperand>
         {

@@ -32,7 +32,7 @@ namespace RDD.Infra.Storage
         }
 
         public IQueryable<TEntity> Set<TEntity>()
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             CreateIfNotExist<TEntity>();
 
@@ -51,13 +51,13 @@ namespace RDD.Infra.Storage
         }
 
         public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
         }
 
         public void Add<TEntity>(TEntity entity)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             CreateIfNotExist<TEntity>();
 
@@ -65,14 +65,14 @@ namespace RDD.Infra.Storage
         }
 
         public void Remove<TEntity>(TEntity entity)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             CreateIfNotExist<TEntity>();
             Cache[typeof(TEntity)].Remove(entity);
         }
 
         public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             foreach (var entity in entities)
             {
@@ -81,7 +81,7 @@ namespace RDD.Infra.Storage
         }
 
         public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             foreach (var entity in entities)
             {

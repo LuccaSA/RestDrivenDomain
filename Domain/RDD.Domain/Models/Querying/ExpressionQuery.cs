@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace RDD.Domain.Models.Querying
 {
     public class ExpressionQuery<TEntity> : Query<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public Expression<Func<TEntity, bool>> ExpressionFilters { get; set; }
 

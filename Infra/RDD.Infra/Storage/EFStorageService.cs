@@ -21,31 +21,31 @@ namespace RDD.Infra.Storage
         }
 
         public virtual IQueryable<TEntity> Set<TEntity>()
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             return DbContext.Set<TEntity>();
         }
 
         public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             return await entities.ToListAsync();
         }
 
         public virtual void Add<TEntity>(TEntity entity)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             DbContext.Set<TEntity>().Add(entity);
         }
 
         public virtual void AddRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             DbContext.Set<TEntity>().AddRange(entities);
         }
 
         public virtual void Remove<TEntity>(TEntity entity)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             DbContext.Set<TEntity>().Remove(entity);
         }

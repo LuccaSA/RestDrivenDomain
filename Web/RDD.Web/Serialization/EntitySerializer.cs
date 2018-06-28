@@ -38,7 +38,7 @@ namespace RDD.Web.Serialization
         }
 
         public Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
-            where TEntity : class, IEntityBase
+            where TEntity : class
         {
             var result = new Dictionary<string, object>();
 

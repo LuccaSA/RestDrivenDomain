@@ -9,7 +9,7 @@ using System.Reflection;
 namespace RDD.Domain.Models
 {
     public class Selection<TEntity> : ISelection<TEntity>
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         public IEnumerable<TEntity> Items { get; }
         public int Count { get; }
