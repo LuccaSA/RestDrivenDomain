@@ -5,6 +5,7 @@ using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace RDD.Web.Querying
 {
@@ -22,9 +23,9 @@ namespace RDD.Web.Querying
                 .GetEntityPredicate(new QueryBuilder<TEntity, TKey>());
         }
 
-        public override bool HasFilter(PropertySelector<TEntity> property)
+        public override bool HasFilter(Expression<Func<TEntity, object>> property)
         {
-            return _filters.Any(f => f.Property == property);
+            return _filters.Any(f => f.Property.Contains(property));
         }
     }
 }

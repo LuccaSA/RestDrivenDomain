@@ -258,7 +258,7 @@ namespace RDD.Web.Helpers
         protected virtual Expression<Func<TEntity, bool>> Like(PropertySelector<TEntity> field, object value)
         {
             var parameter = Expression.Parameter(typeof(TEntity), "entity");
-            var expression = NestedPropertyAccessor(parameter, field);
+            var expression = NestedPropertyAccessor(parameter, field.Children.FirstOrDefault());
             var comparisonMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
             var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
             var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
@@ -380,45 +380,43 @@ namespace RDD.Web.Helpers
             }
         }
 
-        private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector<TEntity> field)
+        private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector field)
         {
             PropertyInfo unusedFinalProperty;
             return NestedPropertyAccessor(seed, field, out unusedFinalProperty);
         }
-        private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector<TEntity> field, out PropertyInfo property)
+        private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector field, out PropertyInfo property)
         {
             var type = typeof(TEntity); //Ici on triche un peu en utilisant cette variable, car on est censé passer au moins 1 fois dans le foreach pour setter finalPropertyType proprement
             return NestedPropertyAccessor(type, seed, field, out property);
         }
         protected virtual Expression NestedPropertyAccessor(Type type, ParameterExpression seed, PropertySelector field, out PropertyInfo property)
         {
-            return NestedPropertyAccessor(type, seed, field.Children, out property);
-        }
-        protected Expression NestedPropertyAccessor(Type type, ParameterExpression seed, ISet<PropertySelector> fields, out PropertyInfo property)
-        {
             property = null;
             Expression body = seed;
 
-            foreach (var field in fields)
+            while (field.HasChild)
             {
+                var child = field.Children.FirstOrDefault();
                 // Include internal properties through BindingFlags
                 property = type
                     .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .FirstOrDefault(p => p.Name.ToLower() == field.Name.ToLower());
+                    .FirstOrDefault(p => p.Name.ToLower() == child.Name.ToLower());
 
                 if (property == null)
                 {
-                    throw new QueryBuilderException($"Unknown property {field.Name} on type {type.Name}");
+                    throw new QueryBuilderException($"Unknown property {child.Name} on type {type.Name}");
                 }
 
                 if (!property.CanRead)
                 {
-                    throw new QueryBuilderException($"Property {field.Name} of type {type.Name} is set only");
+                    throw new QueryBuilderException($"Property {child.Name} of type {type.Name} is set only");
                 }
 
-                body = Expression.PropertyOrField(body, field.Name);
+                body = Expression.PropertyOrField(body, child.Name);
 
                 type = property.PropertyType;
+                field = child;
             }
 
             return body;

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace RDD.Web.Helpers
 {
-    internal class PredicateService<TEntity, TKey>
+    public class PredicateService<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
