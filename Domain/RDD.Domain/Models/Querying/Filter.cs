@@ -21,7 +21,7 @@ namespace RDD.Domain.Models.Querying
             return new Filter<TEntity>(expression);
         }
 
-        public virtual bool HasFilter(PropertySelector<TEntity> property)
+        public virtual bool HasFilter(Expression<Func<TEntity, object>> property)
         {
             return false;
         }
