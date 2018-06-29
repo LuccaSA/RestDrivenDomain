@@ -21,7 +21,7 @@ namespace RDD.Web.Tests.Models
             var query = new Query<IUser>();
             query.Options.CheckRights = false; //Don't care about rights check
 
-            return (await AppController.GetAsync(query)).Items;
+            return await AppController.GetAsync(query);
         }
     }
 }

@@ -29,12 +29,13 @@ namespace RDD.Domain.Models
             query.Options.NeedEnumeration = false;
             query.Options.NeedCount = true;
 
-            return (await GetAsync(query)).Count > 0;
+            await GetAsync(query);
+            return query.TotalCount > 0;
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>())).Items;
+        public Task<IEnumerable<TEntity>> GetAllAsync() => GetAsync(new Query<TEntity>());
 
-        public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
             var count = 0;
             IEnumerable<TEntity> items = new HashSet<TEntity>();
@@ -81,7 +82,9 @@ namespace RDD.Domain.Models
                 throw new NotFoundException(string.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, query.Verb));
             }
 
-            return new Selection<TEntity>(items, count);
+            query.TotalCount = count;
+
+            return items;
         }
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace RDD.Domain.Models
         {
             query.Filters.Add(new Filter<TEntity>(new PropertySelector<TEntity>(e => e.Id), FilterOperand.Equals, (IList) ids));
 
-            return (await GetAsync(query)).Items;
+            return await GetAsync(query);
         }
 
         protected void AttachOperationsToEntity(TEntity entity)

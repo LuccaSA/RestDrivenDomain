@@ -54,5 +54,7 @@ namespace RDD.Domain.Models.Querying
 
         public Field Fields { get; set; }
         public Field CollectionFields { get; set; }
+
+        public int TotalCount { get; set; }
     }
 }

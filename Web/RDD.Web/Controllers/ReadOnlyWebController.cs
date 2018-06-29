@@ -59,12 +59,12 @@ namespace RDD.Web.Controllers
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
-            ISelection<TEntity> selection = await AppController.GetAsync(query);
+            IEnumerable<TEntity> result = await AppController.GetAsync(query);
 
             // todo : injecter le Count de ISelection dans le Query ?
             HttpContext.SetContextualQuery(query);
             
-            return Ok(selection.Items);
+            return Ok(result);
         }
 
         // Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
