@@ -12,8 +12,7 @@ namespace RDD.Domain.WebServices
 
         public async Task<IEnumerable<WebService>> GetByTokenAsync(string token)
         {
-            return (await GetAsync(new ExpressionQuery<WebService>(ws => ws.Token == token)))
-                .Items;
+            return await GetAsync(new ExpressionQuery<WebService>(ws => ws.Token == token));
         }
     }
 }

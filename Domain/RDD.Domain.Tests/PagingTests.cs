@@ -44,12 +44,12 @@ namespace RDD.Domain.Tests
             await _storage.SaveChangesAsync();
 
             var query = new Query<User>();
-            ISelection<User> result = await _collection.GetAsync(query);
+            IEnumerable<User> result = await _collection.GetAsync(query);
 
             Assert.Equal(0, query.Page.Offset);
             Assert.Equal(10, query.Page.Limit);
-            Assert.Equal(10, result.Items.Count());
-            Assert.Equal(20, result.Count);
+            Assert.Equal(10, result.Count());
+            Assert.Equal(20, query.TotalCount);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace RDD.Domain.Tests
                 await _storage.SaveChangesAsync();
 
                 var query = new Query<User> { Page = new Page(0, 1001) };
-                ISelection<User> result = await _collection.GetAsync(query);
+                await _collection.GetAsync(query);
             });
         }
     }

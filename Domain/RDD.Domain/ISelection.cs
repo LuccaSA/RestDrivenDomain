@@ -1,4 +1,5 @@
-﻿using RDD.Domain.Helpers;
+﻿using System.Collections;
+using RDD.Domain.Helpers;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -16,5 +17,6 @@ namespace RDD.Domain
         object Sum(PropertyInfo property, DecimalRounding rouding);
         object Min(PropertyInfo property, DecimalRounding rouding);
         object Max(PropertyInfo property, DecimalRounding rouding);
+        IEnumerable EnumerabledItems { get; }
     }
 }

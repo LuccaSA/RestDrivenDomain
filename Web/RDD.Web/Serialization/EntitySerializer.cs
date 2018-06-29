@@ -6,6 +6,7 @@ using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Querying;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,8 +38,7 @@ namespace RDD.Web.Serialization
             return key != null ? _mappings[key] : _defaultSerializer;
         }
 
-        public Dictionary<string, object> SerializeSelection<TEntity>(ISelection<TEntity> collection, Query<TEntity> query)
-            where TEntity : class, IEntityBase
+        public Dictionary<string, object> SerializeSelection(ISelection collection, Query query)
         {
             var result = new Dictionary<string, object>();
 
@@ -98,7 +98,7 @@ namespace RDD.Web.Serialization
                 }
             }
 
-            result.Add("items", SerializeEntities(collection.Items, query.Fields));
+            result.Add("items", SerializeEntities(collection.EnumerabledItems, query.Fields));
 
             return result;
         }
@@ -107,17 +107,20 @@ namespace RDD.Web.Serialization
         {
             return fields == null ? new Dictionary<string, object>() : SerializeEntity(entity, fields.EntitySelector);
         }
+
         public virtual Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, PropertySelector fields)
         {
             return SerializeEntities(new List<TEntity> { entity }, fields).FirstOrDefault();
         }
-        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field fields)
+
+        public List<Dictionary<string, object>> SerializeEntities(IEnumerable entities, Field fields)
         {
             return fields == null ? new List<Dictionary<string, object>>() : SerializeEntities(entities, fields.EntitySelector);
         }
-        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, PropertySelector fields)
+
+        public List<Dictionary<string, object>> SerializeEntities(IEnumerable entities, PropertySelector fields)
         {
-            if (fields != null && entities.Any())
+            if (fields != null)
             {
                 var result = new List<Dictionary<string, object>>();
                 foreach (var entity in entities)

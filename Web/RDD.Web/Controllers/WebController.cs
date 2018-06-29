@@ -19,7 +19,7 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
             : base(appController, helper)
         {
         }
@@ -35,31 +35,31 @@ namespace RDD.Web.Controllers
         {
         }
 
-        public Task<IActionResult> PostAsync()
+        public Task<ActionResult<TEntity>> PostAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
             {
                 return ProtectedPostAsync();
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((ActionResult<TEntity>)NotFound());
         }
 
-        public Task<IActionResult> PutByIdAsync(TKey id)
+        public Task<ActionResult<TEntity>> PutByIdAsync(TKey id)
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((ActionResult<TEntity>)NotFound());
         }
 
-        public Task<IActionResult> PutAsync()
+        public Task<ActionResult<IEnumerable<TEntity>>> PutAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync();
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((ActionResult<IEnumerable<TEntity>>)NotFound());
         }
 
         public Task<IActionResult> DeleteByIdAsync(TKey id)
@@ -71,31 +71,29 @@ namespace RDD.Web.Controllers
             return Task.FromResult((IActionResult)NotFound());
         }
 
-        protected virtual async Task<IActionResult> ProtectedPostAsync()
+        protected virtual async Task<ActionResult<TEntity>> ProtectedPostAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.CreateAsync(datas, query);
+            HttpContext.SetContextualQuery(query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(entity);
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
+        protected virtual async Task<ActionResult<TEntity>> ProtectedPutAsync(TKey id)
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, datas, query);
+            HttpContext.SetContextualQuery(query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(entity);
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync()
+        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedPutAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
@@ -111,7 +109,7 @@ namespace RDD.Web.Controllers
             //Il faut que les id soient convertibles en TKey
             try
             {
-                datasByIds = datas.ToDictionary(el => (TKey) TypeExtensions.Convert<TKey>(el["id"].Value), el => el);
+                datasByIds = datas.ToDictionary(el => (TKey)TypeExtensions.Convert<TKey>(el["id"].Value), el => el);
             }
             catch
             {
@@ -119,10 +117,9 @@ namespace RDD.Web.Controllers
             }
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
+            HttpContext.SetContextualQuery(query); 
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(entities);
         }
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
@@ -132,7 +129,7 @@ namespace RDD.Web.Controllers
             return Ok();
         }
 
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync()
+        protected virtual async Task<ActionResult> ProtectedDeleteAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
 
@@ -148,7 +145,7 @@ namespace RDD.Web.Controllers
             //Il faut que les id soient convertibles en TKey
             try
             {
-                ids = datas.Select(el => (TKey) TypeExtensions.Convert<TKey>(el["id"].Value)).ToList();
+                ids = datas.Select(el => (TKey)TypeExtensions.Convert<TKey>(el["id"].Value)).ToList();
             }
             catch
             {
@@ -156,7 +153,7 @@ namespace RDD.Web.Controllers
             }
 
             await AppController.DeleteByIdsAsync(ids);
-
+            HttpContext.SetContextualQuery(query);
             return Ok();
         }
     }

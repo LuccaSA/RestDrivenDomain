@@ -5,6 +5,7 @@ using RDD.Domain.Helpers;
 using RDD.Web.Helpers;
 using RDD.Web.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using RDD.Domain.Models.Querying;
 
@@ -36,46 +37,47 @@ namespace RDD.Web.Controllers
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
-        public Task<IActionResult> GetAsync()
+        public async Task<ActionResult<IEnumerable<TEntity>>> GetAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
-                return ProtectedGetAsync();
+                return await ProtectedGetAsync();
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return NotFound();
         }
 
-        public Task<IActionResult> GetByIdAsync(TKey id)
+        public async Task<ActionResult<TEntity>> GetByIdAsync(TKey id)
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
-                return ProtectedGetAsync(id);
+                return await ProtectedGetAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return NotFound();
         }
         
-        protected virtual async Task<IActionResult> ProtectedGetAsync()
+        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedGetAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
-            ISelection<TEntity> selection = await AppController.GetAsync(query);
+            IEnumerable<TEntity> result = await AppController.GetAsync(query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeSelection(selection, query), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            // todo : injecter le Count de ISelection dans le Query ?
+            HttpContext.SetContextualQuery(query);
+            
+            return Ok(result);
         }
 
         // Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
         // car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
-        protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
+        protected virtual async Task<ActionResult<TEntity>> ProtectedGetAsync(TKey id)
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
+            HttpContext.SetContextualQuery(query);
 
-            return Ok(dataContainer.ToDictionary());
+            return entity;
         }
     }
 }

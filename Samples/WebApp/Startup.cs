@@ -8,8 +8,20 @@ using Microsoft.Extensions.DependencyInjection;
 using RDD.Web.Helpers;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Buffers;
+using System.Collections;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using RDD.Domain;
+using RDD.Domain.Models.Querying;
+using RDD.Web;
+using RDD.Web.Models;
+using RDD.Web.Serialization;
 
 namespace WebApp
 {
@@ -25,7 +37,11 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(conf =>
+                {
+                    conf.OutputFormatters.Add(new MetadataOutputFormatter());
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddRdd();
 
@@ -78,7 +94,7 @@ namespace WebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            
+
             app.UseSwagger();
 
             // Serve swagger-ui from aspnet core intead of angular
@@ -107,4 +123,6 @@ namespace WebApp
             });
         }
     }
+
+
 }

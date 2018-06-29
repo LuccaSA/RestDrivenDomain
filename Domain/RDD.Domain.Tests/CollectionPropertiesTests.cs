@@ -38,9 +38,10 @@ namespace RDD.Domain.Tests
 
                 var fields = "id,name,collection.sum(id)";
 
-                var result = await users.GetAsync(new Query<User> { Fields = new FieldsParser().ParseFields<User>(fields) });
+                var query = new Query<User> { Fields = new FieldsParser().ParseFields<User>(fields) };
+                var result = await users.GetAsync(query);
 
-                Assert.Equal(0, result.Count);
+                Assert.Equal(0, query.TotalCount);
             }
         }
 
@@ -50,10 +51,10 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(10);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
+            var query = new Query<User>();
+            var result = await _collection.GetAsync(query);
 
-            var result = await _collection.GetAsync(new Query<User>());
-
-            Assert.Equal(10, result.Count);
+            Assert.Equal(10, query.TotalCount);
         }
 
         [Fact]
@@ -62,10 +63,10 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(100);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
+            var query = new Query<User>();
+            var result = await _collection.GetAsync(query);
 
-            var result = await _collection.GetAsync(new Query<User>());
-
-            Assert.Equal(100, result.Count);
+            Assert.Equal(100, query.TotalCount);
         }
 
         [Fact]
@@ -74,11 +75,11 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(10000);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
+            var query = new Query<User>();
+            var result = await _collection.GetAsync(query);
 
-            var result = await _collection.GetAsync(new Query<User>());
-
-            Assert.Equal(10, result.Items.Count());
-            Assert.Equal(10000, result.Count);
+            Assert.Equal(10, result.Count());
+            Assert.Equal(10000, query.TotalCount);
         }
     }
 }
