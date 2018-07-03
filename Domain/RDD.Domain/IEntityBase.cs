@@ -3,7 +3,6 @@
     public interface IEntityBase : IPrimaryKey, IIncludable
     {
         string Name { get; }
-        string Url { get; }
     }
 
     public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey> { }
