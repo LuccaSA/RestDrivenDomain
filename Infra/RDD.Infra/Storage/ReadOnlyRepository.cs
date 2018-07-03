@@ -45,7 +45,7 @@ namespace RDD.Infra.Storage
         public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
             var entities = Set(query);
-
+             
             if (query.Options.CheckRights)
             {
                 entities = ApplyRights(entities, query);
