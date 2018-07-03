@@ -19,7 +19,7 @@ namespace RDD.Web.Serialization
         {
             Expression<Func<Culture, CultureInfo>> exp = c => c.RawCulture;
 
-            fields = fields.Where(f => f.Contains(exp));
+            fields = fields.Where(f => !f.Contains(exp));
 
             return base.SerializeProperties(entity, fields);
         }

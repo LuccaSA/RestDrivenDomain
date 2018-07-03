@@ -29,7 +29,19 @@ namespace RDD.Web.Serialization
 
             foreach (var field in fields)
             {
-                result.Add(field.GetCurrentProperty().Name, SerializeProperty(entity, field));
+                var propertyName = field.GetCurrentProperty().Name;
+                var serialized = SerializeProperty(entity, field);
+
+                //Field déjà dans result, il faut aggréger
+                if (result.ContainsKey(propertyName))
+                {
+                    var subsequentProperty = ((Dictionary<string, object>)serialized).FirstOrDefault();
+                    ((Dictionary<string, object>)result[propertyName]).Add(subsequentProperty.Key, subsequentProperty.Value);
+
+                    break;
+                }
+
+                result.Add(propertyName, serialized);
             }
 
             return result;

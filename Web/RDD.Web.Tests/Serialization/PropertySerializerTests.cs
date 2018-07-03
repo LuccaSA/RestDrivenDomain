@@ -93,5 +93,40 @@ namespace RDD.Web.Tests.Serialization
 
             Assert.True(myValueObject.ContainsKey("Id"));
         }
+
+        [Fact]
+        public void MultiplePropertiesOnSubTypeShouldSerialize()
+        {
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var urlProvider = new UrlProvider(httpContextAccessor);
+            var serializer = new EntitySerializer(urlProvider);
+
+            var user = new User
+            {
+                Department = new Department
+                {
+                    Id = 1,
+                    Name = "Department"
+                }
+            };
+
+            var result = serializer.SerializeEntity(user, new HashSet<PropertySelector> {
+                new PropertySelector<User>(u => u.Department.Id),
+                new PropertySelector<User>(u => u.Department.Name)
+            });
+
+            Assert.True(result.ContainsKey("Department"));
+
+            var department = (Dictionary<string, object>)result["Department"];
+
+            Assert.True(department.ContainsKey("Id"));
+            Assert.True(department.ContainsKey("Name"));
+
+            Assert.Equal(1, department["Id"]);
+            Assert.Equal("Department", department["Name"]);
+        }
     }
 }
