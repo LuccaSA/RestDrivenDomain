@@ -12,7 +12,7 @@ namespace RDD.Domain.Tests.Models
     }
 
     public class EnumClient<TEnum> : EnumClient
-        where TEnum : struct
+        where TEnum : System.Enum
     {
         public EnumClient()
         { }

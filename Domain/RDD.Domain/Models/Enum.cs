@@ -6,7 +6,7 @@ using System.Linq;
 namespace RDD.Domain.Models
 {
     public class Enum<TEnum>
-        where TEnum : struct
+        where TEnum : System.Enum
     {
         public Enum(TEnum value)
         {
