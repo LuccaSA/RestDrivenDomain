@@ -1,69 +1,47 @@
-RDD does not depend on any Dependency Injection framework, but we often use it with SimpleInjector. Below are the bootstrapping code for your application using SimpleInjector.
+# Rest Driven Domain
 
-Use the base [bootstrapping](http://simpleinjector.readthedocs.io/en/latest/using.html) from SimpleInjector
+RDD is a structural framework, for easy and fast REST implementation, with an integrated query language, projected on EF Core queries.  It's main goal is to provide a base implementation letting benefit native paging, querying and CRUD operations.
 
-    public class Startup
-    {
-		private Container _container = new Container();
-    	
-    	public void ConfigureServices(IServiceCollection services)
-		{
-			...
-		}
-	}
+### Bootstraping RDD : 
 
-Use the AsyncScopedLifestyle injection, as RDD is fully async
+``` charp
+public void ConfigureServices(IServiceCollection services)
+{
+    // register your dbcontext
+    services.AddScoped<DbContext, MyDbContext>();
 
-    _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-Add required .NET Core dependencies as below
+    // register RDD internal dependencies
+    services.AddRdd();
+ 
+    services.AddMvc();
+}
+```
 
-    services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-    services.AddSingleton<IControllerActivator>(
-		new SimpleInjectorControllerActivator(_container));
-	services.EnableSimpleInjectorCrossWiring(_container);
-    services.UseSimpleInjectorAspNetRequestScoping(_container);
-	services.AddMvc()
-		.AddJsonOptions(options =>
-		{
-			options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
-		});
-Add recommanded RDD dependencies
+RDD depends on standard Microsoft.Extensions.DependencyInjection, it's up to you to use any other DI framework (SimpleInjector/Autofac etc).
 
-    _container.Register<IWebContextWrapper, HttpContextWrapper>(Lifestyle.Scoped);
-    
-    _container.Register<IWebContext>(() => _container.GetInstance<IWebContextWrapper>(), Lifestyle.Scoped);
-    
-    _container.Register<IExecutionContext, HttpExecutionContext>(Lifestyle.Scoped);
-    
-    _container.Register<ICombinationsHolder>(() => {yourCombinationsHoledHere}, Lifestyle.Singleton);
+### Needed registerings : 
 
-For storage, we mainly use Entity Framework. Here is how to handle dependencies upon EF in RDD
+The needed registerings are : 
 
-    _container.Register<IWebServicesCollection, WebServicesCollection>(Lifestyle.Scoped);
-    
-    _container.RegisterConditional<IStorageService, InMemoryStorageService>(Lifestyle.Singleton,
+``` charp
+services.AddScoped<IExecutionContext>(() => new HttpExecutionContext
+{
+    curPrincipal = new CurPrincipal()
+});
 
-    var builder = new DbContextOptionsBuilder<AuthenticationContext>();
-    builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-    
-    _container.Register<DbContextOptions<AuthenticationContext>>(() => builder.Options, Lifestyle.Singleton);
-    
-    _container.RegisterConditional<IStorageService, EFStorageService>(Lifestyle.Scoped,
-				c => !c.Handled);
-				
-    _container.Register<DbContext, {yourDbContextHere}>(Lifestyle.Scoped);
+services.AddSingleton<ICombinationsHolder, CombinationsHolder>();
+services.AddSingleton<IUrlProvider, UrlProvider>();
+services.AddScoped<IStorageService, EFStorageService>();
+services.AddScoped<IPatcherProvider, PatcherProvider>();
+```
 
-For your Repositories dependencies, here is an example
+This list is subject to future improvements
 
-    _container.Register<IRepository<MyClass>, MyClassRepo>(Lifestyle.Scoped);
-    
-    _container.RegisterConditional(typeof(IRepository<>), typeof(EFRepository<>), c => !c.Handled);
+### Layer segregation & Inheritance chain
 
-Mostly used web dependencies
-
-    _container.Register(typeof(ApiHelper<,>), typeof(ApiHelper<,>), Lifestyle.Scoped);
-    
-    _container.Register<IContractResolver, CamelCasePropertyNamesContractResolver>(Lifestyle.Singleton);
-    
-    _container.Register<IEntitySerializer, EntitySerializer>(Lifestyle.Scoped);
+RDD provide 4 distinct layers to structurally enforce Domain isolation.
+- **Web** : WebController / ReadOnlyWebController are the main entry point for instanciating the full RDD stack. All web related operations must stay on this layer.
+- **Application** : AppController / ReadOnlyAppController are aimed at providing a global functionnal layer
+- **Domain** : RestCollection / ReadOnlyRestCollection are placeholders for Domain centric opérations
+- **Infra** : Repository / ReadOnlyRepository implements external access to data (via EF, HttpClient, Files, etc)
 
