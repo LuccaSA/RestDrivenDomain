@@ -16,15 +16,9 @@ namespace RDD.Domain.Tests.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ConcreteClassThree>().Ignore(c => c.Url);
-            
-            modelBuilder.Entity<AbstractClass>().Ignore(a => a.Url);
-            
-            modelBuilder.Entity<User>().Ignore(u => u.Url);
             modelBuilder.Entity<User>().Ignore(u => u.Mail);
             modelBuilder.Entity<User>().Ignore(u => u.TwitterUri);
 
-            modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Url);
             modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Mail);
             modelBuilder.Entity<UserWithParameters>().Ignore(u => u.TwitterUri);
         }
