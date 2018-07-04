@@ -13,9 +13,14 @@ namespace RDD.Web.Querying
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        private readonly IEnumerable<WebFilter<TEntity>> _filters;
+        private IEnumerable<WebFilter<TEntity>> _filters;
 
         public WebFiltersContainer(IEnumerable<WebFilter<TEntity>> filters)
+        {
+            Init(filters);
+        }
+
+        private void Init(IEnumerable<WebFilter<TEntity>> filters)
         {
             _filters = filters;
 
@@ -26,6 +31,14 @@ namespace RDD.Web.Querying
         public override bool HasFilter(Expression<Func<TEntity, object>> property)
         {
             return _filters.Any(f => f.Property.Contains(property));
+        }
+
+        public override void RemoveFilter(Expression<Func<TEntity, object>> property)
+        {
+            if (HasFilter(property))
+            {
+                Init(_filters.Where(f => !f.Property.Contains(property)));
+            }
         }
     }
 }

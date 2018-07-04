@@ -23,7 +23,12 @@ namespace RDD.Domain.Models.Querying
 
         public virtual bool HasFilter(Expression<Func<TEntity, object>> property)
         {
-            return false;
+            throw new NotImplementedException("Expression filters cannot say if they contains individual filters.");
+        }
+
+        public virtual void RemoveFilter(Expression<Func<TEntity, object>> property)
+        {
+            throw new NotImplementedException("Expression filters cannot remove individual filters.");
         }
     }
 }
