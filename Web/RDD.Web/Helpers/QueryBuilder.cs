@@ -328,9 +328,9 @@ namespace RDD.Web.Helpers
                 // Hack pour le Anniversary qui n'est pas binaire, mais plus simple de le faire ici plutot qu'ailleurs
                 if (binaryOperator == WebFilterOperand.Anniversary)
                 {
-                    var date = (DateTime)value;
-                    ConstantExpression day = (value == null) ? Expression.Constant(null) : Expression.Constant(date.Day, typeof(int));
-                    ConstantExpression month = (value == null) ? Expression.Constant(null) : Expression.Constant(date.Month, typeof(int));
+                    var date = (DateTime?)value;
+                    ConstantExpression day = (date.HasValue) ? Expression.Constant(date.Value.Day, typeof(int)) : Expression.Constant(null);
+                    ConstantExpression month = (date.HasValue) ? Expression.Constant(date.Value.Month, typeof(int)) : Expression.Constant(null);
                     var dayExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(day, Expression.Property(Expression.Property(expressionLeft, "Value"), "Day")) : Expression.Equal(day, Expression.Property(expressionLeft, "Day"));
                     var monthExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(month, Expression.Property(Expression.Property(expressionLeft, "Value"), "Month")) : Expression.Equal(month, Expression.Property(expressionLeft, "Month"));
                     return Expression.AndAlso(dayExpression, monthExpression);
