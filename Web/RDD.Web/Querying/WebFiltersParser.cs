@@ -67,7 +67,7 @@ namespace RDD.Web.Querying
                 var values = service.ConvertWhereValues(parts, typeof(TEntity), key);
 
                 //cas spécial pour between (filtre sur un department => decimals, != datetime)
-                if (operand is WebFilterOperand.Between && values.Count == 2 && (values[0] as DateTime?) != null)
+                if (operand is WebFilterOperand.Between && values.Count == 2 && values[0] is DateTime?)
                 {
                     values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                 }
