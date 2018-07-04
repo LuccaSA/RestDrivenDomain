@@ -12,6 +12,8 @@ namespace RDD.Web.Querying
 {
     public class WebFiltersParser
     {
+        protected WebFiltersParser() { }
+
         protected static readonly Dictionary<string, WebFilterOperand> Operands = new Dictionary<string, WebFilterOperand>
         {
             {"between", WebFilterOperand.Between},

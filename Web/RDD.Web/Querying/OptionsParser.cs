@@ -7,8 +7,7 @@ using System.Linq.Expressions;
 
 namespace RDD.Web.Querying
 {
-    public class OptionsParser<TEntity>
-        where TEntity : class
+    public class OptionsParser
     {
         public Options Parse(Dictionary<string, string> parameters, IEnumerable<Field> fields, IEnumerable<Field> collectionFields)
         {
