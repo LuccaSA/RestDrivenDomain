@@ -1,13 +1,13 @@
 ﻿using RDD.Domain.Helpers;
 using System.Collections;
 
-namespace RDD.Web.Querying
+namespace RDD.Infra.Web.Models
 {
     public class WebFilter<TEntity>
     {
-        public PropertySelector<TEntity> Property { get; }
-        public WebFilterOperand Operand { get; }
-        public IList Values { get; }
+        public PropertySelector<TEntity> Property { get; private set; }
+        public WebFilterOperand Operand { get; private set; }
+        public IList Values { get; private set; }
 
         public WebFilter(PropertySelector<TEntity> property, WebFilterOperand operand, IList values)
         {

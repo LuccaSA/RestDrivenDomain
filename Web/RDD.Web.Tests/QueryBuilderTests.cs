@@ -1,10 +1,8 @@
 ﻿using RDD.Domain.Helpers;
-using RDD.Web.Helpers;
+using RDD.Infra.Helpers;
 using RDD.Web.Tests.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 using Xunit;
 
 namespace RDD.Web.Tests

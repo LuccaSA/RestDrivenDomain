@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RDD.Domain;
 using RDD.Domain.Models.Querying;
+using RDD.Infra.Web.Models;
 using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;

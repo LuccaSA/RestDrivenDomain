@@ -2,7 +2,7 @@
 using System.Net;
 using RDD.Domain.Exceptions;
 
-namespace RDD.Web.Exceptions
+namespace RDD.Infra.Exceptions
 {
     public class QueryBuilderException : BusinessException
     {

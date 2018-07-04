@@ -1,5 +1,5 @@
 ﻿using RDD.Domain.Helpers;
-using RDD.Web.Querying;
+using RDD.Infra.Web.Models;
 using RDD.Web.Tests.Models;
 using System;
 using System.Collections.Generic;

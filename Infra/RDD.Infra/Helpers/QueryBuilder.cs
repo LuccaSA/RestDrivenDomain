@@ -5,8 +5,8 @@ using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
-using RDD.Web.Exceptions;
-using RDD.Web.Querying;
+using RDD.Infra.Exceptions;
+using RDD.Infra.Web.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace RDD.Web.Helpers
+namespace RDD.Infra.Helpers
 {
     public class QueryBuilder<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
