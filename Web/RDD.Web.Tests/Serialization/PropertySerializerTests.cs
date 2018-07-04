@@ -16,49 +16,7 @@ namespace RDD.Web.Tests.Serialization
     public class PropertySerializerTests
     {
         [Fact]
-        public void PropertySerializer_should_serialize_url_properly()
-        {
-            var entity = new User { Id = 1 };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
-
-            var tree = ExpressionTree<User>.New(u => u.Url);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.Equal("https://mon.domain.com/api/users/1", json.GetJsonValue("Url"));
-        }
-
-        [Fact]
-        public void PropertySerializer_should_accept_custom_apiPrefix()
-        {
-            var entity = new User { Id = 1 };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new PrefixUrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
-
-            var tree = ExpressionTree<User>.New(u => u.Url);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.Equal("https://mon.domain.com/api/lol/users/1", json.GetJsonValue("Url"));
-        }
-
-        class PrefixUrlProvider : UrlProvider
-        {
-            public PrefixUrlProvider(IPluralizationService pluralizationService, IHttpContextAccessor httpContextAccessor) : base(pluralizationService, httpContextAccessor)
-            {
             }
-
-            protected override string ApiPrefix => "api/lol";
-        }
-
-        [Fact]
         public void ValueObject_should_serializeAllProperties()
         {
             var entity = new User
