@@ -18,7 +18,7 @@ namespace RDD.Domain.Helpers
             var param = Expression.Parameter(EntityType, "p".Repeat(depth));
 
             var dictionaryKey = Expression.Constant(element);
-            var dictionaryAccessor = Expression.Property(param, "Item", new Expression[] { dictionaryKey });
+            var dictionaryAccessor = Expression.Property(param, "Item", dictionaryKey);
 
             var lambda = Expression.Lambda(dictionaryAccessor, param);
 
