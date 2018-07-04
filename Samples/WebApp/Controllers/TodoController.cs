@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using RDD.Application;
+using RDD.Web.Controllers;
+using RDD.Web.Helpers;
 using TodoApi.Models;
 
 namespace TodoApi.Controllers
@@ -8,40 +12,30 @@ namespace TodoApi.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoController : ControllerBase
+    public class TodoController : WebController<TodoItem, long>
     {
-        private readonly TodoContext _context;
-
-        public TodoController(TodoContext context)
+        public TodoController(IAppController<TodoItem, long> appController, ApiHelper<TodoItem, long> helper) 
+            : base(appController, helper)
         {
-            _context = context;
-
-            if (_context.TodoItems.Count() == 0)
-            {
-                _context.TodoItems.Add(new TodoItem { Name = "Item1" });
-                _context.SaveChanges();
-            }
+        //    if (_context.TodoItems.Count() == 0)
+        //    {
+        //        _context.TodoItems.Add(new TodoItem { Name = "Item1" });
+        //        _context.SaveChanges();
+        //    }
         }
 
         [HttpGet]
-        public ActionResult<List<TodoItem>> GetAll()
+        public override Task<ActionResult<IEnumerable<TodoItem>>> GetAsync()
         {
-            return _context.TodoItems.ToList();
+            return base.GetAsync();
         }
 
         [HttpGet("{id}", Name = "GetTodo")]
-        public ActionResult<TodoItem> GetById(long id)
+        public override Task<ActionResult<TodoItem>> GetByIdAsync(long id)
         {
-            var item = _context.TodoItems.Find(id);
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
+            return base.GetByIdAsync(id);
         }
-
+        
         /// <summary>
         /// Creates a TodoItem.
         /// </summary>
@@ -63,36 +57,20 @@ namespace TodoApi.Controllers
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public ActionResult<TodoItem> Create(TodoItem item)
+        public Task<ActionResult<TodoItem>> PostAsync(TodoItem item)
         {
-            _context.TodoItems.Add(item);
-            _context.SaveChanges();
-
-            return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
+            //return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
+            return base.PostAsync();
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(long id, TodoItem item)
+        public Task<ActionResult<TodoItem>> PutByIdAsync(long id, TodoItem item)
         {
-            if (item == null || item.Id != id)
-            {
-                return BadRequest();
-            }
-
-            var todo = _context.TodoItems.Find(id);
-
-            if (todo == null)
-            {
-                return NotFound();
-            }
-
-            todo.IsComplete = item.IsComplete;
-            todo.Name = item.Name;
-
-            _context.TodoItems.Update(todo);
-            _context.SaveChanges();
-
-            return NoContent();
+            //if (item == null || item.Id != id)
+            //{
+            //    return BadRequest();
+            //}
+            return base.PutByIdAsync(id);
         }
 
         /// <summary>
@@ -100,19 +78,9 @@ namespace TodoApi.Controllers
         /// </summary>
         /// <param name="id"></param>        
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
+        public override Task<IActionResult> DeleteByIdAsync(long id)
         {
-            var todo = _context.TodoItems.Find(id);
-
-            if (todo == null)
-            {
-                return NotFound();
-            }
-
-            _context.TodoItems.Remove(todo);
-            _context.SaveChanges();
-
-            return NoContent();
+            return base.DeleteByIdAsync(id);
         }
     }
 }

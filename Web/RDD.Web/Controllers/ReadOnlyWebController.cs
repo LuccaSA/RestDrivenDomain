@@ -37,40 +37,26 @@ namespace RDD.Web.Controllers
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
-        public async Task<ActionResult<IEnumerable<TEntity>>> GetAsync()
+        public virtual async Task<ActionResult<IEnumerable<TEntity>>> GetAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
-            {
-                return await ProtectedGetAsync();
-            }
-            return NotFound();
-        }
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+                return NotFound();
 
-        public async Task<ActionResult<TEntity>> GetByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
-            {
-                return await ProtectedGetAsync(id);
-            }
-            return NotFound();
-        }
-        
-        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedGetAsync()
-        {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             IEnumerable<TEntity> result = await AppController.GetAsync(query);
 
             // todo : injecter le Count de ISelection dans le Query ?
             HttpContext.SetContextualQuery(query);
-            
+
             return Ok(result);
         }
 
-        // Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
-        // car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
-        protected virtual async Task<ActionResult<TEntity>> ProtectedGetAsync(TKey id)
+        public virtual async Task<ActionResult<TEntity>> GetByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+                return NotFound();
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);

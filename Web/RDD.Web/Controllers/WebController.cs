@@ -35,44 +35,11 @@ namespace RDD.Web.Controllers
         {
         }
 
-        public Task<ActionResult<TEntity>> PostAsync()
+        public virtual async Task<ActionResult<TEntity>> PostAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
-            {
-                return ProtectedPostAsync();
-            }
-            return Task.FromResult((ActionResult<TEntity>)NotFound());
-        }
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
+                return NotFound();
 
-        public Task<ActionResult<TEntity>> PutByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return ProtectedPutAsync(id);
-            }
-            return Task.FromResult((ActionResult<TEntity>)NotFound());
-        }
-
-        public Task<ActionResult<IEnumerable<TEntity>>> PutAsync()
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return ProtectedPutAsync();
-            }
-            return Task.FromResult((ActionResult<IEnumerable<TEntity>>)NotFound());
-        }
-
-        public Task<IActionResult> DeleteByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
-            {
-                return ProtectedDeleteAsync(id);
-            }
-            return Task.FromResult((IActionResult)NotFound());
-        }
-
-        protected virtual async Task<ActionResult<TEntity>> ProtectedPostAsync()
-        {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
@@ -82,8 +49,11 @@ namespace RDD.Web.Controllers
             return Ok(entity);
         }
 
-        protected virtual async Task<ActionResult<TEntity>> ProtectedPutAsync(TKey id)
+        public virtual async Task<ActionResult<TEntity>> PutByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+                return NotFound();
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             PostedData datas = Helper.InputObjectsFromIncomingHttpRequest().SingleOrDefault();
 
@@ -93,8 +63,11 @@ namespace RDD.Web.Controllers
             return Ok(entity);
         }
 
-        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedPutAsync()
+        public virtual async Task<ActionResult<IEnumerable<TEntity>>> PutAsync()
         {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+                return NotFound();
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             List<PostedData> datas = Helper.InputObjectsFromIncomingHttpRequest();
 
@@ -117,18 +90,21 @@ namespace RDD.Web.Controllers
             }
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(datasByIds, query);
-            HttpContext.SetContextualQuery(query); 
+            HttpContext.SetContextualQuery(query);
 
             return Ok(entities);
         }
 
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
+        public virtual async Task<IActionResult> DeleteByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
+                return NotFound();
+
             await AppController.DeleteByIdAsync(id);
 
             return Ok();
         }
-
+          
         protected virtual async Task<ActionResult> ProtectedDeleteAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
