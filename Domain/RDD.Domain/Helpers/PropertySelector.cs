@@ -36,17 +36,15 @@ namespace RDD.Domain.Helpers
         {
             get
             {
-                if (Lambda.Body is MemberExpression)
+                switch (Lambda.Body)
                 {
-                    return (Lambda.Body as MemberExpression).Member.Name;
+                    case MemberExpression me:
+                        return me.Member.Name;
+                    case MethodCallExpression ce:
+                        return ce.Method.Name;
+                    default:
+                        throw new NotImplementedException();
                 }
-
-                if (Lambda.Body is MethodCallExpression)
-                {
-                    return (Lambda.Body as MethodCallExpression).Method.Name;
-                }
-
-                throw new NotImplementedException();
             }
         }
 
@@ -266,7 +264,7 @@ namespace RDD.Domain.Helpers
         public PropertySelector(Expression<Func<TEntity, object>> expression)
             : this((LambdaExpression)expression) { }
 
-        public bool Contains(Expression<Func<TEntity, object>> expression) => Contains((LambdaExpression) expression);
+        public bool Contains(Expression<Func<TEntity, object>> expression) => Contains((LambdaExpression)expression);
 
         public bool ContainsAny(params Expression<Func<TEntity, object>>[] expressions)
         {
