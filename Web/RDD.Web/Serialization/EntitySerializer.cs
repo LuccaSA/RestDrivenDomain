@@ -148,7 +148,7 @@ namespace RDD.Web.Serialization
 
                             if (entityType.IsSubclassOfInterface(typeof(IEntityBase)))
                             {
-                                fields = parser.ParseFields<TEntity>("id, name, url").Select(f => f.EntitySelector);
+                                fields = parser.ParseFields(entityType, new List<string> { "id", "name", "url" }).Select(f => f.EntitySelector);
                             }
                             else
                             {

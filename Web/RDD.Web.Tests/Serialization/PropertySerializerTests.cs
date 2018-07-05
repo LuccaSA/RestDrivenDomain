@@ -128,5 +128,35 @@ namespace RDD.Web.Tests.Serialization
             Assert.Equal(1, department["Id"]);
             Assert.Equal("Department", department["Name"]);
         }
+
+        [Fact]
+        public void SubEntityBase_should_serializeIdNameUrl()
+        {
+            var user = new User
+            {
+                Id = 1,
+                Department = new Department
+                {
+                    Id = 2,
+                    Name = "Foo",
+                    Url = "/api/departements/2"
+                }
+            };
+
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var urlProvider = new UrlProvider(httpContextAccessor);
+            var serializer = new EntitySerializer(urlProvider);
+
+            var result = serializer.SerializeEntity(user, new PropertySelector<User>(u => u.Department));
+
+            Assert.True(result.ContainsKey("Department"));
+
+            var myValueObject = (Dictionary<string, object>)result["Department"];
+
+            Assert.True(myValueObject.ContainsKey("Id"));
+        }
     }
 }
