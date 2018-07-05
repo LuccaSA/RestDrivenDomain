@@ -11,6 +11,8 @@ namespace RDD.Web.Helpers
     public class HttpContextHelper : IHttpContextHelper
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private string _content;
+        private object _locker = new object();
 
         public HttpContextHelper(IHttpContextAccessor httpContextAccessor)
         {
@@ -30,12 +32,22 @@ namespace RDD.Web.Helpers
         public string GetContent()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            string content;
-            using (var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8))
+
+            if (_content == null)
             {
-                content = reader.ReadToEnd();
+                lock (_locker)
+                {
+                    if (_content == null)
+                    {
+                        using (var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8))
+                        {
+                            _content = reader.ReadToEnd();
+                        }
+                    }
+                }
             }
-            return content;
+
+            return _content;
         }
 
         public IDictionary<string, StringValues> GetHeaders()
