@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using RDD.Domain;
+﻿using RDD.Domain;
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
-using RDD.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,9 +26,9 @@ namespace RDD.Web.Querying
             }
         }
 
-        public Query<TEntity> FromWebContext(HttpContext httpContext, bool isCollectionCall)
+        public Query<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
         {
-            var parameters = httpContext.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
+            var parameters = httpContextHelper.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
 
             var fields = new FieldsParser().ParseFields<TEntity>(parameters, isCollectionCall);
             var collectionFields = new CollectionFieldsParser().ParseFields<ISelection<TEntity>>(parameters, isCollectionCall);
@@ -38,7 +36,7 @@ namespace RDD.Web.Querying
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             var options = new OptionsParser().Parse(parameters, fields, collectionFields);
             var page = new PageParser<TEntity>().Parse(parameters);
-            var headers = new HeadersParser().Parse(httpContext.Request.Headers);
+            var headers = new HeadersParser().Parse(httpContextHelper.GetHeaders());
 
             return new Query<TEntity>
             {
