@@ -1,5 +1,6 @@
 ﻿using RDD.Domain.Helpers;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace RDD.Infra.Web.Models
 {
@@ -15,5 +16,11 @@ namespace RDD.Infra.Web.Models
             Operand = operand;
             Values = values;
         }
+    }
+
+    public class WebFilter<TEntity, TProp> : WebFilter<TEntity>
+    {
+        public WebFilter(PropertySelector<TEntity> property, WebFilterOperand operand, TProp value)
+            : base(property, operand, new List<TProp> { value }) { }
     }
 }
