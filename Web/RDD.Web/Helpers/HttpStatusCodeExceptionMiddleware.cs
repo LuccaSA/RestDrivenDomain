@@ -73,5 +73,4 @@ namespace RDD.Web.Helpers
             }
         }
     }
-     
 }
