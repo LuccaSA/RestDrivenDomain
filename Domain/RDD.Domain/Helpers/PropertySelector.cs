@@ -12,8 +12,14 @@ namespace RDD.Domain.Helpers
 {
     public class PropertySelector
     {
-        protected PropertySelector()
+        public PropertySelector(Type entityType)
         {
+            EntityType = entityType;
+        }
+        public PropertySelector(Type entityType, LambdaExpression expression)
+            : this(entityType)
+        {
+            Add(expression);
         }
 
         /// <summary>
@@ -24,23 +30,21 @@ namespace RDD.Domain.Helpers
         public PropertyInfo[] EntityProperties => EntityType.GetFlattenProperties(BindingFlags.NonPublic);
 
         public LambdaExpression Lambda { get; set; }
-        public ISet<PropertySelector> Children { get; protected set; }
+        public PropertySelector Child { get; protected set; }
 
         public string Name
         {
             get
             {
-                if (Lambda.Body is MemberExpression)
+                switch (Lambda.Body)
                 {
-                    return (Lambda.Body as MemberExpression).Member.Name;
+                    case MemberExpression me:
+                        return me.Member.Name;
+                    case MethodCallExpression ce:
+                        return ce.Method.Name;
+                    default:
+                        throw new NotImplementedException();
                 }
-
-                if (Lambda.Body is MethodCallExpression)
-                {
-                    return (Lambda.Body as MethodCallExpression).Method.Name;
-                }
-
-                throw new NotImplementedException();
             }
         }
 
@@ -51,13 +55,13 @@ namespace RDD.Domain.Helpers
                 //Root
                 if (Lambda == null)
                 {
-                    return Children.ElementAt(0).Path;
+                    return Child.Path;
                 }
 
                 //Intermediate
                 if (HasChild)
                 {
-                    return $"{Name}.{Children.ElementAt(0).Path}";
+                    return $"{Name}.{Child.Path}";
                 }
 
                 //Leaf
@@ -67,29 +71,15 @@ namespace RDD.Domain.Helpers
 
         public string Subject { get; set; }
 
-        public int LeafNumber
-        {
-            get { return HasChild ? Children.Sum(c => c.LeafNumber) : 1; }
-        }
-
-        public int Count => Children.Count;
-
-        public bool IsEmpty => Count == 0;
-
         public int CollectionCount => throw new NotImplementedException();
 
-        public bool HasChild => Children.Any();
-
-        public PropertySelector this[Expression<Func<object, object>> key]
-        {
-            get { return Children.FirstOrDefault(c => c.IsEqual(key)); }
-        }
+        public bool HasChild => Child != null;
 
         /// <summary>
         ///   Pour les sous noeud, on instancie le type et on ajoutera les expressions via des .Add()
         ///   Ne pas modifier cette méthode, elle est utilisée  via Reflection, ou alors harmoniser la reflection en fonction
         /// </summary>
-        public static PropertySelector<TEntity> New<TEntity>() => new PropertySelector<TEntity>();
+        public static PropertySelector<TEntity> New<TEntity>(LambdaExpression expression) => new PropertySelector<TEntity>(expression);
 
         /// <summary>
         ///   Permet de récupérer un PropertySelector&lt;TEntity&gt; typé à partir d'un Type en param même si la signature ne le
@@ -97,44 +87,49 @@ namespace RDD.Domain.Helpers
         /// </summary>
         /// <param name="entityType"></param>
         /// <returns>PropertySelector&lt;TEntity&gt; que vous pouvez caster</returns>
-        public static PropertySelector NewFromType(Type entityType) => (PropertySelector) typeof(PropertySelector).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { });
+        public static PropertySelector NewFromType(Type entityType, LambdaExpression expression)
+        {
+            if (entityType.IsGenericType && entityType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                var dictionaryGenericArguments = entityType.GetGenericArguments();
+                var propertySelector = typeof(DictionaryPropertySelector<,>).MakeGenericType(dictionaryGenericArguments[0], dictionaryGenericArguments[1]);
+                return (PropertySelector)Activator.CreateInstance(propertySelector, expression);
+            }
+
+            return (PropertySelector)typeof(PropertySelector).GetMethod("New").MakeGenericMethod(entityType).Invoke(null, new object[] { expression });
+        }
 
         public bool Contains(LambdaExpression expression)
         {
-            if (!ChildrenContains(expression))
+            //Matching leaf
+            if (IsEqual(expression))
             {
-                var rootLambda = (LambdaExpression) new PropertySelectorRootLambdaExtractor().Visit(expression);
+                return true;
+            }
 
-                PropertySelector matchingChild = GetChild(rootLambda);
-
-                if (matchingChild != null)
-                {
-                    string propertyName = ((PropertyInfo) (matchingChild.Lambda.Body as MemberExpression).Member).Name;
-                    var transferor = new PropertySelectorTransferor(EntityType, matchingChild.EntityType, propertyName);
-                    var subExpression = (LambdaExpression) transferor.Visit(expression);
-
-                    return matchingChild.Contains(subExpression);
-                }
-
+            //Non matching leaf
+            if (!HasChild)
+            {
                 return false;
             }
 
-            return true;
+            //Potential intermediate
+            var rootLambda = (LambdaExpression)new PropertySelectorRootLambdaExtractor().Visit(expression);
+            if (IsEqual(rootLambda))
+            {
+                string propertyName = ((PropertyInfo)(Lambda.Body as MemberExpression).Member).Name;
+                var transferor = new PropertySelectorTransferor(EntityType, Child.EntityType, propertyName);
+                var subExpression = (LambdaExpression)transferor.Visit(expression);
+
+                //Recursive call upon child node
+                return Child.Contains(subExpression);
+            }
+
+            //Non matching intermediate
+            return false;
         }
 
-        public bool ContainsEmpty(LambdaExpression expression)
-        {
-            bool selfContains = IsEqual(expression);
-            PropertySelector matchingChild = GetChild(expression);
-
-            return matchingChild != null && matchingChild.IsEmpty;
-        }
-
-        public PropertySelector GetChild(LambdaExpression expression) => Children.FirstOrDefault(c => c.IsEqual(expression));
-
-        protected bool ChildrenContains(LambdaExpression expression) => GetChild(expression) != null;
-
-        protected bool AreEqual(LambdaExpression exp1, LambdaExpression exp2)
+        public static bool AreEqual(LambdaExpression exp1, LambdaExpression exp2)
         {
             if (exp1 == null && exp2 == null)
             {
@@ -216,140 +211,44 @@ namespace RDD.Domain.Helpers
 
             LambdaExpression lambda = Expression.Lambda(member, param);
 
-            //ICollection<TSub> on s'intéresse à TSub
-            Type propertyType = property.PropertyType.GetEnumerableOrArrayElementType();
-
-            //On regarde si le child n'existe pas déjà, auquel cas pas besoin de le recréer à chaque fois !
-            PropertySelector matchingChild = Children.FirstOrDefault(c => c.IsEqual(lambda));
-
-            if (matchingChild == null)
-            {
-                matchingChild = NewFromType(propertyType);
-                matchingChild.Lambda = lambda;
-
-                Children.Add(matchingChild);
-            }
+            Lambda = lambda;
 
             if (tail.Any())
             {
-                matchingChild.Parse(tail, depth + 1);
+                //ICollection<TSub> on s'intéresse à TSub
+                Type propertyType = property.PropertyType.GetEnumerableOrArrayElementType();
+
+                Child = NewFromType(propertyType, null);
+                Child.Parse(tail, depth + 1);
             }
         }
 
-        public bool Add(LambdaExpression expression)
+        protected bool Add(LambdaExpression expression)
         {
             var extractor = new PropertySelectorRootLambdaExtractor();
+            Lambda = (LambdaExpression)extractor.Visit(expression);
 
-            var rootLambda = (LambdaExpression) extractor.Visit(expression);
-            PropertySelector matchingChild = GetChild(rootLambda);
-            bool creationNeeded = matchingChild == null;
+            //L'expression concerne le selector courant (u => u.Id), on sort
+            if (AreEqual(Lambda, expression))
+            {
+                return true;
+            }
 
-            Type propertyType = rootLambda.Body.Type;
-
+            //L'expression doit être transférer sur l'enfant
+            var property = (PropertyInfo)((MemberExpression)Lambda.Body).Member;
+            var propertyType = property.PropertyType;
             if (propertyType.IsGenericType)
             {
                 propertyType = propertyType.GetGenericArguments()[0];
             }
+            var transferor = new PropertySelectorTransferor(EntityType, propertyType, property.Name);
 
-            if (creationNeeded)
-            {
-                matchingChild = NewFromType(propertyType);
-                matchingChild.Lambda = rootLambda;
+            Child = NewFromType(propertyType, (LambdaExpression)transferor.Visit(expression));
 
-                Children.Add(matchingChild);
-            }
-
-            //L'expression concerne le selector courant (u => u.Id)
-            if (AreEqual(rootLambda, expression))
-            {
-                return creationNeeded;
-            }
-            //On transfert l'expression sur le child
-            var transferor = new PropertySelectorTransferor(EntityType, propertyType, ((PropertyInfo) ((MemberExpression) rootLambda.Body).Member).Name);
-
-            return matchingChild.Add((LambdaExpression) transferor.Visit(expression));
-        }
-
-        public bool Remove(LambdaExpression expression)
-        {
-            var extractor = new PropertySelectorRootLambdaExtractor();
-
-            var rootLambda = (LambdaExpression) extractor.Visit(expression);
-
-            //L'expression concerne le selector courant (u => u.Id)
-            if (IsEqual(expression))
-            {
-                //Rien à faire ici car ça veut dire que TOUS les enfants doivent être supprimés, et ils le seront
-                //Quand l'appelant supprimera ce selector
-                return true;
-            }
-            PropertySelector matchingChild = GetChild(rootLambda);
-
-            if (matchingChild != null)
-            {
-                bool result = matchingChild.Remove(expression);
-
-                Children.Remove(matchingChild);
-
-                return result;
-            }
-
-            return false;
+            return true;
         }
 
         public override string ToString() => Lambda.ToString();
-
-        /// <summary>
-        ///   On conserve uniquement les Children qui descendent de l'interface
-        ///   NB : utilisé notamment pour obtenir facilement les Includes EF à partir des Fields
-        /// </summary>
-        /// <returns></returns>
-        public virtual PropertySelector CropToInterface(Type interfaceType)
-        {
-            if (!EntityType.IsSubclassOfInterface(interfaceType))
-            {
-                return null;
-            }
-
-            PropertySelector result = NewFromType(EntityType);
-            result.Lambda = Lambda;
-
-            if (HasChild)
-            {
-                result.Children = new HashSet<PropertySelector>(Children.Select(c => c.CropToInterface(interfaceType)).Where(c => c != null));
-            }
-
-            return result;
-        }
-
-        public List<string> ExtractPaths() => RecursiveExtractPaths(new List<string>(), this, new List<string>());
-
-        private List<string> RecursiveExtractPaths(List<string> result, PropertySelector includes, IEnumerable<string> elementsOfpath)
-        {
-            foreach (PropertySelector child in includes.Children)
-            {
-                //u => u.Department
-                //On prend le body, donc u.Department
-                //On vire le u.
-                //Il ne reste que "Department"
-                //NB : le vrai Include() typé ne fonctionne pas car il faut lui préciser le type de la propriété at compile time !
-                //Et de toute façon, en lisant la doc de l'include typé, on voit qu'il appelle aussi l'include non typé !
-                IEnumerable<string> elements = child.Lambda.Body.ToString().Split('.');
-                elements = elementsOfpath.Union(new[] {elements.ElementAt(1)});
-
-                //Si le noeud a des enfants, ce n'est qu'un intermédiaire, on va donc uniquement inclure ses enfants, il sera inclus nativement lui-même par EF
-                if (child.HasChild)
-                {
-                    result = RecursiveExtractPaths(result, child, elements);
-                }
-                else
-                {
-                    result.Add(string.Join(".", elements));
-                }
-            }
-
-            return result;
-        }
     }
 
     /// <summary>
@@ -358,92 +257,18 @@ namespace RDD.Domain.Helpers
     /// </summary>
     public class PropertySelector<TEntity> : PropertySelector
     {
-        /// <summary>
-        ///   Utilisé pour la racine de l'arbre, il n'a pas besoin d'expression
-        /// </summary>
-        /// <param name="entityType"></param>
-        public PropertySelector()
-        {
-            EntityType = typeof(TEntity);
-            Children = new HashSet<PropertySelector>();
-        }
+        public PropertySelector() : base(typeof(TEntity)) { }
+        public PropertySelector(LambdaExpression expression)
+            : base(typeof(TEntity), expression) { }
 
-        public PropertySelector(params Expression<Func<TEntity, object>>[] expressions)
-            : this()
-        {
-            Add(expressions);
-        }
+        public PropertySelector(Expression<Func<TEntity, object>> expression)
+            : this((LambdaExpression)expression) { }
 
-        public bool Contains(Expression<Func<TEntity, object>> expression) => Contains((LambdaExpression) expression);
-
-        public PropertySelector<TSub> GetChild<TSub>(Expression<Func<TEntity, TSub>> expression) => (PropertySelector<TSub>) GetChild((LambdaExpression) expression);
-
-        public PropertySelector<TSub> GetChild<TSub>(Expression<Func<TEntity, IEnumerable<TSub>>> expression) => (PropertySelector<TSub>) GetChild((LambdaExpression) expression);
+        public bool Contains(Expression<Func<TEntity, object>> expression) => Contains((LambdaExpression)expression);
 
         public bool ContainsAny(params Expression<Func<TEntity, object>>[] expressions)
         {
             return expressions.Any(Contains);
-        }
-
-        public bool Add(params Expression<Func<TEntity, object>>[] expressions)
-        {
-            return expressions.Select(expression => { return Add((LambdaExpression) expression); }).Aggregate((b1, b2) => b1 && b2);
-        }
-
-        public bool Add(Expression<Func<TEntity, object>> exp) => Add((LambdaExpression) exp);
-
-        public bool Add<TSub>(PropertySelector<TSub> child, LambdaExpression selector)
-        {
-            //Le child a été construit comme un selecteur racine, donc avec un Lambda null
-            //Ici il va devrenir enfant d'un selecteur, donc il faut patcher son Lambda
-            child.Lambda = selector;
-
-            PropertySelector matchingChild = Children.FirstOrDefault(c => c.Lambda.Body.Type == typeof(TSub));
-
-            if (matchingChild == null)
-            {
-                Children.Add(child);
-
-                return true;
-            }
-            Children.Remove(matchingChild);
-            Children.Add(child);
-
-            return false;
-        }
-
-        public bool Remove(Expression<Func<TEntity, object>> exp) => Remove((LambdaExpression) exp);
-
-        /// <summary>
-        ///   Permet de transférer un selecteur vers un enfant
-        ///   NB : utiliser p. comme paramètre du selecteur
-        /// </summary>
-        /// <typeparam name="TSub"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public PropertySelector<TSub> TransfertTo<TSub>(LambdaExpression selector)
-        {
-            PropertySelector matchingChild = Children.FirstOrDefault(c => c.IsEqual(selector));
-
-            if (matchingChild == null)
-            {
-                throw new Exception(string.Format("Child {0} not found on type {1}. Notice that you must use p. parameter in your selector !", selector.ToString(), typeof(TEntity).Name));
-            }
-
-            return (PropertySelector<TSub>) matchingChild;
-        }
-
-        public PropertySelector<TBase> Cast<TBase>()
-        {
-            var result = new PropertySelector<TBase>();
-
-            //var param = Expression.Parameter(result.EntityType, "p");
-
-            result.Lambda = Lambda; //Expression.Lambda(Lambda.Body)
-
-            result.Children = Children;
-
-            return result;
         }
     }
 }

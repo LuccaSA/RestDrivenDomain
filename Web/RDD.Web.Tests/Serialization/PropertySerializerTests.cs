@@ -27,8 +27,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new EntitySerializer(urlProvider);
 
-            var propertySelector = new PropertySelector<User>();
-            propertySelector.Add(u => u.Url);
+            var propertySelector = new PropertySelector<User>(u => u.Url);
             var dico = serializer.SerializeEntity(entity, propertySelector);
 
             Assert.Equal("https://mon.domain.com/api/users/1", dico["Url"]);
@@ -52,8 +51,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new EntitySerializer(urlProvider);
 
-            var propertySelector = new PropertySelector<User>();
-            propertySelector.Add(u => u.Url);
+            var propertySelector = new PropertySelector<User>(u => u.Url);
             var dico = serializer.SerializeEntity(entity, propertySelector);
 
             Assert.Equal("https://mon.domain.com/api/lol/users/1", dico["Url"]);
@@ -92,6 +90,71 @@ namespace RDD.Web.Tests.Serialization
             Assert.True(result.ContainsKey("MyValueObject"));
 
             var myValueObject = (Dictionary<string, object>)result["MyValueObject"];
+
+            Assert.True(myValueObject.ContainsKey("Id"));
+        }
+
+        [Fact]
+        public void MultiplePropertiesOnSubTypeShouldSerialize()
+        {
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var urlProvider = new UrlProvider(httpContextAccessor);
+            var serializer = new EntitySerializer(urlProvider);
+
+            var user = new User
+            {
+                Department = new Department
+                {
+                    Id = 1,
+                    Name = "Department"
+                }
+            };
+
+            var result = serializer.SerializeEntity(user, new HashSet<PropertySelector> {
+                new PropertySelector<User>(u => u.Department.Id),
+                new PropertySelector<User>(u => u.Department.Name)
+            });
+
+            Assert.True(result.ContainsKey("Department"));
+
+            var department = (Dictionary<string, object>)result["Department"];
+
+            Assert.True(department.ContainsKey("Id"));
+            Assert.True(department.ContainsKey("Name"));
+
+            Assert.Equal(1, department["Id"]);
+            Assert.Equal("Department", department["Name"]);
+        }
+
+        [Fact]
+        public void SubEntityBase_should_serializeIdNameUrl()
+        {
+            var user = new User
+            {
+                Id = 1,
+                Department = new Department
+                {
+                    Id = 2,
+                    Name = "Foo",
+                    Url = "/api/departements/2"
+                }
+            };
+
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var urlProvider = new UrlProvider(httpContextAccessor);
+            var serializer = new EntitySerializer(urlProvider);
+
+            var result = serializer.SerializeEntity(user, new PropertySelector<User>(u => u.Department));
+
+            Assert.True(result.ContainsKey("Department"));
+
+            var myValueObject = (Dictionary<string, object>)result["Department"];
 
             Assert.True(myValueObject.ContainsKey("Id"));
         }

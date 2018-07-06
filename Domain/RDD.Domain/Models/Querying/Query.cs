@@ -1,5 +1,4 @@
 ﻿using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying.Convertors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,9 +11,9 @@ namespace RDD.Domain.Models.Querying
     {
         public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }
-        public Field Fields { get; set; }
-        public Field CollectionFields { get; set; }
-        public List<Filter<TEntity>> Filters { get; set; }
+        public IEnumerable<Field> Fields { get; set; }
+        public IEnumerable<Field> CollectionFields { get; set; }
+        public Filter<TEntity> Filter { get; set; }
         public Queue<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
         public Headers Headers { get; set; }
@@ -24,25 +23,32 @@ namespace RDD.Domain.Models.Querying
         {
             Watch = new Stopwatch();
             Verb = HttpVerbs.Get;
-            Fields = new Field<TEntity>();
-            CollectionFields = new Field<ISelection<TEntity>>();
-            Filters = new List<Filter<TEntity>>();
+            Fields = new HashSet<Field<TEntity>>();
+            Filter = new Filter<TEntity>();
+            CollectionFields = new HashSet<Field<ISelection<TEntity>>>();
             OrderBys = new Queue<OrderBy<TEntity>>();
             Options = new Options();
             Page = Page.Default;
         }
-        public Query(params Filter<TEntity>[] filters)
+        public Query(Expression<Func<TEntity, bool>> filter)
             : this()
         {
-            Filters.AddRange(filters);
+            Filter = new Filter<TEntity>(filter);
         }
         public Query(Query<TEntity> source)
             : this()
         {
-            Filters = new List<Filter<TEntity>>(source.Filters);
-            OrderBys = new Queue<OrderBy<TEntity>>(source.OrderBys);
+            Verb = source.Verb;
+            Fields = source.Fields;
+            Filter = source.Filter;
+            OrderBys = source.OrderBys;
+            Page = source.Page;
+            Options = source.Options;
         }
-
-        public virtual Expression<Func<TEntity, bool>> FiltersAsExpression() => new FiltersConvertor<TEntity>().Convert(Filters);
+        public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
+            : this(source)
+        {
+            Filter = new Filter<TEntity>(filter);
+        }
     }
 }

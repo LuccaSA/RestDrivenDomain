@@ -62,10 +62,6 @@ namespace RDD.Infra.Storage
             return StorageService.EnumerateEntitiesAsync(entities);
         }
 
-        public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities)
-        {
-            return PrepareAsync(entities, new Query<TEntity>());
-        }
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
         {
             return Task.FromResult(entities);
@@ -89,7 +85,7 @@ namespace RDD.Infra.Storage
         }
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            return entities.Where(query.FiltersAsExpression());
+            return entities.Where(query.Filter.Expression);
         }
         protected virtual IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
         {

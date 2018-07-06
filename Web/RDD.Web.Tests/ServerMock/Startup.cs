@@ -47,6 +47,7 @@ namespace RDD.Web.Tests.ServerMock
             services.AddSingleton<IUrlProvider, UrlProvider>();
             services.AddScoped<IStorageService, EFStorageService>();
             services.AddScoped<IPatcherProvider, PatcherProvider>();
+            services.AddScoped<IHttpContextHelper, HttpContextHelper>();
 
             services.AddScoped<ExchangeRateController>();
 

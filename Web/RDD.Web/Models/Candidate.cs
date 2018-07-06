@@ -32,7 +32,7 @@ namespace RDD.Web.Models
         {
             var propertySelector = new PropertySelector<TEntity>(expression);
 
-            return ContainsPath(_structure, propertySelector.Children.ElementAt(0));
+            return ContainsPath(_structure, propertySelector);
         }
         TKey ICandidate<TEntity, TKey>.Id => Value.Id;
 
@@ -51,7 +51,7 @@ namespace RDD.Web.Models
                                 return true;
                             }
 
-                            return ContainsPath(matchingChild.Value, selector.Children.ElementAt(0));
+                            return ContainsPath(matchingChild.Value, selector.Child);
                         }
 
                         return false;

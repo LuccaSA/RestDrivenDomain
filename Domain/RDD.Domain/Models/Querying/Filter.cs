@@ -1,35 +1,23 @@
-﻿using RDD.Domain.Helpers;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq.Expressions;
 
 namespace RDD.Domain.Models.Querying
 {
     public class Filter<TEntity>
     {
-        public PropertySelector<TEntity> Property { get; }
-        public FilterOperand Operand { get; }
-        public IList Values { get; }
+        public Expression<Func<TEntity, bool>> Expression { get; protected set; }
 
-        public Filter(PropertySelector<TEntity> property, FilterOperand operand, IList values)
+        public Filter()
         {
-            Property = property;
-            Operand = operand;
-            Values = values;
+            Expression = e => true;
         }
-
-        [Obsolete("You should use new Filter<TEntity, string>() constr instead")]
-        public Filter(Expression<Func<TEntity, object>> property, FilterOperand operand, string value)
-            : this(new PropertySelector<TEntity>(property), operand, new List<string>() { value }) { }
-
-        public Filter(Expression<Func<TEntity, object>> property, FilterOperand operand, IList values)
-            : this(new PropertySelector<TEntity>(property), operand, values) { }
-    }
-
-    public class Filter<TEntity, TProperty> : Filter<TEntity>
-    {
-        public Filter(Expression<Func<TEntity, object>> property, FilterOperand operand, TProperty value)
-            : base(new PropertySelector<TEntity>(property), operand, new List<TProperty>() { value }) { }
+        public Filter(Expression<Func<TEntity, bool>> expression)
+        {
+            Expression = expression;
+        }
+        public static implicit operator Filter<TEntity>(Expression<Func<TEntity, bool>> expression)
+        {
+            return new Filter<TEntity>(expression);
+        }
     }
 }

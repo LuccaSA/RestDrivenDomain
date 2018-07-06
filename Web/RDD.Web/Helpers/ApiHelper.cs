@@ -16,15 +16,15 @@ using RDD.Web.Querying;
 namespace RDD.Web.Helpers
 {
     public class ApiHelper<TEntity, TKey>
-        where TEntity : class, IEntityBase<TKey>
+        where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly QueryFactory<TEntity> _queryFactory = new QueryFactory<TEntity>();
+        private readonly IHttpContextHelper _httpContextHelper;
+        private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
 
-        public ApiHelper(IHttpContextAccessor httpContextAccessor, IExecutionContext execution, IEntitySerializer serializer)
+        public ApiHelper(IHttpContextHelper httpContextHelper, IExecutionContext execution, IEntitySerializer serializer)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _httpContextHelper = httpContextHelper;
             Execution = execution;
             Serializer = serializer;
         }
@@ -34,7 +34,7 @@ namespace RDD.Web.Helpers
 
         public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {
-            Query<TEntity> query = _queryFactory.FromWebContext(_httpContextAccessor.HttpContext, isCollectionCall);
+            Query<TEntity> query = _queryFactory.FromWebContext(_httpContextHelper, isCollectionCall);
             query.Verb = verb;
             return query;
         }
@@ -43,7 +43,7 @@ namespace RDD.Web.Helpers
 
         public virtual ICandidate<TEntity, TKey> CreateCandidate()
         {
-            string rawInput = _httpContextAccessor.HttpContext.GetContent();
+            string rawInput = _httpContextHelper.GetContent();
             var jsonObject = ParseIntoObject(rawInput);
 
             return new Candidate<TEntity, TKey>(rawInput, jsonObject);
@@ -51,7 +51,7 @@ namespace RDD.Web.Helpers
 
         public virtual IEnumerable<ICandidate<TEntity, TKey>> CreateCandidates()
         {
-            string rawInput = _httpContextAccessor.HttpContext.GetContent();
+            string rawInput = _httpContextHelper.GetContent();
             var jsonObject = ParseIntoArray(rawInput);
 
             //TODO : découper rawInput en autant d'éléments JSON
@@ -69,14 +69,14 @@ namespace RDD.Web.Helpers
         {
             var element = Parse(rawInput) as JsonObject;
             if (element == null)
-                throw new BadRequestException("Unsupported data type. Please send a JSON object");
+                throw new BadRequestException($"Unsupported data type. Please send a JSON object. Input sent {rawInput}");
 
             return element;
         }
 
         IJsonElement Parse(string rawInput)
         {
-            string contentType = _httpContextAccessor.HttpContext.Request.ContentType.Split(';')[0];
+            string contentType = _httpContextHelper.GetContentType();
 
             switch (contentType)
             {

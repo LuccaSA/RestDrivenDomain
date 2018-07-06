@@ -6,10 +6,10 @@ using System.Reflection;
 namespace RDD.Domain.Helpers
 {
     /// <summary>
-    /// Ce visiteur permet de trouver et transférer les expression d'un TEntity vers un TSub
-    /// Etant donné que le TSub est une propriété du TEntity
-    /// </summary>
-    public class PropertySelectorTransferor<TEntity, TSub> : PropertySelectorTransferor
+	/// Ce visiteur permet de trouver et transférer les expression d'un TEntity vers un TSub
+	/// Etant donné que le TSub est une propriété du TEntity
+	/// </summary>
+	public class PropertySelectorTransferor<TEntity, TSub> : PropertySelectorTransferor
     {
         public PropertySelectorTransferor(string propertyName)
             : base(typeof(TEntity), typeof(TSub), propertyName) { }
@@ -30,7 +30,7 @@ namespace RDD.Domain.Helpers
 
             _property = _entityType
                 .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                .FirstOrDefault(p => String.Equals(p.Name, propertyName, StringComparison.CurrentCultureIgnoreCase));
+                .FirstOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
 
             if (_property == null)
             {
@@ -81,6 +81,30 @@ namespace RDD.Domain.Helpers
             return node;
         }
 
+        /// <summary>
+        /// == ne marche pas si on est sur un type dont la propriété est hérité d'une base class
+        /// ex : ExpenseExtendedJournalEntry.Owner
+        /// </summary>
+        /// <param name="property1"></param>
+        /// <param name="property2"></param>
+        /// <returns></returns>
+        private bool AreEqual(PropertyInfo property1, PropertyInfo property2)
+        {
+            //Same declaring type, same type, same Name ~= .Equal() !
+            if (property1.DeclaringType.IsInterface)
+            {
+                return property1.DeclaringType.IsAssignableFrom(property2.DeclaringType)
+                    && property1.PropertyType == property2.PropertyType
+                    && property1.Name == property2.Name;
+            }
+            else
+            {
+                return (property1.DeclaringType == property2.DeclaringType || property1.DeclaringType == property2.DeclaringType.BaseType)
+                    && property1.PropertyType == property2.PropertyType
+                    && property1.Name == property2.Name;
+            }
+        }
+
         protected override Expression VisitMember(MemberExpression node)
         {
             //d => d.Head.LegalEntity.Name
@@ -90,7 +114,7 @@ namespace RDD.Domain.Helpers
             {
                 var property = (PropertyInfo)(node.Expression as MemberExpression).Member;
 
-                if (property == _property)
+                if (AreEqual(property, _property))
                 {
                     return Expression.Property(_param, (PropertyInfo)node.Member);
                 }
@@ -108,7 +132,7 @@ namespace RDD.Domain.Helpers
             //d => d.Users.Select(u => u.LegalEntity.Name)
             //On est sur le Select
             //On retourne u.LegalEntity.Name après l'avoir visité, càd transformé en p.LegalEntity.Name
-            if (property == _property)
+            if (AreEqual(property, _property))
             {
                 param = lambda.Parameters[0];
                 return lambda.Body;

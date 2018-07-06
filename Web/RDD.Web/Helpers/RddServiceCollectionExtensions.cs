@@ -7,6 +7,10 @@ using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
+using RDD.Domain.Patchers;
+using RDD.Domain.WebServices;
+using RDD.Infra;
+using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
 
@@ -26,6 +30,13 @@ namespace RDD.Web.Helpers
                 .AddScoped(typeof(IAppController<,>), typeof(AppController<,>))
                 .AddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>))
                 .AddScoped(typeof(IRepository<>), typeof(Repository<>))
+                .AddScoped<IStorageService, EFStorageService>()
+                .AddScoped<IUrlProvider, UrlProvider>()
+                .AddScoped<IEntitySerializer, EntitySerializer>()
+                .AddScoped<IPatcherProvider, PatcherProvider>()
+                .AddScoped<IHttpContextHelper, HttpContextHelper>()
+                .AddScoped<IExecutionContext, HttpExecutionContext>()
+                .AddScoped<IWebServicesCollection, WebServicesCollection>()
 
                 .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }

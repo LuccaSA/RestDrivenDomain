@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json.Serialization;
-using RDD.Domain.Helpers;
+﻿using Microsoft.AspNetCore.Http;
+using Moq;
 using RDD.Web.Helpers;
 using RDD.Web.Tests.Models;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace RDD.Web.Tests
@@ -11,23 +12,21 @@ namespace RDD.Web.Tests
     public class ApiHelperTests
     {
         [Fact]
-        public void ConvertingFiltersShouldKeepTheEntityType()
+        public void ApiHelperShouldDeserializeJson()
         {
-            var httpContextAccessor = new HttpContextAccessor
-            {
-                HttpContext = new DefaultHttpContext()
-            };
-            httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("id", "2");
-            var helper = new ApiHelper<User, int>(httpContextAccessor ,null, null);
-            var query = helper.CreateQuery(HttpVerbs.Get);
+            var json = @"{ ""id"": 123, ""name"": ""Foo"" }";
+            var httpContextHelper = new Mock<IHttpContextHelper>();
+            httpContextHelper.Setup(h => h.GetContent())
+                .Returns(json);
+            httpContextHelper.Setup(h => h.GetContentType())
+                .Returns("application/json");
 
-            Assert.Single(query.Filters);
+            var helper = new ApiHelper<User, int>(httpContextHelper.Object, null, null);
 
-            var filter = query.Filters.ElementAt(0);
+            var candidate = helper.CreateCandidate();
 
-            Assert.Equal(typeof(PropertySelector<User>), filter.Property.GetType());
-
-            Assert.True(filter.Property.Contains(u => u.Id));
+            Assert.Equal(123, candidate.Value.Id);
+            Assert.Equal("Foo", candidate.Value.Name);
         }
     }
 }

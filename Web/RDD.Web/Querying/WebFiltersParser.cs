@@ -4,31 +4,39 @@ using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
+using RDD.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RDD.Web.Querying
 {
-    public class FiltersParser<TEntity>
-        where TEntity : class
+    public class WebFiltersParser
     {
-        private static readonly Dictionary<string, FilterOperand> _operands = new Dictionary<string, FilterOperand>
-        {
-            {"between", FilterOperand.Between},
-            {"equals", FilterOperand.Equals},
-            {"notequal", FilterOperand.NotEqual},
-            {"like", FilterOperand.Like},
-            {"since", FilterOperand.Since},
-            {"starts", FilterOperand.Starts},
-            {"until", FilterOperand.Until},
-            {"greaterthan", FilterOperand.GreaterThan},
-            {"greaterthanorequal", FilterOperand.GreaterThanOrEqual},
-            {"lessthan", FilterOperand.LessThan},
-            {"lessthanorequal", FilterOperand.LessThanOrEqual}
-        };
+        protected WebFiltersParser() { }
 
-        public List<Filter<TEntity>> Parse(Dictionary<string, string> input)
+        protected static readonly Dictionary<string, WebFilterOperand> Operands = new Dictionary<string, WebFilterOperand>
+        {
+            {"between", WebFilterOperand.Between},
+            {"equals", WebFilterOperand.Equals},
+            {"notequal", WebFilterOperand.NotEqual},
+            {"like", WebFilterOperand.Like},
+            {"since", WebFilterOperand.Since},
+            {"starts", WebFilterOperand.Starts},
+            {"until", WebFilterOperand.Until},
+            {"greaterthan", WebFilterOperand.GreaterThan},
+            {"greaterthanorequal", WebFilterOperand.GreaterThanOrEqual},
+            {"lessthan", WebFilterOperand.LessThan},
+            {"lessthanorequal", WebFilterOperand.LessThanOrEqual}
+        };
+    }
+
+    public class WebFiltersParser<TEntity> : WebFiltersParser
+        where TEntity : class, IEntityBase
+    {
+        protected WebFiltersParser() { }
+
+        public static List<WebFilter<TEntity>> Parse(Dictionary<string, string> input)
         {
             string[] reserved = Enum.GetNames(typeof(Reserved)).ToLower();
 
@@ -37,9 +45,9 @@ namespace RDD.Web.Querying
             return Parse(input, keys);
         }
 
-        private static List<Filter<TEntity>> Parse(Dictionary<string, string> input, IEnumerable<string> keys)
+        private static List<WebFilter<TEntity>> Parse(Dictionary<string, string> input, IEnumerable<string> keys)
         {
-            var list = new List<Filter<TEntity>>();
+            var list = new List<WebFilter<TEntity>>();
             var service = new SerializationService();
 
             foreach (string key in keys)
@@ -47,20 +55,20 @@ namespace RDD.Web.Querying
                 string stringValue = input[key];
                 var parts = stringValue.Split(',').ToList();
 
-                var operand = FilterOperand.Equals;
+                var operand = WebFilterOperand.Equals;
 
                 //si la premier attribut n'est pas un mot clé, on a un equals (mis par défaut plus haut) ex : id=20,30 ; sinon, on le reconnait dans le dico
                 //PS : dans le cas où data contient du JSON, alors .value peut être null
-                if (parts[0] != null && _operands.ContainsKey(parts[0]))
+                if (parts[0] != null && Operands.ContainsKey(parts[0]))
                 {
-                    operand = _operands[parts[0]];
+                    operand = Operands[parts[0]];
                     parts.RemoveAt(0); //On vire l'entrée qui correspondait en fait au mot clé
                 }
 
                 var values = service.ConvertWhereValues(parts, typeof(TEntity), key);
 
                 //cas spécial pour between (filtre sur un department => decimals, != datetime)
-                if (operand == FilterOperand.Between && values.Count == 2 && (values[0] as DateTime?) != null)
+                if (operand is WebFilterOperand.Between && values.Count == 2 && values[0] is DateTime?)
                 {
                     values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                 }
@@ -68,7 +76,7 @@ namespace RDD.Web.Querying
                 var property = new PropertySelector<TEntity>();
                 property.Parse(key);
 
-                list.Add(new Filter<TEntity>(property, operand, values));
+                list.Add(new WebFilter<TEntity>(property, operand, values));
             }
 
             return list;

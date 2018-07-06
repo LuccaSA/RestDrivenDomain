@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace RDD.Web.Serialization
@@ -14,11 +15,11 @@ namespace RDD.Web.Serialization
         public CultureSerializer(IEntitySerializer serializer, IUrlProvider urlProvider)
             : base(serializer, urlProvider) { }
 
-        public override Dictionary<string, object> SerializeProperties(object entity, PropertySelector fields)
+        public override Dictionary<string, object> SerializeProperties(object entity, IEnumerable<PropertySelector> fields)
         {
             Expression<Func<Culture, CultureInfo>> exp = c => c.RawCulture;
 
-            fields.Remove(exp);
+            fields = fields.Where(f => !f.Contains(exp));
 
             return base.SerializeProperties(entity, fields);
         }

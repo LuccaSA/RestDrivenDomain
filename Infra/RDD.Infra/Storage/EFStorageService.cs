@@ -26,9 +26,22 @@ namespace RDD.Infra.Storage
             return DbContext.Set<TEntity>();
         }
 
+        /// <summary>
+        /// source : https://expertcodeblog.wordpress.com/2018/02/19/net-core-2-0-resolve-error-the-source-iqueryable-doesnt-implement-iasyncenumerable/
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entities"></param>
+        /// <returns></returns>
         public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
             where TEntity : class
         {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            //IQueryable is not coming from an EF DbSet !
+            if (!(entities is IAsyncEnumerable<TEntity>))
+                return entities.ToList();
+
             return await entities.ToListAsync();
         }
 

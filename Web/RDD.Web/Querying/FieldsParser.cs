@@ -8,7 +8,7 @@ namespace RDD.Web.Querying
 {
     public class FieldsParser
     {
-        public Field ParseFields<TEntity>(Dictionary<string, string> parameters, bool isCollectionCall)
+        public IEnumerable<Field> ParseFields<TEntity>(Dictionary<string, string> parameters, bool isCollectionCall)
         {
             if (parameters.ContainsKey(Reserved.fields.ToString()))
             {
@@ -19,44 +19,48 @@ namespace RDD.Web.Querying
                 return ParseAllProperties<TEntity>();
             }
 
-            return new Field<TEntity>();
+            return new HashSet<Field<TEntity>>();
         }
 
-        public Field ParseFields<TEntity>(string fields)
+        public IEnumerable<Field> ParseFields<TEntity>(string fields)
         {
             var expandedFields = new FieldExpansionHelper().Expand(fields);
 
             return ParseFields<TEntity>(expandedFields);
         }
 
-        public Field ParseAllProperties<TEntity>()
+        public IEnumerable<Field> ParseAllProperties<TEntity>()
         {
             return ParseAllProperties(typeof(TEntity));
         }
 
-        public Field ParseAllProperties(Type entityType)
+        public IEnumerable<Field> ParseAllProperties(Type entityType)
         {
             var fields = entityType.GetProperties().Select(p => p.Name).ToList();
 
             return ParseFields(entityType, fields);
         }
 
-        public Field ParseFields<TEntity>(List<string> fields)
+        public IEnumerable<Field> ParseFields<TEntity>(List<string> fields)
         {
             return ParseFields(typeof(TEntity), fields);
         }
-        public virtual Field ParseFields(Type entityType, List<string> fields)
+        public virtual IEnumerable<Field> ParseFields(Type entityType, List<string> fields)
         {
-            var field = new Field(entityType);
+            var result = new HashSet<Field>();
 
             foreach (var item in fields)
             {
                 if (!item.StartsWith("collection."))
                 {
-                    field.EntitySelector.Parse(item);
+                    var selector = new PropertySelector(entityType);
+                    selector.Parse(item);
+                    var field = new Field(entityType, selector);
+                    result.Add(field);
                 }
             }
-            return field;
+
+            return result;
         }
 
         public static Field NewFromType(Type entityType)

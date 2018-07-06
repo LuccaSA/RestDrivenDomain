@@ -42,8 +42,9 @@ namespace RDD.Web.Serialization
         {
             var result = new Dictionary<string, object>();
 
-            foreach (var child in query.CollectionFields.EntitySelector.Children)
+            foreach (var collectionField in query.CollectionFields)
             {
+                var child = collectionField.EntitySelector;
                 var childName = child.Name;
                 var value = child.Lambda.Compile().DynamicInvoke(collection);
 
@@ -103,21 +104,33 @@ namespace RDD.Web.Serialization
             return result;
         }
 
-        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field fields)
+        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, Field field)
         {
-            return fields == null ? new Dictionary<string, object>() : SerializeEntity(entity, fields.EntitySelector);
+            return SerializeEntity(entity, new HashSet<Field> { field });
         }
-        public virtual Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, PropertySelector fields)
+        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, IEnumerable<Field> fields)
         {
             return SerializeEntities(new List<TEntity> { entity }, fields).FirstOrDefault();
         }
-        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, Field fields)
+        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, PropertySelector field)
         {
-            return fields == null ? new List<Dictionary<string, object>>() : SerializeEntities(entities, fields.EntitySelector);
+            return SerializeEntities(new List<TEntity> { entity }, new HashSet<PropertySelector> { field }).FirstOrDefault();
         }
-        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, PropertySelector fields)
+        public Dictionary<string, object> SerializeEntity<TEntity>(TEntity entity, IEnumerable<PropertySelector> fields)
         {
-            if (fields != null && entities.Any())
+            return SerializeEntities(new List<TEntity> { entity }, fields).FirstOrDefault();
+        }
+        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, IEnumerable<Field> fields)
+        {
+            return SerializeEntities(entities, fields.Select(f => f.EntitySelector));
+        }
+        public List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, PropertySelector field)
+        {
+            return SerializeEntities(entities, new HashSet<PropertySelector> { field });
+        }
+        public virtual List<Dictionary<string, object>> SerializeEntities<TEntity>(IEnumerable<TEntity> entities, IEnumerable<PropertySelector> fields)
+        {
+            if (entities.Any())
             {
                 var result = new List<Dictionary<string, object>>();
                 foreach (var entity in entities)
@@ -128,19 +141,18 @@ namespace RDD.Web.Serialization
                         var propertySerializer = GetPropertySerializer(entity.GetType());
 
                         //Si c'est un entitybase mais qu'on ne demande aucun field particulier, on va renvoyer id, name, url
-                        if (!fields.HasChild)
+                        if (!fields.Any())
                         {
                             var entityType = entity.GetType();
+                            var parser = new FieldsParser();
 
                             if (entityType.IsSubclassOfInterface(typeof(IEntityBase)))
                             {
-                                fields.Parse("id");
-                                fields.Parse("name");
-                                fields.Parse("url");
+                                fields = parser.ParseFields(entityType, new List<string> { "id", "name", "url" }).Select(f => f.EntitySelector);
                             }
                             else
                             {
-                                fields = new FieldsParser().ParseAllProperties(entityType).EntitySelector;
+                                fields = parser.ParseAllProperties(entityType).Select(f => f.EntitySelector);
                             }
                         }
 
