@@ -19,7 +19,7 @@ namespace RDD.Web.Tests
             };
             httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
             var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper, null, null);
+            var helper = new ApiHelper<User, int>(httpContextHelper);
 
             helper.CreateQuery(HttpVerbs.Get);
         }
@@ -33,7 +33,7 @@ namespace RDD.Web.Tests
             };
             httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
             var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper, null, null);
+            var helper = new ApiHelper<User, int>(httpContextHelper);
 
             helper.CreateQuery(HttpVerbs.Get);
         }

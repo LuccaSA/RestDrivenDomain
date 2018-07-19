@@ -17,8 +17,7 @@ using System.Reflection;
 namespace RDD.Infra.Helpers
 {
     public class QueryBuilder<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
-        where TKey : IEquatable<TKey>
+        where TEntity : IPrimaryKey<TKey>
     {
         private const int EF_EXPRESSION_TREE_MAX_DEPTH = 1000;
 

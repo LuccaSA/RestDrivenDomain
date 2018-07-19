@@ -6,5 +6,8 @@
         void SetId(object id);
     }
 
-    public interface IPrimaryKey<TKey> : IPrimaryKey, IIdable<TKey> { }
+    public interface IPrimaryKey<out TKey> : IPrimaryKey
+    {
+        TKey Id { get; }
+    }
 }

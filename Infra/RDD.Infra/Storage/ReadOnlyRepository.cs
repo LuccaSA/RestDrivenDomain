@@ -1,8 +1,7 @@
 ﻿using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Models.Querying.Convertors;
+using RDD.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,15 +11,13 @@ namespace RDD.Infra.Storage
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class
     {
-        protected IStorageService StorageService { get; }
-        protected IExecutionContext ExecutionContext { get; }
-        protected ICombinationsHolder CombinationsHolder { get; }
+        protected IStorageService _storageService;
+        protected IRightsService _rightsService;
 
-        public ReadOnlyRepository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)
+        public ReadOnlyRepository(IStorageService storageService, IRightsService rightsService)
         {
-            StorageService = storageService;
-            ExecutionContext = executionContext;
-            CombinationsHolder = combinationsHolder;
+            _storageService = storageService;
+            _rightsService = rightsService;
         }
 
         public virtual Task<int> CountAsync()
@@ -59,7 +56,7 @@ namespace RDD.Infra.Storage
             entities = ApplyPage(entities, query);
             entities = ApplyIncludes(entities, query);
 
-            return StorageService.EnumerateEntitiesAsync(entities);
+            return _storageService.EnumerateEntitiesAsync(entities);
         }
 
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
@@ -69,19 +66,12 @@ namespace RDD.Infra.Storage
 
         protected virtual IQueryable<TEntity> Set(Query<TEntity> query)
         {
-            return StorageService.Set<TEntity>();
+            return _storageService.Set<TEntity>();
         }
 
         protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            var operationIds = GetOperationIds(query.Verb);
-            if (!operationIds.Any())
-            {
-                throw new UnreachableEntityException(typeof(TEntity));
-            }
-            
-            return ExecutionContext.curPrincipal
-                .ApplyRights(entities, operationIds);
+            return entities.Where(_rightsService.GetFilter(query));
         }
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {
@@ -105,13 +95,6 @@ namespace RDD.Infra.Storage
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
         {
             return entities;
-        }
-
-        protected virtual HashSet<int> GetOperationIds(HttpVerbs verb)
-        {
-            var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
-
-            return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }
     }
 }

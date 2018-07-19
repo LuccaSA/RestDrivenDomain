@@ -1,6 +1,7 @@
 ﻿using RDD.Domain.Helpers;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 
 namespace RDD.Domain
 {
@@ -16,6 +17,6 @@ namespace RDD.Domain
 
         HashSet<int> GetOperations(HashSet<int> operations);
 
-        IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations);
+        Expression<Func<TEntity, bool>> ApplyRights<TEntity>(HashSet<int> operations);
     }
 }

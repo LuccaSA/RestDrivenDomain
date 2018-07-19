@@ -3,6 +3,7 @@ using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
+using RDD.Domain.Rights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,8 @@ namespace RDD.Domain.Models
     {
         protected IPatcherProvider PatcherProvider { get; private set; }
 
-        public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder,
-            IPatcherProvider patcherProvider)
-            : base(repository, execution, combinationsHolder)
+        public RestCollection(IRepository<TEntity> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
+            : base(repository, rightsService)
         {
             PatcherProvider = patcherProvider;
         }
@@ -43,7 +43,7 @@ namespace RDD.Domain.Models
 
             ValidateEntity(entity, null);
 
-            Repository.Add(entity);
+            _repository.Add(entity);
 
             return entity;
         }
@@ -52,8 +52,6 @@ namespace RDD.Domain.Models
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
-            query.Options.AttachActions = true;
-            query.Options.AttachOperations = true;
 
             TEntity entity = await GetByIdAsync(id, query);
 
@@ -64,18 +62,16 @@ namespace RDD.Domain.Models
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
-            query.Options.AttachActions = true;
-            query.Options.AttachOperations = true;
 
             var result = new HashSet<TEntity>();
 
             var ids = candidatesByIds.Select(d => d.Key).ToList();
             var expQuery = new Query<TEntity>(query, e => ids.Contains(e.Id));
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
+            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
 
             foreach (KeyValuePair<TKey, ICandidate<TEntity, TKey>> kvp in candidatesByIds)
             {
-                var entity = entities[kvp.Key];
+                TEntity entity = entities[kvp.Key];
                 entity = await UpdateAsync(entity, kvp.Value, query);
 
                 result.Add(entity);
@@ -91,21 +87,23 @@ namespace RDD.Domain.Models
                 Verb = HttpVerbs.Delete
             });
 
-            Repository.Remove(entity);
+            _repository.Remove(entity);
         }
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id));
-            expQuery.Verb = HttpVerbs.Delete;
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id))
+            {
+                Verb = HttpVerbs.Delete
+            };
 
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
+            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
 
-            foreach (var id in ids)
+            foreach (TKey id in ids)
             {
                 var entity = entities[id];
 
-                Repository.Remove(entity);
+                _repository.Remove(entity);
             }
         }
 
@@ -115,17 +113,11 @@ namespace RDD.Domain.Models
         /// </summary>
         /// <returns></returns>
         public virtual TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
-        {
-            return System.Activator.CreateInstance<TEntity>();
-        }
+            => Activator.CreateInstance<TEntity>();
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
-            IEnumerable<int> operationIds = CombinationsHolder.Combinations
-                .Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(HttpVerbs.Post))
-                .Select(c => c.Operation.Id);
-
-            if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
+            if (!_rightsService.IsAllowed<TEntity>(HttpVerbs.Post))
             {
                 throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
             }

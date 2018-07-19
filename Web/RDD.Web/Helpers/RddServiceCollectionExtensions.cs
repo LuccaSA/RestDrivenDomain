@@ -2,17 +2,17 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Newtonsoft.Json.Serialization;
 using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
 using RDD.Domain.Patchers;
+using RDD.Domain.Rights;
 using RDD.Domain.WebServices;
 using RDD.Infra;
-using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
+using System;
 
 namespace RDD.Web.Helpers
 {
@@ -20,25 +20,48 @@ namespace RDD.Web.Helpers
     {
         /// <summary>
         /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
+        /// IRightsService and IRddSerialization are missing for this setup to be ready
         /// </summary>
         /// <param name="services"></param>
-        public static void AddRdd(this IServiceCollection services)
+        public static IServiceCollection AddRddMinimum(this IServiceCollection services)
         {
             // register base services
-            services.AddScoped(typeof(ApiHelper<,>))
-                .AddScoped<IEntitySerializer, EntitySerializer>()
-                .AddScoped(typeof(IAppController<,>), typeof(AppController<,>))
-                .AddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>))
-                .AddScoped(typeof(IRepository<>), typeof(Repository<>))
-                .AddScoped<IStorageService, EFStorageService>()
-                .AddScoped<IUrlProvider, UrlProvider>()
-                .AddScoped<IEntitySerializer, EntitySerializer>()
-                .AddScoped<IPatcherProvider, PatcherProvider>()
-                .AddScoped<IHttpContextHelper, HttpContextHelper>()
-                .AddScoped<IExecutionContext, HttpExecutionContext>()
-                .AddScoped<IWebServicesCollection, WebServicesCollection>()
+            services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.TryAddScoped<IPatcherProvider, PatcherProvider>();
+            services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
+            services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
+            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
+            services.TryAddScoped(typeof(ApiHelper<,>));
+            return services;
+        }
 
-                .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+            where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
+        {
+            services.TryAddScoped<IRightsService, RightsService>();
+            services.TryAddScoped<IPrincipal, TPrincipal>();
+            services.TryAddScoped<ICombinationsHolder, TCombinationsHolder>();
+            return services;
+        }
+
+        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
+            where TPrincipal : class, IPrincipal
+        {
+            services.TryAddScoped<IUrlProvider, UrlProvider>();
+            services.TryAddScoped<IEntitySerializer, EntitySerializer>();
+            services.TryAddScoped<IRddSerializer, RddSerializer>();
+            services.TryAddScoped<IPrincipal, TPrincipal>();
+            return services;
+        }
+
+        public static IServiceCollection AddRdd<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+            where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
+        {
+            return services.AddRddMinimum().AddRddRights<TCombinationsHolder, TPrincipal>().AddRddSerialization<TPrincipal>();
         }
 
         /// <summary>
@@ -51,5 +74,5 @@ namespace RDD.Web.Helpers
             return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
-     
+
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 
 namespace RDD.Domain.WebServices
@@ -30,14 +31,14 @@ namespace RDD.Domain.WebServices
 
         public virtual bool HasOperation(int operation) => GetOperations(new HashSet<int>() { operation }).Any();
 
-        public virtual IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations)
+        public virtual Expression<Func<TEntity, bool>> ApplyRights<TEntity>(HashSet<int> operations)
         {
             if (!HasAnyOperations(operations))
             {
-                throw new UnauthorizedException(String.Format("Web service {0} does not have any permission on type {1}", Name, typeof(TEntity).Name));
+                throw new UnauthorizedException(string.Format("Web service {0} does not have any permission on type {1}", Name, typeof(TEntity).Name));
             }
 
-            return entities;
+            return t => true;
         }
     }
 }

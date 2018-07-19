@@ -1,6 +1,8 @@
 ﻿using RDD.Domain.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace RDD.Domain.Mocks
 {
@@ -16,9 +18,6 @@ namespace RDD.Domain.Mocks
 
         public HashSet<int> GetOperations(HashSet<int> operations) { return operations; }
 
-        public IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations)
-        {
-            return entities;
-        }
+        public Expression<Func<TEntity, bool>> ApplyRights<TEntity>(HashSet<int> operations) => t => true;
     }
 }

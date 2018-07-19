@@ -10,8 +10,7 @@ using System.Linq.Expressions;
 namespace RDD.Infra.Helpers
 {
     public class PredicateService<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
-        where TKey : IEquatable<TKey>
+        where TEntity : IPrimaryKey<TKey>
     {
         private readonly IEnumerable<WebFilter<TEntity>> _filters;
 
