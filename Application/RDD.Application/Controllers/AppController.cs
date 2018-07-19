@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace RDD.Application.Controllers
 {
-    public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey> 
+    public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection) 
+        public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection)
             : base(storage, collection)
         {
         }

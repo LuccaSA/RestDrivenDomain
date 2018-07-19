@@ -16,12 +16,12 @@ namespace RDD.Domain.Models
     {
         public ReadOnlyRestCollection(IRepository<TEntity> repository, IRightsService rightsService)
         {
-            Repository = repository;
+            _repository = repository;
             _rightsService = rightsService;
         }
 
         protected IRightsService _rightsService;
-        protected IRepository<TEntity> Repository { get; }
+        protected IRepository<TEntity> _repository;
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {
@@ -41,20 +41,20 @@ namespace RDD.Domain.Models
             //Dans de rares cas on veut seulement le count des entités
             if (query.Options.NeedCount && !query.Options.NeedEnumeration)
             {
-                count = await Repository.CountAsync(query);
+                count = await _repository.CountAsync(query);
             }
             
             //En général on veut une énumération des entités
             if (query.Options.NeedEnumeration)
             {
-                items = await Repository.GetAsync(query);
+                items = await _repository.GetAsync(query);
 
                 count = items.Count();
 
                 //Si y'a plus d'items que le paging max ou que l'offset du paging n'est pas à 0, il faut compter la totalité des entités
                 if (query.Page.Offset > 0 || query.Page.Limit <= count)
                 {
-                    count = await Repository.CountAsync(query);
+                    count = await _repository.CountAsync(query);
                 }
 
                 query.Page.TotalCount = count;
@@ -65,7 +65,7 @@ namespace RDD.Domain.Models
                     AttachOperationsToEntities(items);
                 }
 
-                items = await Repository.PrepareAsync(items, query);
+                items = await _repository.PrepareAsync(items, query);
 
                 //ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
                 if (query.Options.AttachActions)

@@ -43,7 +43,7 @@ namespace RDD.Domain.Models
 
             ValidateEntity(entity, null);
 
-            Repository.Add(entity);
+            _repository.Add(entity);
 
             return entity;
         }
@@ -91,7 +91,7 @@ namespace RDD.Domain.Models
                 Verb = HttpVerbs.Delete
             });
 
-            Repository.Remove(entity);
+            _repository.Remove(entity);
         }
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
@@ -105,7 +105,7 @@ namespace RDD.Domain.Models
             {
                 var entity = entities[id];
 
-                Repository.Remove(entity);
+                _repository.Remove(entity);
             }
         }
 

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using NExtends.Primitives.Types;
+﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
-using RDD.Web.Models;
 using RDD.Web.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDD.Web.Controllers
 {
