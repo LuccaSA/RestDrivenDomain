@@ -11,7 +11,6 @@ namespace RDD.Domain.Tests.Templates
 {
     public class SingleContextTests
     {
-        protected IDependencyInjectionResolver _resolver;
         protected Func<string, IStorageService> _newStorage;
         protected IRightsService _rightsService;
         protected IPatcherProvider _patcherProvider;
