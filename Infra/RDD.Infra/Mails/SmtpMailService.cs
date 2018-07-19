@@ -43,7 +43,7 @@ namespace RDD.Infra.Mails
                         smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                         smtpClient.EnableSsl = _serverInfo.Ssl;
 
-                        if (!String.IsNullOrEmpty(_serverInfo.Login))
+                        if (!string.IsNullOrEmpty(_serverInfo.Login))
                         {
                             smtpClient.UseDefaultCredentials = false;
                             smtpClient.Credentials = new NetworkCredential(_serverInfo.Login, _serverInfo.Password);
