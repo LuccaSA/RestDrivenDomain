@@ -113,8 +113,15 @@ namespace RDD.Web.Serialization
                         //Si c'est une liste d'élément valeur, on sort d'ici, car on la sérialize telle quelle
                         if (!genericType.IsValueType() && genericType != typeof(object))
                         {
-
-                            value = _serializer.SerializeEntities(list, field);
+                            //Si on est sur une feuille on sérialise les objets en entier
+                            if (!field.HasChild)
+                            {
+                                value = _serializer.SerializeEntities(list, new HashSet<Field>());
+                            }
+                            else //Sinon on descend sur les enfants
+                            {
+                                value = _serializer.SerializeEntities(list, field.Child);
+                            }
                         }
                     }
                     else
