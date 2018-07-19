@@ -14,7 +14,7 @@ namespace RDD.Web.Serialization
         public RddSerializer(IEntitySerializer serializer, IPrincipal principal)
         {
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            _principal = principal ?? throw new ArgumentNullException(nameof(principal));
+            _principal = principal;
         }
 
         public object Serialize<TEntity>(TEntity entity, Query<TEntity> query)

@@ -11,7 +11,7 @@ namespace RDD.Web.Models
 
         public MetadataHeader(IPrincipal principal)
         {
-            Principal = principal.Name;
+            Principal = principal?.Name;
         }
     }
 

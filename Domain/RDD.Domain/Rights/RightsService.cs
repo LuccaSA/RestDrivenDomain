@@ -15,7 +15,7 @@ namespace RDD.Domain.Rights
 
         public RightsService(IPrincipal principal, ICombinationsHolder combinationsHolder)
         {
-            _principal = principal ?? throw new ArgumentNullException(nameof(principal));
+            _principal = principal;
             _combinationsHolder = combinationsHolder ?? throw new ArgumentNullException(nameof(combinationsHolder));
         }
 
@@ -23,6 +23,11 @@ namespace RDD.Domain.Rights
 
         public virtual Expression<Func<T, bool>> GetFilter<T>(Query<T> query) where T : class
         {
+            if (_principal == null)
+            {
+                throw new ForbiddenException("Anonymous query is forbidden");
+            }
+
             var operationIds = GetOperationIds<T>(query.Verb);
             if (!operationIds.Any())
             {
