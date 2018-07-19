@@ -34,9 +34,8 @@ namespace RDD.Web.Tests.ServerMock
                 .Options;
 
             services.AddScoped<DbContextOptions>(_ => options);
-            services.AddScoped<DbContext, ExchangeRateDbContext>();
 
-            services.AddRdd<CombinationsHolder, CurPrincipal>();
+            services.AddRdd<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
 
             services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
