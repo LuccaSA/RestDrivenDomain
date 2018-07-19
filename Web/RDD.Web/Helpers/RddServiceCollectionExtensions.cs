@@ -37,28 +37,31 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRddRights<TCombinationsHolder>(this IServiceCollection services, Func<IServiceProvider, IPrincipal> principalGetter)
+        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
         {
             services.TryAddScoped<IRightsService, RightsService>();
-            services.TryAddScoped(principalGetter);
+            services.TryAddScoped<IPrincipal, TPrincipal>();
             services.TryAddScoped<ICombinationsHolder, TCombinationsHolder>();
             return services;
         }
 
-        public static IServiceCollection AddRddSerialization(this IServiceCollection services, Func<IServiceProvider, IPrincipal> principalGetter)
+        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
+            where TPrincipal : class, IPrincipal
         {
             services.TryAddScoped<IUrlProvider, UrlProvider>();
             services.TryAddScoped<IEntitySerializer, EntitySerializer>();
             services.TryAddScoped<IRddSerializer, RddSerializer>();
-            services.TryAddScoped(principalGetter);
+            services.TryAddScoped<IPrincipal, TPrincipal>();
             return services;
         }
 
-        public static IServiceCollection AddRdd<TCombinationsHolder>(this IServiceCollection services, Func<IServiceProvider, IPrincipal> principalGetter)
+        public static IServiceCollection AddRdd<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
         {
-            return services.AddRddMinimum().AddRddRights<TCombinationsHolder>(principalGetter).AddRddSerialization(principalGetter);
+            return services.AddRddMinimum().AddRddRights<TCombinationsHolder, TPrincipal>().AddRddSerialization<TPrincipal>();
         }
 
         /// <summary>
