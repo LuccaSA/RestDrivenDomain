@@ -1,19 +1,17 @@
 ﻿using RDD.Application;
-using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Controllers;
 using RDD.Web.Helpers;
-using System;
+using RDD.Web.Serialization;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RDD.Web.Tests.Models
 {
     public class IUserWebController : ReadOnlyWebController<IUser, int>
     {
-        public IUserWebController(IReadOnlyAppController<IUser, int> appController, ApiHelper<IUser, int> apiHelper)
-            : base(appController, apiHelper) { }
+        public IUserWebController(IReadOnlyAppController<IUser, int> appController, ApiHelper<IUser, int> apiHelper, IRddSerializer rddSerializer)
+            : base(appController, apiHelper, rddSerializer) { }
 
         //This method only intend is to check that IUser constraint on ReadOnlyWebController is sufficient and working
         public async Task<IEnumerable<IUser>> GetEnumerableAsync()

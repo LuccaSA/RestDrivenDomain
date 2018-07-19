@@ -19,14 +19,10 @@ namespace RDD.Web.Helpers
         private readonly IHttpContextHelper _httpContextHelper;
         private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
 
-        public ApiHelper(IHttpContextHelper httpContextHelper, IEntitySerializer serializer)
+        public ApiHelper(IHttpContextHelper httpContextHelper)
         {
             _httpContextHelper = httpContextHelper;
-            Serializer = serializer;
         }
-
-        public IPrincipal _principal;
-        public IEntitySerializer Serializer { get; }
 
         public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {

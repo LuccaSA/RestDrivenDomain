@@ -2,11 +2,11 @@
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
-using RDD.Web.Models;
+using RDD.Web.Serialization;
 using System;
 using System.Threading.Tasks;
-using RDD.Domain.Models.Querying;
 
 namespace RDD.Web.Controllers
 {
@@ -14,8 +14,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
-            : base(appController, helper)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer) 
+            : base(appController, helper, rddSerializer)
         {
         }
     }
@@ -27,11 +27,13 @@ namespace RDD.Web.Controllers
     {
         protected TAppController AppController { get; }
         protected ApiHelper<TEntity, TKey> Helper { get; }
+        protected IRddSerializer _rddSerializer;
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer)
         {
             AppController = appController;
-            Helper = helper;
+            Helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            _rddSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
@@ -60,9 +62,7 @@ namespace RDD.Web.Controllers
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeSelection(selection, query), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+             return Ok(_rddSerializer.Serialize(selection, query));
         }
 
         // Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
@@ -73,9 +73,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(_rddSerializer.Serialize(entity, query));
         }
     }
 }

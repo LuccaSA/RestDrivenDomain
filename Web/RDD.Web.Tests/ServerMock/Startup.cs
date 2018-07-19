@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Domain;
 using RDD.Domain.Patchers;
+using RDD.Domain.WebServices;
 using RDD.Infra;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
@@ -34,15 +36,9 @@ namespace RDD.Web.Tests.ServerMock
             services.AddScoped<DbContextOptions>(_ => options);
             services.AddScoped<DbContext, ExchangeRateDbContext>();
 
-            // register RDD 
-            services.AddRdd();
-            services.AddRddRights<CombinationsHolder>(p => new CurPrincipal());
+            services.AddRdd<CombinationsHolder>(p => new CurPrincipal());
 
-            services.AddSingleton<IUrlProvider, UrlProvider>();
-            services.AddScoped<IStorageService, EFStorageService>();
-            services.AddScoped<IPatcherProvider, PatcherProvider>();
-            services.AddScoped<IHttpContextHelper, HttpContextHelper>();
-
+            services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
 
             services.AddMvc();

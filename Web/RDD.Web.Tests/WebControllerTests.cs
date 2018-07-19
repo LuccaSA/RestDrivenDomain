@@ -1,7 +1,9 @@
-﻿using RDD.Application.Controllers;
+﻿using Moq;
+using RDD.Application.Controllers;
 using RDD.Domain.Models;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
+using RDD.Web.Serialization;
 using RDD.Web.Tests.Models;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,7 @@ namespace RDD.Web.Tests
                 repository.Add(new User { Id = 1 });
                 repository.Add(new AnotherUser { Id = 2 });
 
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null, null));
+                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null), new Mock<IRddSerializer>().Object);
 
                 var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
 

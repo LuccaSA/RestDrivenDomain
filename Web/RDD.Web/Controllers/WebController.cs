@@ -12,6 +12,7 @@ using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
 using RDD.Web.Models;
+using RDD.Web.Serialization;
 
 namespace RDD.Web.Controllers
 {
@@ -19,8 +20,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
-            : base(appController, helper)
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer) 
+            : base(appController, helper, rddSerializer)
         {
         }
     }
@@ -30,8 +31,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
-            : base(appController, helper)
+        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer)
+            : base(appController, helper, rddSerializer)
         {
         }
 
@@ -78,9 +79,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(_rddSerializer.Serialize(entity, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
@@ -90,9 +89,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(_rddSerializer.Serialize(entity, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedPutAsync()
@@ -110,9 +107,7 @@ namespace RDD.Web.Controllers
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntities(entities, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(_rddSerializer.Serialize(entities, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
