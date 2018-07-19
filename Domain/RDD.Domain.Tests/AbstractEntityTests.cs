@@ -1,5 +1,6 @@
 ﻿using RDD.Domain.Mocks;
 using RDD.Domain.Models;
+using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Infra.Storage;
 using System.Linq;
@@ -9,14 +10,14 @@ namespace RDD.Domain.Tests
 {
     internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
     {
-        public AbstractClassCollection(IRepository<AbstractClass> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
-            : base(repository, execution, combinationsHolder) { }
+        public AbstractClassCollection(IRepository<AbstractClass> repository, IRightsService rightsService)
+            : base(repository, rightsService) { }
     }
 
     internal class ConcreteClassThreeCollection : ReadOnlyRestCollection<ConcreteClassThree, int>
     {
-        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
-            : base(repository, execution, combinationsHolder) { }
+        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository, IRightsService rightsService)
+            : base(repository, rightsService) { }
     }
 
     public class AbstractEntityTests
@@ -24,15 +25,14 @@ namespace RDD.Domain.Tests
         [Fact]
         public async void NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
-            var execution = new ExecutionContextMock();
-            var combinationHolder = new CombinationsHolderMock();
+            var rightsService = new RightsServiceMock();
             var storage = new InMemoryStorageService();
-            var repo = new OpenRepository<ConcreteClassThree>(storage, execution, combinationHolder);
+            var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService);
 
             repo.Add(new ConcreteClassThree());
             repo.Add(new ConcreteClassThree());
 
-            var collection = new ConcreteClassThreeCollection(repo, execution, null);
+            var collection = new ConcreteClassThreeCollection(repo, rightsService);
 
             var result = await collection.GetAllAsync();
 
@@ -42,16 +42,15 @@ namespace RDD.Domain.Tests
         [Fact]
         public async void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
-            var execution = new ExecutionContextMock();
-            var combinationHolder = new CombinationsHolderMock();
+            var rightsService = new RightsServiceMock();
             var storage = new InMemoryStorageService();
-            var repo = new OpenRepository<AbstractClass>(storage, execution, combinationHolder);
+            var repo = new OpenRepository<AbstractClass>(storage, rightsService);
 
             repo.Add(new ConcreteClassOne());
             repo.Add(new ConcreteClassOne());
             repo.Add(new ConcreteClassTwo());
 
-            var collection = new AbstractClassCollection(repo, execution, combinationHolder);
+            var collection = new AbstractClassCollection(repo, rightsService);
 
             var result = await collection.GetAllAsync();
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using RDD.Domain;
 using RDD.Domain.Patchers;
 using RDD.Infra;
-using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
 using RDD.Web.Serialization;
@@ -37,13 +36,8 @@ namespace RDD.Web.Tests.ServerMock
 
             // register RDD 
             services.AddRdd();
+            services.AddRddRights<CombinationsHolder>(p => new CurPrincipal());
 
-            services.AddScoped<IExecutionContext>(_ => new HttpExecutionContext
-            {
-                curPrincipal = new CurPrincipal()
-            });
-
-            services.AddSingleton<ICombinationsHolder, CombinationsHolder>();
             services.AddSingleton<IUrlProvider, UrlProvider>();
             services.AddScoped<IStorageService, EFStorageService>();
             services.AddScoped<IPatcherProvider, PatcherProvider>();

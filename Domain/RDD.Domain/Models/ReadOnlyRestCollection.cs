@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
+using RDD.Domain.Rights;
 
 namespace RDD.Domain.Models
 {
@@ -13,15 +14,13 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public ReadOnlyRestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+        public ReadOnlyRestCollection(IRepository<TEntity> repository, IRightsService rightsService)
         {
             Repository = repository;
-            Execution = execution;
-            CombinationsHolder = combinationsHolder;
+            _rightsService = rightsService;
         }
-        
-        protected ICombinationsHolder CombinationsHolder { get; }
-        protected IExecutionContext Execution { get; }
+
+        protected IRightsService _rightsService;
         protected IRepository<TEntity> Repository { get; }
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
@@ -128,13 +127,13 @@ namespace RDD.Domain.Models
                 return query;
             }
 
-            HashSet<int> operationIds = GetOperationIds(query, verb);
-            if (!operationIds.Any())
+            if (!_rightsService.IsAllowed<TEntity>(verb))
             {
-                throw new UnreachableEntityException(typeof(TEntity));
-            }
-            if (!Execution.curPrincipal.HasAnyOperations(operationIds))
-            {
+                var operations = _rightsService.GetOperationIds<TEntity>(verb);
+                if (!operations.Any())
+                {
+                    throw new UnreachableEntityException(typeof(TEntity));
+                }
                 throw new UnauthorizedException(string.Format("You do not have sufficient permission to make a {0} on type {1}", verb, typeof(TEntity).Name));
             }
 
@@ -201,12 +200,5 @@ namespace RDD.Domain.Models
         {
             Verb = verb
         });
-
-        protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
-        {
-            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
-
-            return new HashSet<int>(combinations.Select(c => c.Operation.Id));
-        }
     }
 }

@@ -1,13 +1,9 @@
-﻿using RDD.Domain.Json;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Patchers;
+﻿using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Infra.Storage;
 using RDD.Web.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -20,8 +16,8 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollectionWithHardcodedGetById(repo, _rightsService, _patcherProvider);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
@@ -38,8 +34,8 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollectionWithHardcodedGetById(repo, _rightsService, _patcherProvider);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;

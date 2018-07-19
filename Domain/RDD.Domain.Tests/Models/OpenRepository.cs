@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Models.Querying;
+using RDD.Domain.Rights;
 using RDD.Infra;
 using RDD.Infra.Storage;
 using System.Linq;
@@ -8,8 +9,8 @@ namespace RDD.Domain.Tests.Models
     public class OpenRepository<TEntity> : Repository<TEntity>
         where TEntity : class
     {
-        public OpenRepository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)
-        : base(storageService, executionContext, combinationsHolder) { }
+        public OpenRepository(IStorageService storageService, IRightsService rightsService)
+        : base(storageService, rightsService) { }
 
         protected override IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {

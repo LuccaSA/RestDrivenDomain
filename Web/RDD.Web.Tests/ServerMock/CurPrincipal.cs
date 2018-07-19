@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 
@@ -17,6 +19,6 @@ namespace RDD.Web.Tests.ServerMock
 
         public HashSet<int> GetOperations(HashSet<int> operations) => operations;
 
-        public IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations) => entities;
+        public Expression<Func<TEntity, bool>> ApplyRights<TEntity>(HashSet<int> operations) => t => true;
     }
 }

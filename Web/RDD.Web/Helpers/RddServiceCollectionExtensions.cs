@@ -2,17 +2,17 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Newtonsoft.Json.Serialization;
 using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
 using RDD.Domain.Patchers;
+using RDD.Domain.Rights;
 using RDD.Domain.WebServices;
 using RDD.Infra;
-using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
+using System;
 
 namespace RDD.Web.Helpers
 {
@@ -35,10 +35,17 @@ namespace RDD.Web.Helpers
                 .AddScoped<IEntitySerializer, EntitySerializer>()
                 .AddScoped<IPatcherProvider, PatcherProvider>()
                 .AddScoped<IHttpContextHelper, HttpContextHelper>()
-                .AddScoped<IExecutionContext, HttpExecutionContext>()
                 .AddScoped<IWebServicesCollection, WebServicesCollection>()
 
                 .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        }
+
+        public static void AddRddRights<TCombinationsHolder>(this IServiceCollection services, Func<IServiceProvider, IPrincipal> principalGetter)
+            where TCombinationsHolder : class, ICombinationsHolder
+        {
+            services.AddScoped<IRightsService, RightsService>()
+                .AddScoped(principalGetter)
+                .AddScoped<ICombinationsHolder, TCombinationsHolder>();
         }
 
         /// <summary>

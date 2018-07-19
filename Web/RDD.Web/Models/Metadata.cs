@@ -11,9 +11,9 @@ namespace RDD.Web.Models
 
         public object Data { get; set; }
 
-        public Metadata(object datas, Options options, Page page, IExecutionContext execution)
+        public Metadata(object datas, Options options, Page page, IPrincipal principal)
         {
-            Header = new MetadataHeader(execution) { generated = DateTime.Now };
+            Header = new MetadataHeader(principal) { Generated = DateTime.Now };
             Data = datas;
 
             var offset = page.Offset;

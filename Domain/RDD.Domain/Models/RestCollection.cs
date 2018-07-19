@@ -3,6 +3,7 @@ using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
+using RDD.Domain.Rights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,8 @@ namespace RDD.Domain.Models
     {
         protected IPatcherProvider PatcherProvider { get; private set; }
 
-        public RestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder,
-            IPatcherProvider patcherProvider)
-            : base(repository, execution, combinationsHolder)
+        public RestCollection(IRepository<TEntity> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
+            : base(repository, rightsService)
         {
             PatcherProvider = patcherProvider;
         }
@@ -121,11 +121,7 @@ namespace RDD.Domain.Models
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {
-            IEnumerable<int> operationIds = CombinationsHolder.Combinations
-                .Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(HttpVerbs.Post))
-                .Select(c => c.Operation.Id);
-
-            if (!Execution.curPrincipal.HasAnyOperations(new HashSet<int>(operationIds)))
+            if (!_rightsService.IsAllowed<TEntity>(HttpVerbs.Post))
             {
                 throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
             }

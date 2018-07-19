@@ -1,14 +1,13 @@
 ﻿using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
-using System;
+using RDD.Domain.Rights;
 
 namespace RDD.Domain.Tests.Models
 {
     public class UsersCollectionWithParametersAndOverride : RestCollection<UserWithParameters, int>
     {
-        public UsersCollectionWithParametersAndOverride(IRepository<UserWithParameters> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder, IPatcherProvider patcherProvider)
-            : base(repository, execution, combinationsHolder, patcherProvider) { }
+        public UsersCollectionWithParametersAndOverride(IRepository<UserWithParameters> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
+            : base(repository, rightsService, patcherProvider) { }
 
         public override UserWithParameters InstanciateEntity(ICandidate<UserWithParameters, int> candidate)
         {

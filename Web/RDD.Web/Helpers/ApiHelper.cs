@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Serialization;
-using RDD.Domain;
+﻿using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Json;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Models;
 using RDD.Web.Querying;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace RDD.Web.Helpers
 {
@@ -22,14 +19,13 @@ namespace RDD.Web.Helpers
         private readonly IHttpContextHelper _httpContextHelper;
         private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
 
-        public ApiHelper(IHttpContextHelper httpContextHelper, IExecutionContext execution, IEntitySerializer serializer)
+        public ApiHelper(IHttpContextHelper httpContextHelper, IEntitySerializer serializer)
         {
             _httpContextHelper = httpContextHelper;
-            Execution = execution;
             Serializer = serializer;
         }
 
-        public IExecutionContext Execution { get; }
+        public IPrincipal _principal;
         public IEntitySerializer Serializer { get; }
 
         public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
