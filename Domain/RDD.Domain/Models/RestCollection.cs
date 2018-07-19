@@ -67,11 +67,11 @@ namespace RDD.Domain.Models
 
             var ids = candidatesByIds.Select(d => d.Key).ToList();
             var expQuery = new Query<TEntity>(query, e => ids.Contains(e.Id));
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
+            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
 
             foreach (KeyValuePair<TKey, ICandidate<TEntity, TKey>> kvp in candidatesByIds)
             {
-                var entity = entities[kvp.Key];
+                TEntity entity = entities[kvp.Key];
                 entity = await UpdateAsync(entity, kvp.Value, query);
 
                 result.Add(entity);
@@ -92,12 +92,14 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id));
-            expQuery.Verb = HttpVerbs.Delete;
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id))
+            {
+                Verb = HttpVerbs.Delete
+            };
 
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id, el => el);
+            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
 
-            foreach (var id in ids)
+            foreach (TKey id in ids)
             {
                 var entity = entities[id];
 
@@ -111,9 +113,7 @@ namespace RDD.Domain.Models
         /// </summary>
         /// <returns></returns>
         public virtual TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
-        {
-            return System.Activator.CreateInstance<TEntity>();
-        }
+            => Activator.CreateInstance<TEntity>();
 
         protected virtual Task CheckRightsForCreateAsync(TEntity entity)
         {

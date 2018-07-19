@@ -43,7 +43,7 @@ namespace RDD.Domain.Models
             {
                 count = await _repository.CountAsync(query);
             }
-            
+
             //En général on veut une énumération des entités
             if (query.Options.NeedEnumeration)
             {
@@ -95,12 +95,7 @@ namespace RDD.Domain.Models
         /// <returns></returns>
         protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerbs verb)
         {
-            if (verb == HttpVerbs.Get)
-            {
-                return query;
-            }
-
-            if (!_rightsService.IsAllowed<TEntity>(verb))
+            if (verb != HttpVerbs.Get && !_rightsService.IsAllowed<TEntity>(verb))
             {
                 var operations = _rightsService.GetOperationIds<TEntity>(verb);
                 if (!operations.Any())
@@ -119,7 +114,7 @@ namespace RDD.Domain.Models
         {
             try
             {
-                return await GetByIdAsync((TKey) id);
+                return await GetByIdAsync((TKey)id);
             }
             catch
             {
@@ -127,9 +122,7 @@ namespace RDD.Domain.Models
             }
         }
 
-        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get) => GetByIdAsync(id, new Query<TEntity>
-        {
-            Verb = verb
-        });
+        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get)
+            => GetByIdAsync(id, new Query<TEntity> { Verb = verb });
     }
 }
