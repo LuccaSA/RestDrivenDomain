@@ -1,7 +1,4 @@
-﻿using RDD.Domain.Models;
-using System.Collections.Generic;
-
-namespace RDD.Domain
+﻿namespace RDD.Domain
 {
     public interface IEntityBase : IPrimaryKey, IIncludable
     {

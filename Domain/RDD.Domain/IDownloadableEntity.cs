@@ -7,6 +7,5 @@
 
     public interface IDownloadableEntity<TEntity, TKey> : IDownloadableEntity, IEntityBase<TEntity, TKey>
     {
-
     }
 }

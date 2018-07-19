@@ -9,8 +9,7 @@ using System.Linq.Expressions;
 namespace RDD.Infra.Web.Models
 {
     public class WebFiltersContainer<TEntity, TKey> : Filter<TEntity>
-        where TEntity : class, IEntityBase<TEntity, TKey>
-        where TKey : IEquatable<TKey>
+        where TEntity : IPrimaryKey<TKey>
     {
         private IEnumerable<WebFilter<TEntity>> _filters;
 

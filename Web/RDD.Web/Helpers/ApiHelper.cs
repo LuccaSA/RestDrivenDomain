@@ -13,8 +13,7 @@ using System.Linq.Expressions;
 namespace RDD.Web.Helpers
 {
     public class ApiHelper<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
-        where TKey : IEquatable<TKey>
+        where TEntity : class, IEntityBase<TKey>
     {
         private readonly IHttpContextHelper _httpContextHelper;
         private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
