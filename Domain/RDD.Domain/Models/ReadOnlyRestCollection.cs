@@ -59,19 +59,7 @@ namespace RDD.Domain.Models
 
                 query.Page.TotalCount = count;
 
-                //Si on a demandé les permissions, on va les chercher après énumération
-                if (query.Options.AttachOperations)
-                {
-                    AttachOperationsToEntities(items);
-                }
-
                 items = await _repository.PrepareAsync(items, query);
-
-                //ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
-                if (query.Options.AttachActions)
-                {
-                    AttachActionsToEntities(items);
-                }
             }
 
             //Si c'était un PUT/DELETE, on en profite pour affiner la réponse
@@ -101,21 +89,6 @@ namespace RDD.Domain.Models
             return result;
         }
 
-        protected void AttachOperationsToEntity(TEntity entity)
-        {
-            AttachOperationsToEntities(new List<TEntity>
-            {
-                entity
-            });
-        }
-
-        private void AttachOperationsToEntities(IEnumerable<TEntity> entities)
-        {
-            var operationsForAttach = new List<Operation>(); //TODO  _appInstance.GetAllOperations<TEntity>();
-
-            AttachOperations(entities, operationsForAttach);
-        }
-
         /// <summary>
         /// On ne filtre qu'en écriture, pas en lecture
         /// </summary>
@@ -138,48 +111,6 @@ namespace RDD.Domain.Models
             }
 
             return query;
-        }
-
-        protected virtual void AttachOperations(IEnumerable<TEntity> entities, List<Operation> operations)
-        {
-            //TODO
-            //if (operations.Any())
-            //{
-            //    var ops = ExecutionContext.Current.curPrincipal.GetOperations(_storage, _appInstance, new HashSet<int>(operations.Select(o => o.Id)));
-            //    SetOperationsOnEntities(entities, entities.ToDictionary(o => o.Id, o => ops), operations);
-            //}
-        }
-        
-        /// <summary>
-        /// Permet d'attacher des actions personnalisées en complément des opérations
-        /// </summary>
-        /// <param name="list"></param>
-        internal virtual void AttachActions(IEnumerable<TEntity> list)
-        {
-        }
-
-        protected void AttachActionsToEntity(TEntity entity)
-        {
-            AttachActionsToEntities(new HashSet<TEntity>
-            {
-                entity
-            });
-        }
-
-        private void AttachActionsToEntities(IEnumerable<TEntity> list)
-        {
-            AttachActions(list);
-        }
-
-        /// <summary>
-        /// When a custom action needs to access the entities operations
-        /// </summary>
-        /// <param name="entities"></param>
-        internal virtual void AppendOperationsToEntities(ICollection<TEntity> entities)
-        {
-            //TODO
-            //var operationsForAttach = _appInstance.GetAllOperations<TEntity>();
-            //AttachOperations(entities, operationsForAttach);
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());

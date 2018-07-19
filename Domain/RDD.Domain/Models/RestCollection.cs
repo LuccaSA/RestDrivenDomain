@@ -52,8 +52,6 @@ namespace RDD.Domain.Models
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
-            query.Options.AttachActions = true;
-            query.Options.AttachOperations = true;
 
             TEntity entity = await GetByIdAsync(id, query);
 
@@ -64,8 +62,6 @@ namespace RDD.Domain.Models
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
-            query.Options.AttachActions = true;
-            query.Options.AttachOperations = true;
 
             var result = new HashSet<TEntity>();
 

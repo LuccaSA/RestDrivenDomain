@@ -20,8 +20,6 @@ namespace RDD.Domain.Models.Querying
         /// </summary>
         public bool CheckRights { get; set; }
 
-        public bool AttachOperations { get; set; }
-        public bool AttachActions { get; set; }
         public bool WithWarnings { get; set; }
 
         public String Accept { get; set; }
