@@ -3,6 +3,7 @@ using RDD.Domain.Helpers;
 using RDD.Web.Serialization;
 using RDD.Web.Tests.Models;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace RDD.Web.Tests.Serialization
@@ -157,6 +158,102 @@ namespace RDD.Web.Tests.Serialization
             var myValueObject = (Dictionary<string, object>)result["Department"];
 
             Assert.True(myValueObject.ContainsKey("Id"));
+        }
+
+        [Fact]
+        public void ListSubTypeShouldSerialize()
+        {
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var urlProvider = new UrlProvider(httpContextAccessor);
+            var serializer = new EntitySerializer(urlProvider);
+            
+            var department = new Department
+            {
+                Users = new List<User>
+                {
+                    new User
+                    {
+                        Id = 0,
+                        Name = "Peter"
+                    },
+                    new User
+                    {
+                        Id = 1,
+                        Name = "Steven"
+                    }
+                }
+            };
+
+            var result = serializer.SerializeEntity(department, new HashSet<PropertySelector> {
+                new PropertySelector<Department>(d => d.Users)
+            });
+
+            Assert.True(result.ContainsKey("Users"));
+            var users = (List<Dictionary<string, object>>)result["Users"];
+            Assert.Equal(2, users.Count);
+
+            var user0 = users[0];
+            var user1 = users[1];
+
+            Assert.True(user0.ContainsKey("Name"));
+            Assert.Equal("Peter", user0["Name"]);
+            Assert.True(user0.ContainsKey("Id"));
+            Assert.Equal(0, user0["Id"]);
+
+            Assert.True(user1.ContainsKey("Name"));
+            Assert.Equal("Steven", user1["Name"]);
+            Assert.True(user1.ContainsKey("Id"));
+            Assert.Equal(1, user1["Id"]);
+        }
+
+        [Fact]
+        public void ListSubTypeWithPropertySelectorShouldSerialize()
+        {
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var urlProvider = new UrlProvider(httpContextAccessor);
+            var serializer = new EntitySerializer(urlProvider);
+
+            var department = new Department
+            {
+                Users = new List<User>
+                {
+                    new User
+                    {
+                        Id = 0,
+                        Name = "Peter"
+                    },
+                    new User
+                    {
+                        Id = 1,
+                        Name = "Steven"
+                    }
+                }
+            };
+
+            var result = serializer.SerializeEntity(department, new HashSet<PropertySelector> {
+                new PropertySelector<Department>(d => d.Users.Select(u => u.Name))
+            });
+
+            Assert.True(result.ContainsKey("Users"));
+            var users = (List<Dictionary<string, object>>)result["Users"];
+            Assert.Equal(2, users.Count);
+
+            var user0 = users[0];
+            var user1 = users[1];
+
+            Assert.True(user0.ContainsKey("Name"));
+            Assert.Equal("Peter", user0["Name"]);
+            Assert.False(user0.ContainsKey("Id"));
+
+            Assert.True(user1.ContainsKey("Name"));
+            Assert.Equal("Steven", user1["Name"]);
+            Assert.False(user1.ContainsKey("Id"));
         }
     }
 }
