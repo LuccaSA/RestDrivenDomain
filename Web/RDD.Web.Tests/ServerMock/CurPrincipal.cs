@@ -13,12 +13,5 @@ namespace RDD.Web.Tests.ServerMock
         public string Token { get; set; }
         public string Name { get; }
         public Culture Culture { get; }
-        public bool HasOperation(int operation) => true;
-
-        public bool HasAnyOperations(HashSet<int> operations) => true;
-
-        public HashSet<int> GetOperations(HashSet<int> operations) => operations;
-
-        public Expression<Func<TEntity, bool>> ApplyRights<TEntity>(HashSet<int> operations) => t => true;
     }
 }
