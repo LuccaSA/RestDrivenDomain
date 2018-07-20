@@ -8,5 +8,7 @@ namespace RDD.Domain.Mocks
         public string Token { get; set; }
         public string Name { get; set; }
         public Culture Culture { get; }
+
+        public PrincipalType Type => PrincipalType.User;
     }
 }

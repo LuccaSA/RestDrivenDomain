@@ -13,5 +13,7 @@ namespace RDD.Web.Tests.ServerMock
         public string Token { get; set; }
         public string Name { get; }
         public Culture Culture { get; }
+
+        public PrincipalType Type => PrincipalType.User;
     }
 }

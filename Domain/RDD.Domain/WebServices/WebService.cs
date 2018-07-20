@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 
 namespace RDD.Domain.WebServices
 {
@@ -15,6 +14,8 @@ namespace RDD.Domain.WebServices
         public override int Id { get; set; }
         public override string Name { get; set; }
         public string Token { get; set; }
+
+        public PrincipalType Type => PrincipalType.WebService;
 
         public Culture Culture => new Culture(CultureInfo.GetCultureInfo("en-US"));
 
