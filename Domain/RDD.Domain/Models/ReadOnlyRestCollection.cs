@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RDD.Domain.Exceptions;
+﻿using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Rights;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDD.Domain.Models
 {
@@ -14,14 +13,14 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public ReadOnlyRestCollection(IRepository<TEntity> repository, IRightsService rightsService)
+        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository, IRightsService rightsService)
         {
             _repository = repository;
             _rightsService = rightsService;
         }
 
         protected IRightsService _rightsService;
-        protected IRepository<TEntity> _repository;
+        protected IReadOnlyRepository<TEntity> _repository;
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {

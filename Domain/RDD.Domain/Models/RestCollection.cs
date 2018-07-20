@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RDD.Domain.Exceptions;
+﻿using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
@@ -16,11 +15,13 @@ namespace RDD.Domain.Models
         where TKey : IEquatable<TKey>
     {
         protected IPatcherProvider PatcherProvider { get; private set; }
+        protected new IRepository<TEntity> _repository;
 
         public RestCollection(IRepository<TEntity> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
             : base(repository, rightsService)
         {
             PatcherProvider = patcherProvider;
+            _repository = repository;
         }
 
         public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)

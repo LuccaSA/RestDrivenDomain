@@ -30,9 +30,12 @@ namespace RDD.Web.Helpers
             // register base services
             services.TryAddScoped<DbContext, TDbContext>();
             services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.TryAddScoped<IPatcherProvider, PatcherProvider>();
+            services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
+            services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
