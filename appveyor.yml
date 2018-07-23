@@ -34,39 +34,34 @@ install:
   - ps: . .\ComputeVersion.ps1
   - ps: $version = Compute "Web\RDD.Web\RDD.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
   - ps: Update-AppveyorBuild -Version $version.Semver
-  - ps: Write-Host "deploy_unstable = " $env:deploy_unstable
-  - echo %deploy_unstable%
-  - choco install "msbuild-sonarqube-runner" -y
-  - choco install opencover.portable
-  - choco install codecov
+  - dotnet tool install --global dotnet-sonarscanner
+  - nuget install OpenCover -Version 4.6.519 
+  - nuget install Codecov -Version 1.0.5 
 
 before_build:
 - dotnet restore
 - cmd: >-
     IF "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" (
-    C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net46\tools\SonarScanner.MSBuild.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%"
+    dotnet sonarscanner begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%"
     ) ELSE (
-    C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net46\tools\SonarScanner.MSBuild.exe begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=preview" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.pullRequest=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%"
+    dotnet sonarscanner begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=preview" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.pullRequest=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%"
     )
 
 build_script:
 - ps: msbuild "RDD.sln" /m /verbosity:minimal /property:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
-- cmd: >-
-    "C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net46\tools\SonarScanner.MSBuild.exe" end /d:"sonar.login=%SONAR_TOKEN%"
+- dotnet sonarscanner end /d:"sonar.login=%SONAR_TOKEN%"
 - ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --include-symbols --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --include-symbols --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Application\RDD.Application\RDD.Application.csproj --include-symbols --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Web\RDD.Web\RDD.Web.csproj --include-symbols --configuration $env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 
 test_script:
-- echo Starting test coverage with OpenCover
-- C:\ProgramData\chocolatey\bin\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
-- C:\ProgramData\chocolatey\bin\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
-- C:\ProgramData\chocolatey\bin\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Web\RDD.Web.Tests\RDD.Web.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
-- echo Sending to codecov
-- codecov -f coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Web\RDD.Web.Tests\RDD.Web.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- Codecov.1.0.5\tools\codecov -f coverage-opencover.xml
 
 after_test:
   - echo Starting Myget publish
