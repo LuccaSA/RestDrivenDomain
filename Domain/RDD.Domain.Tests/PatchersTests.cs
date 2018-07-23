@@ -63,7 +63,7 @@ namespace RDD.Domain.Tests
             IPatcher patcher = new ObjectPatcher(PatcherProvider);
             patcher.Patch(newPatched, json);
 
-            Assert.Equal(null, newPatched.CustomFields[1]);
+            Assert.Null(newPatched.CustomFields[1]);
             Assert.Equal("test", newPatched.CustomFields[2].Code);
         }
 
@@ -76,7 +76,7 @@ namespace RDD.Domain.Tests
             IPatcher patcher = new ObjectPatcher(PatcherProvider);
             patcher.Patch(newPatched, json);
 
-            Assert.Equal(null, newPatched.KeyStringValueStringDico["yo"]);
+            Assert.Null(newPatched.KeyStringValueStringDico["yo"]);
             Assert.Equal("test", newPatched.KeyStringValueStringDico["man"]);
         }
 
@@ -89,7 +89,7 @@ namespace RDD.Domain.Tests
             IPatcher patcher = new ObjectPatcher(PatcherProvider);
             patcher.Patch(newPatched, json);
 
-            Assert.Equal(null, newPatched.IntNullableDico[1]);
+            Assert.Null(newPatched.IntNullableDico[1]);
             Assert.Equal(3, newPatched.IntNullableDico[2]);
         }
 
@@ -102,7 +102,7 @@ namespace RDD.Domain.Tests
             IPatcher patcher = new ObjectPatcher(PatcherProvider);
             patcher.Patch(newPatched, json);
 
-            Assert.Equal(null, newPatched.StringDico[1]);
+            Assert.Null(newPatched.StringDico[1]);
             Assert.Equal("test", newPatched.StringDico[2]);
         }
 
