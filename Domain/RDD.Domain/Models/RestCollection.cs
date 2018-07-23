@@ -27,7 +27,7 @@ namespace RDD.Domain.Models
 
         public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
-            TEntity entity = InstanciateEntity(candidate);
+            TEntity entity = Instanciator.InstanciateNew(candidate);
 
             GetPatcher().Patch(entity, candidate.JsonValue);
 
@@ -103,9 +103,6 @@ namespace RDD.Domain.Models
                 Repository.Remove(entity);
             }
         }
-   
-        public TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
-            => Instanciator.InstanciateNew(candidate);
 
         protected virtual IPatcher GetPatcher() => new ObjectPatcher(PatcherProvider);
 
