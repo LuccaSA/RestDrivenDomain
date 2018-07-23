@@ -27,13 +27,13 @@ namespace RDD.Web.Controllers
     {
         protected TAppController AppController { get; }
         protected ApiHelper<TEntity, TKey> Helper { get; }
-        protected IRDDSerializer _rddSerializer;
+        protected IRDDSerializer RDDSerializer { get; set; }
 
         protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
         {
             AppController = appController;
             Helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            _rddSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
+            RDDSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
@@ -62,7 +62,7 @@ namespace RDD.Web.Controllers
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
-            return Ok(_rddSerializer.Serialize(selection, query));
+            return Ok(RDDSerializer.Serialize(selection, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
@@ -71,7 +71,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
-            return Ok(_rddSerializer.Serialize(entity, query));
+            return Ok(RDDSerializer.Serialize(entity, query));
         }
     }
 }

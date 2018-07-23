@@ -10,18 +10,18 @@ namespace RDD.Domain.Rights
 {
     public class RightExpressionsHelper : IRightExpressionsHelper
     {
-        protected IPrincipal _principal;
-        protected ICombinationsHolder _combinationsHolder;
+        protected IPrincipal Principal { get; set; }
+        protected ICombinationsHolder CombinationsHolder { get; set; }
 
         public RightExpressionsHelper(IPrincipal principal, ICombinationsHolder combinationsHolder)
         {
-            _principal = principal;
-            _combinationsHolder = combinationsHolder ?? throw new ArgumentNullException(nameof(combinationsHolder));
+            Principal = principal;
+            CombinationsHolder = combinationsHolder ?? throw new ArgumentNullException(nameof(combinationsHolder));
         }
 
         public virtual Expression<Func<T, bool>> GetFilter<T>(Query<T> query) where T : class
         {
-            if (_principal == null)
+            if (Principal == null)
             {
                 throw new ForbiddenException("Anonymous query is forbidden");
             }
@@ -37,7 +37,7 @@ namespace RDD.Domain.Rights
 
         public virtual HashSet<int> GetOperationIds<T>(HttpVerbs verb)
         {
-            var combinations = _combinationsHolder.Combinations.Where(c => c.Subject == typeof(T) && c.Verb.HasVerb(verb));
+            var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(T) && c.Verb.HasVerb(verb));
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
         }
     }

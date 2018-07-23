@@ -76,7 +76,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
-            return Ok(_rddSerializer.Serialize(entity, query));
+            return Ok(RDDSerializer.Serialize(entity, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
@@ -86,7 +86,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
 
-            return Ok(_rddSerializer.Serialize(entity, query));
+            return Ok(RDDSerializer.Serialize(entity, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedPutAsync()
@@ -104,7 +104,7 @@ namespace RDD.Web.Controllers
 
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
 
-            return Ok(_rddSerializer.Serialize(entities, query));
+            return Ok(RDDSerializer.Serialize(entities, query));
         }
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
