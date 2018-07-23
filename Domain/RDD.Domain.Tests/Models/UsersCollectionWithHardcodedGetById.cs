@@ -1,14 +1,14 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
-using RDD.Domain.Rights;
 using System.Threading.Tasks;
 
 namespace RDD.Domain.Tests.Models
 {
     public class UsersCollectionWithHardcodedGetById : UsersCollection
     {
-        public UsersCollectionWithHardcodedGetById(IRepository<User> repository, IPatcherProvider patcherProvider)
-            : base(repository, patcherProvider) { }
+        public UsersCollectionWithHardcodedGetById(IRepository<User> repository, IPatcherProvider patcherProvider, IInstanciator<User> instanciator)
+            : base(repository, patcherProvider, instanciator) { }
 
         public override Task<User> GetByIdAsync(int id, Query<User> query)
         {

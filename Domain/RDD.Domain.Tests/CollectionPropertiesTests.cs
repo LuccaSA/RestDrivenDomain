@@ -21,7 +21,7 @@ namespace RDD.Domain.Tests
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
             _repo = new OpenRepository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _patcherProvider);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace RDD.Domain.Tests
             using (var storage = new EFStorageService(new DataContext(options)))
             {
                 var repo = new OpenRepository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
 
                 var fields = "id,name,collection.sum(id)";
 

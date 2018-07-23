@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RDD.Domain.Mocks;
+using RDD.Domain.Models;
 using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
@@ -14,12 +15,14 @@ namespace RDD.Domain.Tests.Templates
         protected Func<string, IStorageService> _newStorage;
         protected IRightExpressionsHelper _rightsService;
         protected IPatcherProvider _patcherProvider;
+        protected IInstanciator<User> Instanciator { get; set; }
 
         public SingleContextTests()
         {
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
             _rightsService = new RightsServiceMock();
             _patcherProvider = new PatcherProvider();
+            Instanciator = new DefaultInstanciator<User>();
         }
 
         private DbContextOptions<DataContext> GetOptions(string name)

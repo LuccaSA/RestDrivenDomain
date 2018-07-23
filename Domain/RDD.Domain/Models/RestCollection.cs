@@ -1,5 +1,4 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
 using System;
@@ -16,11 +15,14 @@ namespace RDD.Domain.Models
         protected IPatcherProvider PatcherProvider { get; private set; }
         protected new IRepository<TEntity> Repository { get; set; }
 
-        public RestCollection(IRepository<TEntity> repository, IPatcherProvider patcherProvider)
+        protected IInstanciator<TEntity> Instanciator { get;set;}
+
+        public RestCollection(IRepository<TEntity> repository, IPatcherProvider patcherProvider, IInstanciator<TEntity> instanciator)
             : base(repository)
         {
             PatcherProvider = patcherProvider;
             Repository = repository;
+            Instanciator = instanciator;
         }
 
         public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
@@ -101,14 +103,9 @@ namespace RDD.Domain.Models
                 Repository.Remove(entity);
             }
         }
-
-        /// <summary>
-        /// We dropped the new() constraint for all these reasons
-        /// https://blogs.msdn.microsoft.com/seteplia/2017/02/01/dissecting-the-new-constraint-in-c-a-perfect-example-of-a-leaky-abstraction/
-        /// </summary>
-        /// <returns></returns>
-        public virtual TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
-            => Activator.CreateInstance<TEntity>();
+   
+        public TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
+            => Instanciator.InstanciateNew(candidate);
 
         protected virtual IPatcher GetPatcher() => new ObjectPatcher(PatcherProvider);
 
