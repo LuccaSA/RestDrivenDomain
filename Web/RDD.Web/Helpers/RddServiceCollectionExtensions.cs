@@ -17,14 +17,14 @@ using System;
 
 namespace RDD.Web.Helpers
 {
-    public static class RddServiceCollectionExtensions
+    public static class RDDServiceCollectionExtensions
     {
         /// <summary>
         /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
-        /// IRightsService and IRddSerialization are missing for this setup to be ready
+        /// IRightsService and IRDDSerialization are missing for this setup to be ready
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddRddCore<TDbContext>(this IServiceCollection services)
+        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
             // register base services
@@ -44,7 +44,7 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRDDRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
@@ -54,24 +54,24 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
             services.TryAddScoped<IUrlProvider, UrlProvider>();
             services.TryAddScoped<IEntitySerializer, EntitySerializer>();
-            services.TryAddScoped<IRddSerializer, RddSerializer>();
+            services.TryAddScoped<IRDDSerializer, RDDSerializer>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
             return services;
         }
 
-        public static IServiceCollection AddRdd<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRDD<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TDbContext : DbContext
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            return services.AddRddCore<TDbContext>()
-                .AddRddRights<TCombinationsHolder, TPrincipal>()
-                .AddRddSerialization<TPrincipal>();
+            return services.AddRDDCore<TDbContext>()
+                .AddRDDRights<TCombinationsHolder, TPrincipal>()
+                .AddRDDSerialization<TPrincipal>();
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace RDD.Web.Helpers
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
         {
             return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }

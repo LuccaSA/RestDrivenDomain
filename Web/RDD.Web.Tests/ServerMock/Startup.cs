@@ -35,7 +35,7 @@ namespace RDD.Web.Tests.ServerMock
 
             services.AddScoped<DbContextOptions>(_ => options);
 
-            services.AddRdd<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
+            services.AddRDD<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
 
             services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
@@ -54,11 +54,11 @@ namespace RDD.Web.Tests.ServerMock
             }
             app.UseStatusCodePages();
 
-            app.UseRdd();
+            app.UseRDD();
 
             app.UseMvc(routes =>
             {
-                routes.MapRddDefaultRoutes();
+                routes.MapRDDDefaultRoutes();
 
                 routes.MapRoute(
                     name: "default_route",

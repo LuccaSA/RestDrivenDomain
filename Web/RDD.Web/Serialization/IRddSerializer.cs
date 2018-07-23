@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RDD.Web.Serialization
 {
-    public interface IRddSerializer
+    public interface IRDDSerializer
     {
         object Serialize<TEntity>(TEntity entity, Query<TEntity> query)
             where TEntity : class;

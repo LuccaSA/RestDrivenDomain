@@ -14,7 +14,7 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
             : base(appController, helper, rddSerializer)
         {
         }
@@ -27,9 +27,9 @@ namespace RDD.Web.Controllers
     {
         protected TAppController AppController { get; }
         protected ApiHelper<TEntity, TKey> Helper { get; }
-        protected IRddSerializer _rddSerializer;
+        protected IRDDSerializer _rddSerializer;
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer)
+        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
         {
             AppController = appController;
             Helper = helper ?? throw new ArgumentNullException(nameof(helper));

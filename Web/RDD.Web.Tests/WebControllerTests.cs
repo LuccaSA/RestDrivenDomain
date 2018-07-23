@@ -28,7 +28,7 @@ namespace RDD.Web.Tests
                 repository.Add(new User { Id = 1 });
                 repository.Add(new AnotherUser { Id = 2 });
 
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null), new Mock<IRddSerializer>().Object);
+                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null), new Mock<IRDDSerializer>().Object);
 
                 var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
 

@@ -17,7 +17,7 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer) 
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer) 
             : base(appController, helper, rddSerializer)
         {
         }
@@ -28,7 +28,7 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRddSerializer rddSerializer)
+        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
             : base(appController, helper, rddSerializer)
         {
         }

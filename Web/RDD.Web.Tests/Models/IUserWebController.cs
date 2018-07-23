@@ -10,7 +10,7 @@ namespace RDD.Web.Tests.Models
 {
     public class IUserWebController : ReadOnlyWebController<IUser, int>
     {
-        public IUserWebController(IReadOnlyAppController<IUser, int> appController, ApiHelper<IUser, int> apiHelper, IRddSerializer rddSerializer)
+        public IUserWebController(IReadOnlyAppController<IUser, int> appController, ApiHelper<IUser, int> apiHelper, IRDDSerializer rddSerializer)
             : base(appController, apiHelper, rddSerializer) { }
 
         //This method only intend is to check that IUser constraint on ReadOnlyWebController is sufficient and working

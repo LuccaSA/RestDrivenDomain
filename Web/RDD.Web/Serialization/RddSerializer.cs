@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace RDD.Web.Serialization
 {
-    public class RddSerializer : IRddSerializer
+    public class RDDSerializer : IRDDSerializer
     {
         private readonly IEntitySerializer _serializer;
         private readonly IPrincipal _principal;
 
-        public RddSerializer(IEntitySerializer serializer, IPrincipal principal)
+        public RDDSerializer(IEntitySerializer serializer, IPrincipal principal)
         {
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _principal = principal;
