@@ -19,7 +19,7 @@ namespace RDD.Domain.Tests
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
             _repo = new Repository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _rightsService, _patcherProvider);
+            _collection = new UsersCollection(_repo, _patcherProvider);
         }
 
         [Fact]

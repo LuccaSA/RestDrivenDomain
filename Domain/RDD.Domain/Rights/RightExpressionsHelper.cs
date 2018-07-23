@@ -8,18 +8,16 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Rights
 {
-    public class RightsService : IRightsService
+    public class RightExpressionsHelper : IRightExpressionsHelper
     {
         protected IPrincipal _principal;
         protected ICombinationsHolder _combinationsHolder;
 
-        public RightsService(IPrincipal principal, ICombinationsHolder combinationsHolder)
+        public RightExpressionsHelper(IPrincipal principal, ICombinationsHolder combinationsHolder)
         {
             _principal = principal;
             _combinationsHolder = combinationsHolder ?? throw new ArgumentNullException(nameof(combinationsHolder));
         }
-
-        public bool IsAllowed<T>(HttpVerbs verb) => true;
 
         public virtual Expression<Func<T, bool>> GetFilter<T>(Query<T> query) where T : class
         {

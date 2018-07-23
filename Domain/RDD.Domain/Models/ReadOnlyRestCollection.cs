@@ -1,7 +1,6 @@
 ﻿using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +12,12 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository, IRightsService rightsService)
+        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository)
         {
-            _repository = repository;
-            _rightsService = rightsService;
+            Repository = repository;
         }
 
-        protected IRightsService _rightsService;
-        protected IReadOnlyRepository<TEntity> _repository;
+        protected IReadOnlyRepository<TEntity> Repository { get; set; }
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {
@@ -40,25 +37,25 @@ namespace RDD.Domain.Models
             //Dans de rares cas on veut seulement le count des entités
             if (query.Options.NeedCount && !query.Options.NeedEnumeration)
             {
-                count = await _repository.CountAsync(query);
+                count = await Repository.CountAsync(query);
             }
 
             //En général on veut une énumération des entités
             if (query.Options.NeedEnumeration)
             {
-                items = await _repository.GetAsync(query);
+                items = await Repository.GetAsync(query);
 
                 count = items.Count();
 
                 //Si y'a plus d'items que le paging max ou que l'offset du paging n'est pas à 0, il faut compter la totalité des entités
                 if (query.Page.Offset > 0 || query.Page.Limit <= count)
                 {
-                    count = await _repository.CountAsync(query);
+                    count = await Repository.CountAsync(query);
                 }
 
                 query.Page.TotalCount = count;
 
-                items = await _repository.PrepareAsync(items, query);
+                items = await Repository.PrepareAsync(items, query);
             }
 
             //Si c'était un PUT/DELETE, on en profite pour affiner la réponse
@@ -86,25 +83,6 @@ namespace RDD.Domain.Models
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// On ne filtre qu'en écriture, pas en lecture
-        /// </summary>
-        /// <returns></returns>
-        protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerbs verb)
-        {
-            if (verb != HttpVerbs.Get && !_rightsService.IsAllowed<TEntity>(verb))
-            {
-                var operations = _rightsService.GetOperationIds<TEntity>(verb);
-                if (!operations.Any())
-                {
-                    throw new UnreachableEntityException(typeof(TEntity));
-                }
-                throw new UnauthorizedException(string.Format("You do not have sufficient permission to make a {0} on type {1}", verb, typeof(TEntity).Name));
-            }
-
-            return query;
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());

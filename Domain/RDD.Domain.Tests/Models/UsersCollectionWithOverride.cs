@@ -6,8 +6,8 @@ namespace RDD.Domain.Tests.Models
 {
     public class UsersCollectionWithOverride : RestCollection<User, int>
     {
-        public UsersCollectionWithOverride(IRepository<User> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
-            : base(repository, rightsService, patcherProvider) { }
+        public UsersCollectionWithOverride(IRepository<User> repository, IPatcherProvider patcherProvider)
+            : base(repository, patcherProvider) { }
 
         public override User InstanciateEntity(ICandidate<User, int> candidate)
         {

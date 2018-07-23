@@ -11,13 +11,13 @@ namespace RDD.Infra.Storage
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class
     {
-        protected IStorageService _storageService;
-        protected IRightsService _rightsService;
+        protected IStorageService StorageService { get; set; }
+        protected IRightExpressionsHelper RightExpressionsHelper { get; set; }
 
-        public ReadOnlyRepository(IStorageService storageService, IRightsService rightsService)
+        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper rightExpressionsHelper)
         {
-            _storageService = storageService;
-            _rightsService = rightsService;
+            StorageService = storageService;
+            RightExpressionsHelper = rightExpressionsHelper;
         }
 
         public virtual Task<int> CountAsync()
@@ -56,7 +56,7 @@ namespace RDD.Infra.Storage
             entities = ApplyPage(entities, query);
             entities = ApplyIncludes(entities, query);
 
-            return _storageService.EnumerateEntitiesAsync(entities);
+            return StorageService.EnumerateEntitiesAsync(entities);
         }
 
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
@@ -66,12 +66,12 @@ namespace RDD.Infra.Storage
 
         protected virtual IQueryable<TEntity> Set(Query<TEntity> query)
         {
-            return _storageService.Set<TEntity>();
+            return StorageService.Set<TEntity>();
         }
 
         protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            return entities.Where(_rightsService.GetFilter(query));
+            return entities.Where(RightExpressionsHelper.GetFilter(query));
         }
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {

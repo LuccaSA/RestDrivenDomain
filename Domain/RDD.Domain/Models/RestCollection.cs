@@ -2,7 +2,6 @@
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
-using RDD.Domain.Rights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +14,13 @@ namespace RDD.Domain.Models
         where TKey : IEquatable<TKey>
     {
         protected IPatcherProvider PatcherProvider { get; private set; }
-        protected new IRepository<TEntity> _repository;
+        protected new IRepository<TEntity> Repository { get; set; }
 
-        public RestCollection(IRepository<TEntity> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
-            : base(repository, rightsService)
+        public RestCollection(IRepository<TEntity> repository, IPatcherProvider patcherProvider)
+            : base(repository)
         {
             PatcherProvider = patcherProvider;
-            _repository = repository;
+            Repository = repository;
         }
 
         public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
@@ -35,16 +34,11 @@ namespace RDD.Domain.Models
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
         {
-            if (query == null || query.Options.CheckRights)
-            {
-                await CheckRightsForCreateAsync(entity);
-            }
-
             ForgeEntity(entity);
 
             ValidateEntity(entity, null);
 
-            _repository.Add(entity);
+            Repository.Add(entity);
 
             return entity;
         }
@@ -88,7 +82,7 @@ namespace RDD.Domain.Models
                 Verb = HttpVerbs.Delete
             });
 
-            _repository.Remove(entity);
+            Repository.Remove(entity);
         }
 
         public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
@@ -104,7 +98,7 @@ namespace RDD.Domain.Models
             {
                 var entity = entities[id];
 
-                _repository.Remove(entity);
+                Repository.Remove(entity);
             }
         }
 
@@ -115,16 +109,6 @@ namespace RDD.Domain.Models
         /// <returns></returns>
         public virtual TEntity InstanciateEntity(ICandidate<TEntity, TKey> candidate)
             => Activator.CreateInstance<TEntity>();
-
-        protected virtual Task CheckRightsForCreateAsync(TEntity entity)
-        {
-            if (!_rightsService.IsAllowed<TEntity>(HttpVerbs.Post))
-            {
-                throw new UnauthorizedException(string.Format("You cannot create entity of type {0}", typeof(TEntity).Name));
-            }
-
-            return Task.CompletedTask;
-        }
 
         protected virtual IPatcher GetPatcher() => new ObjectPatcher(PatcherProvider);
 

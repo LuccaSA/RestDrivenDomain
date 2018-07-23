@@ -7,8 +7,8 @@ namespace RDD.Domain.Tests.Models
 {
     public class UsersCollectionWithHardcodedGetById : UsersCollection
     {
-        public UsersCollectionWithHardcodedGetById(IRepository<User> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
-            : base(repository, rightsService, patcherProvider) { }
+        public UsersCollectionWithHardcodedGetById(IRepository<User> repository, IPatcherProvider patcherProvider)
+            : base(repository, patcherProvider) { }
 
         public override Task<User> GetByIdAsync(int id, Query<User> query)
         {

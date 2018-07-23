@@ -17,7 +17,7 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _rightsService, _patcherProvider);
+                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
@@ -35,7 +35,7 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _rightsService, _patcherProvider);
+                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;

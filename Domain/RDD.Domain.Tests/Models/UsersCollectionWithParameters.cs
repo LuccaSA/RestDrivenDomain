@@ -6,7 +6,7 @@ namespace RDD.Domain.Tests.Models
 {
     public class UsersCollectionWithParameters : RestCollection<UserWithParameters, int>
     {
-        public UsersCollectionWithParameters(IRepository<UserWithParameters> repository, IRightsService rightsService, IPatcherProvider patcherProvider)
-            : base(repository, rightsService, patcherProvider) { }
+        public UsersCollectionWithParameters(IRepository<UserWithParameters> repository, IPatcherProvider patcherProvider)
+            : base(repository, patcherProvider) { }
     }
 }

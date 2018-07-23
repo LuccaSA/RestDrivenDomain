@@ -47,7 +47,7 @@ namespace RDD.Web.Helpers
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            services.TryAddScoped<IRightsService, RightsService>();
+            services.TryAddScoped<IRightExpressionsHelper, RightExpressionsHelper>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
             services.TryAddScoped<ICombinationsHolder, TCombinationsHolder>();
             return services;

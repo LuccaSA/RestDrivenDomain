@@ -10,14 +10,14 @@ namespace RDD.Domain.Tests
 {
     internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
     {
-        public AbstractClassCollection(IRepository<AbstractClass> repository, IRightsService rightsService)
-            : base(repository, rightsService) { }
+        public AbstractClassCollection(IRepository<AbstractClass> repository)
+            : base(repository) { }
     }
 
     internal class ConcreteClassThreeCollection : ReadOnlyRestCollection<ConcreteClassThree, int>
     {
-        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository, IRightsService rightsService)
-            : base(repository, rightsService) { }
+        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository)
+            : base(repository) { }
     }
 
     public class AbstractEntityTests
@@ -32,7 +32,7 @@ namespace RDD.Domain.Tests
             repo.Add(new ConcreteClassThree());
             repo.Add(new ConcreteClassThree());
 
-            var collection = new ConcreteClassThreeCollection(repo, rightsService);
+            var collection = new ConcreteClassThreeCollection(repo);
 
             var result = await collection.GetAllAsync();
 
@@ -50,7 +50,7 @@ namespace RDD.Domain.Tests
             repo.Add(new ConcreteClassOne());
             repo.Add(new ConcreteClassTwo());
 
-            var collection = new AbstractClassCollection(repo, rightsService);
+            var collection = new AbstractClassCollection(repo);
 
             var result = await collection.GetAllAsync();
 
