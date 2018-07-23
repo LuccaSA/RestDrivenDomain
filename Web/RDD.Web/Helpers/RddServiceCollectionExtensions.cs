@@ -24,7 +24,7 @@ namespace RDD.Web.Helpers
         /// IRightsService and IRddSerialization are missing for this setup to be ready
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddRddMinimum<TDbContext>(this IServiceCollection services)
+        public static IServiceCollection AddRddCore<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
             // register base services
@@ -68,7 +68,7 @@ namespace RDD.Web.Helpers
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            return services.AddRddMinimum<TDbContext>()
+            return services.AddRddCore<TDbContext>()
                 .AddRddRights<TCombinationsHolder, TPrincipal>()
                 .AddRddSerialization<TPrincipal>();
         }
