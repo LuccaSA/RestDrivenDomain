@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra.Storage
 {
-    public class InMemoryStorageService : IStorageService
+    public class InMemoryStorageService<TEntity> : IStorageService<TEntity>
+            where TEntity : class
     {
         protected Queue<Task> AfterSaveChangesActions { get; }
         public Dictionary<Type, IList> Cache { get; }
@@ -20,7 +21,7 @@ namespace RDD.Infra.Storage
             Indexes = new Dictionary<Type, int>();
         }
 
-        private void CreateIfNotExist<TEntity>()
+        private void CreateIfNotExist()
         {
             var type = typeof(TEntity);
 
@@ -31,10 +32,9 @@ namespace RDD.Infra.Storage
             }
         }
 
-        public IQueryable<TEntity> Set<TEntity>()
-            where TEntity : class
+        public IQueryable<TEntity> Set()
         {
-            CreateIfNotExist<TEntity>();
+            CreateIfNotExist();
 
             var type = typeof(TEntity);
 
@@ -50,29 +50,25 @@ namespace RDD.Infra.Storage
             return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
         }
 
-        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
-            where TEntity : class
+        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync(IQueryable<TEntity> entities)
         {
             return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
         }
 
-        public void Add<TEntity>(TEntity entity)
-            where TEntity : class
+        public void Add(TEntity entity)
         {
-            CreateIfNotExist<TEntity>();
+            CreateIfNotExist();
 
             Cache[typeof(TEntity)].Add(entity);
         }
 
-        public void Remove<TEntity>(TEntity entity)
-            where TEntity : class
+        public void Remove(TEntity entity)
         {
-            CreateIfNotExist<TEntity>();
+            CreateIfNotExist();
             Cache[typeof(TEntity)].Remove(entity);
         }
 
-        public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class
+        public void AddRange(IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
             {
@@ -80,8 +76,7 @@ namespace RDD.Infra.Storage
             }
         }
 
-        public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class
+        public void RemoveRange(IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
             {

@@ -14,22 +14,34 @@ using RDD.Infra;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
 using System;
+using System.Collections.Generic;
 
 namespace RDD.Web.Helpers
 {
     public static class RDDServiceCollectionExtensions
     {
-        /// <summary>
-        /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
-        /// IRightsService and IRDDSerialization are missing for this setup to be ready
-        /// </summary>
-        /// <param name="services"></param>
-        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
+        private static void RegisterBoundedContextSetup(IServiceCollection services, List<Type> dbContextTypes)
+        {
+            BoundedContextsResolver.DbContextTypes = dbContextTypes;
+            services.AddSingleton<BoundedContextsResolver>();
+
+            foreach (var dbContextType in dbContextTypes)
+            {
+                services.TryAddScoped(dbContextType);
+            }
+        }
+
+        private static void RegisterMonoContextSetup<TDbContext>(IServiceCollection services)
             where TDbContext : DbContext
         {
+            services.AddSingleton<MonoContextResolver<TDbContext>>();
+            services.TryAddScoped<TDbContext>();
+        }
+
+        private static void RegisterRDDCore(IServiceCollection services)
+        {
             // register base services
-            services.TryAddScoped<DbContext, TDbContext>();
-            services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped(typeof(IStorageService<>), typeof(EFStorageService<>));
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.TryAddScoped<IPatcherProvider, PatcherProvider>();
@@ -41,6 +53,30 @@ namespace RDD.Web.Helpers
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
             services.TryAddScoped(typeof(ApiHelper<,>));
+        }
+    
+        /// <summary>
+        /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
+        /// IRightsService and IRDDSerialization are missing for this setup to be ready
+        /// </summary>
+        /// <param name="services"></param>
+        public static IServiceCollection AddRDDCoreWithBoundedContext(this IServiceCollection services, List<Type> dbContextTypes)
+        {
+            RegisterBoundedContextSetup(services, dbContextTypes);
+            RegisterRDDCore(services);
+            return services;
+        }
+
+        /// <summary>
+        /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
+        /// IRightsService and IRDDSerialization are missing for this setup to be ready
+        /// </summary>
+        /// <param name="services"></param>
+        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
+            where TDbContext : DbContext
+        {
+            RegisterMonoContextSetup<TDbContext>(services);
+            RegisterRDDCore(services);
             return services;
         }
 

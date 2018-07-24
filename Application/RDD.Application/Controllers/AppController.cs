@@ -11,7 +11,7 @@ namespace RDD.Application.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection)
+        public AppController(IStorageService<TEntity> storage, IRestCollection<TEntity, TKey> collection)
             : base(storage, collection)
         {
         }
@@ -22,9 +22,9 @@ namespace RDD.Application.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected IStorageService Storage { get; }
+        protected IStorageService<TEntity> Storage { get; }
 
-        public AppController(IStorageService storage, TCollection collection)
+        public AppController(IStorageService<TEntity> storage, TCollection collection)
             : base(collection)
         {
             Storage = storage;

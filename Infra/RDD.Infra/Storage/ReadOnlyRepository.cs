@@ -11,10 +11,10 @@ namespace RDD.Infra.Storage
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class
     {
-        protected IStorageService StorageService { get; set; }
+        protected IStorageService<TEntity> StorageService { get; set; }
         protected IRightExpressionsHelper RightExpressionsHelper { get; set; }
 
-        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper rightExpressionsHelper)
+        public ReadOnlyRepository(IStorageService<TEntity> storageService, IRightExpressionsHelper rightExpressionsHelper)
         {
             StorageService = storageService;
             RightExpressionsHelper = rightExpressionsHelper;
@@ -66,7 +66,7 @@ namespace RDD.Infra.Storage
 
         protected virtual IQueryable<TEntity> Set(Query<TEntity> query)
         {
-            return StorageService.Set<TEntity>();
+            return StorageService.Set();
         }
 
         protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
