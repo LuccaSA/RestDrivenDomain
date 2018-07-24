@@ -19,21 +19,19 @@ namespace RDD.Web.Tests
         [Fact]
         public async Task WebControllerShouldWorkOnInterfaces()
         {
-            using (var storage = new InMemoryStorageService())
-            {
-                var repository = new Repository<IUser>(storage, null);
-                var collection = new ReadOnlyRestCollection<IUser, int>(repository);
-                var appController = new ReadOnlyAppController<IUser, int>(collection);
+            var storage = new InMemoryStorageService<IUser>();
+            var repository = new Repository<IUser>(storage, null);
+            var collection = new ReadOnlyRestCollection<IUser, int>(repository);
+            var appController = new ReadOnlyAppController<IUser, int>(collection);
 
-                repository.Add(new User { Id = 1 });
-                repository.Add(new AnotherUser { Id = 2 });
+            repository.Add(new User { Id = 1 });
+            repository.Add(new AnotherUser { Id = 2 });
 
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null), new Mock<IRDDSerializer>().Object);
+            var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null), new Mock<IRDDSerializer>().Object);
 
-                var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
+            var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
 
-                Assert.Equal(2, results.Count());
-            }
+            Assert.Equal(2, results.Count());
         }
     }
 }

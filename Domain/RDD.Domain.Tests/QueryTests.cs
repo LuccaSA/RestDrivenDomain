@@ -13,7 +13,7 @@ namespace RDD.Domain.Tests
     {
         private readonly IRepository<User> _repo;
         private IReadOnlyRestCollection<User, int> _collection;
-        private readonly IStorageService _storage;
+        private readonly IStorageService<User> _storage;
 
         public QueryTests()
         {

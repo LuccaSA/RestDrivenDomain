@@ -26,7 +26,7 @@ namespace RDD.Domain.Tests
         public async void NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
             var rightsService = new RightsServiceMock();
-            var storage = new InMemoryStorageService();
+            var storage = new InMemoryStorageService<ConcreteClassThree>();
             var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService);
 
             repo.Add(new ConcreteClassThree());
@@ -43,7 +43,7 @@ namespace RDD.Domain.Tests
         public async void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
             var rightsService = new RightsServiceMock();
-            var storage = new InMemoryStorageService();
+            var storage = new InMemoryStorageService<AbstractClass>();
             var repo = new OpenRepository<AbstractClass>(storage, rightsService);
 
             repo.Add(new ConcreteClassOne());
