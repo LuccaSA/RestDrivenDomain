@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using System.Threading;
@@ -10,7 +11,7 @@ namespace RDD.Domain.Attributes
         private string TermName { get; }
         private ResourceManager ResxManager { get; }
 
-        public string Description => ResxManager.GetString(TermName, Thread.CurrentThread.CurrentCulture);
+        public string Description => ResxManager.GetString(TermName, CultureInfo.CurrentCulture);
 
         protected CulturedDescriptionAttribute(ResourceManager resxManager, string termName)
         {

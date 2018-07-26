@@ -32,7 +32,7 @@ namespace RDD.Web.Querying
     }
 
     public class WebFiltersParser<TEntity> : WebFiltersParser
-        where TEntity : class, IEntityBase
+        where TEntity : class
     {
         protected WebFiltersParser() { }
 

@@ -5,15 +5,13 @@ namespace RDD.Web.Models
 {
     public class MetadataHeader
     {
-        public DateTime generated { get; set; }
-
-        public string principal { get; set; }
-
+        public DateTime Generated { get; set; }
+        public string Principal { get; set; }
         public MetadataPaging Paging { get; set; }
 
-        public MetadataHeader(IExecutionContext execution)
+        public MetadataHeader(IPrincipal principal)
         {
-            principal = execution.curPrincipal.Name;
+            Principal = principal?.Name;
         }
     }
 

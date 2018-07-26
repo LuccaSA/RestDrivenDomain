@@ -20,8 +20,4 @@
     <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
-
 </Project>

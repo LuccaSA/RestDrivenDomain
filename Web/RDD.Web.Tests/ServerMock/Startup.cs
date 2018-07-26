@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Domain;
 using RDD.Domain.Patchers;
+using RDD.Domain.WebServices;
 using RDD.Infra;
-using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Helpers;
 using RDD.Web.Serialization;
@@ -33,22 +34,10 @@ namespace RDD.Web.Tests.ServerMock
                 .Options;
 
             services.AddScoped<DbContextOptions>(_ => options);
-            services.AddScoped<DbContext, ExchangeRateDbContext>();
 
-            // register RDD 
-            services.AddRdd();
+            services.AddRDD<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
 
-            services.AddScoped<IExecutionContext>(_ => new HttpExecutionContext
-            {
-                curPrincipal = new CurPrincipal()
-            });
-
-            services.AddSingleton<ICombinationsHolder, CombinationsHolder>();
-            services.AddSingleton<IUrlProvider, UrlProvider>();
-            services.AddScoped<IStorageService, EFStorageService>();
-            services.AddScoped<IPatcherProvider, PatcherProvider>();
-            services.AddScoped<IHttpContextHelper, HttpContextHelper>();
-
+            services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
 
             services.AddMvc();
@@ -65,11 +54,11 @@ namespace RDD.Web.Tests.ServerMock
             }
             app.UseStatusCodePages();
 
-            app.UseRdd();
+            app.UseRDD();
 
             app.UseMvc(routes =>
             {
-                routes.MapRddDefaultRoutes();
+                routes.MapRDDDefaultRoutes();
 
                 routes.MapRoute(
                     name: "default_route",

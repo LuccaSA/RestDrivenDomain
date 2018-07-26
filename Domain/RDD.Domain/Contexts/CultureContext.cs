@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Threading;
 
 namespace RDD.Domain.Contexts
 {
@@ -11,17 +10,17 @@ namespace RDD.Domain.Contexts
 
         public CultureContext(CultureInfo culture)
         {
-            _originalCulture = Thread.CurrentThread.CurrentCulture;
-            _originalUICulture = Thread.CurrentThread.CurrentUICulture;
+            _originalCulture = CultureInfo.CurrentCulture;
+            _originalUICulture = CultureInfo.CurrentUICulture;
 
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = culture;
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
         }
 
         public void Dispose()
         {
-            Thread.CurrentThread.CurrentCulture = _originalCulture;
-            Thread.CurrentThread.CurrentUICulture = _originalUICulture;
+            CultureInfo.CurrentCulture = _originalCulture;
+            CultureInfo.CurrentUICulture = _originalUICulture;
         }
     }
 }

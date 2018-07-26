@@ -18,8 +18,8 @@ namespace RDD.Domain.Tests
         public QueryTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new Repository<User>(_storage, _execution, _combinationsHolder);
-            _collection = new UsersCollection(_repo, _execution, _combinationsHolder, _patcherProvider);
+            _repo = new Repository<User>(_storage, _rightsService);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
 
         [Fact]

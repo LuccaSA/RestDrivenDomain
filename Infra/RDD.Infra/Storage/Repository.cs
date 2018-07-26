@@ -1,4 +1,5 @@
 ﻿using RDD.Domain;
+using RDD.Domain.Rights;
 using System.Collections.Generic;
 
 namespace RDD.Infra.Storage
@@ -6,8 +7,8 @@ namespace RDD.Infra.Storage
     public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
         where TEntity : class
     {
-        public Repository(IStorageService storageService, IExecutionContext executionContext, ICombinationsHolder combinationsHolder)
-            : base(storageService, executionContext, combinationsHolder) { }
+        public Repository(IStorageService storageService, IRightExpressionsHelper rightExpressionsHelper)
+            : base(storageService, rightExpressionsHelper) { }
 
         public virtual void Add(TEntity entity)
         {

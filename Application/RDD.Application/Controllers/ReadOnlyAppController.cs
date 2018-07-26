@@ -27,18 +27,8 @@ namespace RDD.Application.Controllers
             Collection = collection;
         }
 
-        public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
-        {
-            var selection = await Collection.GetAsync(query);
+        public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
 
-            return selection;
-        }
-
-        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
-        {
-            var entity = await Collection.GetByIdAsync(id, query);
-
-            return entity;
-        }
+        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
     }
 }

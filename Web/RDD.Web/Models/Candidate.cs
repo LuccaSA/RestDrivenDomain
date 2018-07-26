@@ -35,6 +35,7 @@ namespace RDD.Web.Models
             return ContainsPath(_structure, propertySelector);
         }
         TKey ICandidate<TEntity, TKey>.Id => Value.Id;
+        object ICandidate<TEntity>.Id => Value.Id;
 
         private bool ContainsPath(JToken token, PropertySelector selector)
         {

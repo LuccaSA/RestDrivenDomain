@@ -3,7 +3,7 @@ using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using System.Collections.Generic;
 
-namespace RDD.Web
+namespace RDD.Web.Serialization
 {
     public interface IEntitySerializer
     {

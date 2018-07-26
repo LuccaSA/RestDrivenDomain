@@ -8,8 +8,7 @@ using System.Linq;
 namespace RDD.Web.Querying
 {
     public class QueryFactory<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
-        where TKey : IEquatable<TKey>
+        where TEntity : class, IPrimaryKey<TKey>
     {
         protected HashSet<string> IgnoredFilters { get; set; }
 

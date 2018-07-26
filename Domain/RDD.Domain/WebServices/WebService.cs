@@ -1,11 +1,7 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers;
 using RDD.Domain.Models;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
 
 namespace RDD.Domain.WebServices
 {
@@ -15,6 +11,8 @@ namespace RDD.Domain.WebServices
         public override string Name { get; set; }
         public string Token { get; set; }
 
+        public PrincipalType Type => PrincipalType.WebService;
+
         public Culture Culture => new Culture(CultureInfo.GetCultureInfo("en-US"));
 
         public ICollection<int> AppOperations { get; set; }
@@ -22,22 +20,6 @@ namespace RDD.Domain.WebServices
         public WebService()
         {
             AppOperations = new HashSet<int>();
-        }
-
-        public virtual HashSet<int> GetOperations(HashSet<int> operations) => new HashSet<int>(AppOperations.Intersect(operations));
-
-        public virtual bool HasAnyOperations(HashSet<int> operations) => GetOperations(operations).Any();
-
-        public virtual bool HasOperation(int operation) => GetOperations(new HashSet<int>() { operation }).Any();
-
-        public virtual IQueryable<TEntity> ApplyRights<TEntity>(IQueryable<TEntity> entities, HashSet<int> operations)
-        {
-            if (!HasAnyOperations(operations))
-            {
-                throw new UnauthorizedException(String.Format("Web service {0} does not have any permission on type {1}", Name, typeof(TEntity).Name));
-            }
-
-            return entities;
         }
     }
 }

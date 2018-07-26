@@ -2,8 +2,10 @@
 using Newtonsoft.Json;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
+using RDD.Domain.Mocks;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
+using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
@@ -26,8 +28,8 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var user = new User { Id = 1 };
-                var repo = new OpenRepository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new OpenRepository<User>(storage, _rightsService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
 
                 await users.CreateAsync(user);
 
@@ -43,8 +45,8 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var user = new User { Id = 2 };
-                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
 
                 await users.CreateAsync(user);
 
@@ -59,19 +61,17 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                _execution.curPrincipal = new WebService { Id = 1, AppOperations = new HashSet<int>() { 1 } };
-
                 var mock = new Mock<ICombinationsHolder>();
                 mock.Setup(h => h.Combinations)
                     .Returns(new HashSet<Combination>() {
                         new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerbs.Post },
                         new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerbs.Put }
                     });
-                var combinationsHolder = mock.Object;
+                var rightService = new RightExpressionsHelper(new WebService { Id = 1, AppOperations = new HashSet<int> { 1 } }, mock.Object);
 
                 var user = new User { Id = 3 };
-                var repo = new Repository<User>(storage, _execution, combinationsHolder);
-                var users = new UsersCollection(repo, _execution, combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, rightService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var app = new UsersAppController(storage, users);
 
                 await app.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), new Query<User>());
@@ -85,8 +85,8 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<User>(storage, _execution, null);
-                var users = new UsersCollection(repo, _execution, null, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
@@ -94,34 +94,14 @@ namespace RDD.Domain.Tests
             }
         }
 
-        [Fact]
-        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverriden()
+        class InstanciatorImplementation : IInstanciator<UserWithParameters>
         {
-            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            public UserWithParameters InstanciateNew(ICandidate<UserWithParameters> candidate)
             {
-                var repo = new Repository<User>(storage, _execution, null);
-                var users = new UsersCollectionWithOverride(repo, _execution, null, _patcherProvider);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
-                
-                await users.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
-            }
-        }
+                var id = candidate.Value.Id;
+                var name = candidate.Value.Name;
 
-
-        [Fact]
-        public async Task Post_SHOULD_fail_WHEN_InstantiateEntityIsNotOverridenAndEntityHasParametersInConstructor()
-        {
-            using (var storage = _newStorage(Guid.NewGuid().ToString()))
-            {
-                var repo = new Repository<UserWithParameters>(storage, _execution, null);
-                var users = new UsersCollectionWithParameters(repo, _execution, null, _patcherProvider);
-                var query = new Query<UserWithParameters>();
-                query.Options.CheckRights = false;
-
-                await Assert.ThrowsAsync<MissingMethodException>(
-                    () => users.CreateAsync(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3 }"), query)
-                );
+                return new UserWithParameters(id, name);
             }
         }
 
@@ -130,8 +110,8 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<UserWithParameters>(storage, _execution, null);
-                var users = new UsersCollectionWithParametersAndOverride(repo, _execution, null, _patcherProvider);
+                var repo = new Repository<UserWithParameters>(storage, _rightsService);
+                var users = new UsersCollectionWithParameters(repo, _patcherProvider, new InstanciatorImplementation());
                 var query = new Query<UserWithParameters>();
                 query.Options.CheckRights = false;
 
@@ -148,8 +128,8 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var user = new User { Id = 2 };
-                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
@@ -169,8 +149,8 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
-                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
@@ -190,8 +170,8 @@ namespace RDD.Domain.Tests
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
                 var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
-                var repo = new Repository<User>(storage, _execution, _combinationsHolder);
-                var users = new UsersCollection(repo, _execution, _combinationsHolder, _patcherProvider);
+                var repo = new Repository<User>(storage, _rightsService);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 

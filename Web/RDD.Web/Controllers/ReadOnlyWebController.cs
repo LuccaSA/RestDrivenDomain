@@ -2,11 +2,11 @@
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
-using RDD.Web.Models;
+using RDD.Web.Serialization;
 using System;
 using System.Threading.Tasks;
-using RDD.Domain.Models.Querying;
 
 namespace RDD.Web.Controllers
 {
@@ -14,8 +14,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
-            : base(appController, helper)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
+            : base(appController, helper, rddSerializer)
         {
         }
     }
@@ -27,11 +27,13 @@ namespace RDD.Web.Controllers
     {
         protected TAppController AppController { get; }
         protected ApiHelper<TEntity, TKey> Helper { get; }
+        protected IRDDSerializer RDDSerializer { get; set; }
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
         {
             AppController = appController;
-            Helper = helper;
+            Helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            RDDSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
@@ -53,29 +55,23 @@ namespace RDD.Web.Controllers
             }
             return Task.FromResult((IActionResult)NotFound());
         }
-        
+
         protected virtual async Task<IActionResult> ProtectedGetAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeSelection(selection, query), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(RDDSerializer.Serialize(selection, query));
         }
 
-        // Attention ! Ne pas renommer _id_ en id, sinon, il est impossible de faire des filtres API sur id dans la querystring
-        // car asp.net essaye de mapper vers la TKey id et n'est pas content car c'est pas du bon type
         protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
-            var dataContainer = new Metadata(Helper.Serializer.SerializeEntity(entity, query.Fields), query.Options, query.Page, Helper.Execution);
-
-            return Ok(dataContainer.ToDictionary());
+            return Ok(RDDSerializer.Serialize(entity, query));
         }
     }
 }

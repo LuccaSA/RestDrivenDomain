@@ -1,44 +1,77 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Newtonsoft.Json.Serialization;
 using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
 using RDD.Domain.Patchers;
+using RDD.Domain.Rights;
 using RDD.Domain.WebServices;
 using RDD.Infra;
-using RDD.Infra.Contexts;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
+using System;
 
 namespace RDD.Web.Helpers
 {
-    public static class RddServiceCollectionExtensions
+    public static class RDDServiceCollectionExtensions
     {
         /// <summary>
         /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
+        /// IRightsService and IRDDSerialization are missing for this setup to be ready
         /// </summary>
         /// <param name="services"></param>
-        public static void AddRdd(this IServiceCollection services)
+        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
+            where TDbContext : DbContext
         {
             // register base services
-            services.AddScoped(typeof(ApiHelper<,>))
-                .AddScoped<IEntitySerializer, EntitySerializer>()
-                .AddScoped(typeof(IAppController<,>), typeof(AppController<,>))
-                .AddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>))
-                .AddScoped(typeof(IRepository<>), typeof(Repository<>))
-                .AddScoped<IStorageService, EFStorageService>()
-                .AddScoped<IUrlProvider, UrlProvider>()
-                .AddScoped<IEntitySerializer, EntitySerializer>()
-                .AddScoped<IPatcherProvider, PatcherProvider>()
-                .AddScoped<IHttpContextHelper, HttpContextHelper>()
-                .AddScoped<IExecutionContext, HttpExecutionContext>()
-                .AddScoped<IWebServicesCollection, WebServicesCollection>()
+            services.TryAddScoped<DbContext, TDbContext>();
+            services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
+            services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.TryAddScoped<IPatcherProvider, PatcherProvider>();
+            services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
+            services.TryAddScoped(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
+            services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
+            services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
+            services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
+            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
+            services.TryAddScoped(typeof(ApiHelper<,>));
+            return services;
+        }
 
-                .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        public static IServiceCollection AddRDDRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+            where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
+        {
+            services.TryAddScoped<IRightExpressionsHelper, RightExpressionsHelper>();
+            services.TryAddScoped<IPrincipal, TPrincipal>();
+            services.TryAddScoped<ICombinationsHolder, TCombinationsHolder>();
+            return services;
+        }
+
+        public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
+            where TPrincipal : class, IPrincipal
+        {
+            services.TryAddScoped<IUrlProvider, UrlProvider>();
+            services.TryAddScoped<IEntitySerializer, EntitySerializer>();
+            services.TryAddScoped<IRDDSerializer, RDDSerializer>();
+            services.TryAddScoped<IPrincipal, TPrincipal>();
+            return services;
+        }
+
+        public static IServiceCollection AddRDD<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+            where TDbContext : DbContext
+            where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
+        {
+            return services.AddRDDCore<TDbContext>()
+                .AddRDDRights<TCombinationsHolder, TPrincipal>()
+                .AddRDDSerialization<TPrincipal>();
         }
 
         /// <summary>
@@ -46,10 +79,10 @@ namespace RDD.Web.Helpers
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
         {
             return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
-     
+
 }

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using RDD.Domain.Exceptions;
+using RDD.Domain.Helpers;
+using RDD.Domain.Models.Querying;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain.Models
 {
@@ -13,16 +12,12 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public ReadOnlyRestCollection(IRepository<TEntity> repository, IExecutionContext execution, ICombinationsHolder combinationsHolder)
+        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository)
         {
             Repository = repository;
-            Execution = execution;
-            CombinationsHolder = combinationsHolder;
         }
-        
-        protected ICombinationsHolder CombinationsHolder { get; }
-        protected IExecutionContext Execution { get; }
-        protected IRepository<TEntity> Repository { get; }
+
+        protected IReadOnlyRepository<TEntity> Repository { get; set; }
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {
@@ -44,7 +39,7 @@ namespace RDD.Domain.Models
             {
                 count = await Repository.CountAsync(query);
             }
-            
+
             //En général on veut une énumération des entités
             if (query.Options.NeedEnumeration)
             {
@@ -60,19 +55,7 @@ namespace RDD.Domain.Models
 
                 query.Page.TotalCount = count;
 
-                //Si on a demandé les permissions, on va les chercher après énumération
-                if (query.Options.AttachOperations)
-                {
-                    AttachOperationsToEntities(items);
-                }
-
                 items = await Repository.PrepareAsync(items, query);
-
-                //ON attache les actions après le Prepare, histoire que les objets soient le plus complets possibles
-                if (query.Options.AttachActions)
-                {
-                    AttachActionsToEntities(items);
-                }
             }
 
             //Si c'était un PUT/DELETE, on en profite pour affiner la réponse
@@ -102,94 +85,13 @@ namespace RDD.Domain.Models
             return result;
         }
 
-        protected void AttachOperationsToEntity(TEntity entity)
-        {
-            AttachOperationsToEntities(new List<TEntity>
-            {
-                entity
-            });
-        }
-
-        private void AttachOperationsToEntities(IEnumerable<TEntity> entities)
-        {
-            var operationsForAttach = new List<Operation>(); //TODO  _appInstance.GetAllOperations<TEntity>();
-
-            AttachOperations(entities, operationsForAttach);
-        }
-
-        /// <summary>
-        /// On ne filtre qu'en écriture, pas en lecture
-        /// </summary>
-        /// <returns></returns>
-        protected virtual Query<TEntity> FilterRights(Query<TEntity> query, HttpVerbs verb)
-        {
-            if (verb == HttpVerbs.Get)
-            {
-                return query;
-            }
-
-            HashSet<int> operationIds = GetOperationIds(query, verb);
-            if (!operationIds.Any())
-            {
-                throw new UnreachableEntityException(typeof(TEntity));
-            }
-            if (!Execution.curPrincipal.HasAnyOperations(operationIds))
-            {
-                throw new UnauthorizedException(string.Format("You do not have sufficient permission to make a {0} on type {1}", verb, typeof(TEntity).Name));
-            }
-
-            return query;
-        }
-
-        protected virtual void AttachOperations(IEnumerable<TEntity> entities, List<Operation> operations)
-        {
-            //TODO
-            //if (operations.Any())
-            //{
-            //    var ops = ExecutionContext.Current.curPrincipal.GetOperations(_storage, _appInstance, new HashSet<int>(operations.Select(o => o.Id)));
-            //    SetOperationsOnEntities(entities, entities.ToDictionary(o => o.Id, o => ops), operations);
-            //}
-        }
-        
-        /// <summary>
-        /// Permet d'attacher des actions personnalisées en complément des opérations
-        /// </summary>
-        /// <param name="list"></param>
-        internal virtual void AttachActions(IEnumerable<TEntity> list)
-        {
-        }
-
-        protected void AttachActionsToEntity(TEntity entity)
-        {
-            AttachActionsToEntities(new HashSet<TEntity>
-            {
-                entity
-            });
-        }
-
-        private void AttachActionsToEntities(IEnumerable<TEntity> list)
-        {
-            AttachActions(list);
-        }
-
-        /// <summary>
-        /// When a custom action needs to access the entities operations
-        /// </summary>
-        /// <param name="entities"></param>
-        internal virtual void AppendOperationsToEntities(ICollection<TEntity> entities)
-        {
-            //TODO
-            //var operationsForAttach = _appInstance.GetAllOperations<TEntity>();
-            //AttachOperations(entities, operationsForAttach);
-        }
-
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
 
         public async Task<TEntity> TryGetByIdAsync(object id)
         {
             try
             {
-                return await GetByIdAsync((TKey) id);
+                return await GetByIdAsync((TKey)id);
             }
             catch
             {
@@ -197,16 +99,7 @@ namespace RDD.Domain.Models
             }
         }
 
-        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get) => GetByIdAsync(id, new Query<TEntity>
-        {
-            Verb = verb
-        });
-
-        protected virtual HashSet<int> GetOperationIds(Query<TEntity> query, HttpVerbs verb)
-        {
-            IEnumerable<Combination> combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(TEntity) && c.Verb.HasVerb(verb));
-
-            return new HashSet<int>(combinations.Select(c => c.Operation.Id));
-        }
+        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get)
+            => GetByIdAsync(id, new Query<TEntity> { Verb = verb });
     }
 }
