@@ -25,7 +25,8 @@ namespace RDD.Web.Serialization.Serializers
         {
             if (options.Selectors == null || options.Selectors.Count == 0 || options.Selectors.Any(s => s?.Lambda == null))
             {
-                options.Selectors = new FieldsParser().ParseFields(entity.GetType(), new List<string> { "id", "name", "url" }).Select(p => p.EntitySelector).ToList();
+                //TODO ?
+                //options.Selectors = new FieldsParser().ParseFields(entity.GetType(), new List<string> { "id", "name", "url" }).Select(p => p.EntitySelector).ToList();
             }
 
             return base.RefineOptions(entity, options);

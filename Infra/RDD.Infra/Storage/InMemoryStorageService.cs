@@ -50,10 +50,10 @@ namespace RDD.Infra.Storage
             return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
         }
 
-        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<IReadOnlyCollection<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
             where TEntity : class
         {
-            return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
+            return Task.FromResult(entities.ToList() as IReadOnlyCollection<TEntity>);
         }
 
         public void Add<TEntity>(TEntity entity)

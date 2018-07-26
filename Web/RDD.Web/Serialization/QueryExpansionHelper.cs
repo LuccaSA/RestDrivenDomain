@@ -1,23 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
-namespace RDD.Domain.Helpers
+namespace RDD.Web.Serialization
 {
-    public class FieldExpansionHelper
+    public static class QueryExpansionHelper
     {
-        public FieldExpansionHelper()
-            : this(new Stack<string>())
-        {
-        }
-
-        private FieldExpansionHelper(Stack<string> prefixes)
-        {
-            _prefixes = prefixes;
-            _buffer = string.Empty;
-            _analyseResult = new List<string>();
-        }
-
         private const char _multiselectStart = '[';
         private const char _multiselectEnd = ']';
         private const char _functionStart = '(';
@@ -26,24 +15,58 @@ namespace RDD.Domain.Helpers
         private const char _fieldSeparator = '.';
         private const char _space = ' ';
 
-        private readonly Stack<string> _prefixes;
-        private readonly List<string> _analyseResult;
-        private string _buffer;
-
-        public List<string> Expand(string input)
+        public static IEnumerable<string> Expand(string input)
         {
+            return Expand(input, new Stack<StringBuilder>()).Select(i => i.ToString());
+        }
+
+        private static List<StringBuilder> Expand(string input, Stack<StringBuilder> prefixes)
+        {
+            var analyseResult = new List<StringBuilder>();
+            var buffer = new StringBuilder();
+
+            void EmptyBuffer()
+            {
+                if (buffer.Length == 0)
+                {
+                    return;
+                }
+                if (prefixes.Any())
+                {
+                    var prefixedBuffer = new StringBuilder();
+                    foreach (var v in prefixes.Reverse())
+                    {
+                        prefixedBuffer.Append(v);
+                    }
+                    prefixedBuffer.Append(buffer);
+                    analyseResult.Add(prefixedBuffer);
+                }
+                else
+                {
+                    analyseResult.Add(buffer);
+                }
+                buffer = new StringBuilder();
+            }
+
+            void FeedBuffer(char c)
+            {
+                buffer.Append(c);
+            }
+
             var isInsideFunction = false;
             var level = 0;
 
-            foreach (char character in input)
+            for (var i = 0; i < input.Length; i++)
             {
+                char character = input[i];
                 switch (character)
                 {
                     case _multiselectStart:
                         if (level++ == 0)
                         {
-                            _prefixes.Push(_buffer + _fieldSeparator);
-                            _buffer = string.Empty;
+                            buffer.Append(_fieldSeparator);
+                            prefixes.Push(buffer);
+                            buffer = new StringBuilder();
                         }
                         else
                         {
@@ -57,9 +80,10 @@ namespace RDD.Domain.Helpers
                             {
                                 throw new FormatException("Le champ fields est mal renseigné.");
                             }
-                            _analyseResult.AddRange(new FieldExpansionHelper(_prefixes).Expand(_buffer));
-                            _buffer = string.Empty;
-                            _prefixes.Pop();
+                            var sub = Expand(buffer.ToString(), prefixes);
+                            analyseResult.AddRange(sub);
+                            buffer = new StringBuilder();
+                            prefixes.Pop();
                         }
                         else
                         {
@@ -84,6 +108,7 @@ namespace RDD.Domain.Helpers
                         {
                             FeedBuffer(character);
                         }
+
                         break;
                     case _space:
                         break;
@@ -98,21 +123,7 @@ namespace RDD.Domain.Helpers
                 throw new FormatException("Le champ fields est mal renseigné.");
             }
             EmptyBuffer();
-            return _analyseResult;
-        }
-
-        private void EmptyBuffer()
-        {
-            if (!string.IsNullOrWhiteSpace(_buffer))
-            {
-                _analyseResult.Add(string.Join(string.Empty, _prefixes.Reverse()) + _buffer);
-                _buffer = string.Empty;
-            }
-        }
-
-        private void FeedBuffer(char c)
-        {
-            _buffer += c;
+            return analyseResult;
         }
     }
 }

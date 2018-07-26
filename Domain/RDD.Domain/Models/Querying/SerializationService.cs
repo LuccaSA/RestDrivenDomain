@@ -118,58 +118,5 @@ namespace RDD.Domain.Models.Querying
             }
         }
 
-        /// <summary>
-        /// Permet de convertir un List of Utilisateur_SPOREOIREUR en APICollection of Utilisateur tout court
-        /// </summary>
-        /// <param name="propertyType"></param>
-        /// <param name="elements"></param>
-        /// <returns></returns>
-        public object CastEnumerableIntoStrongType(Type propertyType, IEnumerable<object> elements)
-        {
-            Type elementType = propertyType.GetEnumerableOrArrayElementType();
-
-            //ON part d'une List<T> fortement typée
-            Type stronglyTypedListType = typeof(List<>).MakeGenericType(elementType);
-            var listResult = (IList) Activator.CreateInstance(stronglyTypedListType);
-
-            foreach (object element in elements)
-            {
-                listResult.Add(element);
-            }
-
-            if (propertyType.IsArray)
-            {
-                Array arrayResult = Array.CreateInstance(elementType, listResult.Count);
-                listResult.CopyTo(arrayResult, 0);
-                return arrayResult;
-            }
-
-            Type genericTypeDefinition = propertyType.GetGenericTypeDefinition();
-
-            if (genericTypeDefinition == typeof(List<>)
-                || genericTypeDefinition == typeof(ICollection<>)
-                || genericTypeDefinition == typeof(IEnumerable<>)
-                || genericTypeDefinition == typeof(IList<>)
-                || genericTypeDefinition == typeof(IReadOnlyList<>)
-                || genericTypeDefinition == typeof(IReadOnlyCollection<>))
-            {
-                return listResult;
-            }
-
-            if (genericTypeDefinition == typeof(HashSet<>)
-                || genericTypeDefinition == typeof(ISet<>))
-            {
-                Type stronglyTypedHashSetType = typeof(HashSet<>).MakeGenericType(elementType);
-                return Activator.CreateInstance(stronglyTypedHashSetType, listResult);
-            }
-
-            if (genericTypeDefinition == typeof(ISelection<>))
-            {
-                return propertyType
-                    .GetConstructor(new[] {typeof(ICollection<>).MakeGenericType(elementType)})
-                    .Invoke(new object[] {listResult});
-            }
-            throw new Exception(string.Format("Unhandled enumerable type {0}", propertyType.Name));
-        }
     }
 }

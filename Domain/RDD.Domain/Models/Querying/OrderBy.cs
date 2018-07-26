@@ -5,8 +5,6 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Models.Querying
 {
-    public enum SortDirection { Ascending, Descending };
-
     public class OrderBy<TEntity>
         where TEntity : class
     {

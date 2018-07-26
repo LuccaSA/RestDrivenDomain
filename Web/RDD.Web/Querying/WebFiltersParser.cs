@@ -8,6 +8,7 @@ using RDD.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RDD.Web.Middleware;
 
 namespace RDD.Web.Querying
 {
@@ -36,11 +37,11 @@ namespace RDD.Web.Querying
     {
         protected WebFiltersParser() { }
 
-        public static List<WebFilter<TEntity>> Parse(Dictionary<string, string> input)
-        {
-            string[] reserved = Enum.GetNames(typeof(Reserved)).ToLower();
+        
 
-            IEnumerable<string> keys = input.Keys.Where(k => !reserved.Contains(k.Split('.')[0]));
+        public static List<WebFilter<TEntity>> Parse(Dictionary<string, string> input)
+        { 
+            IEnumerable<string> keys = input.Keys.Where(k => !QueryTokens.Reserved.Contains(k.Split('.')[0]));
 
             return Parse(input, keys);
         }

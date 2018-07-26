@@ -76,43 +76,6 @@ namespace RDD.Infra.Helpers
             }
         }
 
-        private bool IsQueryOnCollection(Type parentType, PropertySelector field, out CollectionPropertySelector<TEntity> collectionAccessorField, out PropertySelector subField, out Type collectionType)
-        {
-            PropertyInfo property = null;
-            collectionAccessorField = null;
-            subField = field;
-            collectionType = typeof(object);
-            while (subField != null)
-            {
-                if (parentType.IsGenericType && (parentType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>) || parentType.GetGenericTypeDefinition() == typeof(Dictionary<,>)))
-                {
-                    return false;
-                }
-
-                // Include internal properties through BindingFlags
-                property = subField.GetCurrentProperty();
-
-                if (!property.CanRead)
-                {
-                    throw new QueryBuilderException($"Property {property.Name} of type {parentType.Name} is set only");
-                }
-
-                if (property.PropertyType.IsEnumerableOrArray())
-                {
-                    throw new NotImplementedException();
-                    //collectionAccessorField = string.Join(".", fields.Take(i + 1).ToArray());
-                    //subField = string.Join(".", fields.Skip(i + 1).ToArray());
-                    //collectionType = property.PropertyType.GetEnumerableOrArrayElementType();
-                    //return true;
-                }
-
-                parentType = property.PropertyType;
-                subField = subField.Child;
-            }
-
-            return false;
-        }
-
         public Expression<Func<TEntity, bool>> OrFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
         {
             if (values.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
@@ -294,89 +257,74 @@ namespace RDD.Infra.Helpers
 
         private Expression BuildBinaryExpressionRecursive(WebFilterOperand binaryOperator, ParameterExpression parameter, PropertySelector field, object value, out PropertyInfo property)
         {
-            CollectionPropertySelector<TEntity> collectionAccessorField;
             PropertySelector subField;
             Type collectionType;
 
-            if (IsQueryOnCollection(parameter.Type, field, out collectionAccessorField, out subField, out collectionType))
+            Expression expressionLeft = NestedPropertyAccessor(parameter.Type, parameter, field, out property);
+
+            // Hack pour le Between qui n'est pas binaire, mais plus performant de le faire ici plutot que 2 parcours récursifs, puis un AND sur les expressions
+            if (binaryOperator == WebFilterOperand.Between)
             {
-                var collectionParameter = Expression.Parameter(collectionType, "subparam");
-                var collectionBinaryExpression = BuildBinaryExpressionRecursive(binaryOperator, collectionParameter, subField, value, out property);
-
-                Expression anyExpression = Expression.Lambda(typeof(Func<,>).MakeGenericType(collectionType, typeof(bool)), collectionBinaryExpression, collectionParameter);
-
-                PropertyInfo accessProperty;
-                var accessCollectionExpression = NestedPropertyAccessor(parameter.Type, parameter, collectionAccessorField, out accessProperty);
-                return ExpressionHelper.BuildAny(collectionType, accessCollectionExpression, anyExpression);
+                var period = (Period)value;
+                ConstantExpression expressionRightSince = (value == null) ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
+                ConstantExpression expressionRightUntil = (value == null) ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
+                var sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
+                var untilExpression = Expression.LessThanOrEqual(expressionLeft, expressionRightUntil);
+                return Expression.AndAlso(sinceExpression, untilExpression);
             }
-            else
+
+            // Hack pour le Anniversary qui n'est pas binaire, mais plus simple de le faire ici plutot qu'ailleurs
+            if (binaryOperator == WebFilterOperand.Anniversary)
             {
-                Expression expressionLeft = NestedPropertyAccessor(parameter.Type, parameter, field, out property);
+                var date = (DateTime?)value;
+                ConstantExpression day = (date.HasValue) ? Expression.Constant(date.Value.Day, typeof(int)) : Expression.Constant(null);
+                ConstantExpression month = (date.HasValue) ? Expression.Constant(date.Value.Month, typeof(int)) : Expression.Constant(null);
+                var dayExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(day, Expression.Property(Expression.Property(expressionLeft, "Value"), "Day")) : Expression.Equal(day, Expression.Property(expressionLeft, "Day"));
+                var monthExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(month, Expression.Property(Expression.Property(expressionLeft, "Value"), "Month")) : Expression.Equal(month, Expression.Property(expressionLeft, "Month"));
+                return Expression.AndAlso(dayExpression, monthExpression);
+            }
 
-                // Hack pour le Between qui n'est pas binaire, mais plus performant de le faire ici plutot que 2 parcours récursifs, puis un AND sur les expressions
-                if (binaryOperator == WebFilterOperand.Between)
-                {
-                    var period = (Period)value;
-                    ConstantExpression expressionRightSince = (value == null) ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
-                    ConstantExpression expressionRightUntil = (value == null) ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
-                    var sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
-                    var untilExpression = Expression.LessThanOrEqual(expressionLeft, expressionRightUntil);
-                    return Expression.AndAlso(sinceExpression, untilExpression);
-                }
+            ConstantExpression expressionRight;
+            switch (binaryOperator)
+            {
+                case WebFilterOperand.Equals:
+                    expressionRight = Expression.Constant(value);
+                    break;
+                default:
+                    //précision du type nécessaie pour les nullables
+                    expressionRight = Expression.Constant(value, expressionLeft.Type);
+                    break;
+            }
 
-                // Hack pour le Anniversary qui n'est pas binaire, mais plus simple de le faire ici plutot qu'ailleurs
-                if (binaryOperator == WebFilterOperand.Anniversary)
-                {
-                    var date = (DateTime?)value;
-                    ConstantExpression day = (date.HasValue) ? Expression.Constant(date.Value.Day, typeof(int)) : Expression.Constant(null);
-                    ConstantExpression month = (date.HasValue) ? Expression.Constant(date.Value.Month, typeof(int)) : Expression.Constant(null);
-                    var dayExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(day, Expression.Property(Expression.Property(expressionLeft, "Value"), "Day")) : Expression.Equal(day, Expression.Property(expressionLeft, "Day"));
-                    var monthExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(month, Expression.Property(Expression.Property(expressionLeft, "Value"), "Month")) : Expression.Equal(month, Expression.Property(expressionLeft, "Month"));
-                    return Expression.AndAlso(dayExpression, monthExpression);
-                }
+            switch (binaryOperator)
+            {
+                case WebFilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new Type[] { expressionLeft.Type }, expressionRight, expressionLeft);
+                case WebFilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
+                case WebFilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
+                case WebFilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
 
-                ConstantExpression expressionRight;
-                switch (binaryOperator)
-                {
-                    case WebFilterOperand.Equals:
-                        expressionRight = Expression.Constant(value);
-                        break;
-                    default:
-                        //précision du type nécessaie pour les nullables
-                        expressionRight = Expression.Constant(value, expressionLeft.Type);
-                        break;
-                }
+                case WebFilterOperand.Since:
+                case WebFilterOperand.GreaterThanOrEqual:
+                    if (value == null)
+                    {
+                        return Expression.Equal(expressionLeft, expressionRight);
+                    }
 
-                switch (binaryOperator)
-                {
-                    case WebFilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new Type[] { expressionLeft.Type }, expressionRight, expressionLeft);
-                    case WebFilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
-                    case WebFilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
-                    case WebFilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
+                    return Expression.GreaterThanOrEqual(expressionLeft, expressionRight);
 
-                    case WebFilterOperand.Since:
-                    case WebFilterOperand.GreaterThanOrEqual:
-                        if (value == null)
-                        {
-                            return Expression.Equal(expressionLeft, expressionRight);
-                        }
+                case WebFilterOperand.Until:
+                case WebFilterOperand.LessThanOrEqual:
+                    if (value == null)
+                    {
+                        return Expression.Equal(expressionLeft, expressionRight);
+                    }
 
-                        return Expression.GreaterThanOrEqual(expressionLeft, expressionRight);
+                    return Expression.LessThanOrEqual(expressionLeft, expressionRight);
 
-                    case WebFilterOperand.Until:
-                    case WebFilterOperand.LessThanOrEqual:
-                        if (value == null)
-                        {
-                            return Expression.Equal(expressionLeft, expressionRight);
-                        }
+                case WebFilterOperand.ContainsAll: return Expression.Equal(expressionLeft, expressionRight);
 
-                        return Expression.LessThanOrEqual(expressionLeft, expressionRight);
-
-                    case WebFilterOperand.ContainsAll: return Expression.Equal(expressionLeft, expressionRight);
-
-                    default:
-                        throw new NotImplementedException(string.Format("L'expression binaire n'est pas gérée pour l'opérateur fourni: '{0}'.", binaryOperator));
-                }
+                default:
+                    throw new NotImplementedException(string.Format("L'expression binaire n'est pas gérée pour l'opérateur fourni: '{0}'.", binaryOperator));
             }
         }
 
@@ -385,11 +333,13 @@ namespace RDD.Infra.Helpers
             PropertyInfo unusedFinalProperty;
             return NestedPropertyAccessor(seed, field, out unusedFinalProperty);
         }
+
         private Expression NestedPropertyAccessor(ParameterExpression seed, PropertySelector field, out PropertyInfo property)
         {
             var type = typeof(TEntity); //Ici on triche un peu en utilisant cette variable, car on est censé passer au moins 1 fois dans le foreach pour setter finalPropertyType proprement
             return NestedPropertyAccessor(type, seed, field, out property);
         }
+
         protected virtual Expression NestedPropertyAccessor(Type type, ParameterExpression seed, PropertySelector field, out PropertyInfo property)
         {
             property = null;

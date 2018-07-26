@@ -1,6 +1,7 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Models.Querying;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RDD.Application.Controllers
@@ -27,7 +28,7 @@ namespace RDD.Application.Controllers
             Collection = collection;
         }
 
-        public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
+        public virtual Task<IReadOnlyCollection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
 
         public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
     }

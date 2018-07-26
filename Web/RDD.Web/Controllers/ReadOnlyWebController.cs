@@ -6,6 +6,7 @@ using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
 using RDD.Web.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RDD.Web.Controllers
@@ -14,8 +15,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
+            : base(appController, helper)
         {
         }
     }
@@ -27,58 +28,52 @@ namespace RDD.Web.Controllers
     {
         protected TAppController AppController { get; }
         protected ApiHelper<TEntity, TKey> Helper { get; }
-        protected IRDDSerializer RDDSerializer { get; set; }
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
+        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
         {
             AppController = appController;
             Helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            RDDSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
-        public Task<IActionResult> GetAsync()
+        public Task<ActionResult<IEnumerable<TEntity>>> GetAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
                 return ProtectedGetAsync();
             }
-
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((ActionResult<IEnumerable<TEntity>>)NotFound());
         }
 
-        public Task<IActionResult> GetByIdAsync(TKey id)
+        public Task<ActionResult<TEntity>> GetByIdAsync(TKey id)
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
                 return ProtectedGetAsync(id);
             }
-
-            return Task.FromResult((IActionResult)NotFound(id));
+            return Task.FromResult((ActionResult<TEntity>)NotFound());
         }
 
-        protected virtual async Task<IActionResult> ProtectedGetAsync()
+        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedGetAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
-            ISelection<TEntity> selection = await AppController.GetAsync(query);
+            IEnumerable<TEntity> entity = await AppController.GetAsync(query);
 
-            return Ok(RDDSerializer.Serialize(selection, query));
+            return Ok(entity);
         }
 
-        protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
+        protected virtual async Task<ActionResult<TEntity>> ProtectedGetAsync(TKey id)
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
-
             if (entity == null)
             {
                 return NotFound(id);
             }
-
-            return Ok(RDDSerializer.Serialize(entity, query));
+            return Ok(entity);
         }
 
         protected NotFoundObjectResult NotFound(TKey id) => NotFound(new { Id = id, error = $"Resource {id} not found" });

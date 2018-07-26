@@ -14,12 +14,13 @@ namespace RDD.Domain.Tests
         private readonly IRepository<User> _repo;
         private IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
+        private readonly QueryContext _queryContex = new QueryContext(new QueryRequest(), new QueryResponse());
 
         public QueryTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new Repository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
+            _repo = new Repository<User>(_storage, _rightsService, _queryContex.Request);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator, _queryContex);
         }
 
         [Fact]
@@ -29,15 +30,6 @@ namespace RDD.Domain.Tests
             var result = new Query<User>(query);
 
             Assert.Equal(HttpVerbs.Put, result.Verb);
-        }
-
-        [Fact]
-        public void Cloning_query_should_not_clone_stopwatch()
-        {
-            var query = new Query<User> { Verb = HttpVerbs.Put };
-            var result = new Query<User>(query);
-
-            Assert.NotEqual(query.Watch, result.Watch);
         }
     }
 }

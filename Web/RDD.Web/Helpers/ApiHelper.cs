@@ -20,7 +20,7 @@ namespace RDD.Web.Helpers
 
         public ApiHelper(IHttpContextHelper httpContextHelper)
         {
-            _httpContextHelper = httpContextHelper;
+            _httpContextHelper = httpContextHelper ?? throw new ArgumentNullException(nameof(httpContextHelper));
         }
 
         public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)

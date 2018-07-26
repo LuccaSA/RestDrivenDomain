@@ -46,8 +46,8 @@ namespace RDD.Domain.Tests
                 var rightService = new RightExpressionsHelper<User>(new WebService { Id = 1, AppOperations = new HashSet<int> { 1 } }, mock.Object);
 
                 var user = new User { Id = 3 };
-                var repo = new Repository<User>(storage, rightService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
+                var repo = new Repository<User>(storage, rightService, QueryContex.Request);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator, QueryContex);
                 var app = new UsersAppController(storage, users);
 
                 await app.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), new Query<User>());
@@ -61,10 +61,10 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
+                QueryContex.Request.CheckRights = false;
+                var repo = new Repository<User>(storage, _rightsService, QueryContex.Request);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator, QueryContex);
+                var query = new Query<User>(); 
 
                 await users.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
             }
@@ -86,10 +86,10 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<UserWithParameters>(storage, new RightsServiceMock<UserWithParameters>());
-                var users = new UsersCollectionWithParameters(repo, _patcherProvider, new InstanciatorImplementation());
+                QueryContex.Request.CheckRights = false;
+                var repo = new Repository<UserWithParameters>(storage, new RightsServiceMock<UserWithParameters>(), QueryContex.Request);
+                var users = new UsersCollectionWithParameters(repo, _patcherProvider, new InstanciatorImplementation(), QueryContex);
                 var query = new Query<UserWithParameters>();
-                query.Options.CheckRights = false;
 
                 var result = await users.CreateAsync(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3, ""name"": ""John"" }"), query);
 
@@ -103,13 +103,14 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
+                QueryContex.Request.CheckRights = false;
                 var user = new User { Id = 2 };
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
-                
-                storage.Add(user);
+                var repo = new Repository<User>(storage, _rightsService, QueryContex.Request);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator, QueryContex);
+                var query = new Query<User>(); 
+
+                await users.CreateAsync(user, query);
+
                 await storage.SaveChangesAsync();
 
                 var any = await users.AnyAsync(query);
@@ -123,13 +124,14 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
+                QueryContex.Request.CheckRights = false;
                 var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
-                
-                storage.Add(user);
+                var repo = new Repository<User>(storage, _rightsService, QueryContex.Request);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator, QueryContex);
+                var query = new Query<User>(); 
+
+                await users.CreateAsync(user, query);
+
                 await storage.SaveChangesAsync();
 
                 await users.UpdateByIdAsync(2, Candidate<User, int>.Parse(JsonConvert.SerializeObject(user)), query);
@@ -143,11 +145,11 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
+                QueryContex.Request.CheckRights = false;
                 var user = new User { Id = 2, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
+                var repo = new Repository<User>(storage, _rightsService, QueryContex.Request);
+                var users = new UsersCollection(repo, _patcherProvider, Instanciator, QueryContex);
+                var query = new Query<User>(); 
 
                 storage.Add(user);
                 await storage.SaveChangesAsync();

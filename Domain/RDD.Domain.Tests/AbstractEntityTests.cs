@@ -5,20 +5,21 @@ using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Infra.Storage;
 using System.Linq;
+using RDD.Domain.Models.Querying;
 using Xunit;
 
 namespace RDD.Domain.Tests
 {
     internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
     {
-        public AbstractClassCollection(IRepository<AbstractClass> repository)
-            : base(repository) { }
+        public AbstractClassCollection(IRepository<AbstractClass> repository, QueryContext queryContext)
+            : base(repository, queryContext) { }
     }
 
     internal class ConcreteClassThreeCollection : ReadOnlyRestCollection<ConcreteClassThree, int>
     {
-        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository)
-            : base(repository) { }
+        public ConcreteClassThreeCollection(IRepository<ConcreteClassThree> repository, QueryContext queryContext)
+            : base(repository, queryContext) { }
     }
 
     public class AbstractEntityTests
@@ -28,12 +29,12 @@ namespace RDD.Domain.Tests
         {
             var rightsService = new RightsServiceMock<ConcreteClassThree>();
             var storage = new InMemoryStorageService();
-            var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService);
+            var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService, new QueryRequest());
 
             repo.Add(new ConcreteClassThree());
             repo.Add(new ConcreteClassThree());
 
-            var collection = new ConcreteClassThreeCollection(repo);
+            var collection = new ConcreteClassThreeCollection(repo, new QueryContext(new QueryRequest(), new QueryResponse()));
 
             var result = await collection.GetAsync(new Query<ConcreteClassThree>());
 
@@ -45,13 +46,13 @@ namespace RDD.Domain.Tests
         {
             var rightsService = new RightsServiceMock<AbstractClass>();
             var storage = new InMemoryStorageService();
-            var repo = new OpenRepository<AbstractClass>(storage, rightsService);
+            var repo = new OpenRepository<AbstractClass>(storage, rightsService, new QueryRequest());
 
             repo.Add(new ConcreteClassOne());
             repo.Add(new ConcreteClassOne());
             repo.Add(new ConcreteClassTwo());
 
-            var collection = new AbstractClassCollection(repo);
+            var collection = new AbstractClassCollection(repo, new QueryContext(new QueryRequest(), new QueryResponse()));
 
             var result = await collection.GetAsync(new Query<AbstractClass>());
 

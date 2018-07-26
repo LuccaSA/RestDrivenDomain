@@ -53,45 +53,5 @@ namespace RDD.Domain.Tests
             Assert.Equal(numberOfDecimals, rounding.NumberOfDecimals);
         }
 
-        [Fact]
-        public void SHOULD_round_to_two_decimal_WHEN_asked()
-        {
-            var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
-            var selection = new Selection<User>(items, 2);
-
-            var result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Round, 2));
-
-            Assert.Equal(58.01M, result);
-
-            result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Round, 1));
-
-            Assert.Equal(58.0M, result);
-
-            result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Round));
-
-            Assert.Equal(58M, result);
-
-            result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Floor));
-
-            Assert.Equal(58M, result);
-
-            result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Ceiling));
-
-            Assert.Equal(59M, result);
-        }
-
-        [Fact]
-        public void SHOULD_parse_rounding_correctly_to_good_propertySelector()
-        {
-            var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
-            var selection = new Selection<User>(items, 2);
-
-            var pattern = "sum(salary,round,2)";
-            var selector = new CollectionPropertySelector<User>();
-
-            selector.Parse(pattern);
-
-            Assert.Equal(58.01M, selector.Lambda.Compile().DynamicInvoke(selection));
-        }
     }
 }

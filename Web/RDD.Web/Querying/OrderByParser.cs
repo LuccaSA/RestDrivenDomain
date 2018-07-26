@@ -3,6 +3,7 @@ using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using System.Collections.Generic;
+using RDD.Web.Middleware;
 
 namespace RDD.Web.Querying
 {
@@ -11,11 +12,10 @@ namespace RDD.Web.Querying
     {
         public Queue<OrderBy<TEntity>> Parse(Dictionary<string, string> parameters)
         {
-            if (parameters.ContainsKey(Reserved.orderby.ToString()))
+            if (parameters.ContainsKey(QueryTokens.OrderBy))
             {
-                return Parse(parameters[Reserved.orderby.ToString()]);
+                return Parse(parameters[QueryTokens.OrderBy]);
             }
-
             return new Queue<OrderBy<TEntity>>();
         }
 

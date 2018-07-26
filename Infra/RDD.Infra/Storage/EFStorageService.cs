@@ -32,7 +32,7 @@ namespace RDD.Infra.Storage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual async Task<IReadOnlyCollection<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
             where TEntity : class
         {
             if (entities == null)

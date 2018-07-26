@@ -16,8 +16,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper) 
+            : base(appController, helper)
         {
         }
     }
@@ -27,74 +27,71 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-
-        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+            : base(appController, helper)
         {
         }
 
-        public Task<IActionResult> PostAsync()
+        public Task<ActionResult<TEntity>> PostAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
             {
                 return ProtectedPostAsync();
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((ActionResult<TEntity>)NotFound());
         }
 
-        public Task<IActionResult> PutByIdAsync(TKey id)
+        public Task<ActionResult<TEntity>> PutByIdAsync(TKey id)
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound(id));
+            return Task.FromResult((ActionResult<TEntity>)NotFound());
         }
 
-        public Task<IActionResult> PutAsync()
+        public Task<ActionResult<IReadOnlyCollection<TEntity>>> PutAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync();
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((ActionResult<IReadOnlyCollection<TEntity>>)NotFound());
         }
 
-        public Task<IActionResult> DeleteByIdAsync(TKey id)
+        public Task<ActionResult> DeleteByIdAsync(TKey id)
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
             {
                 return ProtectedDeleteAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound(id));
+            return Task.FromResult((ActionResult)NotFound());
         }
 
-        protected virtual async Task<IActionResult> ProtectedPostAsync()
+        protected virtual async Task<ActionResult<TEntity>> ProtectedPostAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
-            return Ok(RDDSerializer.Serialize(entity, query));
+            return Ok(entity);
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
+        protected virtual async Task<ActionResult<TEntity>> ProtectedPutAsync(TKey id)
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
-
             if (entity == null)
             {
                 return NotFound(id);
             }
-
-            return Ok(RDDSerializer.Serialize(entity, query));
+            return Ok(entity);
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync()
+        protected virtual async Task<ActionResult<IReadOnlyCollection<TEntity>>> ProtectedPutAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
@@ -106,12 +103,12 @@ namespace RDD.Web.Controllers
 
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
 
-            IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
+            IReadOnlyCollection<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
 
-            return Ok(RDDSerializer.Serialize(entities, query));
+            return Ok(entities);
         }
 
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
+        protected virtual async Task<ActionResult> ProtectedDeleteAsync(TKey id)
         {
             await AppController.DeleteByIdAsync(id);
 

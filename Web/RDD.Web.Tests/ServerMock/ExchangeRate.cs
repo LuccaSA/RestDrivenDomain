@@ -15,8 +15,8 @@ namespace RDD.Web.Tests.ServerMock
 
     public class ExchangeRateController : WebController<ExchangeRate,int>
     {
-        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper)
+            : base(appController, helper)
         {
         }
 

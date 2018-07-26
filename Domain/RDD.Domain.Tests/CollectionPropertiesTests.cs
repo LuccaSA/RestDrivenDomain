@@ -20,28 +20,8 @@ namespace RDD.Domain.Tests
         public CollectionPropertiesTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new OpenRepository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
-        }
-
-        [Fact]
-        public async void Sum_of_id_SHOULD_work_on_collection()
-        {
-            var options = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "Sum_of_id_SHOULD_work_on_collection")
-                .Options;
-
-            using (var storage = new EFStorageService(new DataContext(options)))
-            {
-                var repo = new OpenRepository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-
-                var fields = "id,name,collection.sum(id)";
-
-                var result = await users.GetAsync(new Query<User> { Fields = new FieldsParser().ParseFields<User>(fields) });
-
-                Assert.Equal(0, result.Count);
-            }
+            _repo = new OpenRepository<User>(_storage, _rightsService, QueryContex.Request);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator, QueryContex);
         }
 
         [Fact]
@@ -64,8 +44,8 @@ namespace RDD.Domain.Tests
             await _storage.SaveChangesAsync();
 
             var result = await _collection.GetAsync(new Query<User>());
-
-            Assert.Equal(100, result.Count);
+            
+            Assert.Equal(100, QueryContex.Response.TotalCount);
         }
 
         [Fact]
@@ -77,8 +57,8 @@ namespace RDD.Domain.Tests
 
             var result = await _collection.GetAsync(new Query<User>());
 
-            Assert.Equal(10, result.Items.Count());
-            Assert.Equal(10000, result.Count);
+            Assert.Equal(10, result.Count);
+            Assert.Equal(10000, QueryContex.Response.TotalCount);
         }
     }
 }

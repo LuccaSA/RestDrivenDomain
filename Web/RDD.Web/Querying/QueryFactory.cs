@@ -28,22 +28,15 @@ namespace RDD.Web.Querying
         public Query<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
         {
             var parameters = httpContextHelper.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
-
-            var fields = new FieldsParser().ParseFields<TEntity>(parameters, isCollectionCall);
-            var collectionFields = new CollectionFieldsParser().ParseFields<ISelection<TEntity>>(parameters, isCollectionCall);
+             
             var filters = WebFiltersParser<TEntity>.Parse(parameters);
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
-            var options = new OptionsParser().Parse(parameters, fields, collectionFields);
-            var page = new PageParser<TEntity>().Parse(parameters);
             var headers = new HeadersParser().Parse(httpContextHelper.GetHeaders());
 
             return new Query<TEntity>
             {
-                Fields = fields,
                 Filter = new WebFiltersContainer<TEntity, TKey>(filters),
                 OrderBys = orderBys,
-                Options = options,
-                Page = page,
                 Headers = headers,
             };
         }

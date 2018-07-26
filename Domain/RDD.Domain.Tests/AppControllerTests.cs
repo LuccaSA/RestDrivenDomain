@@ -13,16 +13,17 @@ namespace RDD.Domain.Tests
 {
     public class AppControllerTests : SingleContextTests
     {
+        private QueryContext _ctx = new QueryContext(new QueryRequest(), new QueryResponse());
+
         [Fact]
         public async Task PostShouldNotCallGetByIdOnTheCollection()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
+                var repo = new Repository<User>(storage, _rightsService, new QueryRequest{ CheckRights = false});
+                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator, _ctx);
                 var controller = new UsersAppController(storage, users);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
+                var query = new Query<User>(); 
                 var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
 
                 var user = await controller.CreateAsync(candidate, query);
@@ -56,11 +57,10 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
+                var repo = new Repository<User>(storage, _rightsService, new QueryRequest { CheckRights = false });
+                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator, _ctx);
                 var controller = new UsersAppController(storage, users);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
+                var query = new Query<User>(); 
                 var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
 
                 await controller.CreateAsync(candidate, query);

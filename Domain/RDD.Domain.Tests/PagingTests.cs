@@ -15,26 +15,16 @@ namespace RDD.Domain.Tests
     {
         public PagingTests()
         {
+            _queryContext = new QueryContext(new QueryRequest(), new QueryResponse());
             _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new OpenRepository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
+            _repo = new OpenRepository<User>(_storage, _rightsService, _queryContext.Request);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator, _queryContext);
         }
 
+        private readonly QueryContext _queryContext;
         private readonly IRepository<User> _repo;
         private readonly IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
-
-        [Fact]
-        public void Changing_query_page_count_should_not_affect_another_query()
-        {
-            var query1 = new Query<User>();
-            query1.Page.TotalCount = 20;
-
-            var query2 = new Query<User>();
-            query2.Page.TotalCount = 10;
-
-            Assert.Equal(20, query1.Page.TotalCount);
-        }
 
         [Fact]
         public async void Default_Paging_should_be_0_to_10()
@@ -44,12 +34,13 @@ namespace RDD.Domain.Tests
             await _storage.SaveChangesAsync();
 
             var query = new Query<User>();
-            ISelection<User> result = await _collection.GetAsync(query);
+            var result = await _collection.GetAsync(query);
 
-            Assert.Equal(0, query.Page.Offset);
-            Assert.Equal(10, query.Page.Limit);
-            Assert.Equal(10, result.Items.Count());
-            Assert.Equal(20, result.Count);
+            Assert.Equal(0, _queryContext.Request.PageOffset);
+            Assert.Equal(10, _queryContext.Request.ItemPerPage);
+
+            Assert.Equal(10, result.Count);
+            Assert.Equal(20, _queryContext.Response.TotalCount);
         }
 
         [Fact]
@@ -61,8 +52,10 @@ namespace RDD.Domain.Tests
                 _repo.AddRange(users);
                 await _storage.SaveChangesAsync();
 
-                var query = new Query<User> { Page = new Page(0, 1001) };
-                ISelection<User> result = await _collection.GetAsync(query);
+                _queryContext.Request.ItemPerPage = 1001;
+
+                var query = new Query<User>();
+                await _collection.GetAsync(query);
             });
         }
     }

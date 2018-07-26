@@ -7,15 +7,18 @@ using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Infra;
 using RDD.Infra.Storage;
+using RDD.Web.Middleware;
 using RDD.Web.Serialization;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
 using System.Globalization;
+using System;
 
 namespace RDD.Web.Helpers
 {
@@ -43,6 +46,9 @@ namespace RDD.Web.Helpers
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
+            services.TryAddScoped<QueryContext>();
+            services.TryAddScoped<QueryResponse>();
+            services.TryAddScoped<QueryRequest>();
             services.TryAddScoped(typeof(ApiHelper<,>));
             return services;
         }
@@ -60,15 +66,7 @@ namespace RDD.Web.Helpers
         public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
-            services.TryAddScoped(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.TryAddScoped<IPluralizationService, PluralizationService>();
-
-            services.AddMemoryCache();
-            services.TryAddScoped<IReflectionProvider, ReflectionProvider>();
-
             services.TryAddScoped<IUrlProvider, UrlProvider>();
-            services.TryAddScoped<ISerializerProvider, SerializerProvider>();
-            services.TryAddScoped<IRDDSerializer, RDDSerializer>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
             return services;
         }
@@ -90,7 +88,9 @@ namespace RDD.Web.Helpers
         /// <returns></returns>
         public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
+            return app
+                .UseMiddleware<QueryContextMiddleware>()
+                .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
 
