@@ -19,17 +19,22 @@ using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
 using System.Globalization;
 using System;
+using System.Buffers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using RDD.Domain.Models.Querying;
+using RDD.Web.Middleware;
 
 namespace RDD.Web.Helpers
 {
-    public static class RDDServiceCollectionExtensions
+    public static class RddServiceCollectionExtensions
     {
         /// <summary>
         /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
         /// IRightsService and IRDDSerialization are missing for this setup to be ready
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
+        public static IServiceCollection AddRddCore<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
             // register base services
@@ -53,7 +58,7 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDDRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
@@ -63,22 +68,27 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, RddOptionsSetup>());
             services.TryAddScoped<IUrlProvider, UrlProvider>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
+            services.Configure<MvcJsonOptions>(jsonOptions =>
+            {
+                jsonOptions.SerializerSettings.ContractResolver = new SelectiveContractResolver();
+            });
             return services;
         }
 
-        public static IServiceCollection AddRDD<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRdd<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TDbContext : DbContext
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            return services.AddRDDCore<TDbContext>()
-                .AddRDDRights<TCombinationsHolder, TPrincipal>()
-                .AddRDDSerialization<TPrincipal>();
+            return services.AddRddCore<TDbContext>()
+                .AddRddRights<TCombinationsHolder, TPrincipal>()
+                .AddRddSerialization<TPrincipal>();
         }
 
         /// <summary>
@@ -86,12 +96,32 @@ namespace RDD.Web.Helpers
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
         {
             return app
                 .UseMiddleware<QueryContextMiddleware>()
                 .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
+     
+    public class RddOptionsSetup : IConfigureOptions<MvcOptions>
+    {
+        private readonly IOptions<MvcJsonOptions> _jsonOptions;
+        private readonly ArrayPool<char> _charPool; 
+
+        public RddOptionsSetup(IOptions<MvcJsonOptions> jsonOptions, ArrayPool<char> charPool)
+        {
+            _jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
+            _charPool = charPool ?? throw new ArgumentNullException(nameof(charPool));
+        }
+
+        public void Configure(MvcOptions options)
+        {
+            options.OutputFormatters.Add(new MetaSelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
+            options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
+        }
+    }
+
+
 
 }

@@ -11,7 +11,7 @@ namespace RDD.Web.Helpers
         /// </summary>
         /// <param name="routes">The route builder</param>
         /// <param name="prefix">Optional route prefix ("/api/v2" in /api/v2/MyController/42) </param>
-        public static void MapRDDDefaultRoutes(this IRouteBuilder routes, string prefix = null)
+        public static void MapRddDefaultRoutes(this IRouteBuilder routes, string prefix = null)
         {
             string cleanPrefix = !String.IsNullOrWhiteSpace(prefix) ? prefix.Trim().Trim('/') + '/' : string.Empty;
 
