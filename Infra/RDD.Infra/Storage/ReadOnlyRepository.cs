@@ -11,13 +11,11 @@ namespace RDD.Infra.Storage
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class
     {
-        private readonly QueryRequest _queryRequest;
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
 
-        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper, QueryRequest queryRequest)
+        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
         {
-            _queryRequest = queryRequest;
             StorageService = storageService;
             RightExpressionsHelper = rightExpressionsHelper;
         }
@@ -27,7 +25,7 @@ namespace RDD.Infra.Storage
         {
             var entities = Set(query);
 
-            if (_queryRequest.CheckRights)
+            if (query.CheckRights)
             {
                 entities = ApplyRights(entities, query);
             }
@@ -45,7 +43,7 @@ namespace RDD.Infra.Storage
         {
             var entities = Set(query);
 
-            if (_queryRequest.CheckRights)
+            if (query.CheckRights)
             {
                 entities = ApplyRights(entities, query);
             }
@@ -92,8 +90,8 @@ namespace RDD.Infra.Storage
 
         protected virtual IQueryable<TEntity> ApplyPage(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            var skip = _queryRequest.PageOffset * _queryRequest.ItemPerPage;
-            return entities.Skip(skip).Take(_queryRequest.ItemPerPage);
+            var skip = query.Paging.PageOffset * query.Paging.ItemPerPage;
+            return entities.Skip(skip).Take(query.Paging.ItemPerPage);
         }
 
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)

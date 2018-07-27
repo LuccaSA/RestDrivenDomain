@@ -5,41 +5,97 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class Query<TEntity>
-        where TEntity : class
+    public class Query
     {
-        public HttpVerbs Verb { get; set; }
-        public Filter<TEntity> Filter { get; set; }
-        public Queue<OrderBy<TEntity>> OrderBys { get; set; } 
-        public Headers Headers { get; set; } 
+        protected Query(HttpVerbs? verb, Headers headers = null, QueryPaging paging = null, QueryMetadata queryMetadata = null)
+        {
+            QueryMetadata = queryMetadata ?? new QueryMetadata();
+            Verb = verb ?? HttpVerbs.None;
+            Headers = headers ?? new Headers();
+            Paging = paging ?? QueryPaging.Default;
 
-        public Query()
-        { 
-            Verb = HttpVerbs.Get;
-            Filter = new Filter<TEntity>();
-            OrderBys = new Queue<OrderBy<TEntity>>(); 
+            // copy paging infos for serialization
+            QueryMetadata.Paging = new QueryPaging 
+            {
+                ItemPerPage = Paging.ItemPerPage,
+                PageOffset = Paging.PageOffset
+            };
+
+            NeedEnumeration = true;
+            CheckRights = true;
+            WithWarnings = true;
         }
 
-        public Query(Expression<Func<TEntity, bool>> filter)
-            : this()
+        public HttpVerbs Verb { get; set; }
+        public Headers Headers { get; }
+        public QueryPaging Paging { get; }
+        public QueryMetadata QueryMetadata { get; }
+
+        /// <summary>
+        /// Est-ce qu'on a besoin du Count
+        /// </summary>
+        public bool NeedCount { get; set; }
+
+        /// <summary>
+        /// Est-ce qu'on a besoin d'énumérer la query
+        /// </summary>
+        public bool NeedEnumeration { get; set; }
+
+        /// <summary>
+        /// Should we FilterRights on GET request, or CheckRightForCreate on POST
+        /// </summary>
+        public bool CheckRights { get; set; }
+
+        public bool WithWarnings { get; set; }
+    }
+
+    public class Query<TEntity> : Query
+        where TEntity : class
+    {
+        public Filter<TEntity> Filter { get; set; }
+        public Queue<OrderBy<TEntity>> OrderBys { get; set; }
+
+        public Query()
+            : base(HttpVerbs.Get, new Headers())
+        {
+            Filter = new Filter<TEntity>();
+            OrderBys = new Queue<OrderBy<TEntity>>();
+        }
+        
+        public Query(Headers headers, QueryPaging paging)
+          : base(HttpVerbs.Get, headers, paging)
+        {
+            Filter = new Filter<TEntity>();
+            OrderBys = new Queue<OrderBy<TEntity>>();
+        }
+
+        public Query(Filter<TEntity> filters, Queue<OrderBy<TEntity>> orderBys, Headers headers, QueryPaging paging, QueryMetadata queryMetadata)
+            : base(HttpVerbs.Get, headers, paging, queryMetadata)
+        {
+            Filter = filters;
+            OrderBys = orderBys;
+        }
+
+        public Query(Expression<Func<TEntity, bool>> filter, Headers headers = null, QueryPaging paging = null)
+            : base(HttpVerbs.Get, headers, paging)
         {
             Filter = new Filter<TEntity>(filter);
-            Page = Page.Max;
+            OrderBys = new Queue<OrderBy<TEntity>>();
         }
 
         public Query(Query<TEntity> source)
-            : this()
+            : base(source.Verb, source.Headers, source.Paging)
         {
-            Verb = source.Verb;
             Filter = source.Filter;
-            OrderBys = source.OrderBys; 
+            OrderBys = source.OrderBys;
         }
 
         public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
-            : this(source)
+            : base(source.Verb, source.Headers, source.Paging)
         {
             Page = Page.Max;
             Filter = new Filter<TEntity>(filter);
+            OrderBys = source.OrderBys;
         }
     }
 }

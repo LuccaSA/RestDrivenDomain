@@ -17,8 +17,8 @@ namespace RDD.Domain.Models
 
         protected IInstanciator<TEntity> Instanciator { get;set;}
 
-        public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator, QueryContext queryContext)
-            : base(repository, queryContext)
+        public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
+            : base(repository)
         {
             Patcher = patcher;
             Repository = repository;

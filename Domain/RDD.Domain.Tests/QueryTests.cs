@@ -14,13 +14,12 @@ namespace RDD.Domain.Tests
         private readonly IRepository<User> _repo;
         private IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
-        private readonly QueryContext _queryContex = new QueryContext(new QueryRequest(), new QueryResponse());
-
+        
         public QueryTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new Repository<User>(_storage, _rightsService, _queryContex.Request);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator, _queryContex);
+            _repo = new Repository<User>(_storage, _rightsService);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
 
         [Fact]

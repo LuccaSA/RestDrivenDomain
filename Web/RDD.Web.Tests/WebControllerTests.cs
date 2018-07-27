@@ -12,22 +12,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RDD.Domain.Mocks;
 using RDD.Domain.Models.Querying;
+using RDD.Web.Querying;
 using Xunit;
 
 namespace RDD.Web.Tests
 {
     public class WebControllerTests
     {
-        private readonly QueryContext _queryContex = new QueryContext(new QueryRequest(), new QueryResponse());
         [Fact]
         public async Task WebControllerShouldWorkOnInterfaces()
         {
             using (var storage = new InMemoryStorageService())
             {
-                _queryContex.Request.CheckRights = false;
-                var repository = new Repository<IUser>(storage, null, _queryContex.Request);
-                var collection = new ReadOnlyRestCollection<IUser, int>(repository, _queryContex);
+                var repository = new Repository<IUser>(storage, new RightsServiceMock<IUser>());
+                var collection = new ReadOnlyRestCollection<IUser, int>(repository);
                 var appController = new ReadOnlyAppController<IUser, int>(collection);
 
                 repository.Add(new User { Id = 1 });
@@ -36,7 +36,7 @@ namespace RDD.Web.Tests
                 {
                     HttpContext = new DefaultHttpContext()
                 });
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(ctxHelper));
+                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(ctxHelper, QueryFactory));
 
                 var results = await controller.GetAsync();
 
@@ -46,5 +46,13 @@ namespace RDD.Web.Tests
                 Assert.Equal(2, found.Count());
             }
         }
+
+        private QueryFactory QueryFactory => new QueryFactory
+        (
+            new HttpContextAccessor
+            {
+                HttpContext = new DefaultHttpContext()
+            }, new QueryTokens(), new QueryMetadata()
+        );
     }
 }

@@ -27,15 +27,15 @@ namespace RDD.Web.Serialization
         {
             var data = base.PreparePayload(context, out node);
 
-            QueryContext queryContext = context.GetService<QueryContext>();
+            QueryMetadata queryMetadata = context.GetService<QueryMetadata>();
 
             var metaHeader = new MetaHeader()
             {
-                Generated = queryContext.EllapsedTime(),
+                Generated = queryMetadata.EllapsedTime(),
                 Paging = new MetaPaging
                 {
-                    Count = queryContext.Response.TotalCount,
-                    Offset = queryContext.Request.PageOffset * queryContext.Request.ItemPerPage
+                    Count = queryMetadata.TotalCount,
+                    Offset = queryMetadata.Paging.PageOffset * queryMetadata.Paging.ItemPerPage
                 }
             };
 

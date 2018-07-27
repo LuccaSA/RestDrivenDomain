@@ -17,11 +17,9 @@ namespace RDD.Domain.Tests.Templates
         protected IRightExpressionsHelper<User> _rightsService;
         protected IPatcherProvider _patcherProvider;
         protected IInstanciator<User> Instanciator { get; }
-        protected QueryContext QueryContex { get; }
-
+ 
         public SingleContextTests()
         {
-            QueryContex = new QueryContext(new QueryRequest(), new QueryResponse());
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
             _rightsService = new RightsServiceMock<User>();
             _patcherProvider = new PatcherProvider();

@@ -16,16 +16,17 @@ namespace RDD.Web.Helpers
         where TEntity : class, IEntityBase<TKey>
     {
         private readonly IHttpContextHelper _httpContextHelper;
-        private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
+        private readonly QueryFactory _queryFactory;
 
-        public ApiHelper(IHttpContextHelper httpContextHelper)
+        public ApiHelper(IHttpContextHelper httpContextHelper, QueryFactory queryFactory)
         {
-            _httpContextHelper = httpContextHelper ?? throw new ArgumentNullException(nameof(httpContextHelper));
+            _httpContextHelper = httpContextHelper;
+            _queryFactory = queryFactory;
         }
 
-        public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
+        public virtual Query<TEntity> CreateQuery(HttpVerbs verb)
         {
-            Query<TEntity> query = _queryFactory.FromWebContext(_httpContextHelper, isCollectionCall);
+            Query<TEntity> query = _queryFactory.FromWebContext<TEntity, TKey>();
             query.Verb = verb;
             return query;
         }
@@ -87,15 +88,6 @@ namespace RDD.Web.Helpers
                 default:
                     throw new UnsupportedContentTypeException($"Unsupported content type {contentType}");
             }
-        }
-
-        /// <summary>
-        /// This allows to explicitly not take into account elements that are not supposed to become auto-generated query members
-        /// </summary>
-        /// <param name="filters"></param>
-        public void IgnoreFilters(params string[] filters)
-        {
-            _queryFactory.IgnoreFilters(filters);
         }
     }
 }

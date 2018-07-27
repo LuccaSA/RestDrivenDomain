@@ -20,8 +20,8 @@ namespace RDD.Domain.Tests
         public CollectionPropertiesTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new OpenRepository<User>(_storage, _rightsService, QueryContex.Request);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator, QueryContex);
+            _repo = new OpenRepository<User>(_storage, _rightsService);
+            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
 
         [Fact]
@@ -42,10 +42,10 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(100);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-
-            var result = await _collection.GetAsync(new Query<User>());
+            var q = new Query<User>();
+            var result = await _collection.GetAsync(q);
             
-            Assert.Equal(100, QueryContex.Response.TotalCount);
+            Assert.Equal(100, q.QueryMetadata.TotalCount);
         }
 
         [Fact]
@@ -54,11 +54,11 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(10000);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-
-            var result = await _collection.GetAsync(new Query<User>());
+            var q = new Query<User>();
+            var result = await _collection.GetAsync(q);
 
             Assert.Equal(10, result.Count);
-            Assert.Equal(10000, QueryContex.Response.TotalCount);
+            Assert.Equal(10000, q.QueryMetadata.TotalCount);
         }
     }
 }

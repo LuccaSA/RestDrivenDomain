@@ -7,8 +7,8 @@ namespace RDD.Domain.WebServices
 {
     public class WebServicesCollection : ReadOnlyRestCollection<WebService, int>, IWebServicesCollection
     {
-        public WebServicesCollection(IRepository<WebService> repository, QueryContext queryContext)
-            : base(repository, queryContext) { }
+        public WebServicesCollection(IRepository<WebService> repository)
+            : base(repository) { }
 
         public async Task<IEnumerable<WebService>> GetByTokenAsync(string token)
         {

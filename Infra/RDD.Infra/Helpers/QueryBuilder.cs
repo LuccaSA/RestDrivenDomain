@@ -257,9 +257,6 @@ namespace RDD.Infra.Helpers
 
         private Expression BuildBinaryExpressionRecursive(WebFilterOperand binaryOperator, ParameterExpression parameter, PropertySelector field, object value, out PropertyInfo property)
         {
-            PropertySelector subField;
-            Type collectionType;
-
             Expression expressionLeft = NestedPropertyAccessor(parameter.Type, parameter, field, out property);
 
             // Hack pour le Between qui n'est pas binaire, mais plus performant de le faire ici plutot que 2 parcours récursifs, puis un AND sur les expressions

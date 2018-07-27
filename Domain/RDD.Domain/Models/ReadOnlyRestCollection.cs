@@ -12,11 +12,8 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        private readonly QueryContext _queryContext;
-
-        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository, QueryContext queryContext)
+        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository)
         {
-            _queryContext = queryContext;
             Repository = repository;
         }
 
@@ -24,11 +21,11 @@ namespace RDD.Domain.Models
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {
-            _queryContext.Request.NeedEnumeration = false;
-            _queryContext.Request.NeedCount = true;
+            query.NeedEnumeration = false;
+            query.NeedCount = true;
 
             await GetAsync(query);
-            return _queryContext.Response.TotalCount > 0;
+            return query.QueryMetadata.TotalCount > 0;
         }
 
         public async Task<IReadOnlyCollection<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>()));
@@ -39,16 +36,16 @@ namespace RDD.Domain.Models
             IReadOnlyCollection<TEntity> items = null;
 
             //Dans de rares cas on veut seulement le count des entités
-            if (_queryContext.Request.NeedCount && !_queryContext.Request.NeedEnumeration)
+            if (query.NeedCount && !query.NeedEnumeration)
             {
-                _queryContext.Response.TotalCount = totalCount = await Repository.CountAsync(query);
+                query.QueryMetadata.TotalCount = totalCount = await Repository.CountAsync(query);
             }
 
             //En général on veut une énumération des entités
-            if (_queryContext.Request.NeedEnumeration)
+            if (query.NeedEnumeration)
             {
                 items = await Repository.GetAsync(query);
-                _queryContext.Response.TotalCount = totalCount != -1 ? totalCount : await Repository.CountAsync(query);
+                query.QueryMetadata.TotalCount = totalCount != -1 ? totalCount : await Repository.CountAsync(query);
                 items = await Repository.PrepareAsync(items, query);
             }
 

@@ -67,7 +67,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<ActionResult<TEntity>> ProtectedGetAsync(TKey id)
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
             if (entity == null)

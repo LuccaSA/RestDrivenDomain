@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Middleware;
+using RDD.Web.Querying;
 
 namespace RDD.Web.Helpers
 {
@@ -51,9 +52,9 @@ namespace RDD.Web.Helpers
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
-            services.TryAddScoped<QueryContext>();
-            services.TryAddScoped<QueryResponse>();
-            services.TryAddScoped<QueryRequest>();
+            services.TryAddScoped<QueryFactory>();
+            services.TryAddScoped<QueryMetadata>();
+            services.TryAddSingleton<QueryTokens>();
             services.TryAddScoped(typeof(ApiHelper<,>));
             return services;
         }

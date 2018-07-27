@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using RDD.Web.Middleware;
+using RDD.Web.Querying;
 
 namespace RDD.Web.Serialization
 {

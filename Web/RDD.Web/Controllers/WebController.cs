@@ -70,7 +70,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<ActionResult<TEntity>> ProtectedPostAsync()
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
@@ -80,7 +80,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<ActionResult<TEntity>> ProtectedPutAsync(TKey id)
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
@@ -93,7 +93,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<ActionResult<IReadOnlyCollection<TEntity>>> ProtectedPutAsync()
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))

@@ -21,7 +21,7 @@ namespace RDD.Web.Tests
             httpContextHelper.Setup(h => h.GetContentType())
                 .Returns("application/json");
 
-            var helper = new ApiHelper<User, int>(httpContextHelper.Object);
+            var helper = new ApiHelper<User, int>(httpContextHelper.Object, null);
 
             var candidate = helper.CreateCandidate();
 
