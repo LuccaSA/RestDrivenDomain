@@ -77,7 +77,6 @@ namespace RDD.Web.Querying
 
                 foreach (var stringValue in kv.Value)
                 {
-                    //string stringValue = input[key];
                     var parts = stringValue.Split(',').ToList();
 
                     var operand = WebFilterOperand.Equals;
@@ -226,7 +225,7 @@ namespace RDD.Web.Querying
                         throw new BadRequestException("Order direction must match asc or desc");
                     }
 
-                    yield return new OrderBy<TEntity>(orderProperty, direction); ;
+                    yield return new OrderBy<TEntity>(orderProperty, direction);
                 }
             }
         }

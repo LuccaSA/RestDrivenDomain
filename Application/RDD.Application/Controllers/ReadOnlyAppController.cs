@@ -28,8 +28,10 @@ namespace RDD.Application.Controllers
             Collection = collection;
         }
 
-        public virtual Task<IReadOnlyCollection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
+        public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query) 
+            => Collection.GetAsync(query);
 
-        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
+        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) 
+            => Collection.GetByIdAsync(id, query);
     }
 }

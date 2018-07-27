@@ -35,14 +35,17 @@ namespace RDD.Web.Serialization
             {
                 throw new ArgumentNullException(nameof(context));
             }
-
             if (selectedEncoding == null)
             {
                 throw new ArgumentNullException(nameof(selectedEncoding));
             }
 
-            object payload = PreparePayload(context, out Node node);
+            await WriteResponseBodyInternalAsync(context, selectedEncoding);
+        }
 
+        private async Task WriteResponseBodyInternalAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+        {
+            object payload = PreparePayload(context, out Node node);
             var response = context.HttpContext.Response;
             using (var writer = context.WriterFactory(response.Body, selectedEncoding))
             {

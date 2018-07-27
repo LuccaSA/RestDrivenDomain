@@ -50,13 +50,13 @@ namespace RDD.Web.Controllers
             return Task.FromResult((ActionResult<TEntity>)NotFound());
         }
 
-        public Task<ActionResult<IReadOnlyCollection<TEntity>>> PutAsync()
+        public Task<ActionResult<IEnumerable<TEntity>>> PutAsync()
         {
             if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
                 return ProtectedPutAsync();
             }
-            return Task.FromResult((ActionResult<IReadOnlyCollection<TEntity>>)NotFound());
+            return Task.FromResult((ActionResult<IEnumerable<TEntity>>)NotFound());
         }
 
         public Task<ActionResult> DeleteByIdAsync(TKey id)
@@ -91,7 +91,7 @@ namespace RDD.Web.Controllers
             return Ok(entity);
         }
 
-        protected virtual async Task<ActionResult<IReadOnlyCollection<TEntity>>> ProtectedPutAsync()
+        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedPutAsync()
         {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
@@ -103,7 +103,7 @@ namespace RDD.Web.Controllers
 
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
 
-            IReadOnlyCollection<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
+            IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
 
             return Ok(entities);
         }

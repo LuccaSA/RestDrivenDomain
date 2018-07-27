@@ -28,9 +28,9 @@ namespace RDD.Domain.Models
             return query.QueryMetadata.TotalCount > 0;
         }
 
-        public async Task<IReadOnlyCollection<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>()));
+        public async Task<IEnumerable<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>()));
 
-        public virtual async Task<IReadOnlyCollection<TEntity>> GetAsync(Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
             var totalCount = -1;
             IReadOnlyCollection<TEntity> items = null;

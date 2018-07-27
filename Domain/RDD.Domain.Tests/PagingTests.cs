@@ -37,7 +37,7 @@ namespace RDD.Domain.Tests
             Assert.Equal(0, query.Paging.PageOffset);
             Assert.Equal(10, query.Paging.ItemPerPage);
             
-            Assert.Equal(10, result.Count);
+            Assert.Equal(10, result.Count());
             Assert.Equal(20, query.QueryMetadata.TotalCount);
         }
 

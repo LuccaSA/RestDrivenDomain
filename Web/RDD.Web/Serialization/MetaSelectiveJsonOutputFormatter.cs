@@ -65,7 +65,6 @@ namespace RDD.Web.Serialization
                 
                 node = root;
 
-                // in case of 
                 return new Meta()
                 {
                     Header = metaHeader,

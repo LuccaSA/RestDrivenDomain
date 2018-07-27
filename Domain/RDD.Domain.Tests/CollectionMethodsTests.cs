@@ -13,6 +13,7 @@ using RDD.Infra.Storage;
 using RDD.Web.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -153,7 +154,7 @@ namespace RDD.Domain.Tests
 
                 var results = await users.GetAsync(query);
 
-                Assert.Equal(1, results.Count);
+                Assert.Equal(1, results.Count());
             }
         }
     }

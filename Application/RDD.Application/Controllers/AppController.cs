@@ -57,7 +57,7 @@ namespace RDD.Application.Controllers
             return entity;
         }
 
-        public async Task<IReadOnlyCollection<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
+        public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
             var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
 

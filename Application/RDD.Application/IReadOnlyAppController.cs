@@ -10,7 +10,7 @@ namespace RDD.Application
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        Task<IReadOnlyCollection<TEntity>> GetAsync(Query<TEntity> query);
+        Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query);
         Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
     }
 }
