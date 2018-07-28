@@ -16,7 +16,12 @@ namespace RDD.Domain.Tests.Models.Querying
         {
             var context = new DefaultHttpContext();
             context.Request.Headers[key] = value;
-            return QueryFactory.ParseHeaders(context.Request);
+
+            var headerParser = new HeaderParser(
+                new HttpContextAccessor { HttpContext = context }
+            );
+
+            return headerParser.ParseHeaders();
         }
 
         [Fact]
@@ -62,8 +67,11 @@ namespace RDD.Domain.Tests.Models.Querying
             context.Request.Headers["Content-Type"] = "multipart/form-data";
             context.Request.Headers["any"] = "value";
             context.Request.Headers["Foo"] = "Bar";
+            
+            var headers = new HeaderParser(
+                new HttpContextAccessor { HttpContext = context }
+            ).ParseHeaders();
 
-            var headers = QueryFactory.ParseHeaders(context.Request);
             var rawHeaders = headers.RawHeaders.ToDictionary();
 
             Assert.Equal(3, rawHeaders.Count);

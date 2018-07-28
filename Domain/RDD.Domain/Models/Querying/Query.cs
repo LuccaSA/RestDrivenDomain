@@ -12,10 +12,10 @@ namespace RDD.Domain.Models.Querying
             QueryMetadata = queryMetadata ?? new QueryMetadata();
             Verb = verb ?? HttpVerbs.None;
             Headers = headers ?? new Headers();
-            Paging = paging ?? QueryPaging.Default;
+            Paging = paging ?? new QueryPaging(new RddOptions());
 
-            // copy paging infos for serialization
-            QueryMetadata.Paging = new QueryPaging 
+            // copy paging infos for metadatas
+            QueryMetadata.Paging = paging == null ? null : new QueryMetadataPaging
             {
                 ItemPerPage = Paging.ItemPerPage,
                 PageOffset = Paging.PageOffset
@@ -62,8 +62,8 @@ namespace RDD.Domain.Models.Querying
             OrderBys = new Queue<OrderBy<TEntity>>();
         }
         
-        public Query(Headers headers, QueryPaging paging)
-          : base(HttpVerbs.Get, headers, paging)
+        public Query(QueryPaging paging)
+            : base(HttpVerbs.Get, new Headers(), paging)
         {
             Filter = new Filter<TEntity>();
             OrderBys = new Queue<OrderBy<TEntity>>();

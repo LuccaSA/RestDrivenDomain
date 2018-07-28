@@ -16,9 +16,9 @@ namespace RDD.Web.Helpers
         where TEntity : class, IEntityBase<TKey>
     {
         private readonly IHttpContextHelper _httpContextHelper;
-        private readonly QueryFactory _queryFactory;
+        private readonly IQueryFactory _queryFactory;
 
-        public ApiHelper(IHttpContextHelper httpContextHelper, QueryFactory queryFactory)
+        public ApiHelper(IHttpContextHelper httpContextHelper, IQueryFactory queryFactory)
         {
             _httpContextHelper = httpContextHelper;
             _queryFactory = queryFactory;
@@ -26,7 +26,7 @@ namespace RDD.Web.Helpers
 
         public virtual Query<TEntity> CreateQuery(HttpVerbs verb)
         {
-            Query<TEntity> query = _queryFactory.FromWebContext<TEntity, TKey>();
+            Query<TEntity> query = _queryFactory.NewFromHttpRequest<TEntity, TKey>();
             query.Verb = verb;
             return query;
         }

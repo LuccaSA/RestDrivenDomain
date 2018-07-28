@@ -57,7 +57,7 @@ namespace RDD.Domain.Tests
             var q = new Query<User>();
             var result = await _collection.GetAsync(q);
 
-            Assert.Equal(10, result.Count());
+            Assert.Equal(100, result.Count());
             Assert.Equal(10000, q.QueryMetadata.TotalCount);
         }
     }

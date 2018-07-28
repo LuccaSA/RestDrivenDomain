@@ -13,8 +13,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RDD.Domain.Mocks;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Querying;
 using Xunit;
 
 namespace RDD.Web.Tests
@@ -36,7 +34,7 @@ namespace RDD.Web.Tests
                 {
                     HttpContext = new DefaultHttpContext()
                 });
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(ctxHelper, QueryFactory));
+                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(ctxHelper, QueryFactoryHelper.NewQueryFactory()));
 
                 var results = await controller.GetAsync();
 
@@ -46,13 +44,5 @@ namespace RDD.Web.Tests
                 Assert.Equal(2, found.Count());
             }
         }
-
-        private QueryFactory QueryFactory => new QueryFactory
-        (
-            new HttpContextAccessor
-            {
-                HttpContext = new DefaultHttpContext()
-            }, new QueryTokens(), new QueryMetadata()
-        );
     }
 }

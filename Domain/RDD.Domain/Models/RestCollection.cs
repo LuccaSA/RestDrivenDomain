@@ -12,24 +12,23 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected new IRepository<TEntity> Repository { get; set; }
-        protected IPatcher<TEntity> Patcher { get; set; }
-
-        protected IInstanciator<TEntity> Instanciator { get;set;}
+        private readonly IPatcher<TEntity> _patcher;
+        private readonly IRepository<TEntity> _repository;
+        private readonly IInstanciator<TEntity> _instanciator;
 
         public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
             : base(repository)
         {
-            Patcher = patcher;
-            Repository = repository;
-            Instanciator = instanciator;
+            _patcher = patcher;
+            _repository = repository;
+            _instanciator = instanciator;
         }
 
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
-            TEntity entity = Instanciator.InstanciateNew(candidate);
+            TEntity entity = _instanciator.InstanciateNew(candidate);
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            _patcher.Patch(entity, candidate.JsonValue);
 
             ForgeEntity(entity);
 
@@ -74,12 +73,12 @@ namespace RDD.Domain.Models
             return await UpdateAsync(entity, candidate, query);
         }
 
-        public virtual async Task<IReadOnlyCollection<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
 
-            var result = new HashSet<TEntity>();
+            var result = new List<TEntity>();
 
             var ids = candidatesByIds.Select(d => d.Key).ToList();
             var expQuery = new Query<TEntity>(query, e => ids.Contains(e.Id));
@@ -134,7 +133,7 @@ namespace RDD.Domain.Models
 
             TEntity oldEntity = entity.Clone();
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            _patcher.Patch(entity, candidate.JsonValue);
 
             await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 

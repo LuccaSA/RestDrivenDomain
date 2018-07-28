@@ -31,7 +31,10 @@ namespace RDD.Domain.Tests
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
 
-            var query = new Query<User>();
+            var query = new Query<User>(new QueryPaging(new RddOptions())
+            {
+                ItemPerPage = 10
+            });
             var result = await _collection.GetAsync(query);
             
             Assert.Equal(0, query.Paging.PageOffset);

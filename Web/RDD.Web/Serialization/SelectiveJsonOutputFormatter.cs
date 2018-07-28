@@ -29,7 +29,7 @@ namespace RDD.Web.Serialization
             SupportedMediaTypes.Add(SelectiveContentType);
         }
 
-        public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
             if (context == null)
             {
@@ -40,7 +40,7 @@ namespace RDD.Web.Serialization
                 throw new ArgumentNullException(nameof(selectedEncoding));
             }
 
-            await WriteResponseBodyInternalAsync(context, selectedEncoding);
+            return WriteResponseBodyInternalAsync(context, selectedEncoding);
         }
 
         private async Task WriteResponseBodyInternalAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)

@@ -10,6 +10,7 @@ using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
+using RDD.Web.Querying;
 using RDD.Web.Tests.ServerMock;
 using Xunit;
 
@@ -51,6 +52,7 @@ namespace RDD.Web.Tests
 
             SetupServer(service =>
             {
+                service.AddScoped(_=> QueryFactoryHelper.NewQueryFactory());
                 service.AddScoped(_ => repo.Object);
                 service.Configure<ExceptionHttpStatusCodeOption>(options =>
                 {

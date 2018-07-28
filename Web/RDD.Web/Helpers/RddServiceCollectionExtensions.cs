@@ -50,12 +50,22 @@ namespace RDD.Web.Helpers
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
-            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
-            services.TryAddScoped<QueryFactory>();
-            services.TryAddScoped<QueryMetadata>();
+
+            services.TryAddSingleton<IWebFilterParser,WebFilterParser> ();
+            services.TryAddSingleton<IPagingParser, PagingParser> ();
+            services.TryAddSingleton<IHeaderParser, HeaderParser> ();
+            services.TryAddSingleton<IOrberByParser, OrberByParser> ();
+            services.TryAddSingleton<QueryParsers> ();
             services.TryAddSingleton<QueryTokens>();
+
+            services.TryAddScoped<IQueryFactory, QueryFactory>();
+            services.TryAddScoped<QueryMetadata>();
             services.TryAddScoped(typeof(ApiHelper<,>));
+
+            services.AddOptions<RddOptions>();
+
             return services;
         }
 
@@ -72,7 +82,7 @@ namespace RDD.Web.Helpers
         public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, RddOptionsSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, RddSerializationSetup>());
             services.TryAddScoped<IUrlProvider, UrlProvider>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
             services.Configure<MvcJsonOptions>(jsonOptions =>
@@ -104,13 +114,13 @@ namespace RDD.Web.Helpers
                 .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
-     
-    public class RddOptionsSetup : IConfigureOptions<MvcOptions>
+
+    public class RddSerializationSetup : IConfigureOptions<MvcOptions>
     {
         private readonly IOptions<MvcJsonOptions> _jsonOptions;
-        private readonly ArrayPool<char> _charPool; 
+        private readonly ArrayPool<char> _charPool;
 
-        public RddOptionsSetup(IOptions<MvcJsonOptions> jsonOptions, ArrayPool<char> charPool)
+        public RddSerializationSetup(IOptions<MvcJsonOptions> jsonOptions, ArrayPool<char> charPool)
         {
             _jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
             _charPool = charPool ?? throw new ArgumentNullException(nameof(charPool));
@@ -122,6 +132,8 @@ namespace RDD.Web.Helpers
             options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
         }
     }
+
+
 
 
 

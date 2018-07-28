@@ -14,10 +14,10 @@ namespace RDD.Domain.Models
     {
         public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository)
         {
-            Repository = repository;
+            _readOnlyRepository = repository;
         }
 
-        protected IReadOnlyRepository<TEntity> Repository { get; set; }
+        private readonly IReadOnlyRepository<TEntity> _readOnlyRepository;
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {
@@ -38,18 +38,18 @@ namespace RDD.Domain.Models
             //Dans de rares cas on veut seulement le count des entités
             if (query.NeedCount && !query.NeedEnumeration)
             {
-                query.QueryMetadata.TotalCount = totalCount = await Repository.CountAsync(query);
+                query.QueryMetadata.TotalCount = totalCount = await _readOnlyRepository.CountAsync(query);
             }
 
             //En général on veut une énumération des entités
             if (query.NeedEnumeration)
             {
-                items = await Repository.GetAsync(query);
-                query.QueryMetadata.TotalCount = totalCount != -1 ? totalCount : await Repository.CountAsync(query);
-                items = await Repository.PrepareAsync(items, query);
+                items = await _readOnlyRepository.GetAsync(query);
+                query.QueryMetadata.TotalCount = totalCount != -1 ? totalCount : await _readOnlyRepository.CountAsync(query);
+                items = await _readOnlyRepository.PrepareAsync(items, query);
             }
 
-            return items ?? new List<TEntity>();
+            return items ?? Enumerable.Empty<TEntity>();
         }
 
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
@@ -60,5 +60,20 @@ namespace RDD.Domain.Models
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
+
+        public async Task<TEntity> TryGetByIdAsync(object id)
+        {
+            try
+            {
+                return await GetByIdAsync((TKey)id);
+            }
+            catch
+            {
+                return default;
+            }
+        }
+
+        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get)
+            => GetByIdAsync(id, new Query<TEntity> { Verb = verb });
     }
 }

@@ -4,14 +4,16 @@ namespace RDD.Domain.Models.Querying
 {
     public class QueryPaging
     {
-        public static readonly QueryPaging Default = new QueryPaging();
-
-        private int _itemPerPage;
-
-        public QueryPaging()
+        public QueryPaging(RddOptions options)
         {
-            ItemPerPage = 10;
+            _itemPerPage = options?.DefaultItemsPerPage ?? 100;
+            _maximumItemsPerPage = options?.MaximumItemsPerPage ?? 1000;
+            if (_itemPerPage > _maximumItemsPerPage)
+                throw new OutOfRangeException($"RddOptions ItemPerPage error");
         }
+
+        private readonly int _maximumItemsPerPage;
+        private int _itemPerPage;
 
         /// <summary>
         /// Requested page offset
@@ -26,8 +28,8 @@ namespace RDD.Domain.Models.Querying
             get => _itemPerPage;
             set
             {
-                if (value > 1000)
-                    throw new OutOfRangeException("Maximum ItemPerPage is 1000");
+                if (value > _maximumItemsPerPage)
+                    throw new OutOfRangeException($"Maximum ItemPerPage is {_maximumItemsPerPage}");
                 _itemPerPage = value;
             }
         }
