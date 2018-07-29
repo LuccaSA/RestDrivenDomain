@@ -16,29 +16,21 @@ namespace RDD.Web.Tests
         [Fact]
         public void LikeOperationOnGuidShouldWork()
         {
-            var httpContextAccessor = new HttpContextAccessor
-            {
-                HttpContext = new DefaultHttpContext()
-            };
-            httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
-            var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper, QueryFactoryHelper.NewQueryFactory());
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
 
-            helper.CreateQuery(HttpVerbs.Get);
+            QueryFactoryHelper.NewQueryFactory(httpContext)
+                .NewFromHttpRequest<User, int>(HttpVerbs.Get);
         }
 
         [Fact]
         public void FilterKeywordsShouldBeCaseInsensitive()
         {
-            var httpContextAccessor = new HttpContextAccessor
-            {
-                HttpContext = new DefaultHttpContext()
-            };
-            httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
-            var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper, QueryFactoryHelper.NewQueryFactory());
-
-            helper.CreateQuery(HttpVerbs.Get);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
+            
+            QueryFactoryHelper.NewQueryFactory(httpContext)
+                .NewFromHttpRequest<User, int>(HttpVerbs.Get);
         }
          
     }

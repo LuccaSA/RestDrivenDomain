@@ -13,7 +13,7 @@ using System.Runtime.Serialization;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class SerializationService
+    public class DeserializationService
     {
         /// <summary>
         /// Returns a strongly-typed list of values matching asked property type
@@ -32,14 +32,14 @@ namespace RDD.Domain.Models.Querying
             //Si on demande une propriété directe de T, alors on peut répondre
             if (elements.Length == 1)
             {
-                PropertyInfo property = declaringType.GetPublicProperties().FirstOrDefault(p => p.Name.ToLower() == propertyName);
+                PropertyInfo property = declaringType.GetPublicProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName, StringComparison.InvariantCultureIgnoreCase));
                 if (property != null)
                 {
                     return ConvertWhereValues(values, property);
                 }
                 throw new SerializationException(string.Format("Property {0} does not exist on type {1}", propertyName, declaringType.Name));
             }
-            PropertyInfo baseProperty = declaringType.GetPublicProperties().FirstOrDefault(p => p.Name.ToLower() == elements[0]);
+            PropertyInfo baseProperty = declaringType.GetPublicProperties().FirstOrDefault(p => string.Equals(p.Name, elements[0], StringComparison.InvariantCultureIgnoreCase));
             if (baseProperty != null)
             {
                 return ConvertWhereValues(values, baseProperty.PropertyType, string.Join(".", elements.Skip(1)));
@@ -50,7 +50,7 @@ namespace RDD.Domain.Models.Querying
         public IList ConvertWhereValues(ICollection<string> values, PropertyInfo property)
         {
             Type listConstructorParamType = typeof(List<>).MakeGenericType(property.PropertyType.GetEnumerableOrArrayElementType());
-            var result = (IList) Activator.CreateInstance(listConstructorParamType);
+            var result = (IList)Activator.CreateInstance(listConstructorParamType);
 
             foreach (string value in values)
             {

@@ -3,6 +3,7 @@ using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using RDD.Domain.Helpers;
 
 namespace RDD.Web.Querying
 {
@@ -22,7 +23,7 @@ namespace RDD.Web.Querying
             _queryParsers = queryParsers;
         }
 
-        public Query<TEntity> NewFromHttpRequest<TEntity, TKey>()
+        public Query<TEntity> NewFromHttpRequest<TEntity, TKey>(HttpVerbs? verb)
             where TEntity : class, IPrimaryKey<TKey>
         {
             return new Query<TEntity>(

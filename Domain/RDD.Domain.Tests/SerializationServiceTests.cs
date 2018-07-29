@@ -10,7 +10,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SerializeStringAsMailAddress_WHEN_GoodMailInQueryFilters()
         {
-            var service = new SerializationService();
+            var service = new DeserializationService();
             var values = service.ConvertWhereValues(new HashSet<string>() { "mail@domain.com" }, typeof(User).GetProperty("Mail"));
         }
     }

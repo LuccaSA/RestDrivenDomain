@@ -62,7 +62,8 @@ namespace RDD.Web.Helpers
 
             services.TryAddScoped<IQueryFactory, QueryFactory>();
             services.TryAddScoped<QueryMetadata>();
-            services.TryAddScoped(typeof(ApiHelper<,>));
+
+            services.TryAddSingleton(typeof(ICandidateFactory<,>), typeof(CandidateFactory<,>));
 
             services.AddOptions<RddOptions>();
 

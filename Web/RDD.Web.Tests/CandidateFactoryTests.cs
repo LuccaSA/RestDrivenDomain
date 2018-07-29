@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Moq;
+﻿using Moq;
 using RDD.Web.Helpers;
 using RDD.Web.Tests.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace RDD.Web.Tests
 {
-    public class ApiHelperTests
+    public class CandidateFactoryTests
     {
         [Fact]
-        public void ApiHelperShouldDeserializeJson()
+        public void CandidateFactoryShouldDeserializeJson()
         {
             var json = @"{ ""id"": 123, ""name"": ""Foo"" }";
             var httpContextHelper = new Mock<IHttpContextHelper>();
@@ -21,7 +17,7 @@ namespace RDD.Web.Tests
             httpContextHelper.Setup(h => h.GetContentType())
                 .Returns("application/json");
 
-            var helper = new ApiHelper<User, int>(httpContextHelper.Object, null);
+            var helper = new CandidateFactory<User, int>(httpContextHelper.Object);
 
             var candidate = helper.CreateCandidate();
 

@@ -34,7 +34,7 @@ namespace RDD.Web.Tests
                 {
                     HttpContext = new DefaultHttpContext()
                 });
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(ctxHelper, QueryFactoryHelper.NewQueryFactory()));
+                var controller = new IUserWebController(appController, new CandidateFactory<IUser, int>(ctxHelper), QueryFactoryHelper.NewQueryFactory());
 
                 var results = await controller.GetAsync();
 

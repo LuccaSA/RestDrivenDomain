@@ -38,7 +38,7 @@ namespace RDD.Web.Querying
         public IEnumerable<WebFilter<TEntity>> ParseWebFilters<TEntity>()
             where TEntity : class
         {
-            var service = new SerializationService();
+            var service = new DeserializationService();
 
             foreach (var kv in _httpContextAccessor.HttpContext.Request.Query)
             {

@@ -8,6 +8,7 @@ using RDD.Web.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RDD.Web.Querying;
 
 namespace RDD.Web.Controllers
 {
@@ -15,8 +16,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
-            : base(appController, helper)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ICandidateFactory<TEntity, TKey> helper, IQueryFactory queryFactory)
+            : base(appController, helper, queryFactory)
         {
         }
     }
@@ -28,12 +29,14 @@ namespace RDD.Web.Controllers
         where TKey : IEquatable<TKey>
     {
         protected TAppController AppController { get; }
-        protected ApiHelper<TEntity, TKey> Helper { get; }
+        protected ICandidateFactory<TEntity, TKey> Helper { get; }
+        protected IQueryFactory QueryFactory { get; }
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+        protected ReadOnlyWebController(TAppController appController, ICandidateFactory<TEntity, TKey> helper, IQueryFactory queryFactory)
         {
             AppController = appController;
             Helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            QueryFactory = queryFactory;
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
@@ -58,7 +61,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedGetAsync()
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
+            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Get);
 
             IEnumerable<TEntity> entity = await AppController.GetAsync(query);
 
@@ -67,7 +70,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<ActionResult<TEntity>> ProtectedGetAsync(TKey id)
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
+            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity,TKey>(HttpVerbs.Get);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
             if (entity == null)

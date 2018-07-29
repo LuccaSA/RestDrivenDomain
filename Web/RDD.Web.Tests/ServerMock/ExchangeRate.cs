@@ -3,6 +3,7 @@ using RDD.Domain.Helpers;
 using RDD.Domain.Models;
 using RDD.Web.Controllers;
 using RDD.Web.Helpers;
+using RDD.Web.Querying;
 using RDD.Web.Serialization;
 
 namespace RDD.Web.Tests.ServerMock
@@ -15,8 +16,8 @@ namespace RDD.Web.Tests.ServerMock
 
     public class ExchangeRateController : WebController<ExchangeRate,int>
     {
-        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper)
-            : base(appController, helper)
+        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ICandidateFactory<ExchangeRate, int> helper, IQueryFactory queryFactory)
+            : base(appController, helper, queryFactory)
         {
         }
 

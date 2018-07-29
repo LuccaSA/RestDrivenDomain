@@ -1,10 +1,7 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
 using RDD.Domain.Json;
-using RDD.Domain.Models.Querying;
 using RDD.Web.Models;
-using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,28 +9,19 @@ using System.Linq.Expressions;
 
 namespace RDD.Web.Helpers
 {
-    public class ApiHelper<TEntity, TKey>
+    public class CandidateFactory<TEntity, TKey> : ICandidateFactory<TEntity, TKey> 
         where TEntity : class, IEntityBase<TKey>
     {
         private readonly IHttpContextHelper _httpContextHelper;
-        private readonly IQueryFactory _queryFactory;
 
-        public ApiHelper(IHttpContextHelper httpContextHelper, IQueryFactory queryFactory)
+        public CandidateFactory(IHttpContextHelper httpContextHelper)
         {
             _httpContextHelper = httpContextHelper;
-            _queryFactory = queryFactory;
-        }
-
-        public virtual Query<TEntity> CreateQuery(HttpVerbs verb)
-        {
-            Query<TEntity> query = _queryFactory.NewFromHttpRequest<TEntity, TKey>();
-            query.Verb = verb;
-            return query;
         }
 
         protected virtual ICollection<Expression<Func<TEntity, object>>> IgnoreList() => new HashSet<Expression<Func<TEntity, object>>>();
 
-        public virtual ICandidate<TEntity, TKey> CreateCandidate()
+        public ICandidate<TEntity, TKey> CreateCandidate()
         {
             string rawInput = _httpContextHelper.GetContent();
             var jsonObject = ParseIntoObject(rawInput);
@@ -41,7 +29,7 @@ namespace RDD.Web.Helpers
             return new Candidate<TEntity, TKey>(rawInput, jsonObject);
         }
 
-        public virtual IEnumerable<ICandidate<TEntity, TKey>> CreateCandidates()
+        public IEnumerable<ICandidate<TEntity, TKey>> CreateCandidates()
         {
             string rawInput = _httpContextHelper.GetContent();
             var jsonObject = ParseIntoArray(rawInput);
@@ -50,14 +38,14 @@ namespace RDD.Web.Helpers
             return jsonObject.Content.Select(el => new Candidate<TEntity, TKey>(rawInput, el as JsonObject));
         }
 
-        public JsonArray ParseIntoArray(string rawInput)
+        private JsonArray ParseIntoArray(string rawInput)
         {
             var element = Parse(rawInput);
             var result = element as JsonArray;
             return result ?? new JsonArray { Content = new List<IJsonElement> { element } };
         }
 
-        public JsonObject ParseIntoObject(string rawInput)
+        private JsonObject ParseIntoObject(string rawInput)
         {
             var element = Parse(rawInput) as JsonObject;
             if (element == null)
@@ -66,7 +54,7 @@ namespace RDD.Web.Helpers
             return element;
         }
 
-        IJsonElement Parse(string rawInput)
+       private IJsonElement Parse(string rawInput)
         {
             string contentType = _httpContextHelper.GetContentType();
 
