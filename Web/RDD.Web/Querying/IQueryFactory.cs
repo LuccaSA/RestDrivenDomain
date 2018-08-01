@@ -8,8 +8,5 @@ namespace RDD.Web.Querying
     {
         Query<TEntity> NewFromHttpRequest<TEntity, TKey>(HttpVerbs? verb)
             where TEntity : class, IPrimaryKey<TKey>;
-
-        Query<TEntity> New<TEntity>()
-            where TEntity : class;
     }
 }

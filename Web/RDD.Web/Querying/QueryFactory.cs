@@ -2,7 +2,6 @@
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
 using System.Collections.Generic;
-using Microsoft.Extensions.Options;
 using RDD.Domain.Helpers;
 
 namespace RDD.Web.Querying
@@ -14,12 +13,10 @@ namespace RDD.Web.Querying
     {
         private readonly QueryParsers _queryParsers;
         private readonly QueryMetadata _queryMetadata;
-        private readonly IOptions<RddOptions> _rddOptions;
        
-        public QueryFactory(QueryMetadata queryMetadata, QueryParsers queryParsers, IOptions<RddOptions> rddOptions)
+        public QueryFactory(QueryMetadata queryMetadata, QueryParsers queryParsers)
         {
             _queryMetadata = queryMetadata;
-            _rddOptions = rddOptions;
             _queryParsers = queryParsers;
         }
 
@@ -33,12 +30,6 @@ namespace RDD.Web.Querying
                 _queryParsers.PagingParser.ParsePaging(),
                 _queryMetadata
             );
-        }
-
-        public Query<TEntity> New<TEntity>()
-            where TEntity : class
-        {
-            return new Query<TEntity>(new QueryPaging(_rddOptions.Value));
         }
     }
 }

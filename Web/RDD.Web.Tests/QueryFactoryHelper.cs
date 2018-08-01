@@ -13,8 +13,7 @@ namespace RDD.Web.Tests
             return new QueryFactory
             (
                 new QueryMetadata(),
-                NewQueryParsers(httpContext, rddOptions),
-                Options.Create(rddOptions ?? new RddOptions())
+                NewQueryParsers(httpContext, rddOptions)
             );
         }
 

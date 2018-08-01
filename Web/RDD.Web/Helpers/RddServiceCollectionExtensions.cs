@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Application;
@@ -34,12 +33,9 @@ namespace RDD.Web.Helpers
         /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
         /// IRightsService and IRDDSerialization are missing for this setup to be ready
         /// </summary>
-        /// <param name="services"></param>
-        public static IServiceCollection AddRddCore<TDbContext>(this IServiceCollection services)
-            where TDbContext : DbContext
+        public static IServiceCollection AddRddCore(this IServiceCollection services)
         {
             // register base services
-            services.TryAddScoped<DbContext, TDbContext>();
             services.TryAddScoped<IStorageService, EFStorageService>();
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -50,8 +46,11 @@ namespace RDD.Web.Helpers
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
+
             services.AddHttpContextAccessor();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
+
+            services.TryAddScoped(typeof(IRightExpressionsHelper<>), typeof(DefaultRightExpressionsHelper<>));
 
             services.TryAddSingleton<IWebFilterParser,WebFilterParser> ();
             services.TryAddSingleton<IPagingParser, PagingParser> ();
@@ -70,6 +69,9 @@ namespace RDD.Web.Helpers
             return services;
         }
 
+        /// <summary>
+        /// Adds custom right management to filter entities
+        /// </summary>
         public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
@@ -80,12 +82,15 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
-            where TPrincipal : class, IPrincipal
+        /// <summary>
+        /// Adds Rdd specific serialisation (fields + metadata)
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddRddSerialization(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, RddSerializationSetup>());
             services.TryAddScoped<IUrlProvider, UrlProvider>();
-            services.TryAddScoped<IPrincipal, TPrincipal>();
             services.Configure<MvcJsonOptions>(jsonOptions =>
             {
                 jsonOptions.SerializerSettings.ContractResolver = new SelectiveContractResolver();
@@ -93,14 +98,10 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRdd<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
-            where TDbContext : DbContext
-            where TCombinationsHolder : class, ICombinationsHolder
-            where TPrincipal : class, IPrincipal
+        public static IServiceCollection AddRdd(this IServiceCollection services)
         {
-            return services.AddRddCore<TDbContext>()
-                .AddRddRights<TCombinationsHolder, TPrincipal>()
-                .AddRddSerialization<TPrincipal>();
+            return services.AddRddCore()
+                .AddRddSerialization();
         }
 
         /// <summary>
@@ -133,9 +134,5 @@ namespace RDD.Web.Helpers
             options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
         }
     }
-
-
-
-
 
 }

@@ -17,6 +17,7 @@ namespace RDD.Web.Middleware
 
         public async Task Invoke(HttpContext context)
         {
+            _queryMetadata.StartWatch();
             await _next(context);
         }
     }
