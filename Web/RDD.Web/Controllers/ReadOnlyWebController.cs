@@ -38,37 +38,28 @@ namespace RDD.Web.Controllers
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
-        public Task<IActionResult> GetAsync()
+        public virtual async Task<IActionResult> GetAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
-                return ProtectedGetAsync();
+                return NotFound();
             }
 
-            return Task.FromResult((IActionResult)NotFound());
-        }
-
-        public Task<IActionResult> GetByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
-            {
-                return ProtectedGetAsync(id);
-            }
-
-            return Task.FromResult((IActionResult)NotFound(id));
-        }
-
-        protected virtual async Task<IActionResult> ProtectedGetAsync()
-        {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
             return Ok(RDDSerializer.Serialize(selection, query));
+
         }
 
-        protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
+        public virtual async Task<IActionResult> GetByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+            {
+                return NotFound();
+            }
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
