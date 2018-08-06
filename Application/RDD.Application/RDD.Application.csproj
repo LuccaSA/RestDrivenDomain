@@ -6,7 +6,16 @@
     <VersionSuffix>alpha</VersionSuffix>
     <PackageVersion>2.0.0</PackageVersion>
     <LangVersion>latest</LangVersion>
+
+    <!-- SourceLink Support -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
