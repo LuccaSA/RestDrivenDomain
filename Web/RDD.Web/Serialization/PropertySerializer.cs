@@ -36,8 +36,7 @@ namespace RDD.Web.Serialization
                 if (result.ContainsKey(propertyName))
                 {
                     var subsequentProperty = ((Dictionary<string, object>)serialized).FirstOrDefault();
-                    //((Dictionary<string, object>)result[propertyName]).Add(subsequentProperty.Key, subsequentProperty.Value);
-
+                   
                     MergeDictionaries((Dictionary<string, object>)result[propertyName], subsequentProperty.Key, subsequentProperty.Value);
 
                     continue;
