@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RDD.Domain.Exceptions;
 
 namespace RDD.Web.Serialization
 {
@@ -56,7 +57,7 @@ namespace RDD.Web.Serialization
                 var toMerge = value as Dictionary<string, object>;
                 if (found == null || toMerge == null)
                 {
-                    throw new Exception("Impossible to merge non-dictionaries items");
+                    throw new TechnicalException("Impossible to merge non-dictionaries items");
                 }
 
                 foreach (var kv in toMerge)
