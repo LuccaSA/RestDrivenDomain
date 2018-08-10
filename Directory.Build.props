@@ -16,22 +16,22 @@
     <Authors>Lucca team</Authors>
     <Description>RestDrivenDomain</Description>
     <PackageProjectUrl>https://github.com/LuccaSA/RestDrivenDomain/</PackageProjectUrl>
-    <Copyright>Copyright � Lucca 2018</Copyright>
+    <Copyright>Copyright Lucca 2018</Copyright>
   </PropertyGroup>
 
   <PropertyGroup>
+    <SourceLinkEnabled Condition="'$(SourceLinkEnabled)' == ''">false</SourceLinkEnabled>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SourceLinkEnabled)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <ContinuousIntegrationBuild Condition="'$(ContinuousIntegrationBuild)' == ''">false</ContinuousIntegrationBuild>
-    <ContinuousIntegrationBuild Condition="'$(APPVEYOR)' == 'True'">true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="$(ContinuousIntegrationBuild)">
     <Deterministic>true</Deterministic>
-    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(SourceLinkEnabled)' == 'true'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
   </ItemGroup>
 
