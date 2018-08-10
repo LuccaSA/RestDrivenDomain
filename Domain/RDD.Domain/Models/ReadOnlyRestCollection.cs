@@ -65,5 +65,8 @@ namespace RDD.Domain.Models
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
+
+        public Task<TEntity> GetByIdAsync(TKey id)
+            => GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Get });
     }
 }
