@@ -58,11 +58,10 @@ test_script:
 - Codecov.1.0.5\tools\codecov -f coverage-opencover.xml
 
 after_test:
-- ps: msbuild "RDD.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true
-- ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack Application\RDD.Application\RDD.Application.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack Web\RDD.Web\RDD.Web.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --include-symbols --configuration Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION /p:SourceLinkEnabled=true /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) -o ..\..\artifacts
+- ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --include-symbols --configuration Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION /p:SourceLinkEnabled=true /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) -o ..\..\artifacts
+- ps: dotnet pack Application\RDD.Application\RDD.Application.csproj --include-symbols --configuration Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION /p:SourceLinkEnabled=true /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) -o ..\..\artifacts
+- ps: dotnet pack Web\RDD.Web\RDD.Web.csproj --include-symbols --configuration Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION /p:SourceLinkEnabled=true /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) -o ..\..\artifacts
 - echo Starting Myget publish
 - ps: if($env:deploy_unstable -eq "true") { foreach ($nuget in Get-ChildItem -Path .\artifacts\* -Include *.nupkg) { nuget push $nuget $env:MYGET_TOKEN -Source https://www.myget.org/F/lucca/api/v2/package -SymbolSource https://www.myget.org/F/lucca/symbols/api/v2/package -SymbolApiKey $env:MYGET_TOKEN } }
 
