@@ -70,6 +70,8 @@ namespace RDD.Web.Tests.Serialization
             Assert.Contains("\"A\"", json);
             Assert.Contains("\"B\"", json);
             Assert.Contains("\"else\"", json);
+            Assert.Contains("\"2\"", json);
+            Assert.DoesNotContain("\"3\"", json);
         }
     }
 
