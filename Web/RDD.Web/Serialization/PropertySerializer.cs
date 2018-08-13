@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RDD.Domain.Exceptions;
 
 namespace RDD.Web.Serialization
 {
@@ -36,15 +37,38 @@ namespace RDD.Web.Serialization
                 if (result.ContainsKey(propertyName))
                 {
                     var subsequentProperty = ((Dictionary<string, object>)serialized).FirstOrDefault();
-                    ((Dictionary<string, object>)result[propertyName]).Add(subsequentProperty.Key, subsequentProperty.Value);
+                   
+                    MergeDictionaries((Dictionary<string, object>)result[propertyName], subsequentProperty.Key, subsequentProperty.Value);
 
-                    break;
+                    continue;
                 }
 
                 result.Add(propertyName, serialized);
             }
 
             return result;
+        }
+
+        private void MergeDictionaries(Dictionary<string, object> target, string key, object value)
+        {
+            if (target.ContainsKey(key))
+            {
+                var found = target[key] as Dictionary<string, object>;
+                var toMerge = value as Dictionary<string, object>;
+                if (found == null || toMerge == null)
+                {
+                    throw new TechnicalException("Impossible to merge non-dictionaries items");
+                }
+
+                foreach (var kv in toMerge)
+                {
+                    found.Add(kv.Key, kv.Value);
+                }
+            }
+            else
+            {
+                target.Add(key, value);
+            }
         }
 
         public virtual object SerializeProperty(object entity, PropertySelector field)
