@@ -15,7 +15,7 @@ namespace RDD.Domain.Tests
     {
         private readonly IRepository<User> _repo;
         private readonly IReadOnlyRestCollection<User,int> _collection;
-        private readonly IStorageService _storage;
+        private readonly IStorageService<User> _storage;
 
         public CollectionPropertiesTests()
         {
@@ -31,8 +31,7 @@ namespace RDD.Domain.Tests
                 .UseInMemoryDatabase(databaseName: "Sum_of_id_SHOULD_work_on_collection")
                 .Options;
 
-            using (var storage = new EFStorageService(new DataContext(options)))
-            {
+            var storage = new EFStorageService<User>(new DbContextResolverMock(new DataContext(options)));
                 var repo = new OpenRepository<User>(storage, _rightsService);
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
 
@@ -41,7 +40,6 @@ namespace RDD.Domain.Tests
                 var result = await users.GetAsync(new Query<User> { Fields = new FieldsParser().ParseFields<User>(fields) });
 
                 Assert.Equal(0, result.Count);
-            }
         }
 
         [Fact]

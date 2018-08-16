@@ -14,41 +14,37 @@ namespace RDD.Domain.Tests
         [Fact]
         public async Task PostShouldNotCallGetByIdOnTheCollection()
         {
-            using (var storage = _newStorage(Guid.NewGuid().ToString()))
-            {
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
-                var controller = new UsersAppController(storage, users);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
-                var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
+            var storage = _newStorage(Guid.NewGuid().ToString());
+            var repo = new Repository<User>(storage, _rightsService);
+            var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
+            var controller = new UsersAppController(storage, users);
+            var query = new Query<User>();
+            query.Options.CheckRights = false;
+            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
 
-                var user = await controller.CreateAsync(candidate, query);
+            var user = await controller.CreateAsync(candidate, query);
 
-                Assert.Equal(3, user.Id);
-            }
+            Assert.Equal(3, user.Id);
         }
 
         [Fact]
         public async Task PutShouldNotCallGetByIdOnTheCollection()
         {
-            using (var storage = _newStorage(Guid.NewGuid().ToString()))
-            {
-                var repo = new Repository<User>(storage, _rightsService);
-                var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
-                var controller = new UsersAppController(storage, users);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
-                var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
+            var storage = _newStorage(Guid.NewGuid().ToString());
+            var repo = new Repository<User>(storage, _rightsService);
+            var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
+            var controller = new UsersAppController(storage, users);
+            var query = new Query<User>();
+            query.Options.CheckRights = false;
+            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
 
-                await controller.CreateAsync(candidate, query);
+            await controller.CreateAsync(candidate, query);
 
-                candidate = Candidate<User, int>.Parse(@"{ ""name"": ""newName"" }");
+            candidate = Candidate<User, int>.Parse(@"{ ""name"": ""newName"" }");
 
-                var user = await controller.UpdateByIdAsync(3, candidate, query);
+            var user = await controller.UpdateByIdAsync(3, candidate, query);
 
-                Assert.Equal(3, user.Id);
-            }
+            Assert.Equal(3, user.Id);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace RDD.Domain.Tests
 
         private readonly IRepository<User> _repo;
         private readonly IReadOnlyRestCollection<User, int> _collection;
-        private readonly IStorageService _storage;
+        private readonly IStorageService<User> _storage;
 
         [Fact]
         public void Changing_query_page_count_should_not_affect_another_query()

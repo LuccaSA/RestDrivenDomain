@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RDD.Domain;
 using RDD.Infra.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -9,21 +8,27 @@ using System.Threading.Tasks;
 
 namespace RDD.Infra.Storage
 {
-    public class EFStorageService : IStorageService
+    public class EFStorageService<TEntity> : IStorageService<TEntity>
+            where TEntity : class
     {
-        protected DbContext DbContext { get; }
+        protected IDbContextResolver DbContextResolver { get; }
         protected Queue<Task> AfterSaveChangesActions { get; }
 
-        public EFStorageService(DbContext dbContext)
+        public EFStorageService(IDbContextResolver dbContextResolver)
         {
-            DbContext = dbContext;
+            DbContextResolver = dbContextResolver;
             AfterSaveChangesActions = new Queue<Task>();
         }
 
-        public virtual IQueryable<TEntity> Set<TEntity>()
-            where TEntity : class
+        private DbContext GetDbContext()
         {
-            return DbContext.Set<TEntity>();
+            return DbContextResolver.GetMatchingContext<TEntity>();
+        }
+
+        IQueryable<TEntity> IStorageService<TEntity>.Set() => Set();
+        public virtual DbSet<TEntity> Set()
+        {
+            return GetDbContext().Set<TEntity>();
         }
 
         /// <summary>
@@ -32,8 +37,7 @@ namespace RDD.Infra.Storage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
-            where TEntity : class
+        public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync(IQueryable<TEntity> entities)
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
@@ -45,28 +49,24 @@ namespace RDD.Infra.Storage
             return await entities.ToListAsync();
         }
 
-        public virtual void Add<TEntity>(TEntity entity)
-            where TEntity : class
+        public virtual void Add(TEntity entity)
         {
-            DbContext.Set<TEntity>().Add(entity);
+            Set().Add(entity);
         }
 
-        public virtual void AddRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class
+        public virtual void AddRange(IEnumerable<TEntity> entities)
         {
-            DbContext.Set<TEntity>().AddRange(entities);
+            Set().AddRange(entities);
         }
 
-        public virtual void Remove<TEntity>(TEntity entity)
-            where TEntity : class
+        public virtual void Remove(TEntity entity)
         {
-            DbContext.Set<TEntity>().Remove(entity);
+            Set().Remove(entity);
         }
 
-        public void RemoveRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class
+        public void RemoveRange(IEnumerable<TEntity> entities)
         {
-            DbContext.Set<TEntity>().RemoveRange(entities);
+            Set().RemoveRange(entities);
         }
 
         public void AddAfterSaveChangesAction(Task action)
@@ -78,9 +78,9 @@ namespace RDD.Infra.Storage
         {
             try
             {
-                await DbContext.SaveChangesAsync();
+                await GetDbContext().SaveChangesAsync();
 
-                while(AfterSaveChangesActions.Count > 0)
+                while (AfterSaveChangesActions.Count > 0)
                 {
                     await AfterSaveChangesActions.Dequeue();
                 }
@@ -114,12 +114,7 @@ namespace RDD.Infra.Storage
 
         public async Task<string> ExecuteScriptAsync(string script)
         {
-            return (await DbContext.Database.ExecuteSqlCommandAsync(script)).ToString();
-        }
-
-        public void Dispose()
-        {
-            DbContext.Dispose();
+            return (await GetDbContext().Database.ExecuteSqlCommandAsync(script)).ToString();
         }
     }
 }
