@@ -75,16 +75,49 @@ namespace RDD.Web.Tests.Serialization
         }
     }
 
+    [Fact]
+    public void SerializeSubCollections()
+    {
+        var httpContext = new DefaultHttpContext();
+        var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
+        var serializer = new EntitySerializer(new UrlProvider(httpContextAccessor));
+
+        var obj1 = new Obj1
+        {
+            Obj2s = new List<Obj2>
+                {
+                    new Obj2
+                    {
+                        Id = 1,
+                        Name = "1"
+                    },
+                    new Obj2
+                    {
+                        Id = 2,
+                        Name = "2"
+                    }
+                }
+        };
+
+        var selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
+        var query = new Query<Obj1>
+        {
+            Fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { { "fields", "obj2s[id,name]" } }, true)
+        };
+
+        serializer.SerializeSelection(selection, query);
+    }
+
     public class Obj1 : IEntityBase<int>
     {
         public int Id { get; set; }
         public String Name { get; set; }
         public string Url { get; }
         public Obj2 Obj2 { get; set; }
-        public object GetId()
-        {
-            return Id;
-        }
+
+        public List<Obj2> Obj2s { get; set; }
+
+        public object GetId() => Id;
 
         public void SetId(object id)
         {
