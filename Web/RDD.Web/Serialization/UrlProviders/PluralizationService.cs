@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace RDD.Web.Serialization
+namespace RDD.Web.Serialization.UrlProviders
 {
-    public class PluralizationService
+    public class PluralizationService : IPluralizationService
     {
         private readonly Dictionary<string, string> _pluralsByName;
 

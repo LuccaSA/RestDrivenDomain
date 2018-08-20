@@ -1,4 +1,5 @@
 ﻿using RDD.Web.Serialization;
+using RDD.Web.Serialization.UrlProviders;
 using Xunit;
 
 namespace RDD.Web.Tests

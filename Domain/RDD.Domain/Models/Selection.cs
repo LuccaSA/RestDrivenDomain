@@ -1,9 +1,7 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 
 namespace RDD.Domain.Models
@@ -13,6 +11,8 @@ namespace RDD.Domain.Models
     {
         public IEnumerable<TEntity> Items { get; }
         public int Count { get; }
+
+        IEnumerable<object> ISelection.Items => Items;
 
         public Selection(IEnumerable<TEntity> items, int count)
         {
