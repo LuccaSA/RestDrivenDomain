@@ -12,8 +12,6 @@ namespace RDD.Domain.Models
         public IEnumerable<TEntity> Items { get; }
         public int Count { get; }
 
-        IEnumerable<object> ISelection.Items => Items;
-
         public Selection(IEnumerable<TEntity> items, int count)
         {
             Items = items;
@@ -165,5 +163,7 @@ namespace RDD.Domain.Models
             }
             throw new NotImplementedException(String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
+
+        IEnumerable<object> ISelection.GetItems() => Items;
     }
 }

@@ -17,11 +17,12 @@ namespace RDD.Web.Serialization.Serializers
 
         protected IJsonElement ToSerializableObject(ISelection collection, SerializationOption options)
         {
+            var items = collection.GetItems();
             return new JsonObject
             {
                 Content = new Dictionary<string, IJsonElement>
                 {
-                   { "items", SerializerProvider.GetSerializer(collection.Items).ToJson(collection.Items, options) }
+                   { "items", SerializerProvider.GetSerializer(items).ToJson(items, options) }
                 }
             };
         }

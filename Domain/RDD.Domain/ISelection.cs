@@ -6,15 +6,16 @@ namespace RDD.Domain
 {
     public interface ISelection
     {
-        IEnumerable<object> Items { get; }
         int Count { get; }
         object Sum(PropertyInfo property, DecimalRounding rouding);
         object Min(PropertyInfo property, DecimalRounding rouding);
         object Max(PropertyInfo property, DecimalRounding rouding);
+
+        IEnumerable<object> GetItems();
     }
     public interface ISelection<TEntity> : ISelection
         where TEntity : class
     {
-        new IEnumerable<TEntity> Items { get; }
+        IEnumerable<TEntity> Items { get; }
     }
 }
