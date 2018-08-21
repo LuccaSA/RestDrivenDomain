@@ -9,11 +9,13 @@ using RDD.Domain;
 using RDD.Domain.Models;
 using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
-using RDD.Domain.WebServices;
 using RDD.Infra;
 using RDD.Infra.Storage;
 using RDD.Web.Serialization;
-using System;
+using RDD.Web.Serialization.Providers;
+using RDD.Web.Serialization.Reflection;
+using RDD.Web.Serialization.UrlProviders;
+using System.Globalization;
 
 namespace RDD.Web.Helpers
 {
@@ -57,8 +59,14 @@ namespace RDD.Web.Helpers
         public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
+            services.TryAddScoped(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
+            services.TryAddSingleton<IPluralizationService, PluralizationService>();
+
+            services.AddMemoryCache();
+            services.TryAddScoped<IReflectionProvider, ReflectionProvider>();
+
             services.TryAddScoped<IUrlProvider, UrlProvider>();
-            services.TryAddScoped<IEntitySerializer, EntitySerializer>();
+            services.TryAddScoped<ISerializerProvider, SerializerProvider>();
             services.TryAddScoped<IRDDSerializer, RDDSerializer>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
             return services;

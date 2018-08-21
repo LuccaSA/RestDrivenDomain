@@ -1,9 +1,7 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 
 namespace RDD.Domain.Models
@@ -165,5 +163,7 @@ namespace RDD.Domain.Models
             }
             throw new NotImplementedException(String.Format("Unhandled type {0}", property.PropertyType.Name));
         }
+
+        IEnumerable<object> ISelection.GetItems() => Items;
     }
 }

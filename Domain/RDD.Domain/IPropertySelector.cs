@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
 
 namespace RDD.Domain
 {
     public interface IPropertySelector
     {
-        IEnumerable<IPropertySelector> Children { get; }
+        string Name { get; }
+        IPropertySelector Child { get; }
         bool HasChild { get; }
         LambdaExpression Lambda { get; set; }
 

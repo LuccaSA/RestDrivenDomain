@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace RDD.Domain.Helpers
 {
-    public class PropertySelector
+    public class PropertySelector : IPropertySelector
     {
         public PropertySelector(Type entityType)
         {
@@ -31,6 +31,8 @@ namespace RDD.Domain.Helpers
 
         public LambdaExpression Lambda { get; set; }
         public PropertySelector Child { get; protected set; }
+
+        IPropertySelector IPropertySelector.Child => Child;
 
         public string Name
         {

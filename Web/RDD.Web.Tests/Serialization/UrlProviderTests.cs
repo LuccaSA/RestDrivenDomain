@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Web.Serialization;
+using RDD.Web.Serialization.UrlProviders;
 using RDD.Web.Tests.Models;
 using Xunit;
 
@@ -29,10 +30,10 @@ namespace RDD.Web.Tests.Serialization
                 Id = 1
             };
 
-            var urlProvider = new UrlProvider(httpContextAccessor);
-            var result = urlProvider.GetEntityUrl(entity);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
+            var result = urlProvider.GetEntityApiUri(entity);
 
-            Assert.Equal("https://mon.domain.com/api/users/1", result);
+            Assert.Equal("https://mon.domain.com/api/users/1", result.ToString());
         }
 
         [Fact]
@@ -40,10 +41,10 @@ namespace RDD.Web.Tests.Serialization
         {
             var entity = new UserTest();
 
-            var urlProvider = new UrlProvider(httpContextAccessor);
-            var result = urlProvider.GetEntityUrl(entity);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
+            var result = urlProvider.GetEntityApiUri(entity);
 
-            Assert.Equal("https://mon.domain.com/api/usertests/10", result);
+            Assert.Equal("https://mon.domain.com/api/usertests/10", result.ToString());
         }
 
         [Fact]
@@ -52,9 +53,9 @@ namespace RDD.Web.Tests.Serialization
             var entity = new UserTest();
 
             var urlProvider = new UserTestUrlProvider(httpContextAccessor);
-            var result = urlProvider.GetEntityUrl(entity);
+            var result = urlProvider.GetEntityApiUri(entity);
 
-            Assert.Equal("https://mon.domain.com/api/users/10", result);
+            Assert.Equal("https://mon.domain.com/api/users/10", result.ToString());
         }
 
         private class UserTest : User
@@ -65,16 +66,16 @@ namespace RDD.Web.Tests.Serialization
         private class UserTestUrlProvider : UrlProvider
         {
             public UserTestUrlProvider(IHttpContextAccessor httpContextAccessor)
-                : base(httpContextAccessor) { }
+                : base(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor) { }
 
-            protected override Type GetEntityType(IEntityBase entity)
+            public override string GetApiControllerName(Type workingType)
             {
-                if (entity is UserTest)
+                if (workingType == typeof(UserTest))
                 {
-                    return typeof(User);
+                    return base.GetApiControllerName(typeof(User));
                 }
 
-                return base.GetEntityType(entity);
+                return base.GetApiControllerName(workingType);
             }
         }
     }
