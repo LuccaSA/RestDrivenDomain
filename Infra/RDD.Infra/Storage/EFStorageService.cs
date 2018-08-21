@@ -57,6 +57,18 @@ namespace RDD.Infra.Storage
             DbContext.Set<TEntity>().AddRange(entities);
         }
 
+        public virtual void Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TKey : IEquatable<TKey>
+        {    
+            var entity = DbContext.Find<TEntity>(id);
+            if (entity == null)
+            {
+                return;
+            }
+            DbContext.Entry(entity).CurrentValues.SetValues(toUpdate);
+        }
+
         public virtual void Remove<TEntity>(TEntity entity)
             where TEntity : class
         {

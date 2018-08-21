@@ -39,6 +39,15 @@ namespace RDD.Application.Controllers
             return entity;
         }
 
+        public virtual async Task<TEntity> CreateAsync(TEntity candidateEntity)
+        {
+            var entity = await Collection.CreateAsync(candidateEntity);
+
+            await Storage.SaveChangesAsync();
+
+            return entity;
+        }
+
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
             var entities = await Collection.CreateAsync(candidates, query);
@@ -51,6 +60,15 @@ namespace RDD.Application.Controllers
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             var entity = await Collection.UpdateByIdAsync(id, candidate, query);
+
+            await Storage.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public virtual async Task<TEntity> UpdateByIdAsync(TEntity candidateEntity)
+        {
+            var entity = await Collection.UpdateByIdAsync(candidateEntity.Id, candidateEntity);
 
             await Storage.SaveChangesAsync();
 
