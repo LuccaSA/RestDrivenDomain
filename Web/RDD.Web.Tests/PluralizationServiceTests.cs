@@ -1,5 +1,4 @@
-﻿using RDD.Web.Serialization;
-using RDD.Web.Serialization.UrlProviders;
+﻿using RDD.Web.Serialization.UrlProviders;
 using Xunit;
 
 namespace RDD.Web.Tests
@@ -10,7 +9,7 @@ namespace RDD.Web.Tests
 
         public PluralizationServiceTests()
         {
-            _service = new PluralizationService();
+            _service = new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US")));
         }
 
         [Theory]

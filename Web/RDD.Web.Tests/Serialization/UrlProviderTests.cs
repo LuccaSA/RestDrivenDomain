@@ -30,7 +30,7 @@ namespace RDD.Web.Tests.Serialization
                 Id = 1
             };
 
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/users/1", result.ToString());
@@ -41,7 +41,7 @@ namespace RDD.Web.Tests.Serialization
         {
             var entity = new UserTest();
 
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/usertests/10", result.ToString());
@@ -66,7 +66,7 @@ namespace RDD.Web.Tests.Serialization
         private class UserTestUrlProvider : UrlProvider
         {
             public UserTestUrlProvider(IHttpContextAccessor httpContextAccessor)
-                : base(new PluralizationService(), httpContextAccessor) { }
+                : base(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor) { }
 
             public override string GetApiControllerName(Type workingType)
             {

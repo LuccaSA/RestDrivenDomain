@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using Moq;
 using Newtonsoft.Json;
 using RDD.Domain;
 using RDD.Domain.Models;
@@ -52,7 +54,7 @@ namespace RDD.Web.Tests.Serialization
             var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { { "fields", "Obj2[Id,Name,Obj3[Something,Else],Else]" } }, true)
                 .Select(f => f.EntitySelector).ToList();
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), new UrlProvider(new PluralizationService(), httpContextAccessor));
+            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
 
             var json = serializer.ToJson(selection, new Web.Serialization.Options.SerializationOption { Selectors = fields });
 
@@ -68,8 +70,8 @@ namespace RDD.Web.Tests.Serialization
         {
             var httpContext = new DefaultHttpContext();
             var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
-            var reflectionProvider = new ReflectionProvider();
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
+            var reflectionProvider = new ReflectionProvider(new Mock<IMemoryCache>().Object);
             var serializer = new SerializerProvider(reflectionProvider, urlProvider);
 
             var obj1 = new Obj1

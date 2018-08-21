@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using RDD.Domain.Helpers;
 using RDD.Domain.Json;
@@ -22,9 +23,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var propertySelector = new PropertySelector<User>(u => u.Url);
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { propertySelector } }) as JsonObject;
@@ -39,9 +40,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new PrefixUrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new PrefixUrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var propertySelector = new PropertySelector<User>(u => u.Url);
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { propertySelector } }) as JsonObject;
@@ -73,9 +74,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var propertySelector = new PropertySelector<User>(u => u.MyValueObject);
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { propertySelector } }) as JsonObject;
@@ -98,9 +99,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption
             {
@@ -131,9 +132,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { new PropertySelector<User>(u => u.Department) } }) as JsonObject;
 
@@ -164,9 +165,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { new PropertySelector<Department>(u => u.Users) } }) as JsonObject;
 
@@ -198,9 +199,9 @@ namespace RDD.Web.Tests.Serialization
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(), httpContextAccessor);
+            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
             var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { new PropertySelector<Department>(u => u.Users.Select(g => g.Name)) } }) as JsonObject;
 
