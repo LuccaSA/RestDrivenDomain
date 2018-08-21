@@ -25,6 +25,55 @@ namespace RDD.Web.Tests.Serialization
     public class FieldsTests
     {
         [Fact]
+        public void EmptyFieldsSelection()
+        {
+            var obj1 = new Obj1
+            {
+                Id = 1,
+                Name = "1"
+            };
+            ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
+
+            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+            httpContextAccessor.HttpContext.Request.Scheme = "https";
+            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+
+            var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { }, true)
+                .Select(f => f.EntitySelector).ToList();
+
+            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
+
+            var json = serializer.ToJson(selection, new Web.Serialization.Options.SerializationOption { Selectors = fields });
+
+            Assert.True(json.HasJsonValue("items.0.Id"));
+            Assert.True(json.HasJsonValue("items.0.Name"));
+            Assert.True(json.HasJsonValue("items.0.Url"));
+        }
+        [Fact]
+        public void EmptyFieldsSingleObject()
+        {
+            var obj1 = new Obj1
+            {
+                Id = 1,
+                Name = "1"
+            };
+
+            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+            httpContextAccessor.HttpContext.Request.Scheme = "https";
+            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+
+            var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { }, true)
+                .Select(f => f.EntitySelector).ToList();
+
+            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
+
+            var json = serializer.ToJson(obj1, new Web.Serialization.Options.SerializationOption { Selectors = fields });
+
+            Assert.True(json.HasJsonValue("Id"));
+            Assert.True(json.HasJsonValue("Name"));
+            Assert.True(json.HasJsonValue("Url"));
+        }
+        [Fact]
         public void TwoLevelSelection()
         {
             var obj1 = new Obj1

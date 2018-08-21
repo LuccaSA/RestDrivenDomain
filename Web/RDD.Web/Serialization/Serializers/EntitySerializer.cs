@@ -23,7 +23,7 @@ namespace RDD.Web.Serialization.Serializers
 
         protected override SerializationOption RefineOptions(object entity, SerializationOption options)
         {
-            if (options.Selectors == null || options.Selectors.Any(s => s?.Lambda == null))
+            if (options.Selectors == null || options.Selectors.Count == 0 || options.Selectors.Any(s => s?.Lambda == null))
             {
                 options.Selectors = new FieldsParser().ParseFields(entity.GetType(), new List<string> { "id", "name", "url" }).Select(p => p.EntitySelector).ToList();
             }
