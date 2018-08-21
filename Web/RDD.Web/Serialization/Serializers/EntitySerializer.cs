@@ -23,7 +23,7 @@ namespace RDD.Web.Serialization.Serializers
 
         protected override SerializationOption RefineOptions(object entity, SerializationOption options)
         {
-            if (options == null || options.Selectors == null || options.Selectors.Any(s => s?.Lambda == null))
+            if (options.Selectors == null || options.Selectors.Any(s => s?.Lambda == null))
             {
                 options.Selectors = new FieldsParser().ParseFields(entity.GetType(), new List<string> { "id", "name", "url" }).Select(p => p.EntitySelector).ToList();
             }
@@ -31,16 +31,14 @@ namespace RDD.Web.Serialization.Serializers
             return base.RefineOptions(entity, options);
         }
 
-		protected override object GetRawValue(object entity, SerializationOption options, PropertyInfo property)
-		{
-			if (property.Name == "Url")
-			{
-				if (UrlProvider == null)
-					return null;
-				return UrlProvider.GetEntityApiUri(WorkingType, entity as IPrimaryKey);
-			}
+        protected override object GetRawValue(object entity, SerializationOption options, PropertyInfo property)
+        {
+            if (property.Name == "Url")
+            {
+                return UrlProvider?.GetEntityApiUri(WorkingType, entity as IPrimaryKey);
+            }
 
-			return base.GetRawValue(entity, options, property);
-		}
-	}
+            return base.GetRawValue(entity, options, property);
+        }
+    }
 }

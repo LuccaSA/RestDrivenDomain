@@ -1,28 +1,16 @@
-﻿using Inflector;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System;
 
 namespace RDD.Web.Serialization.UrlProviders
 {
     public class PluralizationService : IPluralizationService
     {
-        private readonly Dictionary<string, string> _pluralsByName;
+        private readonly Inflector.Inflector _inflector;
 
-        public PluralizationService()
+        public PluralizationService(Inflector.Inflector inflector)
         {
-            Inflector.Inflector.SetDefaultCultureFunc = () => new CultureInfo("en-US");
-
-            _pluralsByName = new Dictionary<string, string>();
+            _inflector = inflector ?? throw new ArgumentNullException(nameof(inflector));
         }
 
-        public string GetPlural(string name)
-        {
-            if (!_pluralsByName.ContainsKey(name))
-            {
-                _pluralsByName[name] = InflectorExtensions.Pluralize(name);
-            }
-
-            return _pluralsByName[name];
-        }
+        public string GetPlural(string name) => _inflector.Pluralize(name);
     }
 }

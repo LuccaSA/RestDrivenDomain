@@ -9,17 +9,17 @@ using System.Reflection;
 namespace RDD.Web.Serialization.Serializers
 {
     public class CultureInfoSerializer : ObjectSerializer
-	{
-		private static HashSet<string> _allowedProperties = new HashSet<string> { "id", "name", "code" };
+    {
+        private static HashSet<string> _allowedProperties = new HashSet<string> { "id", "name", "code" };
 
-		public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(Culture)) { }
+        public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(Culture)) { }
 
-		protected override void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options, PropertyInfo property)
-		{
-			if (_allowedProperties.Contains(property.Name.ToLower()))
-			{
-				base.SerializeProperty(partialResult, entity, options, property);
-			}
-		}
-	}
+        protected override void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options, PropertyInfo property)
+        {
+            if (_allowedProperties.Contains(property.Name.ToLower()))
+            {
+                base.SerializeProperty(partialResult, entity, options, property);
+            }
+        }
+    }
 }

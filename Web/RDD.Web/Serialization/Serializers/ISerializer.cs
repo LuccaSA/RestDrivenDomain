@@ -3,8 +3,8 @@ using RDD.Web.Serialization.Options;
 
 namespace RDD.Web.Serialization.Serializers
 {
-	public interface ISerializer
-	{
-		IJsonElement ToJson(object entity, SerializationOption options);
-	}
+    public interface ISerializer
+    {
+        IJsonElement ToJson(object entity, SerializationOption options);
+    }
 }

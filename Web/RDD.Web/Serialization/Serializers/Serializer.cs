@@ -4,15 +4,15 @@ using RDD.Web.Serialization.Providers;
 
 namespace RDD.Web.Serialization.Serializers
 {
-	public abstract class Serializer : ISerializer
-	{
-		public ISerializerProvider SerializerProvider { get; set; }
+    public abstract class Serializer : ISerializer
+    {
+        protected ISerializerProvider SerializerProvider { get; private set; }
 
-		public Serializer(ISerializerProvider serializerProvider)
-		{
-			SerializerProvider = serializerProvider;
-		}
+        protected Serializer(ISerializerProvider serializerProvider)
+        {
+            SerializerProvider = serializerProvider;
+        }
 
-		public abstract IJsonElement ToJson(object entity, SerializationOption options);
-	}
+        public abstract IJsonElement ToJson(object entity, SerializationOption options);
+    }
 }

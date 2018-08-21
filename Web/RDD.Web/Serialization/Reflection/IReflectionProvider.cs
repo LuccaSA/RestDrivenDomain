@@ -5,7 +5,7 @@ using System.Reflection;
 namespace RDD.Web.Serialization.Reflection
 {
     public interface IReflectionProvider
-	{
-		IReadOnlyCollection<PropertyInfo> GetProperties(Type type);
+    {
+        IReadOnlyCollection<PropertyInfo> GetProperties(Type type);
     }
 }

@@ -10,17 +10,17 @@ using System.Reflection;
 namespace RDD.Web.Serialization.Serializers
 {
     public class ObjectSerializer : Serializer
-	{
-		protected IReflectionProvider _reflectionProvider;
+    {
+        protected IReflectionProvider _reflectionProvider;
 
-		public Type WorkingType { get; set; }
+        public Type WorkingType { get; set; }
 
-		public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, Type workingType)
-			: base(serializerProvider)
-		{
-			_reflectionProvider = reflectionProvider;
-			WorkingType = workingType;
-		}
+        public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, Type workingType)
+            : base(serializerProvider)
+        {
+            _reflectionProvider = reflectionProvider;
+            WorkingType = workingType;
+        }
 
         public override IJsonElement ToJson(object entity, SerializationOption options)
         {
@@ -35,9 +35,9 @@ namespace RDD.Web.Serialization.Serializers
             return result;
         }
 
-		protected virtual SerializationOption RefineOptions(object entity, SerializationOption options)
-		{
-            if (options == null || options.Selectors == null || options.Selectors.Any(s => s?.Lambda == null))
+        protected virtual SerializationOption RefineOptions(object entity, SerializationOption options)
+        {
+            if (options.Selectors == null || options.Selectors.Any(s => s?.Lambda == null))
             {
                 options.Selectors = _reflectionProvider.GetProperties(WorkingType).Select(p =>
                 {
@@ -47,8 +47,8 @@ namespace RDD.Web.Serialization.Serializers
                 }).ToList();
             }
 
-			return options;
-		}
+            return options;
+        }
 
         protected virtual void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options)
         {
@@ -56,29 +56,24 @@ namespace RDD.Web.Serialization.Serializers
             SerializeProperty(partialResult, entity, options, property);
         }
 
-		protected virtual void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options, PropertyInfo property)
-		{
-			var key = GetKey(entity, options, property);
-			var value = GetRawValue(entity, options, property);
+        protected virtual void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options, PropertyInfo property)
+        {
+            var key = GetKey(entity, options, property);
+            var value = GetRawValue(entity, options, property);
 
-			SerializeKvp(partialResult, key, value, options, property);
-		}
+            SerializeKvp(partialResult, key, value, options, property);
+        }
 
-		protected virtual void SerializeKvp(JsonObject partialResult, string key, object value, SerializationOption options, PropertyInfo property)
-		{
+        protected virtual void SerializeKvp(JsonObject partialResult, string key, object value, SerializationOption options, PropertyInfo property)
+        {
             var subOptions = new SerializationOption { Selectors = options.Selectors.Select(s => s.Child).ToList() };
-
             partialResult.Content[key] = SerializerProvider.GetSerializer(value).ToJson(value, subOptions);
-		}
+        }
 
-		protected virtual string GetKey(object entity, SerializationOption options, PropertyInfo property)
-		{
-			return property.Name;
-		}
+        protected virtual string GetKey(object entity, SerializationOption options, PropertyInfo property)
+            => property.Name;
 
-		protected virtual object GetRawValue(object entity, SerializationOption options, PropertyInfo property)
-		{
-			return property.GetValue(entity, null);
-		}
-	}
+        protected virtual object GetRawValue(object entity, SerializationOption options, PropertyInfo property)
+            => property.GetValue(entity, null);
+    }
 }
