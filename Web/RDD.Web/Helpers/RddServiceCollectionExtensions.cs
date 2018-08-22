@@ -60,7 +60,7 @@ namespace RDD.Web.Helpers
             where TPrincipal : class, IPrincipal
         {
             services.TryAddScoped(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.TryAddSingleton<IPluralizationService, PluralizationService>();
+            services.TryAddScoped<IPluralizationService, PluralizationService>();
 
             services.AddMemoryCache();
             services.TryAddScoped<IReflectionProvider, ReflectionProvider>();
