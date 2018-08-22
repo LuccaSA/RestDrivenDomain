@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>2.2.2</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(VersionPrefix)</PackageVersion>
+  </PropertyGroup>
+</Project>
