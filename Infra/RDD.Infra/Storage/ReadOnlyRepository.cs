@@ -12,9 +12,9 @@ namespace RDD.Infra.Storage
         where TEntity : class
     {
         protected IStorageService StorageService { get; set; }
-        protected IRightExpressionsHelper RightExpressionsHelper { get; set; }
+        protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
 
-        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper rightExpressionsHelper)
+        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
         {
             StorageService = storageService;
             RightExpressionsHelper = rightExpressionsHelper;

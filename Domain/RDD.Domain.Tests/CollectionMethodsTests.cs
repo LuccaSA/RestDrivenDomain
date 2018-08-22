@@ -67,7 +67,7 @@ namespace RDD.Domain.Tests
                         new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerbs.Post },
                         new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerbs.Put }
                     });
-                var rightService = new RightExpressionsHelper(new WebService { Id = 1, AppOperations = new HashSet<int> { 1 } }, mock.Object);
+                var rightService = new RightExpressionsHelper<User>(new WebService { Id = 1, AppOperations = new HashSet<int> { 1 } }, mock.Object);
 
                 var user = new User { Id = 3 };
                 var repo = new Repository<User>(storage, rightService);
@@ -110,7 +110,7 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var repo = new Repository<UserWithParameters>(storage, _rightsService);
+                var repo = new Repository<UserWithParameters>(storage, new RightsServiceMock<UserWithParameters>());
                 var users = new UsersCollectionWithParameters(repo, _patcherProvider, new InstanciatorImplementation());
                 var query = new Query<UserWithParameters>();
                 query.Options.CheckRights = false;
