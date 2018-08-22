@@ -13,14 +13,14 @@ namespace RDD.Domain.Tests.Templates
     public class SingleContextTests
     {
         protected Func<string, IStorageService> _newStorage;
-        protected IRightExpressionsHelper _rightsService;
+        protected IRightExpressionsHelper<User> _rightsService;
         protected IPatcherProvider _patcherProvider;
         protected IInstanciator<User> Instanciator { get; set; }
 
         public SingleContextTests()
         {
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
-            _rightsService = new RightsServiceMock();
+            _rightsService = new RightsServiceMock<User>();
             _patcherProvider = new PatcherProvider();
             Instanciator = new DefaultInstanciator<User>();
         }

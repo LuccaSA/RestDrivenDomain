@@ -4,8 +4,9 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Rights
 {
-    public interface IRightExpressionsHelper
+    public interface IRightExpressionsHelper<T>
+         where T : class
     {
-        Expression<Func<T, bool>> GetFilter<T>(Query<T> query) where T : class;
+        Expression<Func<T, bool>> GetFilter(Query<T> query);
     }
 }

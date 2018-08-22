@@ -8,7 +8,8 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Rights
 {
-    public class RightExpressionsHelper : IRightExpressionsHelper
+    public class RightExpressionsHelper<T> : IRightExpressionsHelper<T>
+         where T : class
     {
         protected IPrincipal Principal { get; set; }
         protected ICombinationsHolder CombinationsHolder { get; set; }
@@ -19,14 +20,14 @@ namespace RDD.Domain.Rights
             CombinationsHolder = combinationsHolder ?? throw new ArgumentNullException(nameof(combinationsHolder));
         }
 
-        public virtual Expression<Func<T, bool>> GetFilter<T>(Query<T> query) where T : class
+        public virtual Expression<Func<T, bool>> GetFilter(Query<T> query)
         {
             if (Principal == null)
             {
                 throw new ForbiddenException("Anonymous query is forbidden");
             }
 
-            var operationIds = GetOperationIds<T>(query.Verb);
+            var operationIds = GetOperationIds(query.Verb);
             if (!operationIds.Any())
             {
                 throw new UnreachableEntityException(typeof(T));
@@ -35,7 +36,7 @@ namespace RDD.Domain.Rights
             return t => true;
         }
 
-        public virtual HashSet<int> GetOperationIds<T>(HttpVerbs verb)
+        public virtual HashSet<int> GetOperationIds(HttpVerbs verb)
         {
             var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(T) && c.Verb.HasVerb(verb));
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
