@@ -24,7 +24,7 @@ namespace RDD.Web.Serialization.Serializers
         {
             if (fields == null || !fields.Children.Any())
             {
-                return new ExpressionParser().ParseTree(entity.GetType(), "id,name,url");
+                return new ExpressionParser().ParseTree(entity.GetType(), "id,name");
             }
 
             return base.CorrectFields(entity, fields);

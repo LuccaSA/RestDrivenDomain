@@ -16,7 +16,6 @@ namespace RDD.Web.Tests.Serialization
     public class PropertySerializerTests
     {
         [Fact]
-            }
         public void ValueObject_should_serializeAllProperties()
         {
             var entity = new User
@@ -78,8 +77,7 @@ namespace RDD.Web.Tests.Serialization
                 Department = new Department
                 {
                     Id = 2,
-                    Name = "Foo",
-                    Url = "/api/departements/2"
+                    Name = "Foo"
                 }
             };
             var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
