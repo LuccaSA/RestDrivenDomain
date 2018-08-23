@@ -66,7 +66,7 @@ namespace RDD.Domain.Models
         /// </summary>
         /// <param name="entity">The entity</param>
         /// <returns>false if the entity should not be created</returns>
-        protected virtual bool OnBeforeCreate(TEntity entity) => true;
+        protected virtual Task<bool> OnBeforeCreate(TEntity entity) => Task.FromResult(true);
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
@@ -88,7 +88,7 @@ namespace RDD.Domain.Models
                 return null;
             }
 
-            UpdateEntityCore(id, entity, oldEntity);
+            await UpdateEntityCore(id, entity, oldEntity);
 
             return entity;
         }
@@ -136,12 +136,12 @@ namespace RDD.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual bool ValidateEntity(TEntity entity, TEntity oldEntity) => true;
+        protected virtual Task<bool> ValidateEntity(TEntity entity, TEntity oldEntity) => Task.FromResult(true);
 
-        protected virtual bool OnBeforeUpdateEntity(TEntity entity) => true;
+        protected virtual Task<bool> OnBeforeUpdateEntity(TEntity entity) => Task.FromResult(true);
 
         protected virtual Task OnBeforePatchEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
-        
+
         /// <summary>
         /// Called after entity update
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
@@ -160,14 +160,14 @@ namespace RDD.Domain.Models
             await OnAfterPatchEntity(oldEntity, newEntity, candidate, query);
 
             Patcher.Patch(entity, candidate.JsonValue);
-            UpdateEntityCore((TKey)newEntity.GetId(), newEntity, oldEntity);
+            await UpdateEntityCore((TKey)newEntity.GetId(), newEntity, oldEntity);
 
             return oldEntity;
         }
 
-        private void UpdateEntityCore(TKey id, TEntity entity, TEntity oldEntity)
+        private async Task UpdateEntityCore(TKey id, TEntity entity, TEntity oldEntity)
         {
-            if (!ValidateEntity(entity, oldEntity) || !OnBeforeUpdateEntity(entity))
+            if (!await ValidateEntity(entity, oldEntity) || !await OnBeforeUpdateEntity(entity))
             {
                 return;
             }
