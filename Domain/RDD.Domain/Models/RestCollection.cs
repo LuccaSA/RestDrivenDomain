@@ -61,6 +61,13 @@ namespace RDD.Domain.Models
             return result;
         }
 
+        /// <summary>
+        /// Called before the entity is created
+        /// </summary>
+        /// <param name="entity">The entity</param>
+        /// <returns>false if the entity should not be created</returns>
+        protected virtual bool OnBeforeCreate(TEntity entity) => true;
+
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();

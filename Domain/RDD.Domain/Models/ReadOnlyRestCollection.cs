@@ -59,6 +59,19 @@ namespace RDD.Domain.Models
             return new Selection<TEntity>(items, count);
         }
 
+        /// <summary>
+        /// Central place to filter or add on post query
+        /// </summary>
+        /// <param name="source">Original items</param>
+        /// <returns>Altered items</returns>
+        protected virtual IEnumerable<TEntity> OnAfterGet(IEnumerable<TEntity> source) => source;
+
+        /// <summary>
+        /// Si on ne trouve pas l'entité, on renvoie explicitement un NotFound
+        /// puisque c'était explicitement cette entité qui était visée
+        /// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
+        /// </summary>
+        /// <returns></returns>
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
             return (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
