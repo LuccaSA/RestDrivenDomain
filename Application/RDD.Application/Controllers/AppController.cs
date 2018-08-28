@@ -32,7 +32,16 @@ namespace RDD.Application.Controllers
 
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var entity = await Collection.CreateAsync(candidate, query);
+            var entity = Collection.Create(candidate, query);
+
+            await Storage.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
+        {
+            var entity = Collection.Create(candidates, query);
 
             await Storage.SaveChangesAsync();
 

@@ -21,34 +21,12 @@ namespace RDD.Domain.Tests
     public class CollectionMethodsTests : SingleContextTests
     {
         [Fact]
-        public async Task GetById_SHOULD_NOT_throw_exception_WHEN_id_does_not_exist()
-        {
-            using (var storage = _newStorage(Guid.NewGuid().ToString()))
-            {
-                var user = new User { Id = 1 };
-                var repo = new OpenRepository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-
-                await users.CreateAsync(user);
-
-                await storage.SaveChangesAsync();
-
-                await users.GetByIdAsync(0, new Query<User>());
-            }
-        }
-
-        [Fact]
         public async Task GetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var user = new User { Id = 2 };
                 var repo = new Repository<User>(storage, _rightsService);
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-
-                await users.CreateAsync(user);
-
-                await storage.SaveChangesAsync();
 
                 Assert.Null(await users.GetByIdAsync(0, new Query<User>()));
             }
@@ -79,7 +57,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
+        public void Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -88,7 +66,7 @@ namespace RDD.Domain.Tests
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
-                await users.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
+                users.Create(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
             }
         }
 
@@ -104,7 +82,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
+        public void Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -113,7 +91,7 @@ namespace RDD.Domain.Tests
                 var query = new Query<UserWithParameters>();
                 query.Options.CheckRights = false;
 
-                var result = await users.CreateAsync(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3, ""name"": ""John"" }"), query);
+                var result = users.Create(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3, ""name"": ""John"" }"), query);
 
                 Assert.Equal(3, result.Id);
                 Assert.Equal("John", result.Name);
@@ -130,9 +108,8 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
-
-                await users.CreateAsync(user, query);
-
+                
+                storage.Add(user);
                 await storage.SaveChangesAsync();
 
                 var any = await users.AnyAsync(query);
@@ -151,9 +128,8 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
-
-                await users.CreateAsync(user, query);
-
+                
+                storage.Add(user);
                 await storage.SaveChangesAsync();
 
                 await users.UpdateByIdAsync(2, Candidate<User, int>.Parse(JsonConvert.SerializeObject(user)), query);
@@ -173,8 +149,7 @@ namespace RDD.Domain.Tests
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
-                await users.CreateAsync(user, query);
-
+                storage.Add(user);
                 await storage.SaveChangesAsync();
 
                 query = new Query<User>(query, u => u.TwitterUri == new Uri("https://twitter.com"));

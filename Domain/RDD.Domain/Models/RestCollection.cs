@@ -25,17 +25,12 @@ namespace RDD.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual TEntity Create(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
             Patcher.Patch(entity, candidate.JsonValue);
 
-            return CreateAsync(entity, query);
-        }
-
-        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
-        {
             ForgeEntity(entity);
 
             ValidateEntity(entity, null);
@@ -43,6 +38,27 @@ namespace RDD.Domain.Models
             Repository.Add(entity);
 
             return entity;
+        }
+
+        public virtual IEnumerable<TEntity> Create(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        {
+            var result = new List<TEntity>();
+
+            foreach (var candidate in candidates)
+            {
+                TEntity entity = Instanciator.InstanciateNew(candidate);
+
+                GetPatcher().Patch(entity, candidate.JsonValue);
+
+                ForgeEntity(entity);
+
+                ValidateEntity(entity, null);
+
+                result.Add(entity);
+            }
+
+            Repository.AddRange(result);
+            return result;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
