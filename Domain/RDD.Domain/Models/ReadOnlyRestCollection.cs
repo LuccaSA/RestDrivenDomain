@@ -58,48 +58,14 @@ namespace RDD.Domain.Models
                 items = await Repository.PrepareAsync(items, query);
             }
 
-            //Si c'était un PUT/DELETE, on en profite pour affiner la réponse
-            if (query.Verb != HttpVerbs.Get && count == 0)
-            {
-                throw new NotFoundException(string.Format("No item of type {0} matching URL criteria while trying a {1}", typeof(TEntity).Name, query.Verb));
-            }
-
             return new Selection<TEntity>(items, count);
         }
 
-        /// <summary>
-        /// Si on ne trouve pas l'entité, on renvoie explicitement un NotFound
-        /// puisque c'était explicitement cette entité qui était visée
-        /// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
-        /// </summary>
-        /// <returns></returns>
         public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
         {
-            TEntity result = (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
-
-            if (result == null)
-            {
-                throw new NotFoundException(string.Format("Resource with ID {0} not found", id));
-            }
-
-            return result;
+            return (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
-
-        public async Task<TEntity> TryGetByIdAsync(object id)
-        {
-            try
-            {
-                return await GetByIdAsync((TKey)id);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get)
-            => GetByIdAsync(id, new Query<TEntity> { Verb = verb });
     }
 }

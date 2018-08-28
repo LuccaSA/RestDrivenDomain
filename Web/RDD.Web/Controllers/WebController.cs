@@ -86,6 +86,11 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
 
+            if (entity == null)
+            {
+                throw new NotFoundException($"Resource {id} not found");
+            }
+
             return Ok(RDDSerializer.Serialize(entity, query));
         }
 
@@ -94,7 +99,6 @@ namespace RDD.Web.Controllers
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
-            //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (candidates.Any(c => !c.HasId()))
             {
                 throw new BadRequestException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
@@ -109,7 +113,12 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            await AppController.DeleteByIdAsync(id);
+            var entity = await AppController.DeleteByIdAsync(id);
+
+            if (entity == null)
+            {
+                throw new NotFoundException($"Resource {id} not found");
+            }
 
             return Ok();
         }
@@ -119,7 +128,6 @@ namespace RDD.Web.Controllers
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
-            //Datas est censé contenir un tableau d'objet ayant une prop "id" qui permet de les identifier individuellement
             if (candidates.Any(c => !c.HasId()))
             {
                 throw new BadRequestException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");

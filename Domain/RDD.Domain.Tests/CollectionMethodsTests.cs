@@ -10,9 +10,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
-using RDD.Web.Helpers;
 using RDD.Web.Models;
-using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,7 +21,7 @@ namespace RDD.Domain.Tests
     public class CollectionMethodsTests : SingleContextTests
     {
         [Fact]
-        public async Task GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
+        public async Task GetById_SHOULD_NOT_throw_exception_WHEN_id_does_not_exist()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -35,12 +33,12 @@ namespace RDD.Domain.Tests
 
                 await storage.SaveChangesAsync();
 
-                await Assert.ThrowsAsync<NotFoundException>(() => users.GetByIdAsync(0));
+                await users.GetByIdAsync(0, new Query<User>());
             }
         }
 
         [Fact]
-        public async Task TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
+        public async Task GetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -52,12 +50,12 @@ namespace RDD.Domain.Tests
 
                 await storage.SaveChangesAsync();
 
-                Assert.Null(await users.TryGetByIdAsync(0));
+                Assert.Null(await users.GetByIdAsync(0, new Query<User>()));
             }
         }
 
         [Fact]
-        public async Task Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
+        public async Task Put_SHOULD_NOT_throw_notfound_exception_WHEN_unexisting_entity_()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -76,7 +74,7 @@ namespace RDD.Domain.Tests
 
                 await app.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), new Query<User>());
 
-                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, Candidate<User, int>.Parse(@"{ ""name"": ""new name"" }"), new Query<User>()));
+                await app.UpdateByIdAsync(0, Candidate<User, int>.Parse(@"{ ""name"": ""new name"" }"), new Query<User>());
             }
         }
 

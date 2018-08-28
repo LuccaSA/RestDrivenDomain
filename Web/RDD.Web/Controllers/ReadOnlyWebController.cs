@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
+using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
@@ -70,6 +71,11 @@ namespace RDD.Web.Controllers
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
+
+            if (entity == null)
+            {
+                throw new NotFoundException($"Resource {id} not found");
+            }
 
             return Ok(RDDSerializer.Serialize(entity, query));
         }

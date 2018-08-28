@@ -57,18 +57,22 @@ namespace RDD.Application.Controllers
             return entities;
         }
 
-        public async Task DeleteByIdAsync(TKey id)
+        public async Task<TEntity> DeleteByIdAsync(TKey id)
         {
-            await Collection.DeleteByIdAsync(id);
+            var entity = await Collection.DeleteByIdAsync(id);
 
             await Storage.SaveChangesAsync();
+
+            return entity;
         }
 
-        public async Task DeleteByIdsAsync(IList<TKey> ids)
+        public async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IList<TKey> ids)
         {
-            await Collection.DeleteByIdsAsync(ids);
+            var entities = await Collection.DeleteByIdsAsync(ids);
 
             await Storage.SaveChangesAsync();
+
+            return entities;
         }
     }
 }
