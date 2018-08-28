@@ -33,7 +33,7 @@ namespace RDD.Domain.Models
 
             ForgeEntity(entity);
 
-            ValidateEntity(entity, null);
+            await ValidateEntity(entity, null);
 
             Repository.Add(entity);
 
@@ -52,13 +52,28 @@ namespace RDD.Domain.Models
 
                 ForgeEntity(entity);
 
-                ValidateEntity(entity, null);
+                await ValidateEntity(entity, null);
 
                 result.Add(entity);
             }
 
             Repository.AddRange(result);
             return result;
+        }
+
+
+        public async Task<TEntity> CreateAsync(TEntity entity)
+        {
+            ForgeEntity(entity);
+
+            if (!await ValidateEntity(entity, null) || !await OnBeforeCreate(entity))
+            {
+                return null;
+            }
+
+            Repository.Add(entity);
+
+            return entity;
         }
 
         /// <summary>
@@ -88,9 +103,9 @@ namespace RDD.Domain.Models
                 return null;
             }
 
-            await UpdateEntityCore(id, entity, oldEntity);
+            bool updated = await UpdateEntityCore(id, entity, oldEntity);
 
-            return entity;
+            return updated ? entity : oldEntity;
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
@@ -155,24 +170,25 @@ namespace RDD.Domain.Models
 
             TEntity newEntity = oldEntity.Clone();
 
-            GetPatcher().Patch(newEntity, candidate.JsonValue);
+            Patcher.Patch(newEntity, candidate.JsonValue);
 
             await OnAfterPatchEntity(oldEntity, newEntity, candidate, query);
+            
+            bool updated = await UpdateEntityCore((TKey)newEntity.GetId(), newEntity, oldEntity);
 
-            Patcher.Patch(entity, candidate.JsonValue);
-            await UpdateEntityCore((TKey)newEntity.GetId(), newEntity, oldEntity);
-
-            return newEntity;
+            return updated ? newEntity : oldEntity;
         }
 
-        private async Task UpdateEntityCore(TKey id, TEntity entity, TEntity oldEntity)
+        private async Task<bool> UpdateEntityCore(TKey id, TEntity entity, TEntity oldEntity)
         {
             if (!await ValidateEntity(entity, oldEntity) || !await OnBeforeUpdateEntity(entity))
             {
-                return;
+                return false;
             }
 
             Repository.Update<TEntity, TKey>(id, entity);
+
+            return true;
         }
     }
 }
