@@ -1,6 +1,7 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 using System.Collections.Generic;
 
@@ -9,35 +10,34 @@ namespace RDD.Web.Querying
     public class OrderByParser<TEntity>
         where TEntity : class
     {
-        public Queue<OrderBy<TEntity>> Parse(Dictionary<string, string> parameters)
+        public List<OrderBy<TEntity>> Parse(Dictionary<string, string> parameters)
         {
             if (parameters.ContainsKey(Reserved.orderby.ToString()))
             {
                 return Parse(parameters[Reserved.orderby.ToString()]);
             }
 
-            return new Queue<OrderBy<TEntity>>();
+            return new List<OrderBy<TEntity>>();
         }
 
-        protected Queue<OrderBy<TEntity>> Parse(string value)
+        protected List<OrderBy<TEntity>> Parse(string value)
         {
+            var parser = new ExpressionSelectorParser<TEntity>();
             var orders = value.Split(',');
             var length = orders.Length;
-            var queue = new Queue<OrderBy<TEntity>>();
+            var queue = new List<OrderBy<TEntity>>();
 
             //Il faut forcément un nb pair d'orders
             if (length % 2 == 0)
             {
                 for (var i = 0; i < length; i += 2)
                 {
-                    var orderProperty = new PropertySelector<TEntity>();
-                    orderProperty.Parse(orders[i].ToLower());
-
+                    var orderProperty = parser.Parse(orders[i].ToLower());
                     var orderDirection = orders[i + 1].ToLower();
 
                     if (orderDirection == "asc" || orderDirection == "desc")
                     {
-                        queue.Enqueue(new OrderBy<TEntity>(orderProperty, (orderDirection == "desc" ? SortDirection.Descending : SortDirection.Ascending)));
+                        queue.Add(new OrderBy<TEntity>(orderProperty, orderDirection == "desc" ? SortDirection.Descending : SortDirection.Ascending));
                     }
                     else
                     {

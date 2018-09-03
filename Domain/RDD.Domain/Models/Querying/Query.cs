@@ -14,7 +14,7 @@ namespace RDD.Domain.Models.Querying
         public IEnumerable<Field> Fields { get; set; }
         public IEnumerable<Field> CollectionFields { get; set; }
         public Filter<TEntity> Filter { get; set; }
-        public Queue<OrderBy<TEntity>> OrderBys { get; set; }
+        public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
         public Headers Headers { get; set; }
         public Options Options { get; set; }
@@ -26,7 +26,7 @@ namespace RDD.Domain.Models.Querying
             Fields = new HashSet<Field<TEntity>>();
             Filter = new Filter<TEntity>();
             CollectionFields = new HashSet<Field<ISelection<TEntity>>>();
-            OrderBys = new Queue<OrderBy<TEntity>>();
+            OrderBys = new List<OrderBy<TEntity>>();
             Options = new Options();
             Page = Page.Default;
         }

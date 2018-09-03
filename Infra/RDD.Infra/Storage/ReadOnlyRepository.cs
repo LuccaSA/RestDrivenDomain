@@ -1,6 +1,5 @@
 ﻿using RDD.Domain;
 using RDD.Domain.Models.Querying;
-using RDD.Domain.Models.Querying.Convertors;
 using RDD.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,14 +75,12 @@ namespace RDD.Infra.Storage
         }
         protected virtual IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            if (!query.OrderBys.Any())
+            foreach (var orderBy in query.OrderBys)
             {
-                return entities;
+                entities = orderBy.ApplyOrderBy(entities);
             }
 
-            var orderBysConverter = new OrderBysConverter<TEntity>();
-
-            return orderBysConverter.Convert(entities, query.OrderBys);
+            return entities;
         }
         protected virtual IQueryable<TEntity> ApplyPage(IQueryable<TEntity> entities, Query<TEntity> query)
         {
