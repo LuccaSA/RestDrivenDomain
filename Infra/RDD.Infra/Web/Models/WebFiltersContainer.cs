@@ -1,4 +1,5 @@
 ﻿using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Helpers;
 using System;
@@ -22,26 +23,24 @@ namespace RDD.Infra.Web.Models
         {
             _filters = filters;
 
-            Expression = new PredicateService<TEntity, TKey>(filters)
-                .GetEntityPredicate(new QueryBuilder<TEntity, TKey>());
+            Expression = new PredicateService<TEntity, TKey>(filters).GetEntityPredicate(new QueryBuilder<TEntity, TKey>());
         }
 
-        public bool HasFilter(Expression<Func<TEntity, object>> property)
-        {
-            return _filters.Any(f => f.Property.Contains(property));
-        }
+        public bool HasFilter<TProp>(Expression<Func<TEntity, TProp>> property) => GetFilter(property) != null;
 
-        public void RemoveFilter(Expression<Func<TEntity, object>> property)
+        public void RemoveFilter<TProp>(Expression<Func<TEntity, TProp>> property)
         {
             if (HasFilter(property))
             {
-                Init(_filters.Where(f => !f.Property.Contains(property)));
+                var chain = new ExpressionSelectorParser<TEntity>().ParseChain(property);
+                Init(_filters.Where(f => !f.Selector.Contains(chain)));
             }
         }
 
-        public WebFilter<TEntity> GetFilter(Expression<Func<TEntity, object>> property)
+        public WebFilter<TEntity> GetFilter<TProp>(Expression<Func<TEntity, TProp>> property)
         {
-            return _filters.FirstOrDefault(f => f.Property.Contains(property));
+            var chain = new ExpressionSelectorParser<TEntity>().ParseChain(property);
+            return _filters.FirstOrDefault(f => f.Selector.Contains(chain));
         }
     }
 }

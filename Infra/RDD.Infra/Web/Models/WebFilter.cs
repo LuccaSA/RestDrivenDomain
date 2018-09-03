@@ -1,4 +1,4 @@
-﻿using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers.Expressions;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,13 +6,13 @@ namespace RDD.Infra.Web.Models
 {
     public class WebFilter<TEntity>
     {
-        public PropertySelector<TEntity> Property { get; private set; }
+        public IExpressionSelectorChain Selector { get; private set; }
         public WebFilterOperand Operand { get; private set; }
         public IList Values { get; private set; }
 
-        public WebFilter(PropertySelector<TEntity> property, WebFilterOperand operand, IList values)
+        public WebFilter(IExpressionSelectorChain selector, WebFilterOperand operand, IList values)
         {
-            Property = property;
+            Selector = selector;
             Operand = operand;
             Values = values;
         }
@@ -20,7 +20,7 @@ namespace RDD.Infra.Web.Models
 
     public class WebFilter<TEntity, TProp> : WebFilter<TEntity>
     {
-        public WebFilter(PropertySelector<TEntity> property, WebFilterOperand operand, TProp value)
-            : base(property, operand, new List<TProp> { value }) { }
+        public WebFilter(IExpressionSelectorChain selector, WebFilterOperand operand, TProp value)
+            : base(selector, operand, new List<TProp> { value }) { }
     }
 }

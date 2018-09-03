@@ -42,7 +42,7 @@ namespace RDD.Infra.Helpers
         private Expression<Func<TObject, bool>> ToExpression<TObject>(WebFilter<TEntity> filter, object value)
             where TObject : class
         {
-            var filterProperty = filter.Property;
+            var filterProperty = filter.Selector;
             var filterOperand = filter.Operand;
 
             switch (filterOperand)
@@ -89,19 +89,19 @@ namespace RDD.Infra.Helpers
         {
             switch (filter.Operand)
             {
-                case WebFilterOperand.Equals: return queryBuilder.Equals(filter.Property, value);
-                case WebFilterOperand.NotEqual: return queryBuilder.NotEqual(filter.Property, value);
-                case WebFilterOperand.Starts: return queryBuilder.Starts(filter.Property, value);
-                case WebFilterOperand.Like: return queryBuilder.Like(filter.Property, value);
-                case WebFilterOperand.Between: return queryBuilder.Between(filter.Property, value);
-                case WebFilterOperand.Since: return queryBuilder.Since(filter.Property, value);
-                case WebFilterOperand.Until: return queryBuilder.Until(filter.Property, value);
-                case WebFilterOperand.Anniversary: return queryBuilder.Anniversary(filter.Property, value);
-                case WebFilterOperand.GreaterThan: return queryBuilder.GreaterThan(filter.Property, value);
-                case WebFilterOperand.GreaterThanOrEqual: return queryBuilder.GreaterThanOrEqual(filter.Property, value);
-                case WebFilterOperand.LessThan: return queryBuilder.LessThan(filter.Property, value);
-                case WebFilterOperand.LessThanOrEqual: return queryBuilder.LessThanOrEqual(filter.Property, value);
-                case WebFilterOperand.ContainsAll: return queryBuilder.ContainsAll(filter.Property, value);
+                case WebFilterOperand.Equals: return queryBuilder.Equals(filter.Selector, value);
+                case WebFilterOperand.NotEqual: return queryBuilder.NotEqual(filter.Selector, value);
+                case WebFilterOperand.Starts: return queryBuilder.Starts(filter.Selector, value);
+                case WebFilterOperand.Like: return queryBuilder.Like(filter.Selector, value);
+                case WebFilterOperand.Between: return queryBuilder.Between(filter.Selector, value);
+                case WebFilterOperand.Since: return queryBuilder.Since(filter.Selector, value);
+                case WebFilterOperand.Until: return queryBuilder.Until(filter.Selector, value);
+                case WebFilterOperand.Anniversary: return queryBuilder.Anniversary(filter.Selector, value);
+                case WebFilterOperand.GreaterThan: return queryBuilder.GreaterThan(filter.Selector, value);
+                case WebFilterOperand.GreaterThanOrEqual: return queryBuilder.GreaterThanOrEqual(filter.Selector, value);
+                case WebFilterOperand.LessThan: return queryBuilder.LessThan(filter.Selector, value);
+                case WebFilterOperand.LessThanOrEqual: return queryBuilder.LessThanOrEqual(filter.Selector, value);
+                case WebFilterOperand.ContainsAll: return queryBuilder.ContainsAll(filter.Selector, value);
                 default:
                     throw new NotImplementedException($"Unhandled operand : {filter.Operand}");
             }

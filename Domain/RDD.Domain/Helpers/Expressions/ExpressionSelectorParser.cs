@@ -23,6 +23,8 @@ namespace RDD.Domain.Helpers.Expressions
             return chains.First();
         }
 
+        public IExpressionSelectorChain ParseChain<TProp>(Expression<Func<TClass, TProp>> lambda) => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+
         public IExpressionSelectorTree ParseTree(string input)
         {
             var tree = new TreeParser().Parse(input); 
@@ -52,15 +54,15 @@ namespace RDD.Domain.Helpers.Expressions
             if (typeof(IDictionary).IsAssignableFrom(returnType))
             {
                 var dictionaryKey = Expression.Constant(member);
-                var ItemsExpression = Expression.Property(parameter, "Item", dictionaryKey);
+                var itemsExpression = Expression.Property(parameter, "Item", dictionaryKey);
 
-                return new ItemSelector { LambdaExpression = Expression.Lambda(ItemsExpression, parameter) };
+                return new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
             }
 
             var propertyExpression = Expression.Property(parameter, property);
             var lambda = Expression.Lambda(propertyExpression, parameter);
 
-            if (typeof(IEnumerable<>).IsAssignableFrom(returnType.GetGenericTypeDefinition()) && returnType != typeof(string))
+            if (returnType.IsGenericType && typeof(IEnumerable<>).IsAssignableFrom(returnType.GetGenericTypeDefinition()) && returnType != typeof(string))
             {
                 return new EnumerableMemberSelector { LambdaExpression = lambda };
             }

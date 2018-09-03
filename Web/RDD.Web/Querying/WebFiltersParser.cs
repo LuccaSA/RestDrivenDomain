@@ -2,6 +2,7 @@
 using NExtends.Primitives.Strings;
 using RDD.Domain;
 using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
@@ -49,6 +50,7 @@ namespace RDD.Web.Querying
         {
             var list = new List<WebFilter<TEntity>>();
             var service = new SerializationService();
+            var parser = new ExpressionSelectorParser<TEntity>();
 
             foreach (string key in keys)
             {
@@ -73,10 +75,9 @@ namespace RDD.Web.Querying
                     values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                 }
 
-                var property = new PropertySelector<TEntity>();
-                property.Parse(key);
+                var selector = parser.ParseChain(key);
 
-                list.Add(new WebFilter<TEntity>(property, operand, values));
+                list.Add(new WebFilter<TEntity>(selector, operand, values));
             }
 
             return list;
