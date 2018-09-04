@@ -1,5 +1,6 @@
 ﻿using RDD.Domain.Helpers.Expressions.Utils;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace RDD.Domain.Helpers.Expressions
@@ -10,7 +11,7 @@ namespace RDD.Domain.Helpers.Expressions
 
         public IExpressionSelectorChain Next { get; set; }
 
-        public string Name => Current?.Name + (Next != null ? "." + Next.Name : "");
+        public string Name => string.Join(".", new[] { Current?.Name, Next?.Name }.Where(e => !string.IsNullOrEmpty(e)));
 
         public Type ResultType => Next?.ResultType ?? Current.ResultType;
 

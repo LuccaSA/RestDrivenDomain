@@ -27,11 +27,11 @@ namespace RDD.Domain.Helpers.Expressions
             => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
 
         public IExpressionSelectorTree ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
-            => ParseTree(new[] { lambda });
+            => ParseTree(new LambdaExpression[] { lambda });
         public IExpressionSelectorTree ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
-            => ParseTree(lambda1, lambda2);
+            => ParseTree(new LambdaExpression[] { lambda1, lambda2 });
         public IExpressionSelectorTree ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
-            => ParseTree(lambda1, lambda2, lambda3);
+            => ParseTree(new LambdaExpression[] { lambda1, lambda2, lambda3 });
 
         public IExpressionSelectorTree ParseTree(params LambdaExpression[] lambdas)
         {

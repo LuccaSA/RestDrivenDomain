@@ -52,9 +52,24 @@ namespace RDD.Domain.Helpers.Expressions
             switch (Children.Count)
             {
                 case 0: return start;
-                case 1: return start + "." + Children[0].ToString();
+                case 1: return string.Join(".", new[] { start, Children[0].ToString() }.Where(e => !string.IsNullOrEmpty(e)));
                 default: return start + "[" + string.Join(",", Children.Select(c => c.ToString())) + "]";
             }
+        }
+
+        public bool Equals(IExpressionSelectorTree other)
+        {
+            if (other == null && this == null)
+            {
+                return true;
+            }
+
+            if (other == null || this == null)
+            {
+                return false;
+            }
+
+            return new HashSet<IExpressionSelectorChain>(this, new ExpressionSelectorEqualityComparer()).SetEquals(other);
         }
 
         public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
@@ -62,5 +77,20 @@ namespace RDD.Domain.Helpers.Expressions
 
         public bool Contains(IExpressionSelectorChain chain)
             => this.Any(c => c.Contains(chain));
+
+        public IExpressionSelectorTree Intersection(IExpressionSelectorTree tree)
+        {
+            if (tree == null)
+            {
+                return null;
+            }
+
+            if (!(Node == null && tree.Node == null) && (Node == null || tree.Node == null || !Node.Equals(tree.Node)))
+            {
+                return null;
+            }
+
+            return new ExpressionSelectorTree { Node = Node, Children = Children.SelectMany(c => tree.Children.Select(t => c.Intersection(t))).Where(i => i != null).ToList() };
+        }
     }
 }

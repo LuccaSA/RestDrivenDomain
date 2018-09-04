@@ -1,4 +1,6 @@
-﻿using RDD.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Rights;
 using System.Collections.Generic;
@@ -12,6 +14,8 @@ namespace RDD.Infra.Storage
     {
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
+
+        protected virtual IExpressionSelectorTree IncludeWhiteList { get; }
 
         public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
         {
@@ -86,8 +90,17 @@ namespace RDD.Infra.Storage
         {
             return entities.Skip(query.Page.Offset).Take(query.Page.Limit);
         }
+
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
         {
+            if (IncludeWhiteList != null && query.Fields != null)
+            {
+                foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+                {
+                    entities = entities.Include(prop.Name);
+                }
+            }
+
             return entities;
         }
     }
