@@ -88,7 +88,7 @@ namespace RDD.Domain.Helpers.Expressions
             var propertyExpression = Expression.Property(parameter, property);
             var lambda = Expression.Lambda(propertyExpression, parameter);
 
-            if (returnType.IsGenericType && typeof(IEnumerable<>).IsAssignableFrom(returnType.GetGenericTypeDefinition()) && returnType != typeof(string))
+            if (typeof(IEnumerable).IsAssignableFrom(returnType) && returnType != typeof(string) && !typeof(IDictionary).IsAssignableFrom(returnType))
             {
                 return new EnumerableMemberSelector { LambdaExpression = lambda };
             }

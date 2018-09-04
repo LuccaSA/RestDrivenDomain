@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -41,7 +42,7 @@ namespace RDD.Domain.Helpers.Expressions.Utils
             var propertyExpression = Expression.PropertyOrField(parameter, node.Member.Name);
             var lambda = Expression.Lambda(propertyExpression, parameter);
 
-            if (node.Member.DeclaringType.IsGenericType && typeof(IEnumerable<>).IsAssignableFrom(node.Member.DeclaringType.GetGenericTypeDefinition()) && node.Member.DeclaringType != typeof(string))
+            if (typeof(IEnumerable).IsAssignableFrom(node.Member.DeclaringType) && node.Member.DeclaringType != typeof(string))
             {
                 Selectors.Push(new EnumerableMemberSelector { LambdaExpression = lambda });
             }
