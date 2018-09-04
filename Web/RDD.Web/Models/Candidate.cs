@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using RDD.Domain;
 using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
 using System;
 using System.Linq;
@@ -30,29 +31,28 @@ namespace RDD.Web.Models
         public bool HasId() => HasProperty(c => c.Id);
         public bool HasProperty(Expression<Func<TEntity, object>> expression)
         {
-            var propertySelector = new PropertySelector<TEntity>(expression);
-
-            return ContainsPath(_structure, propertySelector);
+            var selector = ExpressionSelectorChain.New(expression);
+            return ContainsPath(_structure, selector);
         }
         TKey ICandidate<TEntity, TKey>.Id => Value.Id;
         object ICandidate<TEntity>.Id => Value.Id;
 
-        private bool ContainsPath(JToken token, PropertySelector selector)
+        private bool ContainsPath(JToken token, IExpressionSelectorChain selector)
         {
             switch (token.Type)
             {
                 case JTokenType.Object:
                     {
-                        var matchingChild = token.Children<JProperty>().FirstOrDefault(c => String.Equals(c.Name, selector.Name, StringComparison.InvariantCultureIgnoreCase));
+                        var matchingChild = token.Children<JProperty>().FirstOrDefault(c => string.Equals(c.Name, selector.Current.Name, StringComparison.InvariantCultureIgnoreCase));
 
                         if (matchingChild != null)
                         {
-                            if (!selector.HasChild)
+                            if (selector.Next == null)
                             {
                                 return true;
                             }
 
-                            return ContainsPath(matchingChild.Value, selector.Child);
+                            return ContainsPath(matchingChild.Value, selector.Next);
                         }
 
                         return false;

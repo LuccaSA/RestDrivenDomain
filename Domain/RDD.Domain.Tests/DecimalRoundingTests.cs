@@ -79,19 +79,5 @@ namespace RDD.Domain.Tests
 
             Assert.Equal(59M, result);
         }
-
-        [Fact]
-        public void SHOULD_parse_rounding_correctly_to_good_propertySelector()
-        {
-            var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
-            var selection = new Selection<User>(items, 2);
-
-            var pattern = "sum(salary,round,2)";
-            var selector = new CollectionPropertySelector<User>();
-
-            selector.Parse(pattern);
-
-            Assert.Equal(58.01M, selector.Lambda.Compile().DynamicInvoke(selection));
-        }
     }
 }

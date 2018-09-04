@@ -15,7 +15,7 @@ namespace RDD.Domain.Helpers.Expressions
             return (x == null && y == null) || (x != null && x.Equals(y));
         }
 
-        public int GetHashCode(IExpressionSelector obj) => obj.GetHashCode();
+        public int GetHashCode(IExpressionSelector obj) => (obj.Name.GetHashCode() * 23) + (obj.ResultType.GetHashCode() * 17);
     }
 
     public interface IExpressionSelector : IEquatable<IExpressionSelector>
@@ -87,6 +87,7 @@ namespace RDD.Domain.Helpers.Expressions
         IExpressionSelector Current { get; }
         IExpressionSelectorChain Next { get; }
 
+        bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property);
         bool Contains(IExpressionSelectorChain chain);
     }
 
@@ -96,7 +97,7 @@ namespace RDD.Domain.Helpers.Expressions
 
         public IExpressionSelectorChain Next { get; set; }
 
-        public string Name => Current.Name + "." + Next.Name;
+        public string Name => Current?.Name + (Next != null ? "." + Next.Name : "");
 
         public Type ResultType => Next?.ResultType ?? Current.ResultType;
 
@@ -105,6 +106,9 @@ namespace RDD.Domain.Helpers.Expressions
 
         public static IExpressionSelectorChain New<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
             => new ExpressionSelectorParser().ParseChain(lambda);
+
+        public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
+            => Contains(new ExpressionSelectorParser().ParseChain(property));
 
         public bool Contains(IExpressionSelectorChain chain)
         {
@@ -124,6 +128,9 @@ namespace RDD.Domain.Helpers.Expressions
     {
         IExpressionSelector Node { get; }
         IEnumerable<IExpressionSelectorTree> Children { get; }
+
+        bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property);
+        bool Contains(IExpressionSelectorChain chain);
     }
 
     public class ExpressionSelectorTree : IExpressionSelectorTree
@@ -176,5 +183,11 @@ namespace RDD.Domain.Helpers.Expressions
                 default: return start + "[" + string.Join(",", Children.Select(c => c.ToString())) + "]";
             }
         }
+
+        public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
+            => Contains(new ExpressionSelectorParser().ParseChain(property));
+
+        public bool Contains(IExpressionSelectorChain chain)
+            => this.Any(c => c.Contains(chain));
     }
 }

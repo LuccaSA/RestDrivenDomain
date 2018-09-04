@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace RDD.Domain.Helpers.Expressions.Utils
 {
-    public abstract class Tree
+    internal abstract class Tree
     {
         public abstract object GetNode();
         public abstract IReadOnlyCollection<Tree> GetChildren();
     }
 
-    public class Tree<T> : Tree
+    internal class Tree<T> : Tree
     {
         private List<Tree<T>> _children { get; set; }
 
@@ -78,7 +78,7 @@ namespace RDD.Domain.Helpers.Expressions.Utils
         }
     }
 
-    public class TreeParser
+    internal class TreeParser
     {
         const char MULTISELECT_START = '[';
         const char MULTISELECT_END = ']';

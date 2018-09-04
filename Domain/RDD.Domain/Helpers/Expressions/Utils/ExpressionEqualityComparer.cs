@@ -13,24 +13,13 @@ namespace RDD.Domain.Helpers.Expressions.Utils
     /// </summary>
     public static class ExpressionEqualityComparer
     {
-        public static bool Eq(
-            LambdaExpression x,
-            LambdaExpression y)
-        {
-            return ExpressionsEqual(x, y, null, null);
-        }
+        public static bool Eq(LambdaExpression x, LambdaExpression y) => ExpressionsEqual(x, y, null, null);
 
-        public static bool Eq<TSource1, TSource2, TValue>(
-            Expression<Func<TSource1, TSource2, TValue>> x,
-            Expression<Func<TSource1, TSource2, TValue>> y)
-        {
-            return ExpressionsEqual(x, y, null, null);
-        }
+        public static bool Eq<TSource1, TSource2, TValue>(Expression<Func<TSource1, TSource2, TValue>> x, Expression<Func<TSource1, TSource2, TValue>> y)
+            => ExpressionsEqual(x, y, null, null);
 
         public static Expression<Func<Expression<Func<TSource, TValue>>, bool>> Eq<TSource, TValue>(Expression<Func<TSource, TValue>> y)
-        {
-            return x => ExpressionsEqual(x, y, null, null);
-        }
+            => x => ExpressionsEqual(x, y, null, null);
 
         private static bool ExpressionsEqual(Expression x, Expression y, LambdaExpression rootX, LambdaExpression rootY)
         {
@@ -45,8 +34,7 @@ namespace RDD.Domain.Helpers.Expressions.Utils
             if (valueX.IsDefined && valueY.IsDefined)
                 return ValuesEqual(valueX.Value, valueY.Value);
 
-            if (x.NodeType != y.NodeType
-                || x.Type != y.Type)
+            if (x.NodeType != y.NodeType || x.Type != y.Type)
             {
                 if (IsAnonymousType(x.Type) && IsAnonymousType(y.Type))
                     throw new NotImplementedException("Comparison of Anonymous Types is not supported");

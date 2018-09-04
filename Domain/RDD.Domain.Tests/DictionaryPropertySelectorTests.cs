@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -17,40 +18,29 @@ namespace RDD.Domain.Tests
         [Fact]
         public void PropertySelector_ShouldNotFailWhenParsingStringDictionaries()
         {
-            var dico = new EntityWithDictionaries();
-            var ps = new PropertySelector<EntityWithDictionaries>();
-
-            ps.Parse("stringToString.aProperty");
+            var ps = new ExpressionSelectorParser().Parse(typeof(EntityWithDictionaries), "stringToString.aProperty");
         }
 
         [Fact]
         public void PropertySelector_ShouldNotFailWhenParsingIntDictionaries()
         {
-            var dico = new EntityWithDictionaries();
-            var ps = new PropertySelector<EntityWithDictionaries>();
-
-            ps.Parse("stringToInt.aProperty");
+            var ps = new ExpressionSelectorParser().Parse(typeof(EntityWithDictionaries), "stringToInt.aProperty");
         }
 
         [Fact]
         public void PropertySelector_ShouldNotFailWhenParsingObjectDictionaries()
         {
-            var dico = new EntityWithDictionaries();
-            var ps = new PropertySelector<EntityWithDictionaries>();
-
-            ps.Parse("stringToObject.aProperty");
+            var ps = new ExpressionSelectorParser().Parse(typeof(EntityWithDictionaries), "stringToObject.aProperty");
         }
 
         [Fact]
         public void DictionaryPropertySelector_ShouldGenerateLambdaDicoAccessor_OnQueriedProperty()
         {
-            var dico = new EntityWithDictionaries();
-            var ps = new PropertySelector<EntityWithDictionaries>();
+            var ps = new ExpressionSelectorParser().ParseChain(typeof(EntityWithDictionaries), "stringToString.aProperty");
 
-            ps.Parse("stringToString.aProperty");
-
-            Assert.Equal("p => p.StringToString", ps.Lambda.ToString());
-            Assert.Equal(@"pp => pp.Item[""aProperty""]", ps.Child.Lambda.ToString());
+            Assert.Equal("StringToString", ps.Current.ToString());
+            Assert.Equal("aProperty", ps.Next.ToString());
+            Assert.Equal("StringToString.aProperty", ps.ToString());
         }
     }
 }

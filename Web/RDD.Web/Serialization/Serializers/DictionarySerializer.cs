@@ -46,7 +46,7 @@ namespace RDD.Web.Serialization.Serializers
                 }
                 catch
                 {
-                    throw new BadRequestException($"Unknown property {concreteChild.Name }");
+                    throw new BadRequestException($"Unknown key {concreteChild.Name }");
                 }
             }
 

@@ -52,11 +52,11 @@ namespace RDD.Infra.Helpers
                     var type = typeof(TObject);
                     var property = type
                         .GetProperties()
-                        .FirstOrDefault(p => p.Name.ToLower() == filterProperty.Name.ToLower());
+                        .FirstOrDefault(p => p.Name.ToLower() == filterProperty.Current.Name.ToLower());
 
                     var parameter = Expression.Parameter(type, "entity");
 
-                    var body = Expression.PropertyOrField(parameter, filterProperty.Name);
+                    var body = Expression.PropertyOrField(parameter, filterProperty.Current.Name);
 
                     return Expression.Lambda<Func<TObject, bool>>(Expression.Equal(body, Expression.Constant(value, property.PropertyType)), parameter);
 

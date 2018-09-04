@@ -73,18 +73,17 @@ namespace RDD.Domain.Helpers.Expressions
 
         IExpressionSelector GetSelector(Type classType, string member)
         {
-            var property = classType.GetProperty(member, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
-            var returnType = property.PropertyType;
-
             var parameter = Expression.Parameter(classType);
-
-            if (typeof(IDictionary).IsAssignableFrom(returnType))
+            if (typeof(IDictionary).IsAssignableFrom(classType))
             {
                 var dictionaryKey = Expression.Constant(member);
                 var itemsExpression = Expression.Property(parameter, "Item", dictionaryKey);
 
                 return new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
             }
+
+            var property = classType.GetProperty(member, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
+            var returnType = property.PropertyType;
 
             var propertyExpression = Expression.Property(parameter, property);
             var lambda = Expression.Lambda(propertyExpression, parameter);
