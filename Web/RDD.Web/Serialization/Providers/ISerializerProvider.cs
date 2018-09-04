@@ -1,7 +1,7 @@
-﻿using System;
+﻿using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Serializers;
+using System;
 
 namespace RDD.Web.Serialization.Providers
 {
@@ -13,11 +13,11 @@ namespace RDD.Web.Serialization.Providers
 
     public static class ISerializerProviderExtensions
     {
-        public static object Serialize(this ISerializerProvider serializerProvider, object entity, SerializationOption options)
-            => serializerProvider.ToJson(entity, options).GetContent();
+        public static object Serialize(this ISerializerProvider serializerProvider, object entity, IExpressionSelectorTree fields)
+            => serializerProvider.ToJson(entity, fields).GetContent();
 
-        public static IJsonElement ToJson(this ISerializerProvider serializerProvider, object entity, SerializationOption options)
-            => serializerProvider.GetSerializer(entity).ToJson(entity, options);
+        public static IJsonElement ToJson(this ISerializerProvider serializerProvider, object entity, IExpressionSelectorTree fields)
+            => serializerProvider.GetSerializer(entity).ToJson(entity, fields);
     }
 
 }

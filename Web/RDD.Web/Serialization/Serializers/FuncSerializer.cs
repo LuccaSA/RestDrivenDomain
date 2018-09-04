@@ -1,7 +1,7 @@
-﻿using System;
+﻿using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Providers;
+using System;
 
 namespace RDD.Web.Serialization.Serializers
 {
@@ -9,18 +9,18 @@ namespace RDD.Web.Serialization.Serializers
     {
         public FuncSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, SerializationOption options)
+        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
         {
-            return ToJson(entity as Func<T>, options);
+            return ToJson(entity as Func<T>, fields);
         }
 
-        protected IJsonElement ToJson(Func<T> callback, SerializationOption options)
+        protected IJsonElement ToJson(Func<T> callback, IExpressionSelectorTree fields)
         {
             var serializer = SerializerProvider.GetSerializer(typeof(T));
 
             switch (serializer)
             {
-                case ValueSerializer v: return v.ToJson(callback(), options);
+                case ValueSerializer v: return v.ToJson(callback(), fields);
                 default:
                     return new JsonValue { Content = null };
             }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Providers;
+using System;
 
 namespace RDD.Web.Serialization.Serializers
 {
@@ -9,16 +9,16 @@ namespace RDD.Web.Serialization.Serializers
     {
         public DateTimeSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, SerializationOption options)
+        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
         {
             switch (entity)
             {
-                case DateTime d: return ToJson(d, options);
-                default: return base.ToJson(entity, options);
+                case DateTime d: return ToJson(d, fields);
+                default: return base.ToJson(entity, fields);
             }
         }
 
-        public IJsonElement ToJson(DateTime entity, SerializationOption options)
+        public IJsonElement ToJson(DateTime entity, IExpressionSelectorTree fields)
         {
             return new JsonValue { Content = DateTime.SpecifyKind(entity, DateTimeKind.Unspecified) };
         }

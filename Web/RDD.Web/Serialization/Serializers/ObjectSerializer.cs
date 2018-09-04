@@ -1,10 +1,10 @@
-﻿using RDD.Domain.Helpers;
+﻿using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace RDD.Web.Serialization.Serializers
@@ -22,58 +22,53 @@ namespace RDD.Web.Serialization.Serializers
             WorkingType = workingType;
         }
 
-        public override IJsonElement ToJson(object entity, SerializationOption options)
+        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
         {
             var result = new JsonObject();
-            var correctedOptions = RefineOptions(entity, options);
+            var correctedFields = CorrectFields(entity, fields);
 
-            foreach (var subSelectors in correctedOptions.Selectors.GroupBy(s => s.Name))
+            foreach (var subSelector in correctedFields.Children)
             {
-                SerializeProperty(result, entity, new SerializationOption { Selectors = subSelectors.ToList() });
+                SerializeProperty(result, entity, subSelector);
             }
 
             return result;
         }
 
-        protected virtual SerializationOption RefineOptions(object entity, SerializationOption options)
+        protected virtual IExpressionSelectorTree CorrectFields(object entity, IExpressionSelectorTree fields)
         {
-            if (options.Selectors == null || options.Selectors.Count == 0 || options.Selectors.Any(s => s?.Lambda == null))
+            if (fields == null || !fields.Children.Any())
             {
-                options.Selectors = _reflectionProvider.GetProperties(WorkingType).Select(p =>
-                {
-                    var selector = PropertySelector.NewFromType(WorkingType, null);
-                    selector.Parse(p.Name);
-                    return selector;
-                }).ToList();
+                return new ExpressionSelectorParser().ParseTree(WorkingType,
+                    string.Join(",", _reflectionProvider.GetProperties(WorkingType).Select(p => p.Name)));
             }
 
-            return options;
+            return fields;
         }
 
-        protected virtual void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options)
+        protected virtual void SerializeProperty(JsonObject partialResult, object entity, IExpressionSelectorTree fields)
         {
-            var property = options.Selectors.First(s => s != null).GetCurrentProperty();
-            SerializeProperty(partialResult, entity, options, property);
+            var property = (fields.Node.ToLambdaExpression().Body as MemberExpression).Member as PropertyInfo;
+            SerializeProperty(partialResult, entity, fields, property);
         }
 
-        protected virtual void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options, PropertyInfo property)
+        protected virtual void SerializeProperty(JsonObject partialResult, object entity, IExpressionSelectorTree fields, PropertyInfo property)
         {
-            var key = GetKey(entity, options, property);
-            var value = GetRawValue(entity, options, property);
+            var key = GetKey(entity, fields, property);
+            var value = GetRawValue(entity, fields, property);
 
-            SerializeKvp(partialResult, key, value, options, property);
+            SerializeKvp(partialResult, key, value, fields, property);
         }
 
-        protected virtual void SerializeKvp(JsonObject partialResult, string key, object value, SerializationOption options, PropertyInfo property)
+        protected virtual void SerializeKvp(JsonObject partialResult, string key, object value, IExpressionSelectorTree fields, PropertyInfo property)
         {
-            var subOptions = new SerializationOption { Selectors = options.Selectors.Select(s => s.Child).ToList() };
-            partialResult.Content[key] = SerializerProvider.GetSerializer(value).ToJson(value, subOptions);
+            partialResult.Content[key] = SerializerProvider.GetSerializer(value).ToJson(value, fields);
         }
 
-        protected virtual string GetKey(object entity, SerializationOption options, PropertyInfo property)
+        protected virtual string GetKey(object entity, IExpressionSelectorTree fields, PropertyInfo property)
             => property.Name;
 
-        protected virtual object GetRawValue(object entity, SerializationOption options, PropertyInfo property)
+        protected virtual object GetRawValue(object entity, IExpressionSelectorTree fields, PropertyInfo property)
             => property.GetValue(entity, null);
     }
 }

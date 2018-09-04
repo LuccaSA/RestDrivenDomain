@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using Moq;
 using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.Serializers;
 using RDD.Web.Serialization.UrlProviders;
 using RDD.Web.Tests.Models;
 using System.Collections.Generic;
@@ -27,8 +26,8 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var propertySelector = new PropertySelector<User>(u => u.Url);
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { propertySelector } }) as JsonObject;
+            var tree = ExpressionSelectorTree.New((User u) => u.Url);
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.Equal("https://mon.domain.com/api/users/1", json.GetJsonValue("Url"));
         }
@@ -44,8 +43,8 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var propertySelector = new PropertySelector<User>(u => u.Url);
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { propertySelector } }) as JsonObject;
+            var tree = ExpressionSelectorTree.New((User u) => u.Url);
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.Equal("https://mon.domain.com/api/lol/users/1", json.GetJsonValue("Url"));
         }
@@ -78,8 +77,8 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var propertySelector = new PropertySelector<User>(u => u.MyValueObject);
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { propertySelector } }) as JsonObject;
+            var tree = ExpressionSelectorTree.New((User u) => u.MyValueObject);
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.HasJsonValue("MyValueObject.Id"));
             Assert.True(json.HasJsonValue("MyValueObject.Name"));
@@ -102,13 +101,9 @@ namespace RDD.Web.Tests.Serialization
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
-
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption
-            {
-                Selectors = new[] {
-                new PropertySelector<User>(u => u.Department.Id),
-                new PropertySelector<User>(u => u.Department.Name) }
-            }) as JsonObject;
+            
+            var tree = ExpressionSelectorTree.New((User u) => u.Department.Id, (User u) => u.Department.Name);
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.HasJsonValue("Department.Id"));
             Assert.True(json.HasJsonValue("Department.Name"));
@@ -136,7 +131,8 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { new PropertySelector<User>(u => u.Department) } }) as JsonObject;
+            var tree = ExpressionSelectorTree.New((User u) => u.Department);
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.HasJsonValue("Department.Id"));
             Assert.True(json.HasJsonValue("Department.Name"));
@@ -168,8 +164,9 @@ namespace RDD.Web.Tests.Serialization
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
-
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { new PropertySelector<Department>(u => u.Users) } }) as JsonObject;
+            
+            var tree = ExpressionSelectorTree.New((Department u) => u.Users);
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.GetJsonValue("Users.0.Name") == "Peter");
             Assert.True(json.GetJsonValue("Users.0.Id") == "0");
@@ -203,7 +200,8 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var json = serializer.ToJson(entity, new Web.Serialization.Options.SerializationOption { Selectors = new[] { new PropertySelector<Department>(u => u.Users.Select(g => g.Name)) } }) as JsonObject;
+            var tree = ExpressionSelectorTree.New((Department u) => u.Users.Select(g => g.Name));
+            var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.GetJsonValue("Users.0.Name") == "Peter");
             Assert.False(json.HasJsonValue("Users.0.Id"));

@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,8 +12,7 @@ namespace RDD.Domain.Models.Querying
     {
         public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }
-        public IEnumerable<Field> Fields { get; set; }
-        public IEnumerable<Field> CollectionFields { get; set; }
+        public IExpressionSelectorTree Fields { get; set; }
         public Filter<TEntity> Filter { get; set; }
         public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
@@ -23,9 +23,8 @@ namespace RDD.Domain.Models.Querying
         {
             Watch = new Stopwatch();
             Verb = HttpVerbs.Get;
-            Fields = new HashSet<Field<TEntity>>();
+            Fields = new ExpressionSelectorTree();
             Filter = new Filter<TEntity>();
-            CollectionFields = new HashSet<Field<ISelection<TEntity>>>();
             OrderBys = new List<OrderBy<TEntity>>();
             Options = new Options();
             Page = Page.Default;

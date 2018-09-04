@@ -1,30 +1,14 @@
-﻿using RDD.Domain;
+﻿using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace RDD.Web.Querying
 {
     public class OptionsParser
     {
-        public Options Parse(Dictionary<string, string> parameters, IEnumerable<Field> fields, IEnumerable<Field> collectionFields)
+        public Options Parse(Dictionary<string, string> parameters)
         {
             var options = new Options();
-
-            //Si les fields demandent des propriétés sur la collection
-            if (collectionFields.Any(f => f.EntitySelector.Contains((Expression<Func<ISelection, object>>)(c => c.Count))))
-            {
-                options.NeedCount = true;
-
-                //Et uniquement sur le count de la collection ?
-                if (collectionFields.Count() == 1)
-                {
-                    //Alors pas besoin d'énumérer les entités
-                    options.NeedEnumeration = false;
-                }
-            }
 
             //Le filtre sur certaines opérations
             if (parameters.ContainsKey(Reserved.operations + ".id")

@@ -1,6 +1,6 @@
 ﻿using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using System.Collections.Generic;
@@ -14,11 +14,11 @@ namespace RDD.Web.Serialization.Serializers
 
         public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(Culture)) { }
 
-        protected override void SerializeProperty(JsonObject partialResult, object entity, SerializationOption options, PropertyInfo property)
+        protected override void SerializeProperty(JsonObject partialResult, object entity, IExpressionSelectorTree fields, PropertyInfo property)
         {
             if (_allowedProperties.Contains(property.Name.ToLower()))
             {
-                base.SerializeProperty(partialResult, entity, options, property);
+                base.SerializeProperty(partialResult, entity, fields, property);
             }
         }
     }

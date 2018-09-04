@@ -8,12 +8,12 @@ using System.Reflection;
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public class ExpressionSelectorParser<TClass>
+    public class ExpressionSelectorParser
     {
-        public IExpressionSelector Parse(string input) => ParseChain(input);
-        public IExpressionSelectorChain ParseChain(string input)
+        public IExpressionSelector Parse(Type classType, string input) => ParseChain(classType, input);
+        public IExpressionSelectorChain ParseChain(Type classType, string input)
         {
-            var tree = ParseTree(input);
+            var tree = ParseTree(classType, input);
             var chains = tree.ToList();
             if (chains.Count != 1)
             {
@@ -23,16 +23,43 @@ namespace RDD.Domain.Helpers.Expressions
             return chains.First();
         }
 
-        public IExpressionSelectorChain ParseChain<TProp>(Expression<Func<TClass, TProp>> lambda) => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+        public IExpressionSelectorChain ParseChain<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+            => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
 
-        public IExpressionSelectorTree ParseTree(string input)
+        public IExpressionSelectorTree ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+            => ParseTree(new[] { lambda });
+        public IExpressionSelectorTree ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
+            => ParseTree(lambda1, lambda2);
+        public IExpressionSelectorTree ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
+            => ParseTree(lambda1, lambda2, lambda3);
+
+        public IExpressionSelectorTree ParseTree(params LambdaExpression[] lambdas)
+        {
+            var chains = lambdas.Select(lambda => ExpressionChainExtractor.AsExpressionSelectorChain(lambda));
+           return new ExpressionSelectorTree { Children = ChainsToTree(chains).ToList() };
+        }
+
+        private IEnumerable<IExpressionSelectorTree> ChainsToTree(IEnumerable<IExpressionSelectorChain> chains)
+        {
+            if (chains == null)
+            {
+                return null;
+            }
+
+            return chains
+                .Where(c => c != null)
+                .GroupBy(c => c.Current, c => c.Next, new ExpressionSelectorEqualityComparer())
+                .Select(g => new ExpressionSelectorTree { Node = g.Key, Children = ChainsToTree(g).ToList() });
+        }
+
+        public IExpressionSelectorTree ParseTree(Type classType, string input)
         {
             var tree = new TreeParser().Parse(input); 
             var result = new ExpressionSelectorTree();
 
             foreach (var subTree in tree.Children)
             {
-                result.Children.Add(Parse(typeof(TClass), subTree));
+                result.Children.Add(Parse(classType, subTree));
             }
 
             return result;

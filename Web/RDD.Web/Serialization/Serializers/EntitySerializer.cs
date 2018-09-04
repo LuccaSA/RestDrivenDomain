@@ -1,11 +1,10 @@
 ﻿using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Querying;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -21,24 +20,24 @@ namespace RDD.Web.Serialization.Serializers
             UrlProvider = urlProvider;
         }
 
-        protected override SerializationOption RefineOptions(object entity, SerializationOption options)
+        protected override IExpressionSelectorTree CorrectFields(object entity, IExpressionSelectorTree fields)
         {
-            if (options.Selectors == null || options.Selectors.Count == 0 || options.Selectors.Any(s => s?.Lambda == null))
+            if (fields == null || !fields.Children.Any())
             {
-                options.Selectors = new FieldsParser().ParseFields(entity.GetType(), new List<string> { "id", "name", "url" }).Select(p => p.EntitySelector).ToList();
+                return new ExpressionSelectorParser().ParseTree(entity.GetType(), "id,name,url");
             }
 
-            return base.RefineOptions(entity, options);
+            return base.CorrectFields(entity, fields);
         }
 
-        protected override object GetRawValue(object entity, SerializationOption options, PropertyInfo property)
+        protected override object GetRawValue(object entity, IExpressionSelectorTree fields, PropertyInfo property)
         {
             if (property.Name == "Url")
             {
                 return UrlProvider?.GetEntityApiUri(WorkingType, entity as IPrimaryKey);
             }
 
-            return base.GetRawValue(entity, options, property);
+            return base.GetRawValue(entity, fields, property);
         }
     }
 }

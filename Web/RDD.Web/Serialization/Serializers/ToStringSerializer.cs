@@ -1,5 +1,5 @@
-﻿using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
+﻿using RDD.Domain.Helpers.Expressions;
+using RDD.Domain.Json;
 using RDD.Web.Serialization.Providers;
 
 namespace RDD.Web.Serialization.Serializers
@@ -8,7 +8,7 @@ namespace RDD.Web.Serialization.Serializers
     {
         public ToStringSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, SerializationOption options)
-            => base.ToJson(entity.ToString(), options);
+        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+            => base.ToJson(entity.ToString(), fields);
     }
 }

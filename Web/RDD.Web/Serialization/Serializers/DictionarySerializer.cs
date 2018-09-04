@@ -1,7 +1,6 @@
 using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
-using RDD.Web.Serialization.Options;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using System.Collections;
@@ -13,42 +12,41 @@ namespace RDD.Web.Serialization.Serializers
     {
         public DictionarySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(IDictionary)) { }
 
-        public override IJsonElement ToJson(object entity, SerializationOption options)
+        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
         {
-            return ToJson(entity as IDictionary, options);
+            return ToJson(entity as IDictionary, fields);
         }
 
-        protected IJsonElement ToJson(IDictionary dico, SerializationOption options)
+        protected IJsonElement ToJson(IDictionary dico, IExpressionSelectorTree fields)
         {
-            if (options.Selectors.Any())
+            if (fields.Children.Any())
             {
-                return ToJsonWithFieldsFilter(dico, options);
+                return ToJsonWithFieldsFilter(dico, fields);
             }
 
             var result = new JsonObject();
             foreach (var key in dico.Keys)
             {
-                //options may change according to serialized type
-                SerializeKvp(result, key.ToString(), dico[key], new SerializationOption { Selectors = options.Selectors }, null);
+                SerializeKvp(result, key.ToString(), dico[key], fields, null);
             }
 
             return result;
         }
 
-        private IJsonElement ToJsonWithFieldsFilter(IDictionary dico, SerializationOption options)
+        private IJsonElement ToJsonWithFieldsFilter(IDictionary dico, IExpressionSelectorTree fields)
         {
             var result = new JsonObject();
-            foreach (var child in options.Selectors.Select(c => c.Child))
+            foreach (var child in fields.Children)
             {
-                var concreteChild = child as PropertySelector;
+                var concreteChild = child.Node as ItemSelector;
                 try
                 {
-                    var value = concreteChild.Lambda.Compile().DynamicInvoke(dico);
-                    SerializeKvp(result, concreteChild.Subject, value, new SerializationOption { Selectors = null }, null);
+                    var value = dico[concreteChild.Name];
+                    SerializeKvp(result, concreteChild.Name, value, child, null);
                 }
                 catch
                 {
-                    throw new BadRequestException($"Unknown property {concreteChild.Subject}");
+                    throw new BadRequestException($"Unknown property {concreteChild.Name }");
                 }
             }
 

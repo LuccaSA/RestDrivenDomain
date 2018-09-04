@@ -8,6 +8,16 @@ using System.Reflection;
 
 namespace RDD.Domain.Helpers.Expressions
 {
+    public class ExpressionSelectorEqualityComparer : IEqualityComparer<IExpressionSelector>
+    {
+        public bool Equals(IExpressionSelector x, IExpressionSelector y)
+        {
+            return (x == null && y == null) || (x != null && x.Equals(y));
+        }
+
+        public int GetHashCode(IExpressionSelector obj) => obj.GetHashCode();
+    }
+
     public interface IExpressionSelector : IEquatable<IExpressionSelector>
     {
         string Name { get; }
@@ -38,6 +48,8 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         LambdaExpression IExpressionSelector.ToLambdaExpression() => LambdaExpression;
+
+        public override string ToString() => Name;
     }
 
     class EnumerableMemberSelector : SimplePropertySelector
@@ -50,7 +62,7 @@ namespace RDD.Domain.Helpers.Expressions
         }
     }
 
-    class ItemSelector : IExpressionSelector
+    public class ItemSelector : IExpressionSelector
     {
         public LambdaExpression LambdaExpression { get; set; }
 
@@ -67,6 +79,7 @@ namespace RDD.Domain.Helpers.Expressions
             return (other == null && this == null)
                 || (other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression));
         }
+        public override string ToString() => "[" + Name + "]";
     }
 
     public interface IExpressionSelectorChain : IExpressionSelector
@@ -91,7 +104,7 @@ namespace RDD.Domain.Helpers.Expressions
             => ExpressionChainer.Chain(Current?.ToLambdaExpression(), Next?.ToLambdaExpression());
 
         public static IExpressionSelectorChain New<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
-            => new ExpressionSelectorParser<TClass>().ParseChain(lambda);
+            => new ExpressionSelectorParser().ParseChain(lambda);
 
         public bool Contains(IExpressionSelectorChain chain)
         {
@@ -103,6 +116,8 @@ namespace RDD.Domain.Helpers.Expressions
             return (other == null && this == null)
                 || (other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), ToLambdaExpression()));
         }
+
+        public override string ToString() => Name;
     }
 
     public interface IExpressionSelectorTree : IEnumerable<IExpressionSelectorChain>
@@ -117,6 +132,15 @@ namespace RDD.Domain.Helpers.Expressions
 
         IEnumerable<IExpressionSelectorTree> IExpressionSelectorTree.Children => Children;
         public List<IExpressionSelectorTree> Children { get; set; }
+
+        public static IExpressionSelectorTree New<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+            => new ExpressionSelectorParser().ParseTree(lambda);
+
+        public static IExpressionSelectorTree New<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
+            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2);
+
+        public static IExpressionSelectorTree New<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
+            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2, lambda3);
 
         public ExpressionSelectorTree()
         {
@@ -141,5 +165,16 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public override string ToString()
+        {
+            var start = Node?.ToString();
+            switch (Children.Count)
+            {
+                case 0: return start;
+                case 1: return start + "." + Children[0].ToString();
+                default: return start + "[" + string.Join(",", Children.Select(c => c.ToString())) + "]";
+            }
+        }
     }
 }

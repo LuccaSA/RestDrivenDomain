@@ -50,7 +50,7 @@ namespace RDD.Web.Querying
         {
             var list = new List<WebFilter<TEntity>>();
             var service = new SerializationService();
-            var parser = new ExpressionSelectorParser<TEntity>();
+            var parser = new ExpressionSelectorParser();
 
             foreach (string key in keys)
             {
@@ -75,7 +75,7 @@ namespace RDD.Web.Querying
                     values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                 }
 
-                var selector = parser.ParseChain(key);
+                var selector = parser.ParseChain(typeof(TEntity), key);
 
                 list.Add(new WebFilter<TEntity>(selector, operand, values));
             }

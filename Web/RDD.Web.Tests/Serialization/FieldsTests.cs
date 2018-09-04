@@ -38,12 +38,11 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
 
-            var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { }, true)
-                .Select(f => f.EntitySelector).ToList();
+            var fields = new FieldsParser().ParseFields(typeof(Obj1), new Dictionary<string, string> { }, true);
 
             var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
 
-            var json = serializer.ToJson(selection, new Web.Serialization.Options.SerializationOption { Selectors = fields });
+            var json = serializer.ToJson(selection, fields);
 
             Assert.True(json.HasJsonValue("items.0.Id"));
             Assert.True(json.HasJsonValue("items.0.Name"));
@@ -62,12 +61,11 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
 
-            var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { }, true)
-                .Select(f => f.EntitySelector).ToList();
+            var fields = new FieldsParser().ParseFields(typeof(Obj1), new Dictionary<string, string> { }, true);
 
             var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
 
-            var json = serializer.ToJson(obj1, new Web.Serialization.Options.SerializationOption { Selectors = fields });
+            var json = serializer.ToJson(obj1, fields);
 
             Assert.True(json.HasJsonValue("Id"));
             Assert.True(json.HasJsonValue("Name"));
@@ -100,12 +98,11 @@ namespace RDD.Web.Tests.Serialization
             var httpContext = new DefaultHttpContext();
             var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
 
-            var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { { "fields", "Obj2[Id,Name,Obj3[Something,Else],Else]" } }, true)
-                .Select(f => f.EntitySelector).ToList();
+            var fields = new FieldsParser().ParseFields(typeof(Obj1), new Dictionary<string, string> { { "fields", "Obj2[Id,Name,Obj3[Something,Else],Else]" } }, true);
 
             var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
 
-            var json = serializer.ToJson(selection, new Web.Serialization.Options.SerializationOption { Selectors = fields });
+            var json = serializer.ToJson(selection, fields);
 
             Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Something"));
             Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Else"));
@@ -141,10 +138,9 @@ namespace RDD.Web.Tests.Serialization
             };
 
             var selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
-            var fields = new FieldsParser().ParseFields<Obj1>(new Dictionary<string, string> { { "fields", "obj2s[id,name]" } }, true)
-                .Select(f => f.EntitySelector).ToList();
+            var fields = new FieldsParser().ParseFields(typeof(Obj1), new Dictionary<string, string> { { "fields", "obj2s[id,name]" } }, true);
 
-            var json = serializer.ToJson(selection, new Web.Serialization.Options.SerializationOption { Selectors = fields });
+            var json = serializer.ToJson(selection, fields);
 
             Assert.True(json.HasJsonValue("items.0.Obj2s.0.Id"));
             Assert.True(json.HasJsonValue("items.0.Obj2s.0.Name"));

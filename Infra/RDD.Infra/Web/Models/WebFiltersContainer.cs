@@ -32,14 +32,14 @@ namespace RDD.Infra.Web.Models
         {
             if (HasFilter(property))
             {
-                var chain = new ExpressionSelectorParser<TEntity>().ParseChain(property);
+                var chain = new ExpressionSelectorParser().ParseChain(property);
                 Init(_filters.Where(f => !f.Selector.Contains(chain)));
             }
         }
 
         public WebFilter<TEntity> GetFilter<TProp>(Expression<Func<TEntity, TProp>> property)
         {
-            var chain = new ExpressionSelectorParser<TEntity>().ParseChain(property);
+            var chain = new ExpressionSelectorParser().ParseChain(property);
             return _filters.FirstOrDefault(f => f.Selector.Contains(chain));
         }
     }

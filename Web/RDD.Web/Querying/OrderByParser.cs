@@ -22,7 +22,7 @@ namespace RDD.Web.Querying
 
         protected List<OrderBy<TEntity>> Parse(string value)
         {
-            var parser = new ExpressionSelectorParser<TEntity>();
+            var parser = new ExpressionSelectorParser();
             var orders = value.Split(',');
             var length = orders.Length;
             var queue = new List<OrderBy<TEntity>>();
@@ -32,7 +32,7 @@ namespace RDD.Web.Querying
             {
                 for (var i = 0; i < length; i += 2)
                 {
-                    var orderProperty = parser.Parse(orders[i].ToLower());
+                    var orderProperty = parser.Parse(typeof(TEntity), orders[i].ToLower());
                     var orderDirection = orders[i + 1].ToLower();
 
                     if (orderDirection == "asc" || orderDirection == "desc")
