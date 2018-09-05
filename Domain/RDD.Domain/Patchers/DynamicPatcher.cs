@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace RDD.Domain.Patchers
 {
-    class DynamicPatcher : IPatcher<JsonObject>
+    class DynamicPatcher : IPatcher
 	{
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
         {

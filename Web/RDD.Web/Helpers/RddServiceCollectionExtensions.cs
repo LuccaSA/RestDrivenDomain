@@ -35,6 +35,7 @@ namespace RDD.Web.Helpers
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.TryAddScoped<IPatcherProvider, PatcherProvider>();
+            services.TryAddScoped(typeof(IPatcher<>), typeof(ObjectPatcher<>));
             services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
             services.TryAddScoped(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
