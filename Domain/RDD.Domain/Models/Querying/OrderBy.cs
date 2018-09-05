@@ -32,7 +32,8 @@ namespace RDD.Domain.Models.Querying
             //https://stackoverflow.com/questions/3138133/what-is-the-purpose-of-linqs-expression-quote-method
 
             var sort = Selector.ToLambdaExpression();
-            var anotherLevel = typeof(IOrderedQueryable<>).IsAssignableFrom(source.GetType().GetGenericTypeDefinition());
+            var anotherLevel = typeof(IOrderedQueryable).IsAssignableFrom(source.Expression.Type)
+                && !typeof(EnumerableQuery).IsAssignableFrom(source.Expression.Type);
             var methodName = (!anotherLevel ? "OrderBy" : "ThenBy") + (Direction == SortDirection.Descending ? "Descending" : string.Empty);
             var call = Expression.Call(typeof(Queryable), methodName, new[] { typeof(T), Selector.ResultType }, source.Expression, Expression.Quote(sort));
 
