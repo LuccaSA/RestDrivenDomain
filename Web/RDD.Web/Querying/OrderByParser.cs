@@ -32,7 +32,7 @@ namespace RDD.Web.Querying
             {
                 for (var i = 0; i < length; i += 2)
                 {
-                    var orderProperty = parser.Parse(typeof(TEntity), orders[i].ToLower());
+                    var orderProperty = parser.Parse<TEntity>(orders[i].ToLower());
                     var orderDirection = orders[i + 1].ToLower();
 
                     if (orderDirection == "asc" || orderDirection == "desc")

@@ -5,15 +5,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
     public class ExpressionSelectorParser
     {
-        public IExpressionSelector Parse(Type classType, string input) => ParseChain(classType, input);
+        public IExpressionSelector Parse<TClass>(string input)
+            => ParseChain<TClass>(input);
+        public IExpressionSelector Parse(Type classType, string input)
+            => ParseChain(classType, input);
+
+        public IExpressionSelectorChain ParseChain<TClass>(string input)
+            => TreeToChain(ParseTree<TClass>(input));
         public IExpressionSelectorChain ParseChain(Type classType, string input)
+            => TreeToChain(ParseTree(classType, input));
+
+        private IExpressionSelectorChain TreeToChain(IExpressionSelectorTree tree)
         {
-            var tree = ParseTree(classType, input);
             var chains = tree.ToList();
             if (chains.Count != 1)
             {
@@ -26,17 +35,17 @@ namespace RDD.Domain.Helpers.Expressions
         public IExpressionSelectorChain ParseChain<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
             => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
 
-        public IExpressionSelectorTree ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
-            => ParseTree(new LambdaExpression[] { lambda });
-        public IExpressionSelectorTree ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
-            => ParseTree(new LambdaExpression[] { lambda1, lambda2 });
-        public IExpressionSelectorTree ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
-            => ParseTree(new LambdaExpression[] { lambda1, lambda2, lambda3 });
+        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+            => ParseTree<TClass>(new LambdaExpression[] { lambda });
+        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
+            => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2 });
+        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
+            => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3 });
 
-        public IExpressionSelectorTree ParseTree(params LambdaExpression[] lambdas)
+        public IExpressionSelectorTree<TClass> ParseTree<TClass>(params LambdaExpression[] lambdas)
         {
             var chains = lambdas.Select(lambda => ExpressionChainExtractor.AsExpressionSelectorChain(lambda));
-           return new ExpressionSelectorTree { Children = ChainsToTree(chains).ToList() };
+            return new ExpressionSelectorTree<TClass> { Children = ChainsToTree(chains).ToList() };
         }
 
         private IEnumerable<IExpressionSelectorTree> ChainsToTree(IEnumerable<IExpressionSelectorChain> chains)
@@ -53,10 +62,15 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         public IExpressionSelectorTree ParseTree(Type classType, string input)
-        {
-            var tree = new TreeParser().Parse(input); 
-            var result = new ExpressionSelectorTree();
+            => ParseTree(new ExpressionSelectorTree(), classType, input);
 
+        public IExpressionSelectorTree<TClass> ParseTree<TClass>(string input)
+            => ParseTree(new ExpressionSelectorTree<TClass>(), typeof(TClass), input);
+
+        private TTree ParseTree<TTree>(TTree result, Type classType, string input)
+            where TTree : ExpressionSelectorTree
+        {
+            var tree = new TreeParser().Parse(input);
             foreach (var subTree in tree.Children)
             {
                 result.Children.Add(Parse(classType, subTree));
@@ -82,7 +96,7 @@ namespace RDD.Domain.Helpers.Expressions
                 return new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
             }
 
-            var property = classType.GetProperty(member, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
+            var property = GetPropertyInfo(classType, member);
             var returnType = property.PropertyType;
 
             var propertyExpression = Expression.Property(parameter, property);
@@ -95,6 +109,38 @@ namespace RDD.Domain.Helpers.Expressions
             else
             {
                 return new SimplePropertySelector { LambdaExpression = lambda };
+            }
+        }
+
+        PropertyInfo GetPropertyInfo(Type type, string name)
+        {
+            if (type.IsInterface)
+            {
+                var considered = new HashSet<Type> { type };
+                var stack = new Stack<Type>(new[] { type });
+
+                while (stack.Any())
+                {
+                    var subType = stack.Pop();
+                    foreach (var subInterface in subType.GetInterfaces())
+                    {
+                        if (considered.Add(subInterface))
+                        {
+                            stack.Push(subInterface);
+                        }
+                    }
+
+                    var property = subType.GetProperty(name, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                    if (property != null)
+                    {
+                        return property;
+                    }
+                }
+                return null;
+            }
+            else
+            {
+                return type.GetProperty(name, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             }
         }
     }

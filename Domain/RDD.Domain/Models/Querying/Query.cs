@@ -12,7 +12,7 @@ namespace RDD.Domain.Models.Querying
     {
         public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }
-        public IExpressionSelectorTree Fields { get; set; }
+        public IExpressionSelectorTree<TEntity> Fields { get; set; }
         public Filter<TEntity> Filter { get; set; }
         public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
@@ -23,7 +23,7 @@ namespace RDD.Domain.Models.Querying
         {
             Watch = new Stopwatch();
             Verb = HttpVerbs.Get;
-            Fields = new ExpressionSelectorTree();
+            Fields = new ExpressionSelectorTree<TEntity>();
             Filter = new Filter<TEntity>();
             OrderBys = new List<OrderBy<TEntity>>();
             Options = new Options();

@@ -75,7 +75,7 @@ namespace RDD.Web.Querying
                     values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                 }
 
-                var selector = parser.ParseChain(typeof(TEntity), key);
+                var selector = parser.ParseChain<TEntity>(key);
 
                 list.Add(new WebFilter<TEntity>(selector, operand, values));
             }

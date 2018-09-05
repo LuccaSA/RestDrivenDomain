@@ -33,8 +33,8 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 
             if (valueX.IsDefined && valueY.IsDefined)
                 return ValuesEqual(valueX.Value, valueY.Value);
-
-            if (x.NodeType != y.NodeType || x.Type != y.Type)
+            
+            if (x.NodeType != y.NodeType || !(y.Type.IsAssignableFrom(x.Type) || x.Type.IsAssignableFrom(y.Type)))
             {
                 if (IsAnonymousType(x.Type) && IsAnonymousType(y.Type))
                     throw new NotImplementedException("Comparison of Anonymous Types is not supported");

@@ -14,4 +14,9 @@ namespace RDD.Domain.Helpers.Expressions
 
         IExpressionSelectorTree Intersection(IExpressionSelectorTree tree);
     }
+
+    public interface IExpressionSelectorTree<TClass> : IExpressionSelectorTree
+    {
+        bool Contains<TProp>(Expression<Func<TClass, TProp>> property);
+    }
 }

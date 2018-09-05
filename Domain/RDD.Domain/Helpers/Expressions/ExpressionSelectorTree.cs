@@ -93,4 +93,10 @@ namespace RDD.Domain.Helpers.Expressions
             return new ExpressionSelectorTree { Node = Node, Children = Children.SelectMany(c => tree.Children.Select(t => c.Intersection(t))).Where(i => i != null).ToList() };
         }
     }
+
+    public class ExpressionSelectorTree<TClass> : ExpressionSelectorTree, IExpressionSelectorTree<TClass>
+    {
+        public bool Contains<TProp>(Expression<Func<TClass, TProp>> property)
+            => base.Contains(property);
+    }
 }

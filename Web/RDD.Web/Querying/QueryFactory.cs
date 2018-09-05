@@ -29,7 +29,7 @@ namespace RDD.Web.Querying
         {
             var parameters = httpContextHelper.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
 
-            var fields = new FieldsParser().ParseFields(typeof(TEntity), parameters, isCollectionCall);
+            var fields = new FieldsParser().ParseFields<TEntity>(parameters, isCollectionCall);
             var filters = WebFiltersParser<TEntity>.Parse(parameters);
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             var options = new OptionsParser().Parse(parameters);
