@@ -52,7 +52,7 @@ namespace RDD.Domain.Tests
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
 
-            var p2 = ExpressionSelectorChain<FakeClass2>.New(fakeClass => fakeClass.A);
+            var p2 = ExpressionSelectorChain<FakeClass>.New(fakeClass => fakeClass.A);
 
             Assert.Equal(p1Val, dictionary[p2]);
         }
