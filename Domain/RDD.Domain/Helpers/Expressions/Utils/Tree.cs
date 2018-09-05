@@ -3,47 +3,32 @@ using System.Linq;
 
 namespace RDD.Domain.Helpers.Expressions.Utils
 {
-    internal abstract class Tree
+    internal class Tree<T>
     {
-        public abstract object GetNode();
-        public abstract IReadOnlyCollection<Tree> GetChildren();
-    }
-
-    internal class Tree<T> : Tree
-    {
-        private List<Tree<T>> _children { get; set; }
-
-        public IReadOnlyCollection<Tree<T>> Children { get { return _children; } }
+        private readonly List<Tree<T>> _children;
+        public IReadOnlyCollection<Tree<T>> Children => _children;
 
         public T Node { get; set; }
 
         internal protected Tree<T> Parent { get; protected set; }
 
-        public Tree() : this(default(T)) { }
-        public Tree(T node) : this(node, new List<Tree<T>>()) { }
-        public Tree(T node, IEnumerable<Tree<T>> children)
+        public Tree(T node)
         {
             Node = node;
             _children = new List<Tree<T>>();
-            AddChildren(children);
         }
+                
+        public Tree<T> GetParent() => Parent;
 
-        public bool IsLeaf()
-        {
-            return Children == null || Children.Count == 0;
-        }
-
-        public int CountLeaves()
-        {
-            return IsLeaf() ? 1 : Children.Sum(child => child.CountLeaves());
-        }
-
-        public Tree<T> GetParent() { return Parent; }
-        public override object GetNode() { return Node; }
-        public override IReadOnlyCollection<Tree> GetChildren() { return Children; }
         public override string ToString()
         {
-            return Node == null ? base.ToString() : Node.ToString();
+            var start = Node?.ToString();
+            switch (Children.Count)
+            {
+                case 0: return start;
+                case 1: return string.Join(".", new[] { start, _children[0].ToString() }.Where(e => !string.IsNullOrEmpty(e)));
+                default: return start + "[" + string.Join(",", _children.Select(c => c.ToString())) + "]";
+            }
         }
 
         public void AddChild(Tree<T> child)
@@ -52,28 +37,12 @@ namespace RDD.Domain.Helpers.Expressions.Utils
             _children.Add(child);
         }
 
-        public int GetChildIndex(Tree<T> child)
-        {
-            return _children.IndexOf(child);
-        }
-
-        public void InsertChild(int index, Tree<T> child)
-        {
-            child.Parent = this;
-            _children.Insert(index, child);
-        }
-
         public void AddChildren(IEnumerable<Tree<T>> children)
         {
             foreach (var child in children)
             {
                 AddChild(child);
             }
-        }
-
-        public bool Detach()
-        {
-            return Parent == null || Parent.Children == null || Parent._children.Remove(this);
         }
     }
 }
