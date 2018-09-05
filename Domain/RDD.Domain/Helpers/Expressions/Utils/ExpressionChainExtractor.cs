@@ -44,7 +44,7 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 
             if (typeof(IEnumerable).IsAssignableFrom(node.Member.DeclaringType) && node.Member.DeclaringType != typeof(string))
             {
-                Selectors.Push(new EnumerableMemberSelector { LambdaExpression = lambda });
+                Selectors.Push(new EnumerablePropertySelector { LambdaExpression = lambda });
             }
             else
             {

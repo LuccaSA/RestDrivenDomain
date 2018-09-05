@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
@@ -104,7 +103,7 @@ namespace RDD.Domain.Helpers.Expressions
 
             if (typeof(IEnumerable).IsAssignableFrom(returnType) && returnType != typeof(string) && !typeof(IDictionary).IsAssignableFrom(returnType))
             {
-                return new EnumerableMemberSelector { LambdaExpression = lambda };
+                return new EnumerablePropertySelector { LambdaExpression = lambda };
             }
             else
             {
