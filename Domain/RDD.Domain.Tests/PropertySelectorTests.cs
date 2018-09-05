@@ -17,7 +17,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleSelector_should_work()
         {
-            var selector = ExpressionSelectorChain.New((User u) => u.TwitterUri);
+            var selector = ExpressionSelectorChain<User>.New(u => u.TwitterUri);
 
             Assert.True(selector.Contains((User u) => u.TwitterUri));
 
@@ -27,7 +27,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void NeastedSelector_should_work()
         {
-            var selector = ExpressionSelectorChain.New((User u) => u.TwitterUri.Host);
+            var selector = ExpressionSelectorChain<User>.New(u => u.TwitterUri.Host);
 
             Assert.True(selector.Contains((User u) => u.TwitterUri));
             Assert.True(selector.Contains((User u) => u.TwitterUri.Host));

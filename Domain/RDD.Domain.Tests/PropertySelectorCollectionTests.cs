@@ -12,7 +12,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsShouldWork()
         {
-            var collection = ExpressionSelectorChain.New((DummyClass d) => d.DummyProp);
+            var collection = ExpressionSelectorChain< DummyClass>.New(d => d.DummyProp);
 
             Assert.True(collection.Contains((DummyClass d) => d.DummyProp));
         }
@@ -20,7 +20,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsWithDifferentVariableNameShouldWork()
         {
-            var collection = ExpressionSelectorChain.New((DummyClass d) => d.DummyProp);
+            var collection = ExpressionSelectorChain<DummyClass>.New(d => d.DummyProp);
 
             Assert.True(collection.Contains((DummyClass c) => c.DummyProp));
         }
@@ -28,7 +28,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsWithDifferentPropsShouldFail()
         {
-            var collection = ExpressionSelectorChain.New((DummyClass d) => d.DummyProp);
+            var collection = ExpressionSelectorChain<DummyClass>.New(d => d.DummyProp);
 
             Assert.False(collection.Contains((DummyClass d) => d.DummyProp2));
         }
@@ -36,7 +36,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SubContainsShouldWork()
         {
-            var collection = ExpressionSelectorChain.New((DummyClass d) => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp));
+            var collection = ExpressionSelectorChain<DummyClass>.New(d => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp));
 
             Assert.True(collection.Contains((DummyClass d) => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp)));
         }
@@ -44,7 +44,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SubAbstractContainsShouldWork()
         {
-            var collection = ExpressionSelectorChain.New((DummyClass d) => d.Children.Select(c => c.DummySubSubClass));
+            var collection = ExpressionSelectorChain<DummyClass>.New(d => d.Children.Select(c => c.DummySubSubClass));
 
             Assert.True(collection.Contains((DummyClass d) => d.Children.Select(c => c.DummySubSubClass)));
         }

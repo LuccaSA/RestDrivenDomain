@@ -29,9 +29,9 @@ namespace RDD.Web.Models
         }
 
         public bool HasId() => HasProperty(c => c.Id);
-        public bool HasProperty(Expression<Func<TEntity, object>> expression)
+        public bool HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression)
         {
-            var selector = ExpressionSelectorChain.New(expression);
+            var selector = ExpressionSelectorChain<TEntity>.New(expression);
             return ContainsPath(_structure, selector);
         }
         TKey ICandidate<TEntity, TKey>.Id => Value.Id;

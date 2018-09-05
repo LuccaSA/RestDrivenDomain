@@ -27,7 +27,7 @@ namespace RDD.Web.Tests
         {
             var filters = new HashSet<WebFilter<User>>()
             {
-                new WebFilter<User>(ExpressionSelectorChain.New<User, string>(u => u.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
+                new WebFilter<User>(ExpressionSelectorChain<User>.New(u => u.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
             };
             var container = new WebFiltersContainer<User, int>(filters);
             Expression<Func<User, object>> expression = u => u.Name;
@@ -40,7 +40,7 @@ namespace RDD.Web.Tests
         {
             var filters = new HashSet<WebFilter<User>>()
             {
-                new WebFilter<User>(ExpressionSelectorChain.New<User, string>(u => u.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
+                new WebFilter<User>(ExpressionSelectorChain<User>.New(u => u.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
             };
             var container = new WebFiltersContainer<User, int>(filters);
             Expression<Func<User, object>> expression = u => u.TwitterUri;
@@ -53,7 +53,7 @@ namespace RDD.Web.Tests
         {
             var filters = new HashSet<WebFilter<User>>()
             {
-                new WebFilter<User, string>(ExpressionSelectorChain.New<User, string>(u => u.Name), WebFilterOperand.Equals, null)
+                new WebFilter<User, string>(ExpressionSelectorChain<User>.New(u => u.Name), WebFilterOperand.Equals, null)
             };
             var container = new WebFiltersContainer<User, int>(filters);
             Expression<Func<User, object>> expression = u => u.Name;
@@ -73,7 +73,7 @@ namespace RDD.Web.Tests
         {
             var filters = new HashSet<WebFilter<User>>()
             {
-                new WebFilter<User>(ExpressionSelectorChain.New<User, string>(u => u.MyValueObject.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
+                new WebFilter<User>(ExpressionSelectorChain<User>.New(u => u.MyValueObject.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
             };
             var container = new WebFiltersContainer<User, int>(filters);
             Expression<Func<User, object>> expression = u => u.MyValueObject.Name;
@@ -86,7 +86,7 @@ namespace RDD.Web.Tests
         {
             var filters = new HashSet<WebFilter<User>>()
             {
-                new WebFilter<User>(ExpressionSelectorChain.New<User, string>(u => u.MyValueObject.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
+                new WebFilter<User>(ExpressionSelectorChain<User>.New(u => u.MyValueObject.Name), WebFilterOperand.Equals, new List<string> { "Foo" })
             };
             var container = new WebFiltersContainer<User, int>(filters);
             Expression<Func<User, object>> expression = u => u.MyValueObject;
@@ -99,7 +99,7 @@ namespace RDD.Web.Tests
         {
             var filters = new HashSet<WebFilter<User>>()
             {
-                new WebFilter<User>(ExpressionSelectorChain.New<User, MyValueObject>(u => u.MyValueObject), WebFilterOperand.Equals, new List<MyValueObject> { null })
+                new WebFilter<User>(ExpressionSelectorChain<User>.New(u => u.MyValueObject), WebFilterOperand.Equals, new List<MyValueObject> { null })
             };
             var container = new WebFiltersContainer<User, int>(filters);
             Expression<Func<User, object>> expression = u => u.MyValueObject.Name;

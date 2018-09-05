@@ -18,9 +18,6 @@ namespace RDD.Domain.Helpers.Expressions
         public LambdaExpression ToLambdaExpression()
             => ExpressionChainer.Chain(Current?.ToLambdaExpression(), Next?.ToLambdaExpression());
 
-        public static IExpressionSelectorChain New<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
-            => new ExpressionSelectorParser().ParseChain(lambda);
-
         public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
             => Contains(new ExpressionSelectorParser().ParseChain(property));
 
@@ -36,5 +33,11 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         public override string ToString() => Name;
+    }
+
+    public static class ExpressionSelectorChain<TClass>
+    {
+        public static IExpressionSelectorChain New<TProp>(Expression<Func<TClass, TProp>> lambda)
+            => new ExpressionSelectorParser().ParseChain(lambda);
     }
 }

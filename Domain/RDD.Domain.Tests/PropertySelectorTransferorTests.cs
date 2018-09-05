@@ -10,7 +10,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ExtractionOnSubPropertyShouldWork()
         {
-            var ps = ExpressionSelectorChain.New((DummyClass d) => d.BestChild.DummySubProp);
+            var ps = ExpressionSelectorChain< DummyClass>.New(d => d.BestChild.DummySubProp);
 
             Assert.Equal("DummySubProp", ps.Next.ToString());
         }
@@ -18,7 +18,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ExtractionOnListSubPropertyShouldWork()
         {
-            var ps = ExpressionSelectorChain.New((DummyClass d) => d.Children.Select(c => c.DummySubProp));
+            var ps = ExpressionSelectorChain<DummyClass>.New(d => d.Children.Select(c => c.DummySubProp));
 
             Assert.Equal("DummySubProp", ps.Next.ToString());
         }
