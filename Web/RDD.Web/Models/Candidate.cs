@@ -47,12 +47,7 @@ namespace RDD.Web.Models
 
                         if (matchingChild != null)
                         {
-                            if (selector.Next == null)
-                            {
-                                return true;
-                            }
-
-                            return ContainsPath(matchingChild.Value, selector.Next);
+                            return !selector.HasNext() || ContainsPath(matchingChild.Value, selector.Next);
                         }
 
                         return false;

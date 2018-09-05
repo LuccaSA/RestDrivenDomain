@@ -11,4 +11,9 @@ namespace RDD.Domain.Helpers.Expressions
         bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property);
         bool Contains(IExpressionSelectorChain chain);
     }
+
+    public static class IExpressionSelectorChainExtensions
+    {
+        public static bool HasNext(this IExpressionSelectorChain chain) => chain?.Next != null;
+    }
 }

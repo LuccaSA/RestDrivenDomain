@@ -93,15 +93,18 @@ namespace RDD.Infra.Storage
 
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            if (IncludeWhiteList != null && query.Fields != null)
+            if (IncludeWhiteList == null || query.Fields == null)
             {
-                foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
-                {
-                    entities = entities.Include(prop.Name);
-                }
+                return entities;
+            }
+
+            foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+            {
+                entities = entities.Include(prop.Name);
             }
 
             return entities;
+
         }
     }
 }
