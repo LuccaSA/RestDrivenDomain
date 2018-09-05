@@ -13,15 +13,6 @@ namespace RDD.Domain.Helpers.Expressions
         IEnumerable<IExpressionSelectorTree> IExpressionSelectorTree.Children => Children;
         public List<IExpressionSelectorTree> Children { get; set; }
 
-        public static IExpressionSelectorTree New<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
-            => new ExpressionSelectorParser().ParseTree(lambda);
-
-        public static IExpressionSelectorTree New<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
-            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2);
-
-        public static IExpressionSelectorTree New<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
-            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2, lambda3);
-
         public ExpressionSelectorTree()
         {
             Children = new List<IExpressionSelectorTree>();
@@ -57,20 +48,8 @@ namespace RDD.Domain.Helpers.Expressions
             }
         }
 
-        public bool Equals(IExpressionSelectorTree other)
-        {
-            if (other == null && this == null)
-            {
-                return true;
-            }
-
-            if (other == null || this == null)
-            {
-                return false;
-            }
-
-            return new HashSet<IExpressionSelectorChain>(this, new ExpressionSelectorEqualityComparer()).SetEquals(other);
-        }
+        public virtual bool Equals(IExpressionSelectorTree other)
+            => other != null && new HashSet<IExpressionSelectorChain>(this, new ExpressionSelectorEqualityComparer()).SetEquals(other);
 
         public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
             => Contains(new ExpressionSelectorParser().ParseChain(property));
@@ -96,7 +75,19 @@ namespace RDD.Domain.Helpers.Expressions
 
     public class ExpressionSelectorTree<TClass> : ExpressionSelectorTree, IExpressionSelectorTree<TClass>
     {
+        public static IExpressionSelectorTree<TClass> New<TProp>(Expression<Func<TClass, TProp>> lambda)
+            => new ExpressionSelectorParser().ParseTree(lambda);
+
+        public static IExpressionSelectorTree<TClass> New<TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
+            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2);
+
+        public static IExpressionSelectorTree<TClass> New<TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
+            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2, lambda3);
+
+        public static IExpressionSelectorTree<TClass> New<TProp1, TProp2, TProp3, TProp4>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3, Expression<Func<TClass, TProp4>> lambda4)
+            => new ExpressionSelectorParser().ParseTree(lambda1, lambda2, lambda3, lambda4);
+
         public bool Contains<TProp>(Expression<Func<TClass, TProp>> property)
-            => base.Contains(property);
+            => base.Contains(property);    
     }
 }

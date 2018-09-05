@@ -19,7 +19,7 @@ namespace RDD.Domain.Tests
         {
             var selector = ExpressionSelectorChain<User>.New(u => u.TwitterUri);
 
-            Assert.True(selector.Contains((User u) => u.TwitterUri));
+            Assert.True(selector.Contains(u => u.TwitterUri));
 
             Assert.Equal("TwitterUri", selector.Name);
         }
@@ -29,8 +29,8 @@ namespace RDD.Domain.Tests
         {
             var selector = ExpressionSelectorChain<User>.New(u => u.TwitterUri.Host);
 
-            Assert.True(selector.Contains((User u) => u.TwitterUri));
-            Assert.True(selector.Contains((User u) => u.TwitterUri.Host));
+            Assert.True(selector.Contains(u => u.TwitterUri));
+            Assert.True(selector.Contains(u => u.TwitterUri.Host));
 
             Assert.Equal("TwitterUri.Host", selector.Name);
         }

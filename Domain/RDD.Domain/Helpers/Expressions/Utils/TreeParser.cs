@@ -6,11 +6,11 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 {
     internal class TreeParser
     {
-        const char MULTISELECT_START = '[';
-        const char MULTISELECT_END = ']';
-        const char PROPERTIES_SEPARATOR = ',';
-        const char FIELD_SEPARATOR = '.';
-        const char SPACE = ' ';
+        private const char MULTISELECT_START = '[';
+        private const char MULTISELECT_END = ']';
+        private const char PROPERTIES_SEPARATOR = ',';
+        private const char FIELD_SEPARATOR = '.';
+        private const char SPACE = ' ';
 
         public const string Root = "__root__";
 

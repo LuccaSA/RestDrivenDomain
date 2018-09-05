@@ -33,19 +33,19 @@ namespace RDD.Domain.Tests.Members
         [Fact]
         public void Expressions1Intersection()
         {
-            var tree1 = ExpressionSelectorTree.New((User u) => u.Collaborators.Select(c => c.HabilitedRoles), (User u) => u.Manager.Manager.Manager);
-            var tree2 = ExpressionSelectorTree.New((User u) => u.HabilitedRoles, (User u) => u.Manager.Manager.HabilitedRoles);
+            var tree1 = ExpressionSelectorTree<User>.New(u => u.Collaborators.Select(c => c.HabilitedRoles), (User u) => u.Manager.Manager.Manager);
+            var tree2 = ExpressionSelectorTree<User>.New(u => u.HabilitedRoles, (User u) => u.Manager.Manager.HabilitedRoles);
 
             var intersection = tree1.Intersection(tree2);
-            var result = ExpressionSelectorTree.New((User u) => u.Manager.Manager);
+            var result = ExpressionSelectorTree<User>.New(u => u.Manager.Manager);
             Assert.Equal(result, intersection);
         }
 
         [Fact]
         public void Expressions2Intersection()
         {
-            var tree1 = ExpressionSelectorTree.New((User u) => u.Collaborators.Select(c => c.Manager), (User u) => u.Collaborators.Select(c => c.HabilitedRoles.Select(v => v.Id)));
-            var tree2 = ExpressionSelectorTree.New((User u) => u.Collaborators.Select(c => c.HabilitedRoles));
+            var tree1 = ExpressionSelectorTree<User>.New(u => u.Collaborators.Select(c => c.Manager), (User u) => u.Collaborators.Select(c => c.HabilitedRoles.Select(v => v.Id)));
+            var tree2 = ExpressionSelectorTree<User>.New(u => u.Collaborators.Select(c => c.HabilitedRoles));
 
             var intersection = tree1.Intersection(tree2);
             Assert.Equal(tree2, intersection);
@@ -54,7 +54,7 @@ namespace RDD.Domain.Tests.Members
         [Fact]
         public void ExpressionsTreeName()
         {
-            var tree1 = ExpressionSelectorTree.New((User u) => u.Collaborators.Select(c => c.Manager), (User u) => u.Collaborators.Select(c => c.HabilitedRoles.Select(v => v.Id)));
+            var tree1 = ExpressionSelectorTree<User>.New(u => u.Collaborators.Select(c => c.Manager), (User u) => u.Collaborators.Select(c => c.HabilitedRoles.Select(v => v.Id)));
 
             var names = new HashSet<string>(tree1.Select(t => t.Name));
             var result = new HashSet<string> { "Collaborators.Manager", "Collaborators.HabilitedRoles.Id" };

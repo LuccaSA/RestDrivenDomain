@@ -26,18 +26,18 @@ namespace RDD.Domain.Helpers.Expressions
             return chain == null || (chain.Current.Equals(Current) && (chain.Next == null || (Next != null && Next.Contains(chain.Next))));
         }
 
-        public bool Equals(IExpressionSelector other)
-        {
-            return (other == null && this == null)
-                || (other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), ToLambdaExpression()));
-        }
+        public virtual bool Equals(IExpressionSelector other)
+            => other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), ToLambdaExpression());
 
         public override string ToString() => Name;
     }
 
-    public static class ExpressionSelectorChain<TClass>
+    public class ExpressionSelectorChain<TClass> : ExpressionSelectorChain, IExpressionSelectorChain<TClass>
     {
-        public static IExpressionSelectorChain New<TProp>(Expression<Func<TClass, TProp>> lambda)
+        public static IExpressionSelectorChain<TClass> New<TProp>(Expression<Func<TClass, TProp>> lambda)
             => new ExpressionSelectorParser().ParseChain(lambda);
+
+        public bool Contains<TProp>(Expression<Func<TClass, TProp>> property)
+            => base.Contains(property);
     }
 }

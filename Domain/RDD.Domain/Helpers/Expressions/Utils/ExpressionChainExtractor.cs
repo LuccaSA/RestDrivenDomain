@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,13 +17,33 @@ namespace RDD.Domain.Helpers.Expressions.Utils
         }
 
         public static IExpressionSelectorChain AsExpressionSelectorChain(LambdaExpression expression)
+            => ApplyStack(GetSelectors(expression));
+
+        public static IExpressionSelectorChain<TClass> AsExpressionSelectorChain<TClass, TProp>(Expression<Func<TClass, TProp>> expression)
+            => ApplyStack<TClass>(GetSelectors(expression));
+
+        private static Stack<IExpressionSelector> GetSelectors(LambdaExpression expression)
         {
             var extractor = new ExpressionChainExtractor();
             extractor.Visit(expression);
-            return ApplyStack(extractor.Selectors);
+            return extractor.Selectors;
         }
 
-        private static ExpressionSelectorChain ApplyStack(Stack<IExpressionSelector> selectors)
+        private static IExpressionSelectorChain<TClass> ApplyStack<TClass>(Stack<IExpressionSelector> selectors)
+        {
+            if (selectors.Count == 0)
+            {
+                return null;
+            }
+
+            return new ExpressionSelectorChain<TClass>
+            {
+                Current = selectors.Pop(),
+                Next = ApplyStack(selectors)
+            };
+        }
+
+        private static IExpressionSelectorChain ApplyStack(Stack<IExpressionSelector> selectors)
         {
             if (selectors.Count == 0)
             {

@@ -14,7 +14,7 @@ namespace RDD.Domain.Tests
         {
             var collection = ExpressionSelectorChain<DummyClass>.New(d => d.DummyProp);
 
-            Assert.True(collection.Contains((DummyClass d) => d.DummyProp));
+            Assert.True(collection.Contains(d => d.DummyProp));
         }
 
         [Fact]
@@ -22,7 +22,7 @@ namespace RDD.Domain.Tests
         {
             var collection = ExpressionSelectorChain<DummyClass>.New(d => d.DummyProp);
 
-            Assert.True(collection.Contains((DummyClass c) => c.DummyProp));
+            Assert.True(collection.Contains(c => c.DummyProp));
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace RDD.Domain.Tests
         {
             var collection = ExpressionSelectorChain<DummyClass>.New(d => d.DummyProp);
 
-            Assert.False(collection.Contains((DummyClass d) => d.DummyProp2));
+            Assert.False(collection.Contains(d => d.DummyProp2));
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace RDD.Domain.Tests
         {
             var collection = ExpressionSelectorChain<DummyClass>.New(d => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp));
 
-            Assert.True(collection.Contains((DummyClass d) => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp)));
+            Assert.True(collection.Contains(d => d.Children.Select(c => c.DummySubSubClass.DummySubSubProp)));
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace RDD.Domain.Tests
         {
             var collection = ExpressionSelectorChain<DummyClass>.New(d => d.Children.Select(c => c.DummySubSubClass));
 
-            Assert.True(collection.Contains((DummyClass d) => d.Children.Select(c => c.DummySubSubClass)));
+            Assert.True(collection.Contains(d => d.Children.Select(c => c.DummySubSubClass)));
         }
 
         [Fact]

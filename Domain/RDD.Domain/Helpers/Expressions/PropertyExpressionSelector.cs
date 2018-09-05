@@ -15,11 +15,8 @@ namespace RDD.Domain.Helpers.Expressions
         public string Name => Property?.Name;
         public virtual Type ResultType => Property.PropertyType;
 
-        public bool Equals(IExpressionSelector other)
-        {
-            return (other == null && this == null)
-                || (other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression));
-        }
+        public virtual bool Equals(IExpressionSelector other)
+            => other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression);
 
         LambdaExpression IExpressionSelector.ToLambdaExpression() => LambdaExpression;
 

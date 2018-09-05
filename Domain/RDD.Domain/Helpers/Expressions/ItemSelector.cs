@@ -17,11 +17,9 @@ namespace RDD.Domain.Helpers.Expressions
 
         LambdaExpression IExpressionSelector.ToLambdaExpression() => LambdaExpression;
 
-        public bool Equals(IExpressionSelector other)
-        {
-            return (other == null && this == null)
-                || (other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression));
-        }
+        public virtual bool Equals(IExpressionSelector other)
+            => other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression);
+
         public override string ToString() => "[" + Name + "]";
     }
 }

@@ -32,7 +32,10 @@ namespace RDD.Domain.Helpers.Expressions
             return chains.First();
         }
 
-        public IExpressionSelectorChain ParseChain<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+        public IExpressionSelectorChain ParseChain(LambdaExpression lambda)
+            => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+
+        public IExpressionSelectorChain<TClass> ParseChain<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
             => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
 
         public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
@@ -41,6 +44,8 @@ namespace RDD.Domain.Helpers.Expressions
             => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2 });
         public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
             => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3 });
+        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3, TProp4>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3, Expression<Func<TClass, TProp4>> lambda4)
+            => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3, lambda4 });
 
         public IExpressionSelectorTree<TClass> ParseTree<TClass>(params LambdaExpression[] lambdas)
         {
