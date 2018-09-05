@@ -13,7 +13,7 @@ namespace RDD.Web.Serialization.Serializers
     public class SelectionSerializer : ObjectSerializer
     {
         public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider)
-            : base( serializerProvider,  reflectionProvider, typeof(ISelection)) { }
+            : base(serializerProvider, reflectionProvider, typeof(ISelection)) { }
 
         public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
         {
@@ -24,10 +24,12 @@ namespace RDD.Web.Serialization.Serializers
         {
             var items = selection.GetItems();
 
+            var countField = fields.Children.FirstOrDefault(c => c.Node.Name == nameof(ISelection.Count) && typeof(ISelection).IsAssignableFrom(c.Node.ToLambdaExpression().Parameters[0].Type));
+
             var normalFields = new ExpressionSelectorTree
             {
                 Node = fields.Node,
-                Children = fields.Children.Where(c => !(c.Node is MethodCallSelector) && !typeof(ISelection).IsAssignableFrom(c.Node.ToLambdaExpression().Parameters[0].Type)).ToList()
+                Children = fields.Children.Where(c => c != countField).ToList()
             };
 
             var dico = new Dictionary<string, IJsonElement>
@@ -35,34 +37,13 @@ namespace RDD.Web.Serialization.Serializers
                 { "items", SerializerProvider.GetSerializer(items).ToJson(items, normalFields) }
             };
 
-            foreach (var method in new[] { nameof(ISelection.Sum), nameof(ISelection.Max), nameof(ISelection.Min) })
-            {
-                AddMethodResults(method, selection, fields, dico);
-            }
-
             var result = new JsonObject { Content = dico };
 
-            var countField = fields.Children.Where(c => c.Node.Name == nameof(ISelection.Count)).FirstOrDefault();
             if (countField != null)
             {
                 SerializeProperty(result, selection, countField);
             }
             return result;
-        }
-
-        private void AddMethodResults(string methodName, ISelection collection, IExpressionSelectorTree fields, Dictionary<string, IJsonElement> dico)
-        {
-            var methodFields = fields.Children.Select(t => t.Node as MethodCallSelector).Where(n => n != null && n.Name == methodName).ToList();
-
-            if (methodFields.Any())
-            {
-                var value = methodFields.ToDictionary(
-                    m => ((m.MethodCallExpression.Arguments[0] as ConstantExpression).Value as PropertyInfo).Name, 
-                    m => (IJsonElement)new JsonValue(m.ToLambdaExpression().Compile().DynamicInvoke(collection))
-                );
-
-                dico.Add(methodName.ToLower() + "s", new JsonObject(value));
-            }
         }
     }
 }

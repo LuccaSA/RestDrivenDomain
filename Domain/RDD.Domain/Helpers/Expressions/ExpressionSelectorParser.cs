@@ -105,24 +105,6 @@ namespace RDD.Domain.Helpers.Expressions
                 return new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
             }
 
-            if (typeof(ISelection).IsAssignableFrom(classType))
-            {
-                var regexResult = Regex.Match(member, $"(?<method>sum|min|max)\\((?<property>[a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)");
-                if (regexResult.Success)
-                {
-                    var methodName = regexResult.Groups["method"].Value;
-                    var method = typeof(ISelection).GetMethod(methodName, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
-                    if (method != null)
-                    {
-                        var propertyArg = (ParseChain(classType.GenericTypeArguments[0], regexResult.Groups["property"].Value).Current as PropertyExpressionSelector).Property;
-                        var rounding = DecimalRounding.Parse(member);
-                        var body = Expression.Call(parameter, method, new Expression[] { Expression.Constant(propertyArg), Expression.Constant(rounding) });
-
-                        return new MethodCallSelector { LambdaExpression = Expression.Lambda(body, parameter) };
-                    }
-                }
-            }
-
             var property = GetPropertyInfo(classType, member);
             var returnType = property.PropertyType;
 

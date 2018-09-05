@@ -23,21 +23,6 @@ namespace RDD.Domain.Tests
             _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
         [Fact]
-        public async void Sum_of_id_SHOULD_work_on_collection()
-        {
-            var options = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "Sum_of_id_SHOULD_work_on_collection")
-                .Options;
-            using (var storage = new EFStorageService(new DataContext(options)))
-            {
-                var repo = new OpenRepository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-                var fields = "id,name,collection.sum(id)";
-                var result = await users.GetAsync(new Query<User> { Fields = new ExpressionSelectorParser().ParseTree<User>(fields) });
-                Assert.Equal(0, result.Count);
-            }
-        }
-        [Fact]
         public async void Count_of_collection_should_tell_10_when_10_entities()
         {
             var users = User.GetManyRandomUsers(10);
