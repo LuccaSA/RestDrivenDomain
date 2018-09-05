@@ -16,7 +16,7 @@ namespace RDD.Web.Tests
             var goodGuid = Guid.NewGuid();
             var badGuid = Guid.NewGuid();
             var builder = new QueryBuilder<User, int>();
-            var expression = builder.Like(SimplePropertySelector.New<User, Guid>(u => u.PictureId), new List<Guid> { goodGuid });
+            var expression = builder.Like(PropertyExpressionSelector<User>.New(u => u.PictureId), new List<Guid> { goodGuid });
 
             var goodUser = new User { PictureId = goodGuid };
             var badUser = new User { PictureId = badGuid };

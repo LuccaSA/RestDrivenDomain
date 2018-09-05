@@ -44,11 +44,11 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 
             if (typeof(IEnumerable).IsAssignableFrom(node.Member.DeclaringType) && node.Member.DeclaringType != typeof(string))
             {
-                Selectors.Push(new EnumerablePropertySelector { LambdaExpression = lambda });
+                Selectors.Push(new EnumerablePropertyExpressionSelector { LambdaExpression = lambda });
             }
             else
             {
-                Selectors.Push(new SimplePropertySelector { LambdaExpression = lambda });
+                Selectors.Push(new PropertyExpressionSelector { LambdaExpression = lambda });
             }
 
             return base.VisitMember(node);

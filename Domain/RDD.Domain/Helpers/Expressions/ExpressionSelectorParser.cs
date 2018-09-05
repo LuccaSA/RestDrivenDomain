@@ -114,7 +114,7 @@ namespace RDD.Domain.Helpers.Expressions
                     var method = typeof(ISelection).GetMethod(methodName, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
                     if (method != null)
                     {
-                        var propertyArg = (ParseChain(classType.GenericTypeArguments[0], regexResult.Groups["property"].Value).Current as SimplePropertySelector).Property;
+                        var propertyArg = (ParseChain(classType.GenericTypeArguments[0], regexResult.Groups["property"].Value).Current as PropertyExpressionSelector).Property;
                         var rounding = DecimalRounding.Parse(member);
                         var body = Expression.Call(parameter, method, new Expression[] { Expression.Constant(propertyArg), Expression.Constant(rounding) });
 
@@ -131,11 +131,11 @@ namespace RDD.Domain.Helpers.Expressions
 
             if (typeof(IEnumerable).IsAssignableFrom(returnType) && returnType != typeof(string) && !typeof(IDictionary).IsAssignableFrom(returnType))
             {
-                return new EnumerablePropertySelector { LambdaExpression = lambda };
+                return new EnumerablePropertyExpressionSelector { LambdaExpression = lambda };
             }
             else
             {
-                return new SimplePropertySelector { LambdaExpression = lambda };
+                return new PropertyExpressionSelector { LambdaExpression = lambda };
             }
         }
 

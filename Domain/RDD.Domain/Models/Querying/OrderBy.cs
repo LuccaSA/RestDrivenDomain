@@ -14,11 +14,11 @@ namespace RDD.Domain.Models.Querying
         public SortDirection Direction { get; }
 
         public static OrderBy<T> New<TProp>(Expression<Func<T, TProp>> selector, SortDirection direction = SortDirection.Ascending)
-            => new OrderBy<T>(new SimplePropertySelector { LambdaExpression = selector }, direction);
+            => new OrderBy<T>(new PropertyExpressionSelector { LambdaExpression = selector }, direction);
         public static OrderBy<T> Ascending<TProp>(Expression<Func<T, TProp>> selector)
-            => new OrderBy<T>(new SimplePropertySelector { LambdaExpression = selector }, SortDirection.Ascending);
+            => new OrderBy<T>(new PropertyExpressionSelector { LambdaExpression = selector }, SortDirection.Ascending);
         public static OrderBy<T> Descending<TProp>(Expression<Func<T, TProp>> selector)
-            => new OrderBy<T>(new SimplePropertySelector { LambdaExpression = selector }, SortDirection.Descending);
+            => new OrderBy<T>(new PropertyExpressionSelector { LambdaExpression = selector }, SortDirection.Descending);
 
         public OrderBy(IExpressionSelector selector, SortDirection direction = SortDirection.Ascending)
         {
