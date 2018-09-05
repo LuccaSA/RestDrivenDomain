@@ -12,7 +12,7 @@ namespace RDD.Domain.Tests
         [Fact]
         public void SimpleContainsShouldWork()
         {
-            var collection = ExpressionSelectorChain< DummyClass>.New(d => d.DummyProp);
+            var collection = ExpressionSelectorChain<DummyClass>.New(d => d.DummyProp);
 
             Assert.True(collection.Contains((DummyClass d) => d.DummyProp));
         }
