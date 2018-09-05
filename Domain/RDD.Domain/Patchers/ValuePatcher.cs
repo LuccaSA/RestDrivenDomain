@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace RDD.Domain.Patchers
 {
-    class ValuePatcher : IPatcher<JsonValue>
+    class ValuePatcher : IPatcher
 	{
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
         {

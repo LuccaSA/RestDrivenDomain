@@ -10,9 +10,10 @@ namespace RDD.Domain.Patchers
         object PatchValue(object patchedObject, Type expectedType, IJsonElement json);
     }
 
-    internal interface IPatcher<T> : IPatcher where T : IJsonElement
+    public interface IPatcher<T> : IPatcher
+        where T : class
     {
-        object PatchValue(object patchedObject, Type expectedType, T json);
+        T Patch(T patchedObject, JsonObject json);
     }
 
     public static class IPatcherExtension

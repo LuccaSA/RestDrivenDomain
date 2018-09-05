@@ -12,15 +12,15 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected IPatcherProvider PatcherProvider { get; private set; }
         protected new IRepository<TEntity> Repository { get; set; }
+        protected IPatcher<TEntity> Patcher { get; set; }
 
         protected IInstanciator<TEntity> Instanciator { get;set;}
 
-        public RestCollection(IRepository<TEntity> repository, IPatcherProvider patcherProvider, IInstanciator<TEntity> instanciator)
+        public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
             : base(repository)
         {
-            PatcherProvider = patcherProvider;
+            Patcher = patcher;
             Repository = repository;
             Instanciator = instanciator;
         }
@@ -29,7 +29,7 @@ namespace RDD.Domain.Models
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
-            GetPatcher().Patch(entity, candidate.JsonValue);
+            Patcher.Patch(entity, candidate.JsonValue);
 
             return CreateAsync(entity, query);
         }
@@ -104,8 +104,6 @@ namespace RDD.Domain.Models
             }
         }
 
-        protected virtual IPatcher GetPatcher() => new ObjectPatcher(PatcherProvider);
-
         protected virtual void ForgeEntity(TEntity entity) { }
 
         protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
@@ -125,7 +123,7 @@ namespace RDD.Domain.Models
 
             TEntity oldEntity = entity.Clone();
 
-            GetPatcher().Patch(entity, candidate.JsonValue);
+            Patcher.Patch(entity, candidate.JsonValue);
 
             await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 

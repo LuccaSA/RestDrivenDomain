@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace RDD.Domain.Patchers
 {
-    class DictionaryPatcher : IPatcher<JsonObject>
+    class DictionaryPatcher : IPatcher
 	{
         protected IPatcherProvider Provider { get; set; }
 
