@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Domain.Tests.Models;
 using System;
@@ -78,6 +79,16 @@ namespace RDD.Domain.Tests
             result = selection.Sum(typeof(User).GetProperty("Salary"), new DecimalRounding(DecimalRounding.RoudingType.Ceiling));
 
             Assert.Equal(59M, result);
+        }
+
+        [Fact]
+        public void SHOULD_parse_rounding_correctly_to_good_propertySelector()
+        {
+            var items = new HashSet<User>() { new User { Salary = 12.34M }, new User { Salary = 45.67M } };
+            var selection = new Selection<User>(items, 2);
+            var pattern = "sum(salary,round,2)";
+            var selector = new ExpressionSelectorParser().Parse<Selection<User>>(pattern);
+            Assert.Equal(58.01M, selector.ToLambdaExpression().Compile().DynamicInvoke(selection));
         }
     }
 }

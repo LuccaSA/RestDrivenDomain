@@ -81,19 +81,19 @@ namespace RDD.Domain.Helpers
 
         public static DecimalRounding Parse(string pattern)
         {
-            var matches = Regex.Match(pattern, "sum\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)").Groups;
+            var matches = Regex.Match(pattern, "\\(([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)").Groups;
             var matchType = matches[2].Value;
             var matchDecimals = matches[3].Value;
 
             var rouding = Default;
 
-            if (!String.IsNullOrEmpty(matchType))
+            if (!string.IsNullOrEmpty(matchType))
             {
                 var type = (RoudingType)Enum.Parse(typeof(RoudingType), matchType, true);
                 rouding.Type = type;
             }
 
-            if (!String.IsNullOrEmpty(matchDecimals))
+            if (!string.IsNullOrEmpty(matchDecimals))
             {
                 int numberOfDecimals = int.Parse(matchDecimals);
                 rouding.NumberOfDecimals = numberOfDecimals;

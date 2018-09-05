@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
@@ -72,7 +73,16 @@ namespace RDD.Domain.Helpers.Expressions
             var tree = new TreeParser().Parse(input);
             foreach (var subTree in tree.Children)
             {
-                result.Children.Add(Parse(classType, subTree));
+                //skip node
+                if (subTree.Node == "collection" && classType.GetProperty(subTree.Node) == null)
+                {
+                    var selectionType = typeof(ISelection<>).MakeGenericType(new[] { classType });
+                    result.Children.AddRange(subTree.Children.Select(c => Parse(selectionType, c)));
+                }
+                else
+                {
+                    result.Children.Add(Parse(classType, subTree));
+                }
             }
 
             return result;
@@ -93,6 +103,24 @@ namespace RDD.Domain.Helpers.Expressions
                 var itemsExpression = Expression.Property(parameter, "Item", dictionaryKey);
 
                 return new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
+            }
+
+            if (typeof(ISelection).IsAssignableFrom(classType))
+            {
+                var regexResult = Regex.Match(member, $"(?<method>sum|min|max)\\((?<property>[a-zA-Z0-9_]*),?([a-zA-Z0-9_]*),?([a-zA-Z0-9_]*)\\)");
+                if (regexResult.Success)
+                {
+                    var methodName = regexResult.Groups["method"].Value;
+                    var method = typeof(ISelection).GetMethod(methodName, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
+                    if (method != null)
+                    {
+                        var propertyArg = (ParseChain(classType.GenericTypeArguments[0], regexResult.Groups["property"].Value).Current as SimplePropertySelector).Property;
+                        var rounding = DecimalRounding.Parse(member);
+                        var body = Expression.Call(parameter, method, new Expression[] { Expression.Constant(propertyArg), Expression.Constant(rounding) });
+
+                        return new MethodCallSelector { LambdaExpression = Expression.Lambda(body, parameter) };
+                    }
+                }
             }
 
             var property = GetPropertyInfo(classType, member);

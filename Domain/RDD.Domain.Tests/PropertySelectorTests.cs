@@ -7,6 +7,14 @@ namespace RDD.Domain.Tests
     public class PropertySelectorTests
     {
         [Fact]
+        public void Parsing_count_on_empty_collection()
+        {
+            var tree = new ExpressionSelectorParser().Parse(typeof(ISelection<User>), "count");
+
+            Assert.Equal(nameof(ISelection.Count), tree.ToString());
+        }
+ 
+        [Fact]
         public void SimpleSelector_should_work()
         {
             var selector = ExpressionSelectorChain.New((User u) => u.TwitterUri);

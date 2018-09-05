@@ -8,6 +8,8 @@ namespace RDD.Domain.Helpers.Expressions.Utils
     {
         const char MULTISELECT_START = '[';
         const char MULTISELECT_END = ']';
+        const char FUNCTION_START = '(';
+        const char FUNCTION_END = ')';
         const char PROPERTIES_SEPARATOR = ',';
         const char FIELD_SEPARATOR = '.';
         const char SPACE = ' ';
@@ -23,40 +25,55 @@ namespace RDD.Domain.Helpers.Expressions.Utils
                 var treeStack = new Stack<Tuple<char, List<Tree<string>>>>();
                 AddLevel(treeStack, SPACE);
 
+                var isReadingFunction = false;
+
                 foreach (var character in input)
                 {
-                    switch (character)
+                    if (isReadingFunction)
                     {
-                        case MULTISELECT_START:
-                            AddLevel(treeStack, MULTISELECT_START);
-                            break;
+                        AddCharacter(treeStack, character);
+                        isReadingFunction = character != FUNCTION_END;
+                    }
+                    else
+                    {
+                        switch (character)
+                        {
+                            case MULTISELECT_START:
+                                AddLevel(treeStack, MULTISELECT_START);
+                                break;
 
-                        case MULTISELECT_END:
-                            CleanDottedElements(treeStack);
+                            case MULTISELECT_END:
+                                CleanDottedElements(treeStack);
+                                var pop = treeStack.Pop();
+                                if (pop.Item1 != MULTISELECT_START)
+                                {
+                                    throw new FormatException("bad format");
+                                }
+                                treeStack.Peek().Item2.Last().AddChildren(pop.Item2);
+                                break;
 
-                            var pop = treeStack.Pop();
-                            if (pop.Item1 != MULTISELECT_START)
-                            {
-                                throw new FormatException("bad format");
-                            }
+                            case FUNCTION_START:
+                                AddCharacter(treeStack, character);
+                                isReadingFunction = true;
+                                break;
 
-                            treeStack.Peek().Item2.Last().AddChildren(pop.Item2);
-                            break;
+                            case FIELD_SEPARATOR:
+                                AddLevel(treeStack, FIELD_SEPARATOR);
+                                break;
 
-                        case FIELD_SEPARATOR:
-                            AddLevel(treeStack, FIELD_SEPARATOR);
-                            break;
+                            case PROPERTIES_SEPARATOR:
+                                CleanDottedElements(treeStack);
+                                treeStack.Peek().Item2.Add(new Tree<string>(""));
+                                break;
 
-                        case PROPERTIES_SEPARATOR:
-                            CleanDottedElements(treeStack);
-                            treeStack.Peek().Item2.Add(new Tree<string>(""));
-                            break;
+                            case FUNCTION_END: throw new FormatException("bad format");
 
-                        case SPACE: break;
+                            case SPACE: break;
 
-                        default:
-                            AddCharacter(treeStack, character);
-                            break;
+                            default:
+                                AddCharacter(treeStack, character);
+                                break;
+                        }
                     }
                 }
 

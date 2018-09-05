@@ -32,7 +32,7 @@ namespace RDD.Web.Serialization.Providers
             if (typeof(CultureInfo).IsAssignableFrom(type)) { return new CultureInfoSerializer(this, _reflectionProvider); }
             if (typeof(Uri).IsAssignableFrom(type)) { return new ToStringSerializer(this); }
 
-            if (typeof(ISelection).IsAssignableFrom(type)) { return new SelectionSerializer(this); }
+            if (typeof(ISelection).IsAssignableFrom(type)) { return new SelectionSerializer(this, _reflectionProvider); }
             if (typeof(IEntityBase).IsAssignableFrom(type)) { return new EntitySerializer(this, _reflectionProvider, _urlProvider, type); }
 
             if (typeof(IDictionary).IsAssignableFrom(type)) { return new DictionarySerializer(this, _reflectionProvider); }

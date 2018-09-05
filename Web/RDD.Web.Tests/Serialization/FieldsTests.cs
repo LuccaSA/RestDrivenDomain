@@ -5,6 +5,7 @@ using Microsoft.Extensions.Primitives;
 using Moq;
 using Newtonsoft.Json;
 using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
@@ -24,6 +25,48 @@ namespace RDD.Web.Tests.Serialization
 {
     public class FieldsTests
     {
+        [Fact]
+        public void SpecialSelectionFields()
+        {
+            ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { new Obj1 { Id = 1 }, new Obj1 { Id = 2 } }, 1);
+
+            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+            httpContextAccessor.HttpContext.Request.Scheme = "https";
+            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+
+            var fields = new ExpressionSelectorParser().ParseTree<Obj1>("collection.count");
+
+            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
+
+            var json = serializer.ToJson(selection, fields);
+
+            Assert.True(json.HasJsonValue("Count"));
+            Assert.Equal("1", json.GetJsonValue("Count"));
+        }
+        [Fact]
+        public void SpecialSelectionSumFields()
+        {
+            ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { new Obj1 { Id = 1 }, new Obj1 { Id = 2 } }, 1);
+
+            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+            httpContextAccessor.HttpContext.Request.Scheme = "https";
+            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+
+            var fields = new ExpressionSelectorParser().ParseTree<Obj1>("collection.sum(id),collection.max(id), collection.min(id)");
+
+            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
+
+            var json = serializer.ToJson(selection, fields);
+
+            Assert.True(json.HasJsonValue("sums.Id"));
+            Assert.Equal("3", json.GetJsonValue("sums.Id"));
+
+            Assert.True(json.HasJsonValue("maxs.Id"));
+            Assert.Equal("2", json.GetJsonValue("maxs.Id"));
+
+            Assert.True(json.HasJsonValue("mins.Id"));
+            Assert.Equal("1", json.GetJsonValue("mins.Id"));
+        }
         [Fact]
         public void EmptyFieldsSelection()
         {
