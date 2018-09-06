@@ -113,12 +113,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            var entity = await AppController.DeleteByIdAsync(id);
-
-            if (entity == null)
-            {
-                throw new NotFoundException($"Resource {id} not found");
-            }
+            await AppController.DeleteByIdAsync(id);
 
             return Ok();
         }

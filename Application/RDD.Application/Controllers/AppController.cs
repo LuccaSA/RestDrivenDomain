@@ -41,11 +41,11 @@ namespace RDD.Application.Controllers
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
-            var entity = await Collection.CreateAsync(candidates, query);
+            var entities = await Collection.CreateAsync(candidates, query);
 
             await Storage.SaveChangesAsync();
 
-            return entity;
+            return entities;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
@@ -66,22 +66,18 @@ namespace RDD.Application.Controllers
             return entities;
         }
 
-        public async Task<TEntity> DeleteByIdAsync(TKey id)
+        public async Task DeleteByIdAsync(TKey id)
         {
-            var entity = await Collection.DeleteByIdAsync(id);
+            await Collection.DeleteByIdAsync(id);
 
             await Storage.SaveChangesAsync();
-
-            return entity;
         }
 
-        public async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IEnumerable<TKey> ids)
+        public async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
-            var entities = await Collection.DeleteByIdsAsync(ids);
+            await Collection.DeleteByIdsAsync(ids);
 
             await Storage.SaveChangesAsync();
-
-            return entities;
         }
     }
 }

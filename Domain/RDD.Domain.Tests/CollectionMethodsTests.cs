@@ -57,7 +57,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public void Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
+        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -66,7 +66,7 @@ namespace RDD.Domain.Tests
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
-                users.Create(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
+                await users.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), query);
             }
         }
 
@@ -82,7 +82,7 @@ namespace RDD.Domain.Tests
         }
 
         [Fact]
-        public void Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
+        public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -91,7 +91,7 @@ namespace RDD.Domain.Tests
                 var query = new Query<UserWithParameters>();
                 query.Options.CheckRights = false;
 
-                var result = users.Create(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3, ""name"": ""John"" }"), query);
+                var result = await users.CreateAsync(Candidate<UserWithParameters, int>.Parse(@"{ ""id"": 3, ""name"": ""John"" }"), query);
 
                 Assert.Equal(3, result.Id);
                 Assert.Equal("John", result.Name);

@@ -96,28 +96,23 @@ namespace RDD.Domain.Models
             return result;
         }
 
-        public virtual async Task<TEntity> DeleteByIdAsync(TKey id)
+        public virtual async Task DeleteByIdAsync(TKey id)
         {
-            TEntity entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
+            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
             if (entity != null)
             {
                 Repository.Remove(entity);
             }
-            return entity;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IEnumerable<TKey> ids)
+        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
-
-            var entities = (await GetAsync(expQuery)).Items;
-
-            foreach (var entity in entities)
+            
+            foreach (var entity in (await GetAsync(expQuery)).Items)
             {
                 Repository.Remove(entity);
             }
-
-            return entities;
         }
 
         protected virtual void ForgeEntity(TEntity entity) { }
