@@ -48,7 +48,7 @@ namespace RDD.Domain.Models
             {
                 TEntity entity = Instanciator.InstanciateNew(candidate);
 
-                GetPatcher().Patch(entity, candidate.JsonValue);
+                Patcher.Patch(entity, candidate.JsonValue);
 
                 ForgeEntity(entity);
 
@@ -106,7 +106,7 @@ namespace RDD.Domain.Models
             return entity;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IList<TKey> ids)
+        public virtual async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
 

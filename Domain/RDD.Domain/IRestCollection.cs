@@ -16,6 +16,6 @@ namespace RDD.Domain
         Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null);
 
         Task<TEntity> DeleteByIdAsync(TKey id);
-        Task<IEnumerable<TEntity>> DeleteByIdsAsync(IList<TKey> ids);
+        Task<IEnumerable<TEntity>> DeleteByIdsAsync(IEnumerable<TKey> ids);
     }
 }

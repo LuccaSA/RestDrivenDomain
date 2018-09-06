@@ -75,7 +75,7 @@ namespace RDD.Application.Controllers
             return entity;
         }
 
-        public async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IList<TKey> ids)
+        public async Task<IEnumerable<TEntity>> DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             var entities = await Collection.DeleteByIdsAsync(ids);
 
