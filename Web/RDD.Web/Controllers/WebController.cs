@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
-using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
@@ -17,7 +16,7 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer) 
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
             : base(appController, helper, rddSerializer)
         {
         }
@@ -28,6 +27,7 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
+
         protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
             : base(appController, helper, rddSerializer)
         {
@@ -48,7 +48,7 @@ namespace RDD.Web.Controllers
             {
                 return ProtectedPutAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((IActionResult)NotFound(id));
         }
 
         public Task<IActionResult> PutAsync()
@@ -66,7 +66,7 @@ namespace RDD.Web.Controllers
             {
                 return ProtectedDeleteAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound());
+            return Task.FromResult((IActionResult)NotFound(id));
         }
 
         protected virtual async Task<IActionResult> ProtectedPostAsync()
@@ -88,7 +88,7 @@ namespace RDD.Web.Controllers
 
             if (entity == null)
             {
-                throw new NotFoundException($"Resource {id} not found");
+                return NotFound(id);
             }
 
             return Ok(RDDSerializer.Serialize(entity, query));
@@ -101,7 +101,7 @@ namespace RDD.Web.Controllers
 
             if (candidates.Any(c => !c.HasId()))
             {
-                throw new BadRequestException("PUT on collection implies that you provide an array of objets each of which with an id attribute");
+                return BadRequest("To edit a collection of entities, provide an array of objets with an property id");
             }
 
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
@@ -125,7 +125,7 @@ namespace RDD.Web.Controllers
 
             if (candidates.Any(c => !c.HasId()))
             {
-                throw new BadRequestException("DELETE on collection implies that you provide an array of objets each of which with an id attribute");
+                return BadRequest("To delete a collection of entities, provide an array of objets with an property id");
             }
 
             var ids = candidates.Select(c => c.Id).ToList();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
-using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
@@ -45,6 +44,7 @@ namespace RDD.Web.Controllers
             {
                 return ProtectedGetAsync();
             }
+
             return Task.FromResult((IActionResult)NotFound());
         }
 
@@ -54,7 +54,8 @@ namespace RDD.Web.Controllers
             {
                 return ProtectedGetAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound());
+
+            return Task.FromResult((IActionResult)NotFound(id));
         }
 
         protected virtual async Task<IActionResult> ProtectedGetAsync()
@@ -74,10 +75,12 @@ namespace RDD.Web.Controllers
 
             if (entity == null)
             {
-                throw new NotFoundException($"Resource {id} not found");
+                return NotFound(id);
             }
 
             return Ok(RDDSerializer.Serialize(entity, query));
         }
+
+        protected NotFoundObjectResult NotFound(TKey id) => NotFound(new { Id = id, error = $"Resource {id} not found" });
     }
 }
