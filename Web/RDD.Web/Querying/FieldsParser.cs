@@ -1,35 +1,34 @@
 ﻿using RDD.Domain.Helpers.Expressions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RDD.Web.Querying
 {
-    public class FieldsParser
+    public class FieldsParser<T>
     {
-        public IExpressionTree<TClass> ParseFields<TClass>(Dictionary<string, string> parameters, bool isCollectionCall)
+        public IExpressionTree<T> ParseFields(Dictionary<string, string> parameters, bool isCollectionCall)
         {
             if (parameters.ContainsKey(Reserved.fields.ToString()))
             {
-                return ParseFields<TClass>(parameters[Reserved.fields.ToString()]);
+                return ParseFields(parameters[Reserved.fields.ToString()]);
             }
             else if (!isCollectionCall)
             {
-                return ParseAllProperties<TClass>();
+                return ParseAllProperties();
             }
 
-            return new ExpressionTree<TClass>();
+            return new ExpressionTree<T>();
         }
 
-        private IExpressionTree<TClass> ParseAllProperties<TClass>()
+        private IExpressionTree<T> ParseAllProperties()
         {
-            var fields = string.Join(",", typeof(TClass).GetProperties().Select(p => p.Name));
-            return ParseFields<TClass>(fields);
+            var fields = string.Join(",", typeof(T).GetProperties().Select(p => p.Name));
+            return ParseFields(fields);
         }
 
-        private IExpressionTree<TClass> ParseFields<TClass>(string fields)
+        private IExpressionTree<T> ParseFields(string fields)
         {
-            return new ExpressionParser().ParseTree<TClass>(fields);
+            return new ExpressionParser().ParseTree<T>(fields);
         }
     }
 }
