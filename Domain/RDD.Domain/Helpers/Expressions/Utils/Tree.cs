@@ -10,15 +10,11 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 
         public T Node { get; set; }
 
-        internal protected Tree<T> Parent { get; protected set; }
-
         public Tree(T node)
         {
             Node = node;
             _children = new List<Tree<T>>();
         }
-                
-        public Tree<T> GetParent() => Parent;
 
         public override string ToString()
         {
