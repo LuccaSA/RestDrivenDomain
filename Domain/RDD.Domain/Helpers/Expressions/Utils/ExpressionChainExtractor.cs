@@ -7,6 +7,15 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Helpers.Expressions.Utils
 {
+    /// <summary>
+    /// This visitor lets you extract an <see cref="IExpressionChain"/> from a <see cref="LambdaExpression"/>
+    /// <example>
+    /// <code>
+    /// <para />ExpressionChainExtractor.AsExpressionChain(u => u.Manager.Name); // u => u.Manager, m => m.Name);
+    /// <para />ExpressionChainExtractor.AsExpressionChain(u => u.Collaborators.Select(c => c.Name)); // u => u.Collaborators, m => m.Name
+    /// </code>
+    /// </example>
+    /// </summary>
     public class ExpressionChainExtractor : ExpressionVisitor
     {
         public Stack<IExpression> Expressions { get; set; }

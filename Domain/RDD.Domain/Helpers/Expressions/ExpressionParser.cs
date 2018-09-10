@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
@@ -41,11 +40,11 @@ namespace RDD.Domain.Helpers.Expressions
         public IExpressionTree<TClass> ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
             => ParseTree<TClass>(new LambdaExpression[] { lambda });
         public IExpressionTree<TClass> ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
-            => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2 });
+            => ParseTree<TClass>(lambda1, lambda2);
         public IExpressionTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
-            => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3 });
+            => ParseTree<TClass>(lambda1, lambda2, lambda3);
         public IExpressionTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3, TProp4>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3, Expression<Func<TClass, TProp4>> lambda4)
-            => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3, lambda4 });
+            => ParseTree<TClass>(lambda1, lambda2, lambda3, lambda4);
 
         public IExpressionTree<TClass> ParseTree<TClass>(params LambdaExpression[] lambdas)
         {
@@ -54,17 +53,10 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         private IEnumerable<IExpressionTree> ChainsToTree(IEnumerable<IExpressionChain> chains)
-        {
-            if (chains == null)
-            {
-                return null;
-            }
-
-            return chains
+            => chains?
                 .Where(c => c != null)
                 .GroupBy(c => c.Current, c => c.Next, new ExpressionEqualityComparer())
                 .Select(g => new ExpressionTree { Node = g.Key, Children = ChainsToTree(g).ToList() });
-        }
 
         public IExpressionTree ParseTree(Type classType, string input)
             => ParseTree(new ExpressionTree(), classType, input);

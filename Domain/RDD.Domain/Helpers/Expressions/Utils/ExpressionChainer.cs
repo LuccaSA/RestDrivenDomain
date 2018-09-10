@@ -4,6 +4,16 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Helpers.Expressions.Utils
 {
+    /// <summary>
+    /// This visitor lets you chain two <see cref="LambdaExpression"/> in one.
+    /// <example>
+    /// <code>
+    /// <para />ExpressionChainer.Chain(u => u.Manager, m => m.Name); // u => u.Manager.Name 
+    /// <para />ExpressionChainer.Chain(u => u.Collaborators, m => m.Name); // u => u.Collaborators.Select(c => c.Name) 
+    /// <para />ExpressionChainer.Chain(o => o.SuperUser(SuperUser), (BaseUser b) => b.Name); // u => u.SuperUser.Name 
+    /// </code>
+    /// </example>
+    /// </summary>
     public class ExpressionChainer : ExpressionVisitor
     {
         private LambdaExpression _entryPoint;
@@ -29,6 +39,8 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 
             return new ExpressionChainer().ChainAll(entryPoint, outExpression);
         }
+
+        protected ExpressionChainer() { }
 
         protected LambdaExpression ChainAll(LambdaExpression entryPoint, LambdaExpression outExpression)
         {
