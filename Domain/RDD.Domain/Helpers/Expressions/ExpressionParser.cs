@@ -9,19 +9,19 @@ using System.Text.RegularExpressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public class ExpressionSelectorParser
+    public class ExpressionParser
     {
-        public IExpressionSelector Parse<TClass>(string input)
+        public IExpression Parse<TClass>(string input)
             => ParseChain<TClass>(input);
-        public IExpressionSelector Parse(Type classType, string input)
+        public IExpression Parse(Type classType, string input)
             => ParseChain(classType, input);
 
-        public IExpressionSelectorChain ParseChain<TClass>(string input)
+        public IExpressionChain ParseChain<TClass>(string input)
             => TreeToChain(ParseTree<TClass>(input));
-        public IExpressionSelectorChain ParseChain(Type classType, string input)
+        public IExpressionChain ParseChain(Type classType, string input)
             => TreeToChain(ParseTree(classType, input));
 
-        private IExpressionSelectorChain TreeToChain(IExpressionSelectorTree tree)
+        private IExpressionChain TreeToChain(IExpressionTree tree)
         {
             var chains = tree.ToList();
             if (chains.Count != 1)
@@ -32,28 +32,28 @@ namespace RDD.Domain.Helpers.Expressions
             return chains.First();
         }
 
-        public IExpressionSelectorChain ParseChain(LambdaExpression lambda)
-            => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+        public IExpressionChain ParseChain(LambdaExpression lambda)
+            => ExpressionChainExtractor.AsExpressionChain(lambda);
 
-        public IExpressionSelectorChain<TClass> ParseChain<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
-            => ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+        public IExpressionChain<TClass> ParseChain<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+            => ExpressionChainExtractor.AsExpressionChain(lambda);
 
-        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
+        public IExpressionTree<TClass> ParseTree<TClass, TProp>(Expression<Func<TClass, TProp>> lambda)
             => ParseTree<TClass>(new LambdaExpression[] { lambda });
-        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
+        public IExpressionTree<TClass> ParseTree<TClass, TProp1, TProp2>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2)
             => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2 });
-        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
+        public IExpressionTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3)
             => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3 });
-        public IExpressionSelectorTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3, TProp4>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3, Expression<Func<TClass, TProp4>> lambda4)
+        public IExpressionTree<TClass> ParseTree<TClass, TProp1, TProp2, TProp3, TProp4>(Expression<Func<TClass, TProp1>> lambda1, Expression<Func<TClass, TProp2>> lambda2, Expression<Func<TClass, TProp3>> lambda3, Expression<Func<TClass, TProp4>> lambda4)
             => ParseTree<TClass>(new LambdaExpression[] { lambda1, lambda2, lambda3, lambda4 });
 
-        public IExpressionSelectorTree<TClass> ParseTree<TClass>(params LambdaExpression[] lambdas)
+        public IExpressionTree<TClass> ParseTree<TClass>(params LambdaExpression[] lambdas)
         {
-            var chains = lambdas.Select(lambda => ExpressionChainExtractor.AsExpressionSelectorChain(lambda));
-            return new ExpressionSelectorTree<TClass> { Children = ChainsToTree(chains).ToList() };
+            var chains = lambdas.Select(lambda => ExpressionChainExtractor.AsExpressionChain(lambda));
+            return new ExpressionTree<TClass> { Children = ChainsToTree(chains).ToList() };
         }
 
-        private IEnumerable<IExpressionSelectorTree> ChainsToTree(IEnumerable<IExpressionSelectorChain> chains)
+        private IEnumerable<IExpressionTree> ChainsToTree(IEnumerable<IExpressionChain> chains)
         {
             if (chains == null)
             {
@@ -62,18 +62,18 @@ namespace RDD.Domain.Helpers.Expressions
 
             return chains
                 .Where(c => c != null)
-                .GroupBy(c => c.Current, c => c.Next, new ExpressionSelectorEqualityComparer())
-                .Select(g => new ExpressionSelectorTree { Node = g.Key, Children = ChainsToTree(g).ToList() });
+                .GroupBy(c => c.Current, c => c.Next, new ExpressionEqualityComparer())
+                .Select(g => new ExpressionTree { Node = g.Key, Children = ChainsToTree(g).ToList() });
         }
 
-        public IExpressionSelectorTree ParseTree(Type classType, string input)
-            => ParseTree(new ExpressionSelectorTree(), classType, input);
+        public IExpressionTree ParseTree(Type classType, string input)
+            => ParseTree(new ExpressionTree(), classType, input);
 
-        public IExpressionSelectorTree<TClass> ParseTree<TClass>(string input)
-            => ParseTree(new ExpressionSelectorTree<TClass>(), typeof(TClass), input);
+        public IExpressionTree<TClass> ParseTree<TClass>(string input)
+            => ParseTree(new ExpressionTree<TClass>(), typeof(TClass), input);
 
         private TTree ParseTree<TTree>(TTree result, Type classType, string input)
-            where TTree : ExpressionSelectorTree
+            where TTree : ExpressionTree
         {
             var tree = new TreeParser().Parse(input);
             foreach (var subTree in tree.Children)
@@ -93,13 +93,13 @@ namespace RDD.Domain.Helpers.Expressions
             return result;
         }
 
-        IExpressionSelectorTree Parse(Type classType, Tree<string> tree)
+        IExpressionTree Parse(Type classType, Tree<string> tree)
         {
-            var selector = GetSelector(classType, tree.Node);
-            return new ExpressionSelectorTree { Node = selector, Children = tree.Children.Select(c => Parse(selector.ResultType, c)).ToList() };
+            var expression = GetExpression(classType, tree.Node);
+            return new ExpressionTree { Node = expression, Children = tree.Children.Select(c => Parse(expression.ResultType, c)).ToList() };
         }
 
-        IExpressionSelector GetSelector(Type classType, string member)
+        IExpression GetExpression(Type classType, string member)
         {
             var parameter = Expression.Parameter(classType);
             if (typeof(IDictionary).IsAssignableFrom(classType))
@@ -107,7 +107,7 @@ namespace RDD.Domain.Helpers.Expressions
                 var dictionaryKey = Expression.Constant(member);
                 var itemsExpression = Expression.Property(parameter, "Item", dictionaryKey);
 
-                return new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
+                return new ItemExpression { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
             }
 
             var property = GetPropertyInfo(classType, member);
@@ -118,11 +118,11 @@ namespace RDD.Domain.Helpers.Expressions
 
             if (typeof(IEnumerable).IsAssignableFrom(returnType) && returnType != typeof(string) && !typeof(IDictionary).IsAssignableFrom(returnType))
             {
-                return new EnumerablePropertyExpressionSelector { LambdaExpression = lambda };
+                return new EnumerablePropertyExpression { LambdaExpression = lambda };
             }
             else
             {
-                return new PropertyExpressionSelector { LambdaExpression = lambda };
+                return new PropertyExpression { LambdaExpression = lambda };
             }
         }
 

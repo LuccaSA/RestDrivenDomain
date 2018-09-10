@@ -8,7 +8,7 @@ namespace RDD.Web.Querying
 {
     public class OptionsParser
     {
-        public Options Parse(Dictionary<string, string> parameters, IExpressionSelectorTree fields)
+        public Options Parse(Dictionary<string, string> parameters, IExpressionTree fields)
         {
             var options = new Options();
 

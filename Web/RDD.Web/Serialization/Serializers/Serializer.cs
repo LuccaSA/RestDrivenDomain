@@ -13,6 +13,6 @@ namespace RDD.Web.Serialization.Serializers
             SerializerProvider = serializerProvider;
         }
 
-        public abstract IJsonElement ToJson(object entity, IExpressionSelectorTree fields);
+        public abstract IJsonElement ToJson(object entity, IExpressionTree fields);
     }
 }

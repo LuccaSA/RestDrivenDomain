@@ -12,12 +12,12 @@ namespace RDD.Web.Serialization.Serializers
     {
         public DictionarySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(IDictionary)) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+        public override IJsonElement ToJson(object entity, IExpressionTree fields)
         {
             return ToJson(entity as IDictionary, fields);
         }
 
-        protected IJsonElement ToJson(IDictionary dico, IExpressionSelectorTree fields)
+        protected IJsonElement ToJson(IDictionary dico, IExpressionTree fields)
         {
             if (fields.Children.Any())
             {
@@ -33,12 +33,12 @@ namespace RDD.Web.Serialization.Serializers
             return result;
         }
 
-        private IJsonElement ToJsonWithFieldsFilter(IDictionary dico, IExpressionSelectorTree fields)
+        private IJsonElement ToJsonWithFieldsFilter(IDictionary dico, IExpressionTree fields)
         {
             var result = new JsonObject();
             foreach (var child in fields.Children)
             {
-                var concreteChild = child.Node as ItemSelector;
+                var concreteChild = child.Node as ItemExpression;
                 try
                 {
                     var value = dico[concreteChild.Name];

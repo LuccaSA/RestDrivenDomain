@@ -50,7 +50,7 @@ namespace RDD.Web.Querying
         {
             var list = new List<WebFilter<TEntity>>();
             var service = new SerializationService();
-            var parser = new ExpressionSelectorParser();
+            var parser = new ExpressionParser();
 
             foreach (string key in keys)
             {

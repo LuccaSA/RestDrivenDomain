@@ -31,13 +31,13 @@ namespace RDD.Web.Models
         public bool HasId() => HasProperty(c => c.Id);
         public bool HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression)
         {
-            var selector = ExpressionSelectorChain<TEntity>.New(expression);
+            var selector = ExpressionChain<TEntity>.New(expression);
             return ContainsPath(_structure, selector);
         }
         TKey ICandidate<TEntity, TKey>.Id => Value.Id;
         object ICandidate<TEntity>.Id => Value.Id;
 
-        private bool ContainsPath(JToken token, IExpressionSelectorChain selector)
+        private bool ContainsPath(JToken token, IExpressionChain selector)
         {
             switch (token.Type)
             {

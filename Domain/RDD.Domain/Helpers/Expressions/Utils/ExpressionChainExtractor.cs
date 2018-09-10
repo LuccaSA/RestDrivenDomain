@@ -9,51 +9,51 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 {
     public class ExpressionChainExtractor : ExpressionVisitor
     {
-        public Stack<IExpressionSelector> Selectors { get; set; }
+        public Stack<IExpression> Expressions { get; set; }
 
         public ExpressionChainExtractor()
         {
-            Selectors = new Stack<IExpressionSelector>();
+            Expressions = new Stack<IExpression>();
         }
 
-        public static IExpressionSelectorChain AsExpressionSelectorChain(LambdaExpression expression)
-            => ApplyStack(GetSelectors(expression));
+        public static IExpressionChain AsExpressionChain(LambdaExpression expression)
+            => ApplyStack(GetExpressions(expression));
 
-        public static IExpressionSelectorChain<TClass> AsExpressionSelectorChain<TClass, TProp>(Expression<Func<TClass, TProp>> expression)
-            => ApplyStack<TClass>(GetSelectors(expression));
+        public static IExpressionChain<TClass> AsExpressionChain<TClass, TProp>(Expression<Func<TClass, TProp>> expression)
+            => ApplyStack<TClass>(GetExpressions(expression));
 
-        private static Stack<IExpressionSelector> GetSelectors(LambdaExpression expression)
+        private static Stack<IExpression> GetExpressions(LambdaExpression expression)
         {
             var extractor = new ExpressionChainExtractor();
             extractor.Visit(expression);
-            return extractor.Selectors;
+            return extractor.Expressions;
         }
 
-        private static IExpressionSelectorChain<TClass> ApplyStack<TClass>(Stack<IExpressionSelector> selectors)
+        private static IExpressionChain<TClass> ApplyStack<TClass>(Stack<IExpression> expressions)
         {
-            if (selectors.Count == 0)
+            if (expressions.Count == 0)
             {
                 return null;
             }
 
-            return new ExpressionSelectorChain<TClass>
+            return new ExpressionChain<TClass>
             {
-                Current = selectors.Pop(),
-                Next = ApplyStack(selectors)
+                Current = expressions.Pop(),
+                Next = ApplyStack(expressions)
             };
         }
 
-        private static IExpressionSelectorChain ApplyStack(Stack<IExpressionSelector> selectors)
+        private static IExpressionChain ApplyStack(Stack<IExpression> expressions)
         {
-            if (selectors.Count == 0)
+            if (expressions.Count == 0)
             {
                 return null;
             }
 
-            return new ExpressionSelectorChain
+            return new ExpressionChain
             {
-                Current = selectors.Pop(),
-                Next = ApplyStack(selectors)
+                Current = expressions.Pop(),
+                Next = ApplyStack(expressions)
             };
         }
 
@@ -65,11 +65,11 @@ namespace RDD.Domain.Helpers.Expressions.Utils
 
             if (typeof(IEnumerable).IsAssignableFrom(node.Member.DeclaringType) && node.Member.DeclaringType != typeof(string))
             {
-                Selectors.Push(new EnumerablePropertyExpressionSelector { LambdaExpression = lambda });
+                Expressions.Push(new EnumerablePropertyExpression { LambdaExpression = lambda });
             }
             else
             {
-                Selectors.Push(new PropertyExpressionSelector { LambdaExpression = lambda });
+                Expressions.Push(new PropertyExpression { LambdaExpression = lambda });
             }
 
             return base.VisitMember(node);
@@ -79,7 +79,7 @@ namespace RDD.Domain.Helpers.Expressions.Utils
         {
             var parameter = Expression.Parameter(node.Indexer.DeclaringType);
             var itemsExpression = Expression.MakeIndex(parameter, node.Indexer, node.Arguments);
-            Selectors.Push(new ItemSelector { LambdaExpression = Expression.Lambda(itemsExpression, parameter) });
+            Expressions.Push(new ItemExpression { LambdaExpression = Expression.Lambda(itemsExpression, parameter) });
 
             return base.VisitIndex(node);
         }

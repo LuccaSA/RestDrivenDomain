@@ -15,7 +15,7 @@ namespace RDD.Infra.Storage
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
 
-        protected virtual IExpressionSelectorTree IncludeWhiteList { get; }
+        protected virtual IExpressionTree IncludeWhiteList { get; }
 
         public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
         {

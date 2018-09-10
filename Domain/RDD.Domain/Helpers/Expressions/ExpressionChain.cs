@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public class ExpressionSelectorChain : IExpressionSelectorChain
+    public class ExpressionChain : IExpressionChain
     {
-        public IExpressionSelector Current { get; set; }
+        public IExpression Current { get; set; }
 
-        public IExpressionSelectorChain Next { get; set; }
+        public IExpressionChain Next { get; set; }
 
         public string Name => string.Join(".", new[] { Current?.Name, Next?.Name }.Where(e => !string.IsNullOrEmpty(e)));
 
@@ -19,23 +19,23 @@ namespace RDD.Domain.Helpers.Expressions
             => ExpressionChainer.Chain(Current?.ToLambdaExpression(), Next?.ToLambdaExpression());
 
         public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
-            => Contains(new ExpressionSelectorParser().ParseChain(property));
+            => Contains(new ExpressionParser().ParseChain(property));
 
-        public bool Contains(IExpressionSelectorChain chain)
+        public bool Contains(IExpressionChain chain)
         {
             return chain == null || (chain.Current.Equals(Current) && (chain.Next == null || (Next != null && Next.Contains(chain.Next))));
         }
 
-        public virtual bool Equals(IExpressionSelector other)
-            => other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), ToLambdaExpression());
+        public virtual bool Equals(IExpression other)
+            => other != null && Utils.ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), ToLambdaExpression());
 
         public override string ToString() => Name;
     }
 
-    public class ExpressionSelectorChain<TClass> : ExpressionSelectorChain, IExpressionSelectorChain<TClass>
+    public class ExpressionChain<TClass> : ExpressionChain, IExpressionChain<TClass>
     {
-        public static IExpressionSelectorChain<TClass> New<TProp>(Expression<Func<TClass, TProp>> lambda)
-            => new ExpressionSelectorParser().ParseChain(lambda);
+        public static IExpressionChain<TClass> New<TProp>(Expression<Func<TClass, TProp>> lambda)
+            => new ExpressionParser().ParseChain(lambda);
 
         public bool Contains<TProp>(Expression<Func<TClass, TProp>> property)
             => base.Contains(property);

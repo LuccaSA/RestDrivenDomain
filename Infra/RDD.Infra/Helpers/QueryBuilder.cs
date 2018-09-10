@@ -41,44 +41,44 @@ namespace RDD.Infra.Helpers
             return values.OfType<TProp>().Select(val => filter(val)).AndAggregation();
         }
 
-        public virtual Expression<Func<TEntity, bool>> Equals(IExpressionSelector field, IList values)
+        public virtual Expression<Func<TEntity, bool>> Equals(IExpression field, IList values)
         {
             return BuildBinaryExpression(WebFilterOperand.Equals, field, values);
         }
 
         public virtual Expression<Func<TEntity, bool>> Equals(TKey key) => t => t.Id.Equals(key);
 
-        public virtual Expression<Func<TEntity, bool>> NotEqual(IExpressionSelector field, IList values)
+        public virtual Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values)
         {
             return AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.NotEqual, field, value), values);
         }
 
-        public Expression<Func<TEntity, bool>> Until(IExpressionSelector field, IList values) => OrFactory<object>(value => Until(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Until(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.Until, field, value);
+        public Expression<Func<TEntity, bool>> Until(IExpression field, IList values) => OrFactory<object>(value => Until(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> Until(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Until, field, value);
 
-        public Expression<Func<TEntity, bool>> Since(IExpressionSelector field, IList values) => OrFactory<object>(value => Since(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Since(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.Since, field, value);
+        public Expression<Func<TEntity, bool>> Since(IExpression field, IList values) => OrFactory<object>(value => Since(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> Since(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Since, field, value);
 
-        public Expression<Func<TEntity, bool>> Anniversary(IExpressionSelector field, IList values) => OrFactory<object>(value => Anniversary(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Anniversary(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.Anniversary, field, value);
+        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IList values) => OrFactory<object>(value => Anniversary(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> Anniversary(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Anniversary, field, value);
 
-        public Expression<Func<TEntity, bool>> GreaterThan(IExpressionSelector field, IList values) => OrFactory<object>(value => GreaterThan(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> GreaterThan(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.GreaterThan, field, value);
+        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IList values) => OrFactory<object>(value => GreaterThan(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> GreaterThan(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.GreaterThan, field, value);
 
-        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpressionSelector field, IList values) => OrFactory<object>(value => GreaterThanOrEqual(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.GreaterThanOrEqual, field, value);
+        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => GreaterThanOrEqual(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.GreaterThanOrEqual, field, value);
 
-        public Expression<Func<TEntity, bool>> LessThan(IExpressionSelector field, IList values) => OrFactory<object>(value => LessThan(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> LessThan(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.LessThan, field, value);
+        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IList values) => OrFactory<object>(value => LessThan(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> LessThan(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.LessThan, field, value);
 
-        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpressionSelector field, IList values) => OrFactory<object>(value => LessThanOrEqual(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> LessThanOrEqual(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.LessThanOrEqual, field, value);
+        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => LessThanOrEqual(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.LessThanOrEqual, field, value);
 
-        public Expression<Func<TEntity, bool>> Between(IExpressionSelector field, IList values) => OrFactory<object>(value => Between(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Between(IExpressionSelector field, object value) => BuildBinaryExpression(WebFilterOperand.Between, field, value);
+        public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<object>(value => Between(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> Between(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Between, field, value);
 
-        public Expression<Func<TEntity, bool>> Starts(IExpressionSelector field, IList values) => OrFactory<string>(value => Starts(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Starts(IExpressionSelector field, string value)
+        public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => Starts(field, value), values);
+        protected virtual Expression<Func<TEntity, bool>> Starts(IExpression field, string value)
         {
             var lambda = field.ToLambdaExpression();
             var parameter = lambda.Parameters[0];
@@ -90,10 +90,10 @@ namespace RDD.Infra.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(startsWithExpression, parameter);
         }
 
-        public Expression<Func<TEntity, bool>> ContainsAll(IExpressionSelector field, IList values) => AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.ContainsAll, field, value), values);
+        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.ContainsAll, field, value), values);
 
-        public Expression<Func<TEntity, bool>> Like(IExpressionSelector field, IList values) => OrFactory<object>(value => Like(field, value.ToString()), values);
-        protected virtual Expression<Func<TEntity, bool>> Like(IExpressionSelector field, object value)
+        public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => Like(field, value.ToString()), values);
+        protected virtual Expression<Func<TEntity, bool>> Like(IExpression field, object value)
         {
             var lambda = field.ToLambdaExpression();
             var parameter = lambda.Parameters[0];
@@ -105,7 +105,7 @@ namespace RDD.Infra.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
         }
 
-        private Expression<Func<TEntity, bool>> BuildBinaryExpression(WebFilterOperand binaryOperator, IExpressionSelector field, object value)
+        private Expression<Func<TEntity, bool>> BuildBinaryExpression(WebFilterOperand binaryOperator, IExpression field, object value)
         {
             var expression = BuildBinaryExpressionRecursive(binaryOperator, field, value, out var property);
 
@@ -127,7 +127,7 @@ namespace RDD.Infra.Helpers
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }
 
-        private Expression BuildBinaryExpressionRecursive(WebFilterOperand binaryOperator, IExpressionSelector field, object value, out PropertyInfo property)
+        private Expression BuildBinaryExpressionRecursive(WebFilterOperand binaryOperator, IExpression field, object value, out PropertyInfo property)
         {
             var expressionLeft = field.ToLambdaExpression().Body;
             property = (expressionLeft as MemberExpression)?.Member as PropertyInfo;

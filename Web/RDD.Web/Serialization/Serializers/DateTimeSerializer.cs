@@ -9,7 +9,7 @@ namespace RDD.Web.Serialization.Serializers
     {
         public DateTimeSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+        public override IJsonElement ToJson(object entity, IExpressionTree fields)
         {
             switch (entity)
             {
@@ -18,7 +18,7 @@ namespace RDD.Web.Serialization.Serializers
             }
         }
 
-        public IJsonElement ToJson(DateTime entity, IExpressionSelectorTree fields)
+        public IJsonElement ToJson(DateTime entity, IExpressionTree fields)
         {
             return new JsonValue { Content = DateTime.SpecifyKind(entity, DateTimeKind.Unspecified) };
         }

@@ -13,10 +13,10 @@ namespace RDD.Web.Serialization.Providers
 
     public static class ISerializerProviderExtensions
     {
-        public static object Serialize(this ISerializerProvider serializerProvider, object entity, IExpressionSelectorTree fields)
+        public static object Serialize(this ISerializerProvider serializerProvider, object entity, IExpressionTree fields)
             => serializerProvider.ToJson(entity, fields).GetContent();
 
-        public static IJsonElement ToJson(this ISerializerProvider serializerProvider, object entity, IExpressionSelectorTree fields)
+        public static IJsonElement ToJson(this ISerializerProvider serializerProvider, object entity, IExpressionTree fields)
             => serializerProvider.GetSerializer(entity).ToJson(entity, fields);
     }
 

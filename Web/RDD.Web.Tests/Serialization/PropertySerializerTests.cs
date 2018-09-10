@@ -26,7 +26,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var tree = ExpressionSelectorTree<User>.New(u => u.Url);
+            var tree = ExpressionTree<User>.New(u => u.Url);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.Equal("https://mon.domain.com/api/users/1", json.GetJsonValue("Url"));
@@ -43,7 +43,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var tree = ExpressionSelectorTree<User>.New(u => u.Url);
+            var tree = ExpressionTree<User>.New(u => u.Url);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.Equal("https://mon.domain.com/api/lol/users/1", json.GetJsonValue("Url"));
@@ -77,7 +77,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var tree = ExpressionSelectorTree<User>.New(u => u.MyValueObject);
+            var tree = ExpressionTree<User>.New(u => u.MyValueObject);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.HasJsonValue("MyValueObject.Id"));
@@ -102,7 +102,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
             
-            var tree = ExpressionSelectorTree<User>.New(u => u.Department.Id, (User u) => u.Department.Name);
+            var tree = ExpressionTree<User>.New(u => u.Department.Id, (User u) => u.Department.Name);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.HasJsonValue("Department.Id"));
@@ -131,7 +131,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var tree = ExpressionSelectorTree<User>.New(u => u.Department);
+            var tree = ExpressionTree<User>.New(u => u.Department);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.HasJsonValue("Department.Id"));
@@ -165,7 +165,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
             
-            var tree = ExpressionSelectorTree<Department>.New(u => u.Users);
+            var tree = ExpressionTree<Department>.New(u => u.Users);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.GetJsonValue("Users.0.Name") == "Peter");
@@ -200,7 +200,7 @@ namespace RDD.Web.Tests.Serialization
 
             var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
 
-            var tree = ExpressionSelectorTree<Department>.New(u => u.Users.Select(g => g.Name));
+            var tree = ExpressionTree<Department>.New(u => u.Users.Select(g => g.Name));
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
             Assert.True(json.GetJsonValue("Users.0.Name") == "Peter");

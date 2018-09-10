@@ -22,7 +22,7 @@ namespace RDD.Web.Querying
 
         protected List<OrderBy<TEntity>> Parse(string value)
         {
-            var parser = new ExpressionSelectorParser();
+            var parser = new ExpressionParser();
             var orders = value.Split(',');
             var length = orders.Length;
             var queue = new List<OrderBy<TEntity>>();

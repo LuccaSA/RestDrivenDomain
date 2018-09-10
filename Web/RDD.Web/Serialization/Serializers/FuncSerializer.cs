@@ -9,12 +9,12 @@ namespace RDD.Web.Serialization.Serializers
     {
         public FuncSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+        public override IJsonElement ToJson(object entity, IExpressionTree fields)
         {
             return ToJson(entity as Func<T>, fields);
         }
 
-        protected IJsonElement ToJson(Func<T> callback, IExpressionSelectorTree fields)
+        protected IJsonElement ToJson(Func<T> callback, IExpressionTree fields)
         {
             var serializer = SerializerProvider.GetSerializer(typeof(T));
 

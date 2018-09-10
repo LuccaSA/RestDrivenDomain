@@ -13,18 +13,18 @@ namespace RDD.Web.Serialization.Serializers
         public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider)
             : base(serializerProvider, reflectionProvider, typeof(ISelection)) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+        public override IJsonElement ToJson(object entity, IExpressionTree fields)
         {
             return ToSerializableObject(entity as ISelection, fields);
         }
 
-        protected IJsonElement ToSerializableObject(ISelection selection, IExpressionSelectorTree fields)
+        protected IJsonElement ToSerializableObject(ISelection selection, IExpressionTree fields)
         {
             var items = selection.GetItems();
 
             var countField = fields.Children.FirstOrDefault(c => c.Node.Name == nameof(ISelection.Count) && typeof(ISelection).IsAssignableFrom(c.Node.ToLambdaExpression().Parameters[0].Type));
 
-            var normalFields = new ExpressionSelectorTree
+            var normalFields = new ExpressionTree
             {
                 Node = fields.Node,
                 Children = fields.Children.Where(c => c != countField).ToList()

@@ -7,7 +7,7 @@ namespace RDD.Web.Querying
 {
     public class FieldsParser
     {
-        public IExpressionSelectorTree<TClass> ParseFields<TClass>(Dictionary<string, string> parameters, bool isCollectionCall)
+        public IExpressionTree<TClass> ParseFields<TClass>(Dictionary<string, string> parameters, bool isCollectionCall)
         {
             if (parameters.ContainsKey(Reserved.fields.ToString()))
             {
@@ -18,18 +18,18 @@ namespace RDD.Web.Querying
                 return ParseAllProperties<TClass>();
             }
 
-            return new ExpressionSelectorTree<TClass>();
+            return new ExpressionTree<TClass>();
         }
 
-        private IExpressionSelectorTree<TClass> ParseAllProperties<TClass>()
+        private IExpressionTree<TClass> ParseAllProperties<TClass>()
         {
             var fields = string.Join(",", typeof(TClass).GetProperties().Select(p => p.Name));
             return ParseFields<TClass>(fields);
         }
 
-        private IExpressionSelectorTree<TClass> ParseFields<TClass>(string fields)
+        private IExpressionTree<TClass> ParseFields<TClass>(string fields)
         {
-            return new ExpressionSelectorParser().ParseTree<TClass>(fields);
+            return new ExpressionParser().ParseTree<TClass>(fields);
         }
     }
 }

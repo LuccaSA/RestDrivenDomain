@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public interface IExpressionSelector : IEquatable<IExpressionSelector>
+    public interface IExpression : IEquatable<IExpression>
     {
         string Name { get; }
 

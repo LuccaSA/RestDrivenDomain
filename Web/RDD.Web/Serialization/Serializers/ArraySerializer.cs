@@ -13,13 +13,13 @@ namespace RDD.Web.Serialization.Serializers
     {
         public ArraySerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+        public override IJsonElement ToJson(object entity, IExpressionTree fields)
         {
             var genericType = entity.GetType().GetEnumerableOrArrayElementType();
             return ToJson(genericType, (entity as IEnumerable).Cast<object>(), fields);
         }
 
-        protected virtual IJsonElement ToJson(Type genericType, IEnumerable<object> entities, IExpressionSelectorTree fields)
+        protected virtual IJsonElement ToJson(Type genericType, IEnumerable<object> entities, IExpressionTree fields)
         {
             if (genericType == typeof(object))
             {

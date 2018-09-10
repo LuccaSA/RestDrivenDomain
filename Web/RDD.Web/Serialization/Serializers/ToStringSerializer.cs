@@ -8,7 +8,7 @@ namespace RDD.Web.Serialization.Serializers
     {
         public ToStringSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionSelectorTree fields)
+        public override IJsonElement ToJson(object entity, IExpressionTree fields)
             => base.ToJson(entity.ToString(), fields);
     }
 }

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public class PropertyExpressionSelector : IExpressionSelector
+    public class PropertyExpression : IExpression
     {
         public LambdaExpression LambdaExpression { get; set; }
 
@@ -15,17 +15,17 @@ namespace RDD.Domain.Helpers.Expressions
         public string Name => Property?.Name;
         public virtual Type ResultType => Property.PropertyType;
 
-        public virtual bool Equals(IExpressionSelector other)
-            => other != null && ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression);
+        public virtual bool Equals(IExpression other)
+            => other != null && Utils.ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), LambdaExpression);
 
-        LambdaExpression IExpressionSelector.ToLambdaExpression() => LambdaExpression;
+        LambdaExpression IExpression.ToLambdaExpression() => LambdaExpression;
 
         public override string ToString() => Name;
     }
 
-    public static class PropertyExpressionSelector<TClass>
+    public static class PropertyExpression<TClass>
     {
-        public static PropertyExpressionSelector New<TProp>(Expression<Func<TClass, TProp>> lambda)
-            => new PropertyExpressionSelector { LambdaExpression = lambda };
+        public static PropertyExpression New<TProp>(Expression<Func<TClass, TProp>> lambda)
+            => new PropertyExpression { LambdaExpression = lambda };
     }
 }

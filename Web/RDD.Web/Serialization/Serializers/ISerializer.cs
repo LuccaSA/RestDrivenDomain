@@ -5,6 +5,6 @@ namespace RDD.Web.Serialization.Serializers
 {
     public interface ISerializer
     {
-        IJsonElement ToJson(object entity, IExpressionSelectorTree fields);
+        IJsonElement ToJson(object entity, IExpressionTree fields);
     }
 }

@@ -34,7 +34,7 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
 
-            var fields = new ExpressionSelectorParser().ParseTree<Obj1>("collection.count");
+            var fields = new ExpressionParser().ParseTree<Obj1>("collection.count");
 
             var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
 

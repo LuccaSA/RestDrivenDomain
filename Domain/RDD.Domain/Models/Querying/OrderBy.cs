@@ -10,19 +10,19 @@ namespace RDD.Domain.Models.Querying
     public class OrderBy<T>
         where T : class
     {
-        public IExpressionSelector Selector { get; }
+        public IExpression Expression { get; }
         public SortDirection Direction { get; }
 
-        public static OrderBy<T> New<TProp>(Expression<Func<T, TProp>> selector, SortDirection direction = SortDirection.Ascending)
-            => new OrderBy<T>(new PropertyExpressionSelector { LambdaExpression = selector }, direction);
-        public static OrderBy<T> Ascending<TProp>(Expression<Func<T, TProp>> selector)
-            => new OrderBy<T>(new PropertyExpressionSelector { LambdaExpression = selector }, SortDirection.Ascending);
-        public static OrderBy<T> Descending<TProp>(Expression<Func<T, TProp>> selector)
-            => new OrderBy<T>(new PropertyExpressionSelector { LambdaExpression = selector }, SortDirection.Descending);
+        public static OrderBy<T> New<TProp>(Expression<Func<T, TProp>> expression, SortDirection direction = SortDirection.Ascending)
+            => new OrderBy<T>(new PropertyExpression { LambdaExpression = expression }, direction);
+        public static OrderBy<T> Ascending<TProp>(Expression<Func<T, TProp>> expression)
+            => new OrderBy<T>(new PropertyExpression { LambdaExpression = expression }, SortDirection.Ascending);
+        public static OrderBy<T> Descending<TProp>(Expression<Func<T, TProp>> expression)
+            => new OrderBy<T>(new PropertyExpression { LambdaExpression = expression }, SortDirection.Descending);
 
-        public OrderBy(IExpressionSelector selector, SortDirection direction = SortDirection.Ascending)
+        public OrderBy(IExpression expression, SortDirection direction = SortDirection.Ascending)
         {
-            Selector = selector;
+            Expression = expression;
             Direction = direction;
         }
 
@@ -31,11 +31,11 @@ namespace RDD.Domain.Models.Querying
             //https://www.tabsoverspaces.com/229310-sorting-in-iqueryable-using-string-as-column-name?utm_source=blog.cincura.net
             //https://stackoverflow.com/questions/3138133/what-is-the-purpose-of-linqs-expression-quote-method
 
-            var sort = Selector.ToLambdaExpression();
+            var sort = Expression.ToLambdaExpression();
             var anotherLevel = typeof(IOrderedQueryable).IsAssignableFrom(source.Expression.Type)
                 && !typeof(EnumerableQuery).IsAssignableFrom(source.Expression.Type);
             var methodName = (!anotherLevel ? "OrderBy" : "ThenBy") + (Direction == SortDirection.Descending ? "Descending" : string.Empty);
-            var call = Expression.Call(typeof(Queryable), methodName, new[] { typeof(T), Selector.ResultType }, source.Expression, Expression.Quote(sort));
+            var call = System.Linq.Expressions.Expression.Call(typeof(Queryable), methodName, new[] { typeof(T), Expression.ResultType }, source.Expression, System.Linq.Expressions.Expression.Quote(sort));
 
             return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(call);
         }

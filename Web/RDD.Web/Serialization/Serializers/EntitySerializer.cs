@@ -20,17 +20,17 @@ namespace RDD.Web.Serialization.Serializers
             UrlProvider = urlProvider;
         }
 
-        protected override IExpressionSelectorTree CorrectFields(object entity, IExpressionSelectorTree fields)
+        protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {
             if (fields == null || !fields.Children.Any())
             {
-                return new ExpressionSelectorParser().ParseTree(entity.GetType(), "id,name,url");
+                return new ExpressionParser().ParseTree(entity.GetType(), "id,name,url");
             }
 
             return base.CorrectFields(entity, fields);
         }
 
-        protected override object GetRawValue(object entity, IExpressionSelectorTree fields, PropertyInfo property)
+        protected override object GetRawValue(object entity, IExpressionTree fields, PropertyInfo property)
         {
             if (property.Name == "Url")
             {

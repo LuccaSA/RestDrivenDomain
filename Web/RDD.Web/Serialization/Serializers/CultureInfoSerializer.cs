@@ -14,7 +14,7 @@ namespace RDD.Web.Serialization.Serializers
 
         public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(Culture)) { }
 
-        protected override void SerializeProperty(JsonObject partialResult, object entity, IExpressionSelectorTree fields, PropertyInfo property)
+        protected override void SerializeProperty(JsonObject partialResult, object entity, IExpressionTree fields, PropertyInfo property)
         {
             if (_allowedProperties.Contains(property.Name.ToLower()))
             {

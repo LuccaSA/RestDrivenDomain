@@ -33,7 +33,7 @@ namespace RDD.Domain.Tests.Members
         public void ExpressionToChain1()
         {
             Expression<Func<Department, User>> lambda = u => u.Head;
-            var chain = ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+            var chain = ExpressionChainExtractor.AsExpressionChain(lambda);
 
             Assert.Equal(nameof(Department.Head), chain.Current.Name);
 
@@ -44,7 +44,7 @@ namespace RDD.Domain.Tests.Members
         public void ExpressionToChain2()
         {
             Expression<Func<Department, IEnumerable<int>>> lambda = u => u.Head.Collaborators.Select(c => c.Id);
-            var chain = ExpressionChainExtractor.AsExpressionSelectorChain(lambda);
+            var chain = ExpressionChainExtractor.AsExpressionChain(lambda);
 
             Assert.Equal(nameof(Department.Head), chain.Current.Name);
             Assert.Equal(nameof(User.Collaborators), chain.Next.Current.Name);

@@ -22,8 +22,8 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingTheSameReferencedPropertyShouldWork()
         {
-            var dictionary = new Dictionary<IExpressionSelector, int>(new ExpressionSelectorEqualityComparer());
-            var p1 = ExpressionSelectorChain<FakeClass>.New(fc => fc.A);
+            var dictionary = new Dictionary<IExpression, int>(new ExpressionEqualityComparer());
+            var p1 = ExpressionChain<FakeClass>.New(fc => fc.A);
             var p1Val = 42;
 
             dictionary.Add(p1, p1Val);
@@ -34,12 +34,12 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingDifferentPropertyInstancesShouldWork()
         {
-            var dictionary = new Dictionary<IExpressionSelector, int>(new ExpressionSelectorEqualityComparer());
-            var p1 = ExpressionSelectorChain<FakeClass>.New(fc => fc.A);
+            var dictionary = new Dictionary<IExpression, int>(new ExpressionEqualityComparer());
+            var p1 = ExpressionChain<FakeClass>.New(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
 
-            var p2 = ExpressionSelectorChain<FakeClass>.New(fc => fc.A);
+            var p2 = ExpressionChain<FakeClass>.New(fc => fc.A);
 
             Assert.Equal(p1Val, dictionary[p2]);
         }
@@ -47,12 +47,12 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingPropertyInstancesWithDifferentEntityNameButSamePropertyShouldWork()
         {
-            var dictionary = new Dictionary<IExpressionSelector, int>(new ExpressionSelectorEqualityComparer());
-            var p1 = ExpressionSelectorChain<FakeClass>.New(fc => fc.A);
+            var dictionary = new Dictionary<IExpression, int>(new ExpressionEqualityComparer());
+            var p1 = ExpressionChain<FakeClass>.New(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
 
-            var p2 = ExpressionSelectorChain<FakeClass>.New(fakeClass => fakeClass.A);
+            var p2 = ExpressionChain<FakeClass>.New(fakeClass => fakeClass.A);
 
             Assert.Equal(p1Val, dictionary[p2]);
         }
@@ -60,12 +60,12 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingTwoDifferentPropertiesShouldFail()
         {
-            var dictionary = new Dictionary<IExpressionSelector, int>(new ExpressionSelectorEqualityComparer());
-            var p1 = ExpressionSelectorChain<FakeClass>.New(fc => fc.A);
+            var dictionary = new Dictionary<IExpression, int>(new ExpressionEqualityComparer());
+            var p1 = ExpressionChain<FakeClass>.New(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
 
-            var p2 = ExpressionSelectorChain<FakeClass2>.New(fc => fc.B);
+            var p2 = ExpressionChain<FakeClass2>.New(fc => fc.B);
 
             Assert.False(dictionary.ContainsKey(p2));
         }
@@ -73,12 +73,12 @@ namespace RDD.Domain.Tests
         [Fact]
         public void ComparingPropertiesWithTheSameNameFromTwoDifferentClassesShouldFail()
         {
-            var dictionary = new Dictionary<IExpressionSelector, int>(new ExpressionSelectorEqualityComparer());
-            var p1 = ExpressionSelectorChain<FakeClass>.New(fc => fc.A);
+            var dictionary = new Dictionary<IExpression, int>(new ExpressionEqualityComparer());
+            var p1 = ExpressionChain<FakeClass>.New(fc => fc.A);
             var p1Val = 42;
             dictionary.Add(p1, p1Val);
 
-            var p2 = ExpressionSelectorChain<FakeClass2>.New(fc => fc.A);
+            var p2 = ExpressionChain<FakeClass2>.New(fc => fc.A);
 
             Assert.False(dictionary.ContainsKey(p2));
         }
