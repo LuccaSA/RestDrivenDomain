@@ -141,16 +141,26 @@ namespace RDD.Domain.Helpers.Expressions.Utils
                     return new ConstantValue(true, constant.Value);
 
                 case MemberExpression me:
-                    var support = me.Expression == null ? null : TryCalculateConstant(me.Expression).Value;
-
-                    if (me.Member is FieldInfo fieldInfo)
+                    if (me.Expression == null)
                     {
-                        return new ConstantValue(true, fieldInfo.GetValue(support));
+                        if (me.Member is FieldInfo fieldInfo)
+                        {
+                            return new ConstantValue(true, fieldInfo.GetValue(null));
+                        }
+                        else if (me.Member is PropertyInfo propertyInfo)
+                        {
+                            return new ConstantValue(true, propertyInfo.GetValue(null));
+                        }
                     }
-
-                    if (me.Member is PropertyInfo propertyInfo)
+                    else
                     {
-                        return new ConstantValue(true, propertyInfo.GetValue(support));
+                        var parentValue = TryCalculateConstant(me.Expression);
+                        if (parentValue.IsDefined)
+                        {
+                            return new ConstantValue(true, me.Member is FieldInfo
+                                ? ((FieldInfo)me.Member).GetValue(parentValue.Value)
+                                : ((PropertyInfo)me.Member).GetValue(parentValue.Value));
+                        }
                     }
 
                     break;

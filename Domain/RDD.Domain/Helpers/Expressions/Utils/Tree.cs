@@ -27,18 +27,7 @@ namespace RDD.Domain.Helpers.Expressions.Utils
             }
         }
 
-        public void AddChild(Tree<T> child)
-        {
-            child.Parent = this;
-            _children.Add(child);
-        }
-
-        public void AddChildren(IEnumerable<Tree<T>> children)
-        {
-            foreach (var child in children)
-            {
-                AddChild(child);
-            }
-        }
+        public void AddChild(Tree<T> child) => _children.Add(child);
+        public void AddChildren(IEnumerable<Tree<T>> children) => _children.AddRange(children);
     }
 }
