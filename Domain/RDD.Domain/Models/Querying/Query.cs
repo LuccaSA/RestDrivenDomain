@@ -30,11 +30,14 @@ namespace RDD.Domain.Models.Querying
             Options = new Options();
             Page = Page.Default;
         }
+
         public Query(Expression<Func<TEntity, bool>> filter)
             : this()
         {
             Filter = new Filter<TEntity>(filter);
+            Page = Page.Unlimited;
         }
+
         public Query(Query<TEntity> source)
             : this()
         {
@@ -45,9 +48,11 @@ namespace RDD.Domain.Models.Querying
             Page = source.Page;
             Options = source.Options;
         }
+
         public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
             : this(source)
         {
+            Page = Page.Unlimited;
             Filter = new Filter<TEntity>(filter);
         }
     }

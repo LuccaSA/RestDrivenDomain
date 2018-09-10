@@ -22,7 +22,7 @@ namespace RDD.Infra.Storage
 
         public virtual Task<int> CountAsync()
         {
-            return CountAsync(new Query<TEntity>());
+            return CountAsync(new Query<TEntity> { Page = Page.Unlimited });
         }
         public virtual Task<int> CountAsync(Query<TEntity> query)
         {
