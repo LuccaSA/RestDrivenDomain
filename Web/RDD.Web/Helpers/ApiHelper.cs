@@ -8,7 +8,6 @@ using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace RDD.Web.Helpers
 {
@@ -30,8 +29,6 @@ namespace RDD.Web.Helpers
 
             return query;
         }
-
-        protected virtual ICollection<Expression<Func<TEntity, object>>> IgnoreList() => new HashSet<Expression<Func<TEntity, object>>>();
 
         public virtual ICandidate<TEntity, TKey> CreateCandidate()
         {
@@ -94,9 +91,6 @@ namespace RDD.Web.Helpers
         /// This allows to explicitly not take into account elements that are not supposed to become auto-generated query members
         /// </summary>
         /// <param name="filters"></param>
-        public void IgnoreFilters(params string[] filters)
-        {
-            _queryFactory.IgnoreFilters(filters);
-        }
+        public void IgnoreFilters(params string[] filters) => _queryFactory.IgnoreFilters(filters);
     }
 }
