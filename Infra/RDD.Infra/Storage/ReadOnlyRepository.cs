@@ -20,10 +20,7 @@ namespace RDD.Infra.Storage
             RightExpressionsHelper = rightExpressionsHelper;
         }
 
-        public virtual Task<int> CountAsync()
-        {
-            return CountAsync(new Query<TEntity> { Page = Page.Unlimited });
-        }
+        public virtual Task<int> CountAsync() => CountAsync(new Query<TEntity>());
         public virtual Task<int> CountAsync(Query<TEntity> query)
         {
             var entities = Set(query);
