@@ -21,7 +21,7 @@ namespace RDD.Web.Controllers
     }
 
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
-        where TAppController : class, IReadOnlyAppController<TEntity, TKey>
+        where TAppController : IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
