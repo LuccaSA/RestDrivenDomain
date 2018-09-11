@@ -16,7 +16,6 @@ namespace RDD.Domain.Models.Querying
         public Filter<TEntity> Filter { get; set; }
         public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
-        public Headers Headers { get; set; }
         public Options Options { get; set; }
 
         public Query()

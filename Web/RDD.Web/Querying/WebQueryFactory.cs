@@ -33,8 +33,7 @@ namespace RDD.Web.Querying
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             var options = new OptionsParser().Parse(parameters, fields);
             var page = new WebPageParser().Parse(parameters);
-            var headers = new HeadersParser().Parse(httpContextHelper.GetHeaders());
-
+            
             return new WebQuery<TEntity>
             {
                 Fields = fields,
@@ -42,7 +41,6 @@ namespace RDD.Web.Querying
                 OrderBys = orderBys,
                 Options = options,
                 Page = page,
-                Headers = headers,
             };
         }
     }
