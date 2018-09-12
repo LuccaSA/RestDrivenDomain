@@ -27,8 +27,6 @@ namespace RDD.Domain.Models
             return (await GetAsync(query)).Count > 0;
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>())).Items;
-
         public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
         {
             var count = 0;

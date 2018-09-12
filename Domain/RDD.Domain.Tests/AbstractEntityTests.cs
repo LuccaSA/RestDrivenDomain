@@ -1,5 +1,6 @@
 ﻿using RDD.Domain.Mocks;
 using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Infra.Storage;
@@ -34,9 +35,9 @@ namespace RDD.Domain.Tests
 
             var collection = new ConcreteClassThreeCollection(repo);
 
-            var result = await collection.GetAllAsync();
+            var result = await collection.GetAsync(new Query<ConcreteClassThree>());
 
-            Assert.Equal(2, result.Count());
+            Assert.Equal(2, result.Items.Count());
         }
 
         [Fact]
@@ -52,9 +53,9 @@ namespace RDD.Domain.Tests
 
             var collection = new AbstractClassCollection(repo);
 
-            var result = await collection.GetAllAsync();
+            var result = await collection.GetAsync(new Query<AbstractClass>());
 
-            Assert.Equal(3, result.Count());
+            Assert.Equal(3, result.Items.Count());
         }
     }
 }

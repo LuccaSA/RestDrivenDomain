@@ -1,12 +1,13 @@
 ﻿using RDD.Domain.Exceptions;
-using System.Net;
 
 namespace RDD.Domain.Models.Querying
 {
     public class Page
     {
         protected const int MAX_LIMIT = 1000;
+
         public static Page Default => new Page(0, 10);
+        public static Page Max => new Page(0, MAX_LIMIT);
 
         public int Offset { get; }
         public int Limit { get; }
