@@ -44,6 +44,7 @@ namespace RDD.Web.Controllers
             {
                 return ProtectedGetAsync();
             }
+
             return Task.FromResult((IActionResult)NotFound());
         }
 
@@ -53,7 +54,8 @@ namespace RDD.Web.Controllers
             {
                 return ProtectedGetAsync(id);
             }
-            return Task.FromResult((IActionResult)NotFound());
+
+            return Task.FromResult((IActionResult)NotFound(id));
         }
 
         protected virtual async Task<IActionResult> ProtectedGetAsync()
@@ -71,7 +73,14 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
+            if (entity == null)
+            {
+                return NotFound(id);
+            }
+
             return Ok(RDDSerializer.Serialize(entity, query));
         }
+
+        protected NotFoundObjectResult NotFound(TKey id) => NotFound(new { Id = id, error = $"Resource {id} not found" });
     }
 }

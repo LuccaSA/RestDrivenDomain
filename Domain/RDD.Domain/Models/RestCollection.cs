@@ -25,17 +25,12 @@ namespace RDD.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
             Patcher.Patch(entity, candidate.JsonValue);
 
-            return CreateAsync(entity, query);
-        }
-
-        public virtual async Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
-        {
             ForgeEntity(entity);
 
             ValidateEntity(entity, null);
@@ -45,13 +40,37 @@ namespace RDD.Domain.Models
             return entity;
         }
 
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        {
+            var result = new List<TEntity>();
+
+            foreach (var candidate in candidates)
+            {
+                TEntity entity = Instanciator.InstanciateNew(candidate);
+
+                Patcher.Patch(entity, candidate.JsonValue);
+
+                ForgeEntity(entity);
+
+                ValidateEntity(entity, null);
+
+                result.Add(entity);
+            }
+
+            Repository.AddRange(result);
+            return result;
+        }
+
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
 
             TEntity entity = await GetByIdAsync(id, query);
-
+            if (entity == null)
+            {
+                return null;
+            }
             return await UpdateAsync(entity, candidate, query);
         }
 
@@ -79,27 +98,19 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdAsync(TKey id)
         {
-            TEntity entity = await GetByIdAsync(id, new Query<TEntity>
+            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
+            if (entity != null)
             {
-                Verb = HttpVerbs.Delete
-            });
-
-            Repository.Remove(entity);
+                Repository.Remove(entity);
+            }
         }
 
-        public virtual async Task DeleteByIdsAsync(IList<TKey> ids)
+        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id))
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
+            
+            foreach (var entity in (await GetAsync(expQuery)).Items)
             {
-                Verb = HttpVerbs.Delete
-            };
-
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
-
-            foreach (TKey id in ids)
-            {
-                var entity = entities[id];
-
                 Repository.Remove(entity);
             }
         }

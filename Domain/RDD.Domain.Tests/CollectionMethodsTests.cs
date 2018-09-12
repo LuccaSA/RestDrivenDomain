@@ -10,9 +10,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
-using RDD.Web.Helpers;
 using RDD.Web.Models;
-using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,41 +21,19 @@ namespace RDD.Domain.Tests
     public class CollectionMethodsTests : SingleContextTests
     {
         [Fact]
-        public async Task GetById_SHOULD_throw_exception_WHEN_id_does_not_exist()
+        public async Task GetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var user = new User { Id = 1 };
-                var repo = new OpenRepository<User>(storage, _rightsService);
-                var users = new UsersCollection(repo, _patcherProvider, Instanciator);
-
-                await users.CreateAsync(user);
-
-                await storage.SaveChangesAsync();
-
-                await Assert.ThrowsAsync<NotFoundException>(() => users.GetByIdAsync(0));
-            }
-        }
-
-        [Fact]
-        public async Task TryGetById_SHOULD_not_throw_exception_and_return_null_WHEN_id_does_not_exist()
-        {
-            using (var storage = _newStorage(Guid.NewGuid().ToString()))
-            {
-                var user = new User { Id = 2 };
                 var repo = new Repository<User>(storage, _rightsService);
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
 
-                await users.CreateAsync(user);
-
-                await storage.SaveChangesAsync();
-
-                Assert.Null(await users.TryGetByIdAsync(0));
+                Assert.Null(await users.GetByIdAsync(0, new Query<User>()));
             }
         }
 
         [Fact]
-        public async Task Put_SHOULD_throw_notfound_exception_WHEN_unexisting_entity_()
+        public async Task Put_SHOULD_NOT_throw_notfound_exception_WHEN_unexisting_entity_()
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
@@ -76,7 +52,7 @@ namespace RDD.Domain.Tests
 
                 await app.CreateAsync(Candidate<User, int>.Parse(@"{ ""id"": 3 }"), new Query<User>());
 
-                await Assert.ThrowsAsync<NotFoundException>(() => app.UpdateByIdAsync(0, Candidate<User, int>.Parse(@"{ ""name"": ""new name"" }"), new Query<User>()));
+                await app.UpdateByIdAsync(0, Candidate<User, int>.Parse(@"{ ""name"": ""new name"" }"), new Query<User>());
             }
         }
 
@@ -132,9 +108,8 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
-
-                await users.CreateAsync(user, query);
-
+                
+                storage.Add(user);
                 await storage.SaveChangesAsync();
 
                 var any = await users.AnyAsync(query);
@@ -153,9 +128,8 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
-
-                await users.CreateAsync(user, query);
-
+                
+                storage.Add(user);
                 await storage.SaveChangesAsync();
 
                 await users.UpdateByIdAsync(2, Candidate<User, int>.Parse(JsonConvert.SerializeObject(user)), query);
@@ -175,8 +149,7 @@ namespace RDD.Domain.Tests
                 var query = new Query<User>();
                 query.Options.CheckRights = false;
 
-                await users.CreateAsync(user, query);
-
+                storage.Add(user);
                 await storage.SaveChangesAsync();
 
                 query = new Query<User>(query, u => u.TwitterUri == new Uri("https://twitter.com"));
