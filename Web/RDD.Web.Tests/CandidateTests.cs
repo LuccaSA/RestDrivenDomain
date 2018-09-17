@@ -1,5 +1,8 @@
-﻿using RDD.Web.Models;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Mocks;
+using RDD.Web.Models;
 using RDD.Web.Tests.Models;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -58,5 +61,29 @@ namespace RDD.Web.Tests
             Assert.False(candidate.HasProperty(d => d.Name));
             Assert.False(candidate.HasProperty(d => d.Users.Select(u => u.Name)));
         }
+
+        [Fact]
+        public void Candidate_should_fail_without_config()
+        {
+            JsonConvert.DefaultSettings = null;
+            Assert.Throws<JsonSerializationException>(GetCandidate);
+        }
+
+        [Fact]
+        public void Candidate_should_work_with_config()
+        {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>
+                {
+                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
+                }
+            };
+
+            var candidate = GetCandidate();
+            Assert.True(candidate.HasProperty(d => d.Id));
+        }
+
+        private static Candidate<Hierarchy, int> GetCandidate() => Candidate<Hierarchy, int>.Parse(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
     }
 }

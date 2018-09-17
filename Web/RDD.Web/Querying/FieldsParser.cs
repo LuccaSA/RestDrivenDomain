@@ -1,34 +1,39 @@
 ﻿using RDD.Domain.Helpers.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RDD.Web.Querying
 {
-    public class FieldsParser<T>
+    public class FieldsParser
     {
-        public IExpressionTree<T> ParseFields(Dictionary<string, string> parameters, bool isCollectionCall)
+        public IExpressionTree<TClass> ParseFields<TClass>(Dictionary<string, string> parameters, bool isCollectionCall)
         {
             if (parameters.ContainsKey(Reserved.fields.ToString()))
             {
-                return ParseFields(parameters[Reserved.fields.ToString()]);
+                return ParseFields<TClass>(parameters[Reserved.fields.ToString()]);
             }
             else if (!isCollectionCall)
             {
-                return ParseAllProperties();
+                return ParseAllProperties<TClass>();
             }
 
-            return new ExpressionTree<T>();
+            return new ExpressionTree<TClass>();
         }
 
-        private IExpressionTree<T> ParseAllProperties()
+        public IExpressionTree ParseAllProperties(Type classType)
         {
-            var fields = string.Join(",", typeof(T).GetProperties().Select(p => p.Name));
-            return ParseFields(fields);
+            var fields = string.Join(",", classType.GetProperties().Select(p => p.Name));
+            return ParseFields(classType, fields);
         }
 
-        private IExpressionTree<T> ParseFields(string fields)
+        public IExpressionTree<TClass> ParseAllProperties<TClass>()
         {
-            return new ExpressionParser().ParseTree<T>(fields);
+            var fields = string.Join(",", typeof(TClass).GetProperties().Select(p => p.Name));
+            return ParseFields<TClass>(fields);
         }
+
+        public IExpressionTree<TClass> ParseFields<TClass>(string fields) => new ExpressionParser().ParseTree<TClass>(fields);
+        public IExpressionTree ParseFields(Type classType, string fields) => new ExpressionParser().ParseTree(classType, fields);
     }
 }

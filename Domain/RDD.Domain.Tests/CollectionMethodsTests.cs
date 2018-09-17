@@ -1,9 +1,11 @@
 ﻿using Moq;
 using Newtonsoft.Json;
+using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Mocks;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
+using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
@@ -157,5 +159,51 @@ namespace RDD.Domain.Tests
                 Assert.Equal(1, results.Count);
             }
         }
+
+        [Fact]
+        public void Collection_on_hierarchy_fails()
+        {
+            Assert.ThrowsAsync<BadRequestException>(async () =>
+           {
+               using (var storage = _newStorage(Guid.NewGuid().ToString()))
+               {
+                   var repo = new Repository<Hierarchy>(storage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
+                   var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
+                   var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_patcherProvider), instanciator);
+
+                   JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                   {
+                       Converters = new List<JsonConverter>
+                   {
+                        new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
+                   }
+                   };
+                   var candidate = Candidate<Hierarchy, int>.Parse(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
+                   await collection.CreateAsync(candidate);
+               }
+           });
+        }
+
+        [Fact]
+        public async Task BaseClass_Collection_on_hierarchy_works()
+        {
+            using (var storage = _newStorage(Guid.NewGuid().ToString()))
+            {
+                var repo = new Repository<Hierarchy>(storage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
+                var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
+                var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_patcherProvider, new InheritanceConfiguration()), instanciator);
+
+                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                {
+                    Converters = new List<JsonConverter>
+                   {
+                        new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
+                   }
+                };
+                var candidate = Candidate<Hierarchy, int>.Parse(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
+                await collection.CreateAsync(candidate);
+            }
+        }
+
     }
 }

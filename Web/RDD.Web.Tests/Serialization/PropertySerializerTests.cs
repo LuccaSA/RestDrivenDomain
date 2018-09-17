@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
@@ -24,7 +25,7 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
 
             var tree = ExpressionTree<User>.New(u => u.Url);
             var json = serializer.ToJson(entity, tree) as JsonObject;
@@ -41,7 +42,7 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new PrefixUrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
 
             var tree = ExpressionTree<User>.New(u => u.Url);
             var json = serializer.ToJson(entity, tree) as JsonObject;
@@ -75,7 +76,7 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
 
             var tree = ExpressionTree<User>.New(u => u.MyValueObject);
             var json = serializer.ToJson(entity, tree) as JsonObject;
@@ -100,8 +101,8 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
-            
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+
             var tree = ExpressionTree<User>.New(u => u.Department.Id, (User u) => u.Department.Name);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
@@ -129,7 +130,7 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
 
             var tree = ExpressionTree<User>.New(u => u.Department);
             var json = serializer.ToJson(entity, tree) as JsonObject;
@@ -163,8 +164,8 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
-            
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+
             var tree = ExpressionTree<Department>.New(u => u.Users);
             var json = serializer.ToJson(entity, tree) as JsonObject;
 
@@ -198,7 +199,7 @@ namespace RDD.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
             var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider);
+            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
 
             var tree = ExpressionTree<Department>.New(u => u.Users.Select(g => g.Name));
             var json = serializer.ToJson(entity, tree) as JsonObject;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Mocks;
 
 namespace RDD.Domain.Tests.Models
 {
@@ -27,6 +28,9 @@ namespace RDD.Domain.Tests.Models
             modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Url);
             modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Mail);
             modelBuilder.Entity<UserWithParameters>().Ignore(u => u.TwitterUri);
+
+            modelBuilder.Entity<Hierarchy>().Ignore(e => e.Type);
+            modelBuilder.Entity<Super>();
         }
     }
 }

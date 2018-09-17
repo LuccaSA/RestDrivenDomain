@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
@@ -11,10 +12,13 @@ using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Infra;
 using RDD.Infra.Storage;
+using RDD.Web.Models;
 using RDD.Web.Serialization;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace RDD.Web.Helpers
@@ -47,6 +51,35 @@ namespace RDD.Web.Helpers
             return services;
         }
 
+        public static IServiceCollection AddRddInheritanceConfiguration<TConfig, TEntity, TKey>(this IServiceCollection services, TConfig config)
+            where TConfig : class, IInheritanceConfiguration<TEntity>
+            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TKey : IEquatable<TKey>
+        {
+            services.AddSingleton<IInheritanceConfiguration>(s => config);
+            services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
+            services.AddScoped<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
+            services.AddScoped<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
+
+            if (JsonConvert.DefaultSettings == null)
+            {
+                JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Converters = new List<JsonConverter> { new BaseClassJsonConverter<TEntity>(config) } };
+            }
+            else
+            {
+                var initSettings = JsonConvert.DefaultSettings;
+                JsonConvert.DefaultSettings = () =>
+                {
+                    var result = initSettings();
+                    result.Converters = result.Converters ?? new List<JsonConverter>();
+                    result.Converters.Add(new BaseClassJsonConverter<TEntity>(config));
+                    return result;
+                };
+            }
+
+            return services;
+        }
+
         public static IServiceCollection AddRDDRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
@@ -66,6 +99,7 @@ namespace RDD.Web.Helpers
             services.AddMemoryCache();
             services.TryAddScoped<IReflectionProvider, ReflectionProvider>();
 
+            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IUrlProvider, UrlProvider>();
             services.TryAddScoped<ISerializerProvider, SerializerProvider>();
             services.TryAddScoped<IRDDSerializer, RDDSerializer>();
@@ -93,5 +127,4 @@ namespace RDD.Web.Helpers
             return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
-
 }
