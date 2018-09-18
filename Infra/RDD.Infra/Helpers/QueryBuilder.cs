@@ -1,16 +1,11 @@
-﻿using LinqKit;
-using NExtends.Expressions;
-using NExtends.Primitives.Types;
+﻿using NExtends.Expressions;
 using RDD.Domain;
-using RDD.Domain.Helpers;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
 using RDD.Infra.Exceptions;
 using RDD.Infra.Web.Models;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -107,54 +102,55 @@ namespace RDD.Infra.Helpers
 
         private Expression<Func<TEntity, bool>> BuildBinaryExpression(WebFilterOperand binaryOperator, IExpression field, object value)
         {
-            var expression = BuildBinaryExpressionRecursive(binaryOperator, field, value, out var property);
-
-            // Limitation à certains types
-            if (binaryOperator == WebFilterOperand.Until || binaryOperator == WebFilterOperand.Since)
-            {
-                var propertyReturnType = property.GetGetMethod().ReturnType;
-                if (propertyReturnType.IsGenericType)
-                {
-                    propertyReturnType = propertyReturnType.GenericTypeArguments[0];
-                }
-                if (propertyReturnType != typeof(DateTime))
-                {
-                    throw new QueryBuilderException($"Operator '{binaryOperator}' only allows date comparison");
-                }
-            }
-
-            var parameter = field.ToLambdaExpression().Parameters[0];
+            var fieldLambda = field.ToLambdaExpression();
+            var property = (fieldLambda.Body as MemberExpression)?.Member as PropertyInfo;
+            var expression = BuildBinaryExpression(binaryOperator, fieldLambda.Body, value, property);
+            
+            var parameter = fieldLambda.Parameters[0];
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }
 
-        private Expression BuildBinaryExpressionRecursive(WebFilterOperand binaryOperator, IExpression field, object value, out PropertyInfo property)
+        private Expression BuildBinaryExpression(WebFilterOperand binaryOperator, Expression expressionLeft, object value, PropertyInfo property)
         {
-            var expressionLeft = field.ToLambdaExpression().Body;
-            property = (expressionLeft as MemberExpression)?.Member as PropertyInfo;
-
-            if (binaryOperator == WebFilterOperand.Between)
-            {
-                var period = (Period)value;
-                var expressionRightSince = (value == null) ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
-                var expressionRightUntil = (value == null) ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
-                var sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
-                var untilExpression = Expression.LessThanOrEqual(expressionLeft, expressionRightUntil);
-                return Expression.AndAlso(sinceExpression, untilExpression);
-            }
-
-            if (binaryOperator == WebFilterOperand.Anniversary)
-            {
-                var date = (DateTime?)value;
-                var day = date.HasValue ? Expression.Constant(date.Value.Day, typeof(int)) : Expression.Constant(null);
-                var month = date.HasValue ? Expression.Constant(date.Value.Month, typeof(int)) : Expression.Constant(null);
-                var dayExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(day, Expression.Property(Expression.Property(expressionLeft, "Value"), "Day")) : Expression.Equal(day, Expression.Property(expressionLeft, "Day"));
-                var monthExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(month, Expression.Property(Expression.Property(expressionLeft, "Value"), "Month")) : Expression.Equal(month, Expression.Property(expressionLeft, "Month"));
-                return Expression.AndAlso(dayExpression, monthExpression);
-            }
-
             ConstantExpression expressionRight;
             switch (binaryOperator)
             {
+                case WebFilterOperand.Until:
+                case WebFilterOperand.Since:
+                    var propertyReturnType = property.GetGetMethod().ReturnType;
+                    if (propertyReturnType.IsGenericType)
+                    {
+                        propertyReturnType = propertyReturnType.GenericTypeArguments[0];
+                    }
+                    if (propertyReturnType != typeof(DateTime))
+                    {
+                        throw new QueryBuilderException($"Operator '{binaryOperator}' only allows date comparison");
+                    }
+                    expressionRight = Expression.Constant(value, expressionLeft.Type);
+                    break;
+                case WebFilterOperand.Between:
+                    if (value != null && property == null)
+                    {
+                        throw new ArgumentNullException(nameof(property));
+                    }
+                    var period = (Period)value;
+                    var expressionRightSince = (value == null) ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
+                    var expressionRightUntil = (value == null) ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
+                    var sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
+                    var untilExpression = Expression.LessThanOrEqual(expressionLeft, expressionRightUntil);
+                    return Expression.AndAlso(sinceExpression, untilExpression);
+
+                case WebFilterOperand.Anniversary:
+                    if (property == null)
+                    {
+                        throw new ArgumentNullException(nameof(property));
+                    }
+                    var date = (DateTime?)value;
+                    var day = date.HasValue ? Expression.Constant(date.Value.Day, typeof(int)) : Expression.Constant(null);
+                    var month = date.HasValue ? Expression.Constant(date.Value.Month, typeof(int)) : Expression.Constant(null);
+                    var dayExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(day, Expression.Property(Expression.Property(expressionLeft, "Value"), "Day")) : Expression.Equal(day, Expression.Property(expressionLeft, "Day"));
+                    var monthExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(month, Expression.Property(Expression.Property(expressionLeft, "Value"), "Month")) : Expression.Equal(month, Expression.Property(expressionLeft, "Month"));
+                    return Expression.AndAlso(dayExpression, monthExpression);
                 case WebFilterOperand.Equals:
                     expressionRight = Expression.Constant(value);
                     break;
