@@ -1,4 +1,5 @@
-﻿using RDD.Domain.Helpers.Expressions.Utils;
+﻿using RDD.Domain.Helpers.Expressions.Equality;
+using RDD.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -27,7 +28,7 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         public virtual bool Equals(IExpression other)
-            => other != null && Utils.ExpressionEqualityComparer.Eq(other.ToLambdaExpression(), ToLambdaExpression());
+            => other != null && new ExpressionEqualityComparer().Equals(other.ToLambdaExpression(), ToLambdaExpression());
 
         public override string ToString() => Name;
     }

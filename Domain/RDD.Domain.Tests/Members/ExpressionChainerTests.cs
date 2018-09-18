@@ -1,4 +1,5 @@
-﻿using RDD.Domain.Helpers.Expressions.Utils;
+﻿using RDD.Domain.Helpers.Expressions.Equality;
+using RDD.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<User, bool>> expected = a => a.Id == 2;
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
 
         [Fact]
@@ -48,7 +49,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<Department, bool>> expected = a => a.Head.Id == 2;
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
 
         [Fact]
@@ -59,7 +60,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<User, bool>> expected = a => a.Manager.HabilitedRoles.Any(r => r.HasContextualLegalEntityAssociation);
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<User, IEnumerable<int>>> expected = u => u.HabilitedRoles.Select(m => m.Id);
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<User, IEnumerable<User>>> expected = u => u.Collaborators.Select(m => m.Manager);
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
 
         [Fact]
@@ -92,7 +93,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<User, IEnumerable<User>>> expected = u => u.Manager.Collaborators.Select(c => c);
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
 
         [Fact]
@@ -103,7 +104,7 @@ namespace RDD.Domain.Tests.Members
             var result = ExpressionChainer.Chain(lambda1, lambda2);
             Expression<Func<Department, IEnumerable<User>>> expected = u => u.EmployeeOfTheMonth[1].Collaborators.Select(c => c);
 
-            Assert.True(ExpressionEqualityComparer.Eq(expected, result));
+            Assert.True(new ExpressionEqualityComparer().Equals(expected, result));
         }
     }
 }

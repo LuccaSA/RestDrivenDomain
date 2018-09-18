@@ -55,7 +55,7 @@ namespace RDD.Domain.Helpers.Expressions
         private IEnumerable<IExpressionTree> ChainsToTree(IEnumerable<IExpressionChain> chains)
             => chains?
                 .Where(c => c != null)
-                .GroupBy(c => c.Current, c => c.Next, new ExpressionEqualityComparer())
+                .GroupBy(c => c.Current, c => c.Next, new RddIExpressionEqualityComparer())
                 .Select(g => new ExpressionTree { Node = g.Key, Children = ChainsToTree(g).ToList() });
 
         public IExpressionTree ParseTree(Type classType, string input)

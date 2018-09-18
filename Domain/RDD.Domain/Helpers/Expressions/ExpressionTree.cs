@@ -49,7 +49,7 @@ namespace RDD.Domain.Helpers.Expressions
         }
 
         public virtual bool Equals(IExpressionTree other)
-            => other != null && new HashSet<IExpressionChain>(this, new ExpressionEqualityComparer()).SetEquals(other);
+            => other != null && new HashSet<IExpressionChain>(this, new RddIExpressionEqualityComparer()).SetEquals(other);
 
         public bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property)
             => Contains(new ExpressionParser().ParseChain(property));

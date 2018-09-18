@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Helpers.Expressions.Utils;
+﻿using RDD.Domain.Helpers.Expressions.Equality;
+using RDD.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Xunit;
 
 namespace RDD.Domain.Tests.Members
@@ -37,7 +37,7 @@ namespace RDD.Domain.Tests.Members
 
             Assert.Equal(nameof(Department.Head), chain.Current.Name);
 
-            Assert.True(ExpressionEqualityComparer.Eq(lambda, chain.ToLambdaExpression()));
+            Assert.True(new ExpressionEqualityComparer().Equals(lambda, chain.ToLambdaExpression()));
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace RDD.Domain.Tests.Members
             Assert.Equal(nameof(User.Collaborators), chain.Next.Current.Name);
             Assert.Equal(nameof(User.Id), chain.Next.Next.Current.Name);
 
-            Assert.True(ExpressionEqualityComparer.Eq(lambda, chain.ToLambdaExpression()));
+            Assert.True(new ExpressionEqualityComparer().Equals(lambda, chain.ToLambdaExpression()));
         }
     }
 }
