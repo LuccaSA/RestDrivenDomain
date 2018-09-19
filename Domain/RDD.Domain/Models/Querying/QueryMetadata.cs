@@ -14,7 +14,7 @@ namespace RDD.Domain.Models.Querying
 
         public int TotalCount { get; set; }
 
-        internal void StartWatch()
+        public void StartWatch()
         {
             _stopwatch.Start();
         }

@@ -8,7 +8,7 @@ namespace RDD.Web.Tests
 {
     public static class QueryFactoryHelper
     {
-        public static QueryFactory NewQueryFactory(HttpContext httpContext = null, RddOptions rddOptions = null)
+        public static QueryFactory NewQueryFactory(HttpContext httpContext = null, PagingOptions rddOptions = null)
         {
             return new QueryFactory
             (
@@ -17,7 +17,7 @@ namespace RDD.Web.Tests
             );
         }
 
-        public static QueryParsers NewQueryParsers(HttpContext httpContext = null, RddOptions rddOptions = null)
+        public static QueryParsers NewQueryParsers(HttpContext httpContext = null, PagingOptions rddOptions = null)
         {
             var httpContextAccessor = new HttpContextAccessor()
             {
@@ -26,7 +26,7 @@ namespace RDD.Web.Tests
 
             return new QueryParsers(
                 new WebFilterParser(new QueryTokens(), httpContextAccessor),
-                new PagingParser(httpContextAccessor, Options.Create(rddOptions ?? new RddOptions())),
+                new PagingParser(httpContextAccessor, Options.Create(rddOptions ?? new PagingOptions())),
                 new HeaderParser(httpContextAccessor),
                 new OrberByParser(httpContextAccessor));
         }

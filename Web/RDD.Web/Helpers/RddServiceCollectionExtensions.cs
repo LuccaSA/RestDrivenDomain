@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Application;
@@ -13,16 +12,11 @@ using RDD.Infra;
 using RDD.Infra.Storage;
 using RDD.Web.Middleware;
 using RDD.Web.Serialization;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
-using System.Globalization;
 using System;
 using System.Buffers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Middleware;
 using RDD.Web.Querying;
 
 namespace RDD.Web.Helpers
@@ -52,11 +46,11 @@ namespace RDD.Web.Helpers
 
             services.TryAddScoped(typeof(IRightExpressionsHelper<>), typeof(DefaultRightExpressionsHelper<>));
 
-            services.TryAddSingleton<IWebFilterParser,WebFilterParser> ();
-            services.TryAddSingleton<IPagingParser, PagingParser> ();
-            services.TryAddSingleton<IHeaderParser, HeaderParser> ();
-            services.TryAddSingleton<IOrberByParser, OrberByParser> ();
-            services.TryAddSingleton<QueryParsers> ();
+            services.TryAddSingleton<IWebFilterParser, WebFilterParser>();
+            services.TryAddSingleton<IPagingParser, PagingParser>();
+            services.TryAddSingleton<IHeaderParser, HeaderParser>();
+            services.TryAddSingleton<IOrberByParser, OrberByParser>();
+            services.TryAddSingleton<QueryParsers>();
             services.TryAddSingleton<QueryTokens>();
 
             services.TryAddScoped<IQueryFactory, QueryFactory>();
@@ -64,7 +58,7 @@ namespace RDD.Web.Helpers
 
             services.TryAddSingleton(typeof(ICandidateFactory<,>), typeof(CandidateFactory<,>));
 
-            services.AddOptions<RddOptions>();
+            services.AddOptions<PagingOptions>();
 
             return services;
         }
@@ -134,5 +128,4 @@ namespace RDD.Web.Helpers
             options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
         }
     }
-
 }

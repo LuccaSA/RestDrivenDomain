@@ -16,8 +16,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ICandidateFactory<TEntity, TKey> helper, IQueryFactory queryFactory)
-            : base(appController, helper, queryFactory)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ICandidateFactory<TEntity, TKey> candidateFactory, IQueryFactory queryFactory)
+            : base(appController, candidateFactory, queryFactory)
         {
         }
     }
@@ -29,13 +29,13 @@ namespace RDD.Web.Controllers
         where TKey : IEquatable<TKey>
     {
         protected TAppController AppController { get; }
-        protected ICandidateFactory<TEntity, TKey> Helper { get; }
+        protected ICandidateFactory<TEntity, TKey> CandidateFactory { get; }
         protected IQueryFactory QueryFactory { get; }
 
-        protected ReadOnlyWebController(TAppController appController, ICandidateFactory<TEntity, TKey> helper, IQueryFactory queryFactory)
+        protected ReadOnlyWebController(TAppController appController, ICandidateFactory<TEntity, TKey> candidateFactory, IQueryFactory queryFactory)
         {
             AppController = appController;
-            Helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            CandidateFactory = candidateFactory ?? throw new ArgumentNullException(nameof(candidateFactory));
             QueryFactory = queryFactory;
         }
 

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq.Expressions;
 using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
 
-namespace RDD.Web.Helpers
+namespace RDD.Domain.Rights
 {
     /// <summary>
     /// Default right helper : everything is allowed.

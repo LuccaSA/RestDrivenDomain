@@ -4,7 +4,7 @@ namespace RDD.Domain.Models.Querying
 {
     public class QueryPaging
     {
-        public QueryPaging(RddOptions options)
+        public QueryPaging(PagingOptions options)
         {
             _itemPerPage = options?.DefaultItemsPerPage ?? 100;
             _maximumItemsPerPage = options?.MaximumItemsPerPage ?? 1000;

@@ -12,8 +12,8 @@ namespace RDD.Web.Querying
     public class PagingParser : IPagingParser
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IOptions<RddOptions> _rddOptions;
-        public PagingParser(IHttpContextAccessor httpContextAccessor, IOptions<RddOptions> rddOptions)
+        private readonly IOptions<PagingOptions> _rddOptions;
+        public PagingParser(IHttpContextAccessor httpContextAccessor, IOptions<PagingOptions> rddOptions)
         {
             _httpContextAccessor = httpContextAccessor;
             this._rddOptions = rddOptions;

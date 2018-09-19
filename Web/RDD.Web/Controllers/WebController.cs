@@ -73,7 +73,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<ActionResult<TEntity>> ProtectedPostAsync()
         {
             Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Post);
-            ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
+            ICandidate<TEntity, TKey> candidate = CandidateFactory.CreateCandidate();
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
@@ -83,7 +83,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<ActionResult<TEntity>> ProtectedPutAsync(TKey id)
         {
             Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Put);
-            ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
+            ICandidate<TEntity, TKey> candidate = CandidateFactory.CreateCandidate();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
             if (entity == null)
@@ -96,7 +96,7 @@ namespace RDD.Web.Controllers
         protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedPutAsync()
         {
             Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Put);
-            IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
+            IEnumerable<ICandidate<TEntity, TKey>> candidates = CandidateFactory.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))
             {
@@ -119,8 +119,7 @@ namespace RDD.Web.Controllers
 
         protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
-            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Delete);
-            IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
+            IEnumerable<ICandidate<TEntity, TKey>> candidates = CandidateFactory.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))
             {
