@@ -3,12 +3,10 @@ using RDD.Domain;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Infra.Exceptions;
-using RDD.Infra.Web.Models;
 using System;
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace RDD.Infra.Helpers
 {
@@ -24,7 +22,7 @@ namespace RDD.Infra.Helpers
                 throw new QueryBuilderException(string.Empty, new ArgumentOutOfRangeException(nameof(values), $"OrFactory method invoked with {values.Count} values. Must be less than {EF_EXPRESSION_TREE_MAX_DEPTH} to be allowed."));
             }
 
-            return values.OfType<TProp>().Select(val => filter(val)).OrAggregation();
+            return values.Cast<TProp>().Select(filter).OrAggregation();
         }
 
         public Expression<Func<TEntity, bool>> AndFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
@@ -33,163 +31,144 @@ namespace RDD.Infra.Helpers
             {
                 throw new QueryBuilderException(string.Empty, new ArgumentOutOfRangeException(nameof(values), $"AndFactory method invoked with {values.Count} values. Must be less than {EF_EXPRESSION_TREE_MAX_DEPTH} to be allowed."));
             }
-            return values.OfType<TProp>().Select(val => filter(val)).AndAggregation();
-        }
-
-        public virtual Expression<Func<TEntity, bool>> Equals(IExpression field, IList values)
-        {
-            return BuildBinaryExpression(WebFilterOperand.Equals, field, values);
+            return values.Cast<TProp>().Select(filter).AndAggregation();
         }
 
         public virtual Expression<Func<TEntity, bool>> Equals(TKey key) => t => t.Id.Equals(key);
 
-        public virtual Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values)
+        public Expression<Func<TEntity, bool>> Equals(IExpression field, IList values) => BuildBinaryExpression(Contains, field, values);
+        protected virtual Expression Contains(Expression leftExpression, IList values)
         {
-            return AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.NotEqual, field, value), values);
+            return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, Expression.Constant(values), leftExpression);
         }
 
-        public Expression<Func<TEntity, bool>> Until(IExpression field, IList values) => OrFactory<object>(value => Until(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Until(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Until, field, value);
-
-        public Expression<Func<TEntity, bool>> Since(IExpression field, IList values) => OrFactory<object>(value => Since(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Since(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Since, field, value);
-
-        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IList values) => OrFactory<object>(value => Anniversary(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Anniversary(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Anniversary, field, value);
-
-        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IList values) => OrFactory<object>(value => GreaterThan(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> GreaterThan(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.GreaterThan, field, value);
-
-        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => GreaterThanOrEqual(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.GreaterThanOrEqual, field, value);
-
-        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IList values) => OrFactory<object>(value => LessThan(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> LessThan(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.LessThan, field, value);
-
-        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => LessThanOrEqual(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.LessThanOrEqual, field, value);
-
-        public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<object>(value => Between(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Between(IExpression field, object value) => BuildBinaryExpression(WebFilterOperand.Between, field, value);
-
-        public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => Starts(field, value), values);
-        protected virtual Expression<Func<TEntity, bool>> Starts(IExpression field, string value)
+        public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values) => BuildBinaryExpression(NotEqual, field, values);
+        protected virtual Expression NotEqual(Expression leftExpression, IList values)
         {
-            var lambda = field.ToLambdaExpression();
-            var parameter = lambda.Parameters[0];
-            var comparisonMethod = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
-            var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
-
-            var startsWithExpression = Expression.Call(Expression.Call(lambda.Body, toLowerMethod), comparisonMethod, Expression.Constant(value.ToLower(), typeof(string)));
-
-            return Expression.Lambda<Func<TEntity, bool>>(startsWithExpression, parameter);
+            return Expression.Not(Contains(leftExpression, values));
         }
 
-        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildBinaryExpression(WebFilterOperand.ContainsAll, field, value), values);
-
-        public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => Like(field, value.ToString()), values);
-        protected virtual Expression<Func<TEntity, bool>> Like(IExpression field, object value)
+        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildBinaryExpression(Equal, field, value), values);
+        protected virtual Expression Equal(Expression leftExpression, object value)
         {
-            var lambda = field.ToLambdaExpression();
-            var parameter = lambda.Parameters[0];
-            var comparisonMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
-            var toLowerMethod = typeof(string).GetMethod("ToLower", new Type[] { });
-            var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
-
-            var containsExpression = Expression.Call(Expression.Call(Expression.Call(lambda.Body, toStringMethod), toLowerMethod), comparisonMethod, Expression.Constant(value.ToString().ToLower(), typeof(string)));
-            return Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
+            return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
         }
 
-        private Expression<Func<TEntity, bool>> BuildBinaryExpression(WebFilterOperand binaryOperator, IExpression field, object value)
+        public Expression<Func<TEntity, bool>> Since(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(GreaterThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(GreaterThanOrEqual, field, value), values);
+        protected virtual Expression GreaterThanOrEqual(Expression leftExpression, object value)
+        {
+            if (value == null)
+            {
+                return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
+            }
+            else
+            {
+                return Expression.GreaterThanOrEqual(leftExpression, Expression.Constant(value, leftExpression.Type));
+            }
+        }
+
+        public Expression<Func<TEntity, bool>> Until(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(LessThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(LessThanOrEqual, field, value), values);
+        protected virtual Expression LessThanOrEqual(Expression leftExpression, object value)
+        {
+            if (value == null)
+            {
+                return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
+            }
+            else
+            {
+                return Expression.LessThanOrEqual(leftExpression, Expression.Constant(value, leftExpression.Type));
+            }
+        }
+
+        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(GreaterThan, field, value), values);
+        protected virtual Expression GreaterThan(Expression leftExpression, object value)
+        {
+            return Expression.GreaterThan(leftExpression, Expression.Constant(value, leftExpression.Type));
+        }
+
+        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(LessThan, field, value), values);
+        protected virtual Expression LessThan(Expression leftExpression, object value)
+        {
+            return Expression.LessThan(leftExpression, Expression.Constant(value, leftExpression.Type));
+        }
+
+        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IList values) => OrFactory<DateTime?>(value => BuildBinaryExpression(Anniversary, field, value), values);
+        protected virtual Expression Anniversary(Expression leftExpression, DateTime? value)
+        {
+            if (leftExpression.Type == typeof(DateTime?))
+            {
+                if (!value.HasValue)
+                {
+                    return Expression.Equal(leftExpression, Expression.Constant(null));
+                }
+                else
+                {
+                    var day = Expression.Constant(value.Value.Day, typeof(int));
+                    var month = Expression.Constant(value.Value.Month, typeof(int));
+                    var valueExpression = Expression.Property(leftExpression, "Value");
+                    var dayExpression = Expression.Equal(day, Expression.Property(valueExpression, "Day"));
+                    var monthExpression = Expression.Equal(month, Expression.Property(valueExpression, "Month"));
+                    var anniversaryExpression = Expression.AndAlso(dayExpression, monthExpression);
+
+                    var hasValueExpression = Expression.Property(leftExpression, "HasValue");
+                    return Expression.AndAlso(hasValueExpression, anniversaryExpression);
+                }
+            }
+            else
+            {
+                var date = (DateTime)value;
+                var day = Expression.Constant(date.Day, typeof(int));
+                var month = Expression.Constant(date.Month, typeof(int));
+                var dayExpression = Expression.Equal(day, Expression.Property(leftExpression, "Day"));
+                var monthExpression = Expression.Equal(month, Expression.Property(leftExpression, "Month"));
+                return Expression.AndAlso(dayExpression, monthExpression);
+            }
+        }
+
+        public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<Period>(value => BuildBinaryExpression(Between, field, value), values);
+        protected virtual Expression Between(Expression leftExpression, Period value)
+        {
+            if (value == null)
+            {
+                return Expression.Equal(leftExpression, Expression.Constant(value));
+            }
+            else
+            {
+                var expressionRightSince = Expression.Constant(value.Start, leftExpression.Type);
+                var expressionRightUntil = Expression.Constant(value.End, leftExpression.Type);
+                var sinceExpression = Expression.GreaterThanOrEqual(leftExpression, expressionRightSince);
+                var untilExpression = Expression.LessThanOrEqual(leftExpression, expressionRightUntil);
+                return Expression.AndAlso(sinceExpression, untilExpression);
+            }
+        }
+
+        public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => BuildBinaryExpression(Starts, field, value), values);
+        protected virtual Expression Starts(Expression leftExpression, string value)
+        {
+            var startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+            var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
+
+            return Expression.Call(Expression.Call(leftExpression, toLower), startsWith, Expression.Constant(value.ToLower(), typeof(string)));
+        }
+
+        public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(Like, field, value.ToString()), values);
+        protected virtual Expression Like(Expression leftExpression, string value)
+        {
+            var contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
+            var toString = typeof(object).GetMethod("ToString", new Type[] { });
+
+            return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, Expression.Constant(value.ToLower(), typeof(string)));
+        }
+
+        private Expression<Func<TEntity, bool>> BuildBinaryExpression<T>(Func<Expression, T, Expression> builder, IExpression field, T value)
         {
             var fieldLambda = field.ToLambdaExpression();
-            var property = (fieldLambda.Body as MemberExpression)?.Member as PropertyInfo;
-            var expression = BuildBinaryExpression(binaryOperator, fieldLambda.Body, value, property);
-            
+            var expression = builder(fieldLambda.Body, value);
             var parameter = fieldLambda.Parameters[0];
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
-        }
-
-        private Expression BuildBinaryExpression(WebFilterOperand binaryOperator, Expression expressionLeft, object value, PropertyInfo property)
-        {
-            ConstantExpression expressionRight;
-            switch (binaryOperator)
-            {
-                case WebFilterOperand.Until:
-                case WebFilterOperand.Since:
-                    var propertyReturnType = property.GetGetMethod().ReturnType;
-                    if (propertyReturnType.IsGenericType)
-                    {
-                        propertyReturnType = propertyReturnType.GenericTypeArguments[0];
-                    }
-                    if (propertyReturnType != typeof(DateTime))
-                    {
-                        throw new QueryBuilderException($"Operator '{binaryOperator}' only allows date comparison");
-                    }
-                    expressionRight = Expression.Constant(value, expressionLeft.Type);
-                    break;
-                case WebFilterOperand.Between:
-                    if (value != null && property == null)
-                    {
-                        throw new ArgumentNullException(nameof(property));
-                    }
-                    var period = (Period)value;
-                    var expressionRightSince = (value == null) ? Expression.Constant(null) : Expression.Constant(period.Start, property.PropertyType);
-                    var expressionRightUntil = (value == null) ? Expression.Constant(null) : Expression.Constant(period.End, property.PropertyType);
-                    var sinceExpression = Expression.GreaterThanOrEqual(expressionLeft, expressionRightSince);
-                    var untilExpression = Expression.LessThanOrEqual(expressionLeft, expressionRightUntil);
-                    return Expression.AndAlso(sinceExpression, untilExpression);
-
-                case WebFilterOperand.Anniversary:
-                    if (property == null)
-                    {
-                        throw new ArgumentNullException(nameof(property));
-                    }
-                    var date = (DateTime?)value;
-                    var day = date.HasValue ? Expression.Constant(date.Value.Day, typeof(int)) : Expression.Constant(null);
-                    var month = date.HasValue ? Expression.Constant(date.Value.Month, typeof(int)) : Expression.Constant(null);
-                    var dayExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(day, Expression.Property(Expression.Property(expressionLeft, "Value"), "Day")) : Expression.Equal(day, Expression.Property(expressionLeft, "Day"));
-                    var monthExpression = property.PropertyType == typeof(DateTime?) ? Expression.Equal(month, Expression.Property(Expression.Property(expressionLeft, "Value"), "Month")) : Expression.Equal(month, Expression.Property(expressionLeft, "Month"));
-                    return Expression.AndAlso(dayExpression, monthExpression);
-                case WebFilterOperand.Equals:
-                    expressionRight = Expression.Constant(value);
-                    break;
-                default:
-                    //précision du type nécessaire pour les nullables
-                    expressionRight = Expression.Constant(value, expressionLeft.Type);
-                    break;
-            }
-
-            switch (binaryOperator)
-            {
-                case WebFilterOperand.Equals: return Expression.Call(typeof(Enumerable), "Contains", new Type[] { expressionLeft.Type }, expressionRight, expressionLeft);
-                case WebFilterOperand.NotEqual: return Expression.NotEqual(expressionLeft, expressionRight);
-                case WebFilterOperand.GreaterThan: return Expression.GreaterThan(expressionLeft, expressionRight);
-                case WebFilterOperand.LessThan: return Expression.LessThan(expressionLeft, expressionRight);
-
-                case WebFilterOperand.Since:
-                case WebFilterOperand.GreaterThanOrEqual:
-                    if (value == null)
-                    {
-                        return Expression.Equal(expressionLeft, expressionRight);
-                    }
-
-                    return Expression.GreaterThanOrEqual(expressionLeft, expressionRight);
-
-                case WebFilterOperand.Until:
-                case WebFilterOperand.LessThanOrEqual:
-                    if (value == null)
-                    {
-                        return Expression.Equal(expressionLeft, expressionRight);
-                    }
-
-                    return Expression.LessThanOrEqual(expressionLeft, expressionRight);
-
-                case WebFilterOperand.ContainsAll: return Expression.Equal(expressionLeft, expressionRight);
-
-                default:
-                    throw new NotImplementedException($"L'expression binaire n'est pas gérée pour l'opérateur fourni: '{binaryOperator}'.");
-            }
         }
     }
 }
