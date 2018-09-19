@@ -40,7 +40,7 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
-                query.Options.CheckRights = false;
+                query.CheckRights = false;
                 var candidate1 = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
                 var candidate2 = Candidate<User, int>.Parse(@"{ ""id"": 4 }");
 

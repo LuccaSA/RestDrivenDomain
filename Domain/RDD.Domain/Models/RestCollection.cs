@@ -24,30 +24,35 @@ namespace RDD.Domain.Models
             _instanciator = instanciator;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             TEntity entity = _instanciator.InstanciateNew(candidate);
 
             _patcher.Patch(entity, candidate.JsonValue);
 
+            return CreateAsync(entity, query);
+        }
+
+        public virtual Task<TEntity> CreateAsync(TEntity entity, Query<TEntity> query = null)
+        {
             ForgeEntity(entity);
 
             ValidateEntity(entity, null);
 
-            Repository.Add(entity);
+            _repository.Add(entity);
 
-            return entity;
+            return Task.FromResult(entity);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        public virtual async Task<IReadOnlyCollection<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
         {
             var result = new List<TEntity>();
 
             foreach (var candidate in candidates)
             {
-                TEntity entity = Instanciator.InstanciateNew(candidate);
+                TEntity entity = _instanciator.InstanciateNew(candidate);
 
-                Patcher.Patch(entity, candidate.JsonValue);
+                _patcher.Patch(entity, candidate.JsonValue);
 
                 ForgeEntity(entity);
 
@@ -56,7 +61,7 @@ namespace RDD.Domain.Models
                 result.Add(entity);
             }
 
-            Repository.AddRange(result);
+            _repository.AddRange(result);
             return result;
         }
 
@@ -73,7 +78,7 @@ namespace RDD.Domain.Models
             return await UpdateAsync(entity, candidate, query);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
+        public virtual async Task<IReadOnlyCollection<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
@@ -100,17 +105,24 @@ namespace RDD.Domain.Models
             var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
             if (entity != null)
             {
-                Repository.Remove(entity);
+                _repository.Remove(entity);
             }
         }
 
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
-            
-            foreach (var entity in (await GetAsync(expQuery)).Items)
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id))
             {
-                Repository.Remove(entity);
+                Verb = HttpVerbs.Delete
+            };
+
+            var entities = (await GetAsync(expQuery)).ToDictionary(el => el.Id);
+
+            foreach (TKey id in ids)
+            {
+                var entity = entities[id];
+
+                _repository.Remove(entity);
             }
         }
 

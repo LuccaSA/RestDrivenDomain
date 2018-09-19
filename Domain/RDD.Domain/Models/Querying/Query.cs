@@ -93,7 +93,6 @@ namespace RDD.Domain.Models.Querying
         public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
             : base(source.Verb, source.Headers, source.Paging)
         {
-            Page = Page.Max;
             Filter = new Filter<TEntity>(filter);
             OrderBys = source.OrderBys;
         }

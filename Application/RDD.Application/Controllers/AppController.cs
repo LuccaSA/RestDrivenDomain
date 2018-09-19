@@ -39,7 +39,7 @@ namespace RDD.Application.Controllers
             return entity;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
+        public virtual async Task<IReadOnlyCollection<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
             var entities = await Collection.CreateAsync(candidates, query);
 
