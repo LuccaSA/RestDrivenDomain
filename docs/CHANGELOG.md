@@ -1,5 +1,15 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `PropertySelector`, `CollectionPropertySelector` and `DictionaryPropertySelector`. Replaced by `IExpression`, `IExpressionChain`, `IExpressionTree` and their implementations. `
+ - **Removed**: `FieldExpansionHelper`, `PropertySelectorEqualityComparer`, `PropertySelectorIncludablesExtractor`, `PropertySelectorRootLambdaExtractor`, `PropertySelectorTransferor`, `CollectionFieldsParser`
+ - **Modification**: `ICandidate.HasProperty(Expression<Func<TEntity, object>> expression)` -> `ICandidate.HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression)`. Allows for better expression (no conversion required to type object). Other changed member include `WebFiltersContainer.RemoveFilter`, `WebFiltersContainer.GetFilter`, `WebFiltersContainer.HasFilter`
+ - **Removed**: `IEnumerable<Field> Query<T>.CollectionFields`, `ISelection.Sum`, `ISelection.Min`,`ISelection.Max`, `DecimalRounding`. This functionality was considered problematic and almost unused.
+ - **Removed**: `OrderBysConverter`. Replaced by method `ApplyOrderBy` on the `OrderBy` class directly
+ - **Removed**: `Field`. Replaced by a `IExpressionTree`
+ - **Modification**: `IEnumerable<Field> Query<T>.Fields` -> `IExpressionTree Query<T>.Fields`
+ - **Modification**: `Queue<OrderBy<TEntity>> Query<T>.OrderBys ` -> `List<OrderBy<TEntity>> Query<T>.OrderBys`
+ - **Removed**: Unused methods on `QueryBuilder`
+ - **Removed**: `SerializationOption` Replaced by an `IExpressionTree`. Some signatures have been changed accordingly.
  - **Modification**: `RestCollection.PatcherProvider` has been replaced by `IPatcher<TEntity> Patcher`. This modification aims at helping the override of tha patching behavior via dependence injection instead of defining a concrete `RestCollection`, and is overall easier to use. This modifies the constructor
  - **Removed**: `RestCollection.GetPatcher`. The patcher should be injected via the constructore. The patcher should be registered in the dependency injection framework.
  - **Modification**: `internal interface IPatcher<T> where T : IJsonElement` -> `public interface IPatcher<T> where T : class`. The generic argument of the `IPatcher` interface references the class the patcher aims to apply to.
@@ -16,6 +26,11 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: `ReadOnlyRepository<T>.IncludeWhiteList`. This allows an automatic white-list approach on the include on a Get query.
+ - **Added**: New logic for property and member selection via expression coming from the web. The main interface to manipulate is `IExpression`, that replaces `PropertySelector`. The main implementation to use now are `PropertyExpression`, `EnumerablePropertyExpression`, `ItemExpression`, `ExpressionChain`, or `ExpressionTree`. The parsing and manipulation is ensured by `ExpressionParser` and the visitors `ExpressionChainExtractor`, `ExpressionChainer`.
+ - **Added**: `ExpressionEqualityComparer` to compare `Expression` and another one to compare `IExpression`.
+ - **Added**: readable static method to construct `OrderBy`
+ - **Added**: implicit conversion from a `Filter<T>` to `Expression<T, bool>`.
  - **Added**: `IAppController.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from the controller.
  - **Added**: `IRestCollection.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from a collection.
 

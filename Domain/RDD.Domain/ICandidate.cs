@@ -10,7 +10,7 @@ namespace RDD.Domain
         TEntity Value { get; }
         JsonObject JsonValue { get; }
 
-        bool HasProperty(Expression<Func<TEntity, object>> expression);
+        bool HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression);
         bool HasId();
     }
 

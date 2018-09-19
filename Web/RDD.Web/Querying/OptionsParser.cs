@@ -1,25 +1,23 @@
 ﻿using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace RDD.Web.Querying
 {
     public class OptionsParser
     {
-        public Options Parse(Dictionary<string, string> parameters, IEnumerable<Field> fields, IEnumerable<Field> collectionFields)
+        public Options Parse(Dictionary<string, string> parameters, IExpressionTree fields)
         {
             var options = new Options();
 
             //Si les fields demandent des propriétés sur la collection
-            if (collectionFields.Any(f => f.EntitySelector.Contains((Expression<Func<ISelection, object>>)(c => c.Count))))
+            if (fields.Contains((ISelection c) => c.Count))
             {
                 options.NeedCount = true;
-
                 //Et uniquement sur le count de la collection ?
-                if (collectionFields.Count() == 1)
+                if (fields.Children.Count() == 1)
                 {
                     //Alors pas besoin d'énumérer les entités
                     options.NeedEnumeration = false;
@@ -38,7 +36,7 @@ namespace RDD.Web.Querying
             {
                 options.ImpersonatedPrincipal = int.Parse(parameters[Reserved.principal.ToString() + ".id"]);
             }
-            
+
             //No Warnings
             if (parameters.ContainsKey(Reserved.nowarning.ToString()))
             {

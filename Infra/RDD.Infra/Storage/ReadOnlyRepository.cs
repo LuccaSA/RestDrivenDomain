@@ -1,6 +1,7 @@
-﻿using RDD.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
-using RDD.Domain.Models.Querying.Convertors;
 using RDD.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace RDD.Infra.Storage
     {
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
+
+        protected virtual IExpressionTree IncludeWhiteList { get; }
 
         public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
         {
@@ -76,22 +79,32 @@ namespace RDD.Infra.Storage
         }
         protected virtual IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            if (!query.OrderBys.Any())
+            foreach (var orderBy in query.OrderBys)
             {
-                return entities;
+                entities = orderBy.ApplyOrderBy(entities);
             }
 
-            var orderBysConverter = new OrderBysConverter<TEntity>();
-
-            return orderBysConverter.Convert(entities, query.OrderBys);
+            return entities;
         }
         protected virtual IQueryable<TEntity> ApplyPage(IQueryable<TEntity> entities, Query<TEntity> query)
         {
             return entities.Skip(query.Page.Offset).Take(query.Page.Limit);
         }
+
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
         {
+            if (IncludeWhiteList == null || query.Fields == null)
+            {
+                return entities;
+            }
+
+            foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+            {
+                entities = entities.Include(prop.Name);
+            }
+
             return entities;
+
         }
     }
 }
