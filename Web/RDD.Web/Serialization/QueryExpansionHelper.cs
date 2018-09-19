@@ -19,39 +19,38 @@ namespace RDD.Web.Serialization
         {
             return Expand(input, new Stack<StringBuilder>()).Select(i => i.ToString());
         }
+        private static void EmptyBuffer(ref StringBuilder buffer, Stack<StringBuilder> prefixes, List<StringBuilder> analyseResult)
+        {
+            if (buffer.Length == 0)
+            {
+                return;
+            }
+            if (prefixes.Any())
+            {
+                var prefixedBuffer = new StringBuilder();
+                foreach (var v in prefixes.Reverse())
+                {
+                    prefixedBuffer.Append(v);
+                }
+                prefixedBuffer.Append(buffer);
+                analyseResult.Add(prefixedBuffer);
+            }
+            else
+            {
+                analyseResult.Add(buffer);
+            }
+            buffer = new StringBuilder();
+        }
+
+        private static void FeedBuffer(StringBuilder buffer, char c)
+        {
+            buffer.Append(c);
+        }
 
         private static List<StringBuilder> Expand(string input, Stack<StringBuilder> prefixes)
         {
             var analyseResult = new List<StringBuilder>();
             var buffer = new StringBuilder();
-
-            void EmptyBuffer()
-            {
-                if (buffer.Length == 0)
-                {
-                    return;
-                }
-                if (prefixes.Any())
-                {
-                    var prefixedBuffer = new StringBuilder();
-                    foreach (var v in prefixes.Reverse())
-                    {
-                        prefixedBuffer.Append(v);
-                    }
-                    prefixedBuffer.Append(buffer);
-                    analyseResult.Add(prefixedBuffer);
-                }
-                else
-                {
-                    analyseResult.Add(buffer);
-                }
-                buffer = new StringBuilder();
-            }
-
-            void FeedBuffer(char c)
-            {
-                buffer.Append(c);
-            }
 
             var isInsideFunction = false;
             var level = 0;
@@ -62,58 +61,27 @@ namespace RDD.Web.Serialization
                 switch (character)
                 {
                     case _multiselectStart:
-                        if (level++ == 0)
-                        {
-                            buffer.Append(_fieldSeparator);
-                            prefixes.Push(buffer);
-                            buffer = new StringBuilder();
-                        }
-                        else
-                        {
-                            FeedBuffer(character);
-                        }
+                        MultiStart(prefixes, ref buffer, ref level, character);
                         break;
                     case _multiselectEnd:
-                        if (--level == 0)
-                        {
-                            if (level < 0)
-                            {
-                                throw new FormatException("Le champ fields est mal renseigné.");
-                            }
-                            var sub = Expand(buffer.ToString(), prefixes);
-                            analyseResult.AddRange(sub);
-                            buffer = new StringBuilder();
-                            prefixes.Pop();
-                        }
-                        else
-                        {
-                            FeedBuffer(character);
-                        }
+                        MultiEnd(prefixes, analyseResult, ref buffer, ref level, character);
                         break;
                     case _functionStart:
                         isInsideFunction = true;
-                        FeedBuffer(character);
+                        FeedBuffer(buffer, character);
                         break;
                     case _functionEnd:
                         isInsideFunction = false;
-                        FeedBuffer(character);
-                        EmptyBuffer();
+                        FeedBuffer(buffer, character);
+                        EmptyBuffer(ref buffer, prefixes, analyseResult);
                         break;
                     case _propertiesSeparator:
-                        if (level == 0 && !isInsideFunction)
-                        {
-                            EmptyBuffer();
-                        }
-                        else
-                        {
-                            FeedBuffer(character);
-                        }
-
+                        buffer = Separator(prefixes, analyseResult, buffer, isInsideFunction, level, character);
                         break;
                     case _space:
                         break;
                     default:
-                        FeedBuffer(character);
+                        FeedBuffer(buffer, character);
                         break;
                 }
             }
@@ -122,8 +90,54 @@ namespace RDD.Web.Serialization
             {
                 throw new FormatException("Le champ fields est mal renseigné.");
             }
-            EmptyBuffer();
+            EmptyBuffer(ref buffer, prefixes, analyseResult);
             return analyseResult;
+        }
+
+        private static StringBuilder Separator(Stack<StringBuilder> prefixes, List<StringBuilder> analyseResult, StringBuilder buffer, bool isInsideFunction, int level, char character)
+        {
+            if (level == 0 && !isInsideFunction)
+            {
+                EmptyBuffer(ref buffer, prefixes, analyseResult);
+            }
+            else
+            {
+                FeedBuffer(buffer, character);
+            }
+            return buffer;
+        }
+
+        private static void MultiEnd(Stack<StringBuilder> prefixes, List<StringBuilder> analyseResult, ref StringBuilder buffer, ref int level, char character)
+        {
+            if (--level == 0)
+            {
+                if (level < 0)
+                {
+                    throw new FormatException("Le champ fields est mal renseigné.");
+                }
+                var sub = Expand(buffer.ToString(), prefixes);
+                analyseResult.AddRange(sub);
+                buffer = new StringBuilder();
+                prefixes.Pop();
+            }
+            else
+            {
+                FeedBuffer(buffer, character);
+            }
+        }
+
+        private static void MultiStart(Stack<StringBuilder> prefixes, ref StringBuilder buffer, ref int level, char character)
+        {
+            if (level++ == 0)
+            {
+                buffer.Append(_fieldSeparator);
+                prefixes.Push(buffer);
+                buffer = new StringBuilder();
+            }
+            else
+            {
+                FeedBuffer(buffer, character);
+            }
         }
     }
 }
