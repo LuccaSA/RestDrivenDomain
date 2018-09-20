@@ -29,7 +29,7 @@ namespace RDD.Domain.Patchers
 
 		public virtual object PatchValue(object patchedObject, Type expectedType, JsonArray json)
 		{
-			if (json == null)
+			if (json == null || json.Content == null)
 				return null;
 
 			var result = new List<object>();

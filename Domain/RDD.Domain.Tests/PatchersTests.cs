@@ -158,5 +158,19 @@ namespace RDD.Domain.Tests
             Assert.Equal(3, newPatched.ArrayOfInt[2]);
             Assert.Equal(4, newPatched.ArrayOfInt[3]);
         }
+
+        [Fact]
+        public void PatchFromAnonymous()
+        {
+            var newPatched = new ToPatch();
+            IPatcher patcher = new ObjectPatcher(PatcherProvider);
+            patcher.PatchFromAnonymous(newPatched, new { arrayOfInt = new[] { 1, 2, 3, 4 } });
+
+            Assert.Equal(4, newPatched.ArrayOfInt.Length);
+            Assert.Equal(1, newPatched.ArrayOfInt[0]);
+            Assert.Equal(2, newPatched.ArrayOfInt[1]);
+            Assert.Equal(3, newPatched.ArrayOfInt[2]);
+            Assert.Equal(4, newPatched.ArrayOfInt[3]);
+        }
     }
 }

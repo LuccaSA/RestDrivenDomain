@@ -12,7 +12,6 @@ namespace RDD.Domain.Patchers
 		{
 			if (json is JsonArray)
 			{
-				if (typeof(IEntityBase).IsAssignableFrom(expectedType.GetEnumerableOrArrayElementType())) { return new EntitiesPatcher(this); }
 				return new EnumerablePatcher(this);
 			}
 
