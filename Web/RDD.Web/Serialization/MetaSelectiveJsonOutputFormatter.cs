@@ -23,7 +23,7 @@ namespace RDD.Web.Serialization
 
         public const String MetaDataContentType = "application/select.metadata+json";
 
-        protected override object PreparePayload(OutputFormatterWriteContext context, out Node node)
+        protected override object PreparePayload(OutputFormatterWriteContext context, out PropertyTreeNode node)
         {
             var data = base.PreparePayload(context, out node);
 
@@ -43,7 +43,7 @@ namespace RDD.Web.Serialization
             if (context.ObjectType.GetInterfaces().Contains(typeof(IEnumerable)))
             {
                 // include the Meta paths, with Items
-                Node root = Node.NewRoot();
+                PropertyTreeNode root = PropertyTreeNode.NewRoot();
                 root.GetOrCreateChildNode("Header");
                 var items = root.GetOrCreateChildNode("Data")
                     .GetOrCreateChildNode("Items");
@@ -74,7 +74,7 @@ namespace RDD.Web.Serialization
             else
             {
                 // include the Meta paths, with Data
-                Node root = Node.NewRoot();
+                PropertyTreeNode root = PropertyTreeNode.NewRoot();
                 root.GetOrCreateChildNode("Header");
                 var items = root.GetOrCreateChildNode("Data");
                 // If no node structure defined, the whole Data is serialiazed

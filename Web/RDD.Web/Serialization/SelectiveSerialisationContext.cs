@@ -10,9 +10,9 @@ namespace RDD.Web.Serialization
     {
         private static readonly AsyncLocal<SelectiveSerialisationContext> _context = new AsyncLocal<SelectiveSerialisationContext>();
         private readonly bool _serializeEverything;
-        private readonly Stack<Node> _stack;
+        private readonly Stack<PropertyTreeNode> _stack;
 
-        public SelectiveSerialisationContext(Node root)
+        public SelectiveSerialisationContext(PropertyTreeNode root)
         {
             if (root == null)
             {
@@ -20,7 +20,7 @@ namespace RDD.Web.Serialization
             }
             else
             {
-                _stack = new Stack<Node>();
+                _stack = new Stack<PropertyTreeNode>();
                 _stack.Push(root);
                 _currentNode = root;
             }
@@ -32,8 +32,8 @@ namespace RDD.Web.Serialization
             set => _context.Value = value;
         }
 
-        private Node _currentNode;
-        private Node _currentPropertyNode;
+        private PropertyTreeNode _currentNode;
+        private PropertyTreeNode _currentPropertyNode;
         private int _untrackedDepth;
         private bool _untrackedMode;
 

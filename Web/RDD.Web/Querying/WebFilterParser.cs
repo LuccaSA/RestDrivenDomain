@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using NExtends.Primitives.DateTimes;
 using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
@@ -39,7 +40,7 @@ namespace RDD.Web.Querying
             where TEntity : class
         {
             var service = new DeserializationService();
-
+            var parser = new ExpressionParser();
             foreach (var kv in _httpContextAccessor.HttpContext.Request.Query)
             {
                 if (string.IsNullOrEmpty(kv.Key))
@@ -76,10 +77,9 @@ namespace RDD.Web.Querying
                         values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                     }
 
-                    var property = new PropertySelector<TEntity>();
-                    property.Parse(key);
+                    var selector = parser.ParseChain<TEntity>(key);
 
-                    yield return new WebFilter<TEntity>(property, operand, values);
+                    yield return new WebFilter<TEntity>(selector, operand, values);
                 }
             }
         }

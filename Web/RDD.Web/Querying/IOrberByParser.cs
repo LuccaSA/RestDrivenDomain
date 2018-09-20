@@ -3,7 +3,7 @@ using RDD.Domain.Models.Querying;
 
 namespace RDD.Web.Querying
 {
-    public interface IOrberByParser
+    public interface IOrderByParser
     {
         IEnumerable<OrderBy<TEntity>> ParseOrderBys<TEntity>() where TEntity : class;
     }

@@ -14,7 +14,7 @@ namespace RDD.Web.Serialization
         /// <param name="settings"></param>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static string Serialize(object value, JsonSerializerSettings settings, Node node)
+        public static string Serialize(object value, JsonSerializerSettings settings, PropertyTreeNode node)
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 

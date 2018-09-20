@@ -28,7 +28,9 @@ namespace RDD.Web.Tests
                 new WebFilterParser(new QueryTokens(), httpContextAccessor),
                 new PagingParser(httpContextAccessor, Options.Create(rddOptions ?? new PagingOptions())),
                 new HeaderParser(httpContextAccessor),
-                new OrberByParser(httpContextAccessor));
+                new OrderByParser(httpContextAccessor),
+                new FieldsParser(httpContextAccessor)
+                );
         }
 
     }

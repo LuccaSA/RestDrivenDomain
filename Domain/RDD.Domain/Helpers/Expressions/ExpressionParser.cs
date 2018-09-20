@@ -70,16 +70,7 @@ namespace RDD.Domain.Helpers.Expressions
             var tree = new TreeParser().Parse(input);
             foreach (var subTree in tree.Children)
             {
-                //skip node
-                if (subTree.Node == "collection" && classType.GetProperty(subTree.Node) == null)
-                {
-                    var selectionType = typeof(ISelection<>).MakeGenericType(new[] { classType });
-                    result.Children.AddRange(subTree.Children.Select(c => Parse(selectionType, c)));
-                }
-                else
-                {
-                    result.Children.Add(Parse(classType, subTree));
-                }
+                result.Children.Add(Parse(classType, subTree));
             }
 
             return result;

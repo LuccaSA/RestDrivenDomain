@@ -2,6 +2,7 @@
 using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
 using System.Collections.Generic;
+using System.Linq;
 using RDD.Domain.Helpers;
 
 namespace RDD.Web.Querying
@@ -23,13 +24,10 @@ namespace RDD.Web.Querying
         public Query<TEntity> NewFromHttpRequest<TEntity, TKey>(HttpVerbs? verb)
             where TEntity : class, IPrimaryKey<TKey>
         {
-            // TODO
-            var fields = new FieldsParser<TEntity>().ParseFields(parameters, isCollectionCall);
-            var filters = WebFiltersParser<TEntity>.Parse(parameters);
-            var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             return new Query<TEntity>(
                 new WebFiltersContainer<TEntity, TKey>(_queryParsers.WebFilterParser.ParseWebFilters<TEntity>()),
-                new Queue<OrderBy<TEntity>>(_queryParsers.OrderByParser.ParseOrderBys<TEntity>()),
+                _queryParsers.OrderByParser.ParseOrderBys<TEntity>().ToList(),
+                _queryParsers.FieldsParser.ParseFields<TEntity>(),
                 _queryParsers.HeaderParser.ParseHeaders(),
                 _queryParsers.PagingParser.ParsePaging(),
                 _queryMetadata

@@ -49,7 +49,8 @@ namespace RDD.Web.Helpers
             services.TryAddSingleton<IWebFilterParser, WebFilterParser>();
             services.TryAddSingleton<IPagingParser, PagingParser>();
             services.TryAddSingleton<IHeaderParser, HeaderParser>();
-            services.TryAddSingleton<IOrberByParser, OrberByParser>();
+            services.TryAddSingleton<IOrderByParser, OrderByParser>();
+            services.TryAddSingleton<IFieldsParser, FieldsParser>();
             services.TryAddSingleton<QueryParsers>();
             services.TryAddSingleton<QueryTokens>();
 

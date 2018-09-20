@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 
 namespace RDD.Web.Querying
 {
-    public class OrberByParser : IOrberByParser
+    public class OrderByParser : IOrderByParser
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrberByParser(IHttpContextAccessor httpContextAccessor)
+        public OrderByParser(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -24,7 +25,7 @@ namespace RDD.Web.Querying
             {
                 yield break;
             }
-
+            var parser = new ExpressionParser();
             foreach (var clause in orderByValues)
             {
                 var orders = clause.Split(',');
@@ -37,8 +38,7 @@ namespace RDD.Web.Querying
 
                 for (var i = 0; i < length; i += 2)
                 {
-                    var orderProperty = new PropertySelector<TEntity>();
-                    orderProperty.Parse(orders[i].ToLower());
+                    var orderProperty = parser.Parse<TEntity>(orders[i].ToLower());
 
                     SortDirection direction;
 

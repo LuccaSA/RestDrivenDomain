@@ -6,14 +6,14 @@ namespace RDD.Web.Serialization
 {
     public static class NodeHelper
     {
-        public static Node ParseNode(this IEnumerable<string> propertylist)
+        public static PropertyTreeNode ParseNode(this IEnumerable<string> propertylist)
         {
             if (propertylist == null)
             {
                 throw new ArgumentNullException(nameof(propertylist));
             }
 
-            Node root = Node.NewRoot();
+            PropertyTreeNode root = PropertyTreeNode.NewRoot();
 
             foreach (var path in propertylist)
             {
@@ -23,7 +23,7 @@ namespace RDD.Web.Serialization
             return root;
         }
 
-        private static void AddParsedSegments(this Node node, StringSegment path)
+        private static void AddParsedSegments(this PropertyTreeNode node, StringSegment path)
         {
             var currentNode = node;
             while (true)

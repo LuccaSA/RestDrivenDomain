@@ -45,7 +45,7 @@ namespace RDD.Web.Serialization
 
         private async Task WriteResponseBodyInternalAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            object payload = PreparePayload(context, out Node node);
+            object payload = PreparePayload(context, out PropertyTreeNode node);
             var response = context.HttpContext.Response;
             using (var writer = context.WriterFactory(response.Body, selectedEncoding))
             {
@@ -67,7 +67,7 @@ namespace RDD.Web.Serialization
             }
         }
 
-        protected virtual object PreparePayload(OutputFormatterWriteContext context, out Node node)
+        protected virtual object PreparePayload(OutputFormatterWriteContext context, out PropertyTreeNode node)
         {
             if (context.HttpContext.Request.Query.TryGetValue(QueryTokens.Fields, out var fieldValues))
             {
@@ -81,7 +81,7 @@ namespace RDD.Web.Serialization
             return context.Object;
         }
 
-        protected virtual Node ParseFields(StringValues values)
+        protected virtual PropertyTreeNode ParseFields(StringValues values)
         {
             return values.SelectMany(QueryExpansionHelper.Expand).ParseNode();
         }

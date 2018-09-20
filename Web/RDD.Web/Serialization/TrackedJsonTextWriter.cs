@@ -5,7 +5,7 @@ namespace RDD.Web.Serialization
 {
     public class TrackedJsonTextWriter : JsonTextWriter
     {
-        public TrackedJsonTextWriter(TextWriter textWriter, Node node)
+        public TrackedJsonTextWriter(TextWriter textWriter, PropertyTreeNode node)
             : base(textWriter)
         {
             SelectiveSerialisationContext.Current = new SelectiveSerialisationContext(node);

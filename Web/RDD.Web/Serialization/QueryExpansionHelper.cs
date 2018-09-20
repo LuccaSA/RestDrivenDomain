@@ -9,8 +9,6 @@ namespace RDD.Web.Serialization
     {
         private const char _multiselectStart = '[';
         private const char _multiselectEnd = ']';
-        private const char _functionStart = '(';
-        private const char _functionEnd = ')';
         private const char _propertiesSeparator = ',';
         private const char _fieldSeparator = '.';
         private const char _space = ' ';
@@ -65,15 +63,6 @@ namespace RDD.Web.Serialization
                         break;
                     case _multiselectEnd:
                         MultiEnd(prefixes, analyseResult, ref buffer, ref level, character);
-                        break;
-                    case _functionStart:
-                        isInsideFunction = true;
-                        FeedBuffer(buffer, character);
-                        break;
-                    case _functionEnd:
-                        isInsideFunction = false;
-                        FeedBuffer(buffer, character);
-                        EmptyBuffer(ref buffer, prefixes, analyseResult);
                         break;
                     case _propertiesSeparator:
                         buffer = Separator(prefixes, analyseResult, buffer, isInsideFunction, level, character);
