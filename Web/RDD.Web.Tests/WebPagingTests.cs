@@ -57,7 +57,7 @@ namespace RDD.Web.Tests
         [Fact]
         public async Task Paging_should_limit_to_1000_result()
         {
-            await Assert.ThrowsAsync<OutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<BadRequestException>(async () =>
             {
                 IEnumerable<User> users = User.GetManyRandomUsers(2000);
                 _repo.AddRange(users);
