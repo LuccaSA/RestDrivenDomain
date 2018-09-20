@@ -29,34 +29,32 @@ namespace RDD.Domain.Helpers.Expressions.Equality
         public static ConstantValue New(Expression e)
         {
             var isConstant = IsConstantValue(e);
-            if (!isConstant)
+            if (isConstant)
             {
-                return null;
+                switch (e)
+                {
+                    case ConstantExpression constant: return new ConstantValue(constant.Value);
+                    case MemberExpression me:
+
+                        if (me.Member is FieldInfo fieldInfo)
+                        {
+                            return new ConstantValue(fieldInfo.GetValue(me.Expression == null ? null : New(me.Expression).Value));
+                        }
+
+                        if (me.Member is PropertyInfo propertyInfo)
+                        {
+                            return new ConstantValue(propertyInfo.GetValue(me.Expression == null ? null : New(me.Expression).Value));
+                        }
+
+                        break;
+
+                    case NewArrayExpression ae: return new ConstantValue(ae.Expressions.Select(i => New(i).Value).ToArray());
+
+                    case ConditionalExpression ce: return New(Equals(New(ce.Test).Value, true) ? ce.IfTrue : ce.IfFalse);
+                }
             }
 
-            switch (e)
-            {
-                case ConstantExpression constant: return new ConstantValue(constant.Value);
-                case MemberExpression me:
-
-                    if (me.Member is FieldInfo fieldInfo)
-                    {
-                        return new ConstantValue(fieldInfo.GetValue(me.Expression == null ? null : New(me.Expression).Value));
-                    }
-
-                    if (me.Member is PropertyInfo propertyInfo)
-                    {
-                        return new ConstantValue(propertyInfo.GetValue(me.Expression == null ? null : New(me.Expression).Value));
-                    }
-
-                    break;
-
-                case NewArrayExpression ae: return new ConstantValue(ae.Expressions.Select(i => New(i).Value).ToArray());
-
-                case ConditionalExpression ce: return New(Equals(New(ce.Test).Value, true) ? ce.IfTrue : ce.IfFalse);
-            }
-
-            return default;
+            return null;
         }
 
         public ConstantValue(object value)

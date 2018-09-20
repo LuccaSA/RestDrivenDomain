@@ -16,6 +16,14 @@ namespace RDD.Domain.Helpers.Expressions.Equality
         public override Expression Visit(Expression node)
         {
             if (null == node) return null;
+            var constantValue = ConstantValue.New(node);
+            if (constantValue != null)
+            {
+                var constant = Expression.Constant(constantValue.Value);
+                _runningTotal += node.GetHashCodeFor(constant.NodeType, constant.Type);
+                return base.Visit(constant);
+            }
+
             _runningTotal += node.GetHashCodeFor(node.NodeType, node.Type);
             return base.Visit(node);
         }
@@ -26,28 +34,10 @@ namespace RDD.Domain.Helpers.Expressions.Equality
             return base.VisitBinary(node);
         }
 
-        protected override CatchBlock VisitCatchBlock(CatchBlock node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Test);
-            return base.VisitCatchBlock(node);
-        }
-
         protected override Expression VisitConstant(ConstantExpression node)
         {
             _runningTotal += node.GetHashCodeFor(node.Value);
             return base.VisitConstant(node);
-        }
-
-        protected override Expression VisitDebugInfo(DebugInfoExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Document, node.EndColumn, node.EndLine, node.IsClear, node.StartLine, node.StartColumn);
-            return base.VisitDebugInfo(node);
-        }
-
-        protected override Expression VisitDynamic(DynamicExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.DelegateType, node.Binder);
-            return base.VisitDynamic(node);
         }
 
         protected override ElementInit VisitElementInit(ElementInit node)
@@ -56,40 +46,16 @@ namespace RDD.Domain.Helpers.Expressions.Equality
             return base.VisitElementInit(node);
         }
 
-        protected override Expression VisitGoto(GotoExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Kind, node.Target);
-            return base.VisitGoto(node);
-        }
-
         protected override Expression VisitIndex(IndexExpression node)
         {
             _runningTotal += node.GetHashCodeFor(node.Indexer);
             return base.VisitIndex(node);
         }
 
-        protected override LabelTarget VisitLabelTarget(LabelTarget node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Name, node.Type);
-            return base.VisitLabelTarget(node);
-        }
-
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
             _runningTotal += node.GetHashCodeFor(node.Name, node.TailCall);
             return base.VisitLambda(node);
-        }
-
-        protected override Expression VisitListInit(ListInitExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Initializers);
-            return base.VisitListInit(node);
-        }
-
-        protected override Expression VisitLoop(LoopExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.BreakLabel, node.ContinueLabel);
-            return base.VisitLoop(node);
         }
 
         protected override Expression VisitMember(MemberExpression node)
@@ -120,24 +86,6 @@ namespace RDD.Domain.Helpers.Expressions.Equality
         {
             _runningTotal += node.GetHashCodeFor(node.IsByRef);
             return base.VisitParameter(node);
-        }
-
-        protected override Expression VisitSwitch(SwitchExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Comparison);
-            return base.VisitSwitch(node);
-        }
-
-        protected override Expression VisitTry(TryExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.Handlers);
-            return base.VisitTry(node);
-        }
-
-        protected override Expression VisitTypeBinary(TypeBinaryExpression node)
-        {
-            _runningTotal += node.GetHashCodeFor(node.TypeOperand);
-            return base.VisitTypeBinary(node);
         }
 
         protected override Expression VisitUnary(UnaryExpression node)

@@ -52,7 +52,7 @@ namespace RDD.Domain.Tests.Members
                 {
                     var hash = 17;
                     hash = hash * 23 + Name.GetHashCode();
-                    hash = hash * 23 + Address.GetHashCode();
+                    hash = hash * 23 + (Address?.GetHashCode() ?? 0);
                     return hash;
                 }
             }
@@ -73,6 +73,7 @@ namespace RDD.Domain.Tests.Members
         {
             public string Name { get; set; }
             public decimal Price { get; set; }
+            public Dictionary<string, int> Properties { get; set; }
         }
 
         public class ExpressionEqualityComparerTests
@@ -113,6 +114,25 @@ namespace RDD.Domain.Tests.Members
             }
 
             [Fact]
+            public void Equals_Same4_AreEqual()
+            {
+                Expression<Func<Product, bool>> x = p => p.Properties["key"] == 0;
+                Expression<Func<Product, bool>> y = p => p.Properties["key"] == 0;
+                var e = _sut.Equals(x, y);
+                Assert.True(e);
+            }
+
+            [Fact]
+            public void Equals_Same5_AreEqual()
+            {
+                var constant = 3;
+                Expression<Func<int, List<int>>> x = i => new List<int> { 1, 2, 3 };
+                Expression<Func<int, List<int>>> y = i => new List<int> { 1, 2, constant };
+                var e = _sut.Equals(x, y);
+                Assert.True(e);
+            }
+
+            [Fact]
             public void Equals_Different1_AreNotEqual()
             {
                 Expression<Func<Order, object>> x = order => order.Number;
@@ -127,6 +147,15 @@ namespace RDD.Domain.Tests.Members
                 Expression<Func<Order, object>> x = order => order.Customer.Address;
                 Expression<Func<Order, object>> y = order => order.LineItems.Select(item => item.Product);
                 var e = _sut.Equals(x, y);
+                Assert.False(e);
+            }
+
+            [Fact]
+            public void Equals_Different2_bis_AreNotEqual()
+            {
+                Expression<Func<Order, object>> x = order => order.Customer.Address;
+                Expression<Func<Order, object>> y = order => order.LineItems.Select(item => item.Product);
+                var e = _sut.Equals(y, x);
                 Assert.False(e);
             }
 
@@ -196,6 +225,24 @@ namespace RDD.Domain.Tests.Members
             }
 
             [Fact]
+            public void Equals_Different10_AreNotEqual()
+            {
+                Expression<Func<Product, bool>> x = p => p.Properties["key"] == 0;
+                Expression<Func<Product, bool>> y = p => p.Properties["key2"] == 0;
+                var e = _sut.Equals(x, y);
+                Assert.False(e);
+            }
+
+            [Fact]
+            public void Equals_Different11_AreNotEqual()
+            {
+                Expression<Func<int, List<int>>> x = i => new List<int> { 1, 2, 3 };
+                Expression<Func<int, List<int>>> y = i => new List<int> { 1, 3, 2 };
+                var e = _sut.Equals(x, y);
+                Assert.False(e);
+            }
+
+            [Fact]
             public void GetHashCode_Same1_AreEqual()
             {
                 Expression<Func<Order, object>> x = order => order.Customer.Address;
@@ -216,6 +263,23 @@ namespace RDD.Domain.Tests.Members
             {
                 Expression<Func<Order, bool>> x = order => order.Customer == new Customer { Name = "john" };
                 Expression<Func<Order, bool>> y = order => order.Customer == new Customer { Name = "john" };
+                Assert.Equal(_sut.GetHashCode(x), _sut.GetHashCode(y));
+            }
+
+            [Fact]
+            public void GetHashCode_Same4_AreEqual()
+            {
+                Expression<Func<Product, bool>> x = p => p.Properties["key"] == 0;
+                Expression<Func<Product, bool>> y = p => p.Properties["key"] == 0;
+                Assert.Equal(_sut.GetHashCode(x), _sut.GetHashCode(y));
+            }
+
+            [Fact]
+            public void GetHashCode_Same5_AreEqual()
+            {
+                var constant = 3;
+                Expression<Func<int, List<int>>> x = i => new List<int> { 1, 2, 3 };
+                Expression<Func<int, List<int>>> y = i => new List<int> { 1, 2, constant };
                 Assert.Equal(_sut.GetHashCode(x), _sut.GetHashCode(y));
             }
 
@@ -290,6 +354,22 @@ namespace RDD.Domain.Tests.Members
             {
                 Expression<Func<Order, bool>> x = order => order.Customer.Address.Postcode == 5;
                 Expression<Func<Order, bool>> y = order => order.Number > 5;
+                Assert.NotEqual(_sut.GetHashCode(x), _sut.GetHashCode(y));
+            }
+
+            [Fact]
+            public void GetHashCode_Different10_AreNotEqual()
+            {
+                Expression<Func<Product, bool>> x = p => p.Properties["key"] == 0;
+                Expression<Func<Product, bool>> y = p => p.Properties["key2"] == 0;
+                Assert.NotEqual(_sut.GetHashCode(x), _sut.GetHashCode(y));
+            }
+
+            [Fact]
+            public void GetHashCode_Different11_AreNotEqual()
+            {
+                Expression<Func<int, List<int>>> x = i => new List<int> { 1, 2, 3 };
+                Expression<Func<int, List<int>>> y = i => new List<int> { 1, 2, 4 };
                 Assert.NotEqual(_sut.GetHashCode(x), _sut.GetHashCode(y));
             }
 

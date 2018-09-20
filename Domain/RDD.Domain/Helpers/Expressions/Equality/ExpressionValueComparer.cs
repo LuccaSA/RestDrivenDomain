@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -75,39 +76,11 @@ namespace RDD.Domain.Helpers.Expressions.Equality
             return _eq ? base.VisitConstant(node) : node;
         }
 
-        protected override Expression VisitDebugInfo(DebugInfoExpression node)
-        {
-            var other = (DebugInfoExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.EndColumn, _ => _.EndLine, _ => _.IsClear, _ => _.StartLine, _ => _.StartColumn);
-            return _eq ? base.VisitDebugInfo(node) : node;
-        }
-
-        protected override Expression VisitDynamic(DynamicExpression node)
-        {
-            var other = (DynamicExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.DelegateType, _ => _.Binder);
-            return _eq ? base.VisitDynamic(node) : node;
-        }
-
-        protected override Expression VisitGoto(GotoExpression node)
-        {
-            var other = (GotoExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.Kind, _ => _.Target);
-            return _eq ? base.VisitGoto(node) : node;
-        }
-
         protected override Expression VisitIndex(IndexExpression node)
         {
             var other = (IndexExpression)_current;
             _eq &= node.IsEqualTo(other, _ => _.Indexer);
             return _eq ? base.VisitIndex(node) : node;
-        }
-
-        protected override Expression VisitLabel(LabelExpression node)
-        {
-            var other = (LabelExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.Target);
-            return _eq ? base.VisitLabel(node) : node;
         }
 
         protected override Expression VisitLambda<T>(Expression<T> node)
@@ -119,16 +92,7 @@ namespace RDD.Domain.Helpers.Expressions.Equality
 
         protected override Expression VisitListInit(ListInitExpression node)
         {
-            var other = (ListInitExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.Initializers);
             return _eq ? base.VisitListInit(node) : node;
-        }
-
-        protected override Expression VisitLoop(LoopExpression node)
-        {
-            var other = (LoopExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.BreakLabel, _ => _.ContinueLabel);
-            return _eq ? base.VisitLoop(node) : node;
         }
 
         protected override Expression VisitMember(MemberExpression node)
@@ -162,27 +126,6 @@ namespace RDD.Domain.Helpers.Expressions.Equality
             var other = (NewExpression)_current;
             _eq &= node.IsEqualTo(other, _ => _.Constructor, _ => _.Members);
             return _eq ? base.VisitNew(node) : node;
-        }
-
-        protected override Expression VisitSwitch(SwitchExpression node)
-        {
-            var other = (SwitchExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.Comparison);
-            return _eq ? base.VisitSwitch(node) : node;
-        }
-
-        protected override Expression VisitTry(TryExpression node)
-        {
-            var other = (TryExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.Handlers);
-            return _eq ? base.VisitTry(node) : node;
-        }
-
-        protected override Expression VisitTypeBinary(TypeBinaryExpression node)
-        {
-            var other = (TypeBinaryExpression)_current;
-            _eq &= node.IsEqualTo(other, _ => _.TypeOperand);
-            return _eq ? base.VisitTypeBinary(node) : node;
         }
 
         protected override Expression VisitUnary(UnaryExpression node)
