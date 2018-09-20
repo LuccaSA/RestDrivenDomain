@@ -2,7 +2,7 @@
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public class RddIExpressionEqualityComparer : IEqualityComparer<IExpression>
+    public class RddExpressionEqualityComparer : IEqualityComparer<IExpression>
     {
         public bool Equals(IExpression x, IExpression y)
         {
