@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
+using RDD.Domain.Rights;
+using System.Collections.Generic;
 
 namespace RDD.Web.Tests.ServerMock
 {
