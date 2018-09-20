@@ -5,151 +5,125 @@ using System.Linq;
 
 namespace RDD.Domain.Json
 {
-	public class JsonObject : JsonElement
-	{
-		public Dictionary<string, IJsonElement> Content { get; set; }
+    public class JsonObject : JsonElement
+    {
+        public Dictionary<string, IJsonElement> Content { get; set; }
 
-		public JsonObject() : this(new Dictionary<string, IJsonElement>(StringComparer.OrdinalIgnoreCase)) { }
+        public JsonObject() : this(new Dictionary<string, IJsonElement>(StringComparer.OrdinalIgnoreCase)) { }
 
-		public JsonObject(string key, IJsonElement element)
-		{
-			Content = new Dictionary<string, IJsonElement>(StringComparer.OrdinalIgnoreCase);
-			Content[key] = element;
-		}
+        public JsonObject(string key, IJsonElement element)
+        {
+            Content = new Dictionary<string, IJsonElement>(StringComparer.OrdinalIgnoreCase);
+            Content[key] = element;
+        }
 
-		public JsonObject(Dictionary<string, string> data) : this(data.ToDictionary(kvp => kvp.Key, kvp => (IJsonElement)new JsonValue { Content = kvp.Value }, StringComparer.OrdinalIgnoreCase)) { }
-		public JsonObject(Dictionary<string, IJsonElement> content)
-		{
-			Content = content;
-		}
+        public JsonObject(Dictionary<string, string> data) : this(data.ToDictionary(kvp => kvp.Key, kvp => (IJsonElement)new JsonValue { Content = kvp.Value }, StringComparer.OrdinalIgnoreCase)) { }
+        public JsonObject(Dictionary<string, IJsonElement> content)
+        {
+            Content = content;
+        }
 
-		public bool IsEmpty()
-		{
-			return Content.Count == 0;
-		}
+        public bool IsEmpty()
+        {
+            return Content.Count == 0;
+        }
 
-		public override object GetContent()
-		{
-			return Content.ToDictionary(p => p.Key, p => p.Value?.GetContent());
-		}
+        public override object GetContent()
+        {
+            return Content.ToDictionary(p => p.Key, p => p.Value?.GetContent());
+        }
 
-		public override IJsonElement Map(Func<object, object> mapper)
-		{
-			if (Content == null)
-				return new JsonObject();
+        public override HashSet<string> GetPaths()
+        {
+            return Content.SelectMany(kvp => kvp.Value.GetPaths().Select(p => kvp.Key + (!string.IsNullOrEmpty(p) ? "." + p : ""))).ToHashSet();
+        }
 
-			return new JsonObject(Content.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.Map(mapper), StringComparer.OrdinalIgnoreCase));
-		}
+        public override JsonArray GetJsonArray(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+                throw new ArgumentException("The suggested empty json path does not exist on this json object");
 
-		public override HashSet<string> GetPaths()
-		{
-			return Content.SelectMany(kvp => kvp.Value.GetPaths().Select(p => kvp.Key + (!string.IsNullOrEmpty(p) ? "." + p : ""))).ToHashSet();
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+                throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
 
-		public override JsonArray GetJsonArray(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				throw new ArgumentException("The suggested empty json path does not exist on this json object");
+            return Content[currentPath].GetJsonArray(path);
+        }
 
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
+        public override JsonObject GetJsonObject(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+                return this;
 
-			return Content[currentPath].GetJsonArray(path);
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+                throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
 
-		public override JsonObject GetJsonObject(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				return this;
+            return Content[currentPath].GetJsonObject(path);
+        }
 
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
+        public override string GetJsonValue(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+                throw new ArgumentException("The suggested empty json path does not exist on this json object");
 
-			return Content[currentPath].GetJsonObject(path);
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+                throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
 
-		public override string GetJsonValue(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				throw new ArgumentException("The suggested empty json path does not exist on this json object");
+            return Content[currentPath].GetJsonValue(path);
+        }
 
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
+        public override bool HasJsonArray(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+                return false;
 
-			return Content[currentPath].GetJsonValue(path);
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+                return false;
 
-		public override bool HasJsonArray(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				return false;
+            return Content[currentPath].HasJsonArray(path);
+        }
 
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				return false;
+        public override bool HasJsonObject(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+                return true;
 
-			return Content[currentPath].HasJsonArray(path);
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+                return false;
 
-		public override bool HasJsonObject(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				return true;
+            return Content[currentPath].HasJsonObject(path);
+        }
 
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				return false;
+        public override bool HasJsonValue(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+                return false;
 
-			return Content[currentPath].HasJsonObject(path);
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+                return false;
 
-		public override bool HasJsonValue(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				return false;
+            return Content[currentPath].HasJsonValue(path);
+        }
 
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				return false;
+        public override bool HasKey(Queue<string> path)
+        {
+            if (path == null || path.Count == 0)
+            {
+                return true;
+            }
 
-			return Content[currentPath].HasJsonValue(path);
-		}
+            var currentPath = path.Dequeue();
+            if (!Content.ContainsKey(currentPath))
+            {
+                return false;
+            }
 
-		public override bool HasKey(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-			{
-				return true;
-			}
-
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-			{
-				return false;
-			}
-
-			return Content[currentPath].HasKey(path);
-		}
-
-		public override bool RemovePath(Queue<string> path)
-		{
-			if (path == null || path.Count == 0)
-				return false;
-
-			var currentPath = path.Dequeue();
-			if (!Content.ContainsKey(currentPath))
-				return false;
-
-			if (path.Count == 0)
-			{
-				Content.Remove(currentPath);
-				return true;
-			}
-
-			return Content[currentPath].RemovePath(path);
-		}
-	}
+            return Content[currentPath].HasKey(path);
+        }
+    }
 }
