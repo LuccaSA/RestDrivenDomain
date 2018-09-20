@@ -6,7 +6,7 @@ namespace RDD.Domain.Exceptions
     /// <summary>
     /// Should be used for functional exceptions.
     /// </summary>
-    public abstract class BusinessException : Exception, IStatusCodeException
+    public abstract class BusinessException : ApplicationException, IStatusCodeException
     {
         protected BusinessException(string message) 
             : base(message)

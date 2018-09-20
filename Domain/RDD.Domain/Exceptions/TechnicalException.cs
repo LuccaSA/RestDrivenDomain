@@ -7,7 +7,7 @@ namespace RDD.Domain.Exceptions
     /// Should be used for internal / technical exceptions only. 
     /// Will be translated as HttpStatusCode.InternalServerError : 500
     /// </summary>
-    public class TechnicalException : Exception, IStatusCodeException
+    public class TechnicalException : ApplicationException, IStatusCodeException
     {
         public TechnicalException(string message)
             : base(message)

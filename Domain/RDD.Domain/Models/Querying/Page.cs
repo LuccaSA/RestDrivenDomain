@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Exceptions;
+using System;
 
 namespace RDD.Domain.Models.Querying
 {
@@ -16,16 +17,16 @@ namespace RDD.Domain.Models.Querying
 
         protected Page(int offset, int limit, int maxLimit)
         {
-            var offsetConnditions = offset >= 0;
-            if (!offsetConnditions)
+            var offsetConditions = offset >= 0;
+            if (!offsetConditions)
             {
-                throw new OutOfRangeException("Paging offset should be greater than 0");
+                throw new BadRequestException("Paging offset should be greater than 0", new ArgumentOutOfRangeException(nameof(offset)));
             }
 
             var limitConditions = limit >= 1 && limit <= maxLimit;
             if (!limitConditions)
             {
-                throw new OutOfRangeException($"Paging limit should be between 1 and {maxLimit}");
+                throw new BadRequestException($"Paging limit should be between 1 and {maxLimit}", new ArgumentOutOfRangeException(nameof(limit)));
             }
 
             Offset = offset;
