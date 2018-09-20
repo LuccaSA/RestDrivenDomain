@@ -1,11 +1,19 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Runtime.Serialization;
 
 namespace RDD.Domain.Exceptions
 {
-    public class UnsupportedContentTypeException : BusinessException
+    [Serializable]
+    public sealed class UnsupportedContentTypeException : BusinessException
     {
         public UnsupportedContentTypeException(string message)
             : base(message)
+        {
+        }
+
+        private UnsupportedContentTypeException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 

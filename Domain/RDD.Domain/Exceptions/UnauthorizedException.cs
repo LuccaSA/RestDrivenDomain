@@ -1,11 +1,19 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Runtime.Serialization;
 
 namespace RDD.Domain.Exceptions
 {
-    public class UnauthorizedException : BusinessException
+    [Serializable]
+    public sealed class UnauthorizedException : BusinessException
     {
         public UnauthorizedException(string message)
             : base(message)
+        {
+        }
+
+        private UnauthorizedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 

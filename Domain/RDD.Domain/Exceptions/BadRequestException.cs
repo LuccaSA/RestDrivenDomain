@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace RDD.Domain.Exceptions
 {
+    [Serializable]
     public class BadRequestException : BusinessException
     { 
         public BadRequestException(string message) 
@@ -12,6 +14,11 @@ namespace RDD.Domain.Exceptions
 
         public BadRequestException(string message, Exception innerException) 
             : base(message, innerException)
+        {
+        }
+
+        protected BadRequestException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 
