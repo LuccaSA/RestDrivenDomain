@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Helpers;
+using RDD.Domain.Helpers.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -52,8 +53,9 @@ namespace RDD.Domain.Models.Querying
     public class Query<TEntity> : Query
         where TEntity : class
     {
+        public Fields = new ExpressionTree<TEntity>();
         public Filter<TEntity> Filter { get; set; }
-        public Queue<OrderBy<TEntity>> OrderBys { get; set; }
+        public List<OrderBy<TEntity>> OrderBys { get; set; }
 
         public Query()
             : base(HttpVerbs.Get, new Headers())
@@ -69,7 +71,7 @@ namespace RDD.Domain.Models.Querying
             OrderBys = new Queue<OrderBy<TEntity>>();
         }
 
-        public Query(Filter<TEntity> filters, Queue<OrderBy<TEntity>> orderBys, Headers headers, QueryPaging paging, QueryMetadata queryMetadata)
+        public Query(Filter<TEntity> filters, List<OrderBy<TEntity>> orderBys, Headers headers, QueryPaging paging, QueryMetadata queryMetadata)
             : base(HttpVerbs.Get, headers, paging, queryMetadata)
         {
             Filter = filters;

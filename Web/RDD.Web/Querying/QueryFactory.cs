@@ -23,6 +23,10 @@ namespace RDD.Web.Querying
         public Query<TEntity> NewFromHttpRequest<TEntity, TKey>(HttpVerbs? verb)
             where TEntity : class, IPrimaryKey<TKey>
         {
+            // TODO
+            var fields = new FieldsParser<TEntity>().ParseFields(parameters, isCollectionCall);
+            var filters = WebFiltersParser<TEntity>.Parse(parameters);
+            var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             return new Query<TEntity>(
                 new WebFiltersContainer<TEntity, TKey>(_queryParsers.WebFilterParser.ParseWebFilters<TEntity>()),
                 new Queue<OrderBy<TEntity>>(_queryParsers.OrderByParser.ParseOrderBys<TEntity>()),

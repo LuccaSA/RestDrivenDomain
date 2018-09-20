@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
@@ -8,15 +9,13 @@ using RDD.Web.Querying;
 using System;
 using System.Linq;
 using Xunit;
-
 namespace RDD.Domain.Tests
 {
     public class CollectionPropertiesTests : SingleContextTests
     {
         private readonly IRepository<User> _repo;
-        private readonly IReadOnlyRestCollection<User,int> _collection;
+        private readonly IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
-
         public CollectionPropertiesTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
@@ -30,12 +29,10 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(10);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-
             var result = await _collection.GetAsync(new Query<User>());
 
             Assert.Equal(10, result.Count());
         }
-
         [Fact]
         public async void Count_of_collection_should_tell_100_when_100_entities()
         {
@@ -47,7 +44,6 @@ namespace RDD.Domain.Tests
             
             Assert.Equal(100, q.QueryMetadata.TotalCount);
         }
-
         [Fact]
         public async void Count_of_collection_should_tell_10000_when_10000_entities()
         {

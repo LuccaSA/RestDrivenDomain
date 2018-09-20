@@ -13,6 +13,8 @@ namespace RDD.Web.Tests.Models
         public decimal Salary { get; set; }
         public Department Department { get; set; }
         public Guid PictureId { get; set; }
+        public DateTime? BirthDay { get; set; }
+        public DateTime ContractStart { get; set; }
 
         IUser ICloneable<IUser>.Clone()
         {
