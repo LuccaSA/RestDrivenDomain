@@ -130,18 +130,11 @@ namespace RDD.Infra.Helpers
         public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<Period>(value => BuildBinaryExpression(Between, field, value), values);
         protected virtual Expression Between(Expression leftExpression, Period value)
         {
-            if (value == null)
-            {
-                return Expression.Equal(leftExpression, Expression.Constant(value));
-            }
-            else
-            {
-                var expressionRightSince = Expression.Constant(value.Start, leftExpression.Type);
-                var expressionRightUntil = Expression.Constant(value.End, leftExpression.Type);
-                var sinceExpression = Expression.GreaterThanOrEqual(leftExpression, expressionRightSince);
-                var untilExpression = Expression.LessThanOrEqual(leftExpression, expressionRightUntil);
-                return Expression.AndAlso(sinceExpression, untilExpression);
-            }
+            var expressionRightSince = Expression.Constant(value.Start, leftExpression.Type);
+            var expressionRightUntil = Expression.Constant(value.End, leftExpression.Type);
+            var sinceExpression = Expression.GreaterThanOrEqual(leftExpression, expressionRightSince);
+            var untilExpression = Expression.LessThanOrEqual(leftExpression, expressionRightUntil);
+            return Expression.AndAlso(sinceExpression, untilExpression);
         }
 
         public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => BuildBinaryExpression(Starts, field, value), values);
