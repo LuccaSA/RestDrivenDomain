@@ -1,5 +1,9 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `CulturedDescriptionAttribute`, `CultureContext`, `IWebServicesCollection`, `WebService`, `Application`, `Enum`
+ - **Removed**: `IJsonElement.Map`, `IJsonElement.RemovePath`, most `Period` members
+ - **Modification**: `BusinessException` and `TechnicalException` ar now `ApplicationException`. Some exceptions constructors have been removed.
+ - **Removed**: `OutOfRangeException`. Prefer `BadRequestException` with an innerException of type `ArgumentOutOfRange`.
  - **Modification**: `FieldsParser<T>` -> `FieldsParser`. Methods now carry the generic argument. Thi allows for manipulation where the type is not known at design time.
  - **Modification**: `SerializerProvider._reflectionProvider` ->`SerializerProvider.ReflectionProvider`
  - **Modification**: `SerializerProvider._urlProvider_` ->`SerializerProvider.UrlProvider`
