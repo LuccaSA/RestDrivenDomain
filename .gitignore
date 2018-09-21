@@ -197,3 +197,4 @@ FakesAssemblies/
 /.vscode
 /.versionCounter
 /ComputeVersion.ps1
+VersionOverride.props
