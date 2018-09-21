@@ -15,7 +15,7 @@ namespace RDD.Infra.Storage
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
 
-        protected virtual IExpressionTree IncludeWhiteList { get; }
+        protected virtual PropertyTreeNode IncludeWhiteList { get; }
 
         public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
         {
@@ -103,9 +103,11 @@ namespace RDD.Infra.Storage
                 return entities;
             }
 
-            foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+            var interect = query.Fields.Intersection(IncludeWhiteList);
+
+            foreach (var path in interect.AsExpandedPaths<TEntity>())
             {
-                entities = entities.Include(prop.Name);
+                entities = entities.Include(path);
             }
 
             return entities;

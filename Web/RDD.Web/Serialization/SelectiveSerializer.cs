@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 
 namespace RDD.Web.Serialization
 {

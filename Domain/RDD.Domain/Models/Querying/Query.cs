@@ -53,7 +53,7 @@ namespace RDD.Domain.Models.Querying
     public class Query<TEntity> : Query
         where TEntity : class
     {
-        public IExpressionTree<TEntity> Fields { get; set; }
+        public PropertyTreeNode Fields { get; set; }
 
         public Filter<TEntity> Filter { get; set; }
         public List<OrderBy<TEntity>> OrderBys { get; set; }
@@ -61,7 +61,7 @@ namespace RDD.Domain.Models.Querying
         public Query()
             : base(HttpVerbs.Get, new Headers())
         {
-            Fields = new ExpressionTree<TEntity>();
+            Fields = null;
             Filter = new Filter<TEntity>();
             OrderBys = new List<OrderBy<TEntity>>();
         }
@@ -69,12 +69,12 @@ namespace RDD.Domain.Models.Querying
         public Query(QueryPaging paging)
             : base(HttpVerbs.Get, new Headers(), paging)
         {
-            Fields = new ExpressionTree<TEntity>();
+            Fields = null;
             Filter = new Filter<TEntity>();
             OrderBys = new List<OrderBy<TEntity>>();
         }
 
-        public Query(Filter<TEntity> filters, List<OrderBy<TEntity>> orderBys, IExpressionTree<TEntity> fields, Headers headers, QueryPaging paging, QueryMetadata queryMetadata)
+        public Query(Filter<TEntity> filters, List<OrderBy<TEntity>> orderBys, PropertyTreeNode fields, Headers headers, QueryPaging paging, QueryMetadata queryMetadata)
             : base(HttpVerbs.Get, headers, paging, queryMetadata)
         {
             Fields = fields;

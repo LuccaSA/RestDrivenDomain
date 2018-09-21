@@ -27,7 +27,7 @@ namespace RDD.Web.Querying
             return new Query<TEntity>(
                 new WebFiltersContainer<TEntity, TKey>(_queryParsers.WebFilterParser.ParseWebFilters<TEntity>()),
                 _queryParsers.OrderByParser.ParseOrderBys<TEntity>().ToList(),
-                _queryParsers.FieldsParser.ParseFields<TEntity>(),
+                _queryParsers.FieldsParser.ParseFields(),
                 _queryParsers.HeaderParser.ParseHeaders(),
                 _queryParsers.PagingParser.ParsePaging(),
                 _queryMetadata

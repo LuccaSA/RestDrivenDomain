@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Buffers;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using RDD.Web.Middleware;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Querying;
 
 namespace RDD.Web.Serialization
@@ -69,21 +67,8 @@ namespace RDD.Web.Serialization
 
         protected virtual object PreparePayload(OutputFormatterWriteContext context, out PropertyTreeNode node)
         {
-            if (context.HttpContext.Request.Query.TryGetValue(QueryTokens.Fields, out var fieldValues))
-            {
-                node = ParseFields(fieldValues);
-            }
-            else
-            {
-                node = null;
-            }
-
+            node = context.HttpContext.ParseFields();
             return context.Object;
-        }
-
-        protected virtual PropertyTreeNode ParseFields(StringValues values)
-        {
-            return values.SelectMany(QueryExpansionHelper.Expand).ParseNode();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Models;
 
@@ -57,10 +58,10 @@ namespace RDD.Web.Serialization
                 else
                 {
                     items.Children = node.Children;
-                    foreach (var n in items.Children.Values)
-                    {
-                        n.ParentNode = items;
-                    }
+                    //foreach (var n in items.Children.Values)
+                    //{
+                    //    n.ParentNode = items;
+                    //}
                 }
                 
                 node = root;
@@ -81,10 +82,10 @@ namespace RDD.Web.Serialization
                 if (node != null)
                 {
                     items.Children = node.Children;
-                    foreach (var n in items.Children.Values)
-                    {
-                        n.ParentNode = items;
-                    }
+                    //foreach (var n in items.Children.Values)
+                    //{
+                    //    n.ParentNode = items;
+                    //}
                 }
                 node = root;
                 return new Meta()
