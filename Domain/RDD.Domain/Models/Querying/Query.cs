@@ -27,14 +27,13 @@ namespace RDD.Domain.Models.Querying
             Filter = new Filter<TEntity>();
             OrderBys = new List<OrderBy<TEntity>>();
             Options = new Options();
-            Page = Page.Default;
+            Page = Page.Unlimited;
         }
 
         public Query(Expression<Func<TEntity, bool>> filter)
             : this()
         {
             Filter = new Filter<TEntity>(filter);
-            Page = Page.Max;
         }
 
         public Query(Query<TEntity> source)
@@ -51,7 +50,6 @@ namespace RDD.Domain.Models.Querying
         public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
             : this(source)
         {
-            Page = Page.Max;
             Filter = new Filter<TEntity>(filter);
         }
     }

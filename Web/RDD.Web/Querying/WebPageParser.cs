@@ -7,24 +7,24 @@ using System.Net;
 
 namespace RDD.Web.Querying
 {
-    public class PageParser<TEntity>
+    public class WebPageParser<TEntity>
         where TEntity : class
     {
-        public Page Parse(Dictionary<string, string> parameters)
+        public WebPage Parse(Dictionary<string, string> parameters)
         {
             if (parameters.ContainsKey(Reserved.paging.ToString()))
             {
                 return Parse(parameters[Reserved.paging.ToString()]);
             }
 
-            return Page.Default;
+            return WebPage.Default;
         }
 
-        protected Page Parse(string paging)
+        protected WebPage Parse(string paging)
         {
             if (paging == "1") //...&paging=1 <=> &paging=0,100
             {
-                return Page.Default;
+                return WebPage.Default;
             }
             else //...&paging=x,y
             {
@@ -45,7 +45,7 @@ namespace RDD.Web.Querying
                         throw new BadRequestException(String.Format("Limit value {0} not in correct format", elements[1]));
                     }
 
-                    return new Page(offset, limit);
+                    return new WebPage(offset, limit);
                 }
                 else
                 {
