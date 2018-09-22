@@ -1,14 +1,10 @@
-﻿using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Net;
 
 namespace RDD.Web.Querying
 {
-    public class WebPageParser<TEntity>
-        where TEntity : class
+    public class WebPageParser
     {
         public WebPage Parse(Dictionary<string, string> parameters)
         {

@@ -5,7 +5,7 @@ namespace RDD.Domain.Models.Querying
     public class Page
     {
         private const int MAX_LIMIT = int.MaxValue;
-        public static Page Unlimited = new Page(0, MAX_LIMIT);
+        public static readonly Page Unlimited = new Page(0, MAX_LIMIT);
 
         public int Offset { get; }
         public int Limit { get; }
