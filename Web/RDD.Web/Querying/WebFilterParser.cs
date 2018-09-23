@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using NExtends.Primitives.DateTimes;
-using RDD.Domain.Helpers;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
@@ -43,18 +42,11 @@ namespace RDD.Web.Querying
             var parser = new ExpressionParser();
             foreach (var kv in _httpContextAccessor.HttpContext.Request.Query)
             {
-                if (string.IsNullOrEmpty(kv.Key))
+                if (string.IsNullOrEmpty(kv.Key) || _queryTokens.IsTokenReserved(kv.Key))
                 {
                     continue;
-                }
-
-                var key = kv.Key.Split('.')[0];
-
-                if (_queryTokens.IsTokenReserved(kv.Key))
-                {
-                    continue;
-                }
-
+                } 
+                 
                 foreach (var stringValue in kv.Value)
                 {
                     var parts = stringValue.Split(',').ToList();
@@ -69,7 +61,7 @@ namespace RDD.Web.Querying
                         parts.RemoveAt(0); //On vire l'entrée qui correspondait en fait au mot clé
                     }
 
-                    var values = service.ConvertWhereValues(parts, typeof(TEntity), key);
+                    var values = service.ConvertWhereValues(parts, typeof(TEntity), kv.Key);
 
                     //cas spécial pour between (filtre sur un department => decimals, != datetime)
                     if (operand is WebFilterOperand.Between && values.Count == 2 && values[0] is DateTime?)
@@ -77,7 +69,7 @@ namespace RDD.Web.Querying
                         values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
                     }
 
-                    var selector = parser.ParseChain<TEntity>(key);
+                    var selector = parser.ParseChain<TEntity>(kv.Key);
 
                     yield return new WebFilter<TEntity>(selector, operand, values);
                 }

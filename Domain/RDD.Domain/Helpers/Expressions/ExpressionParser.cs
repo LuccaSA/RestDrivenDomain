@@ -17,6 +17,7 @@ namespace RDD.Domain.Helpers.Expressions
 
         public IExpressionChain ParseChain<TClass>(string input)
             => TreeToChain(ParseTree<TClass>(input));
+
         public IExpressionChain ParseChain(Type classType, string input)
             => TreeToChain(ParseTree(classType, input));
 
@@ -67,19 +68,18 @@ namespace RDD.Domain.Helpers.Expressions
         private TTree ParseTree<TTree>(TTree result, Type classType, string input)
             where TTree : ExpressionTree
         {
-            var tree = new TreeParser().Parse(input);
+            var tree = PropertyTreeNode.ParseFields(input);
             foreach (var subTree in tree.Children)
             {
-                result.Children.Add(Parse(classType, subTree));
+                result.Children.Add(Parse(classType, subTree.Value));
             }
-
             return result;
         }
 
-        IExpressionTree Parse(Type classType, Tree<string> tree)
+        IExpressionTree Parse(Type classType, PropertyTreeNode tree)
         {
-            var expression = GetExpression(classType, tree.Node);
-            return new ExpressionTree { Node = expression, Children = tree.Children.Select(c => Parse(expression.ResultType, c)).ToList() };
+            var expression = GetExpression(classType, tree.Name.ToString());
+            return new ExpressionTree { Node = expression, Children = tree.Children?.Select(c => Parse(expression.ResultType, c.Value)).ToList() };
         }
 
         IExpression GetExpression(Type classType, string member)

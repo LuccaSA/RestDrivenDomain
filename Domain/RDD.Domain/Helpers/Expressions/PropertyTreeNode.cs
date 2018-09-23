@@ -19,7 +19,7 @@ namespace RDD.Domain.Helpers.Expressions
             Name = name;
         }
 
-        public PropertyTreeNode ParentNode { get; internal set; }
+        public PropertyTreeNode ParentNode { get; }
 
         /// <summary>
         /// Should corresponds to a property name, case insensitive

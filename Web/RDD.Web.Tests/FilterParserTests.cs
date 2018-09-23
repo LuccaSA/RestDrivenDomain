@@ -24,6 +24,15 @@ namespace RDD.Web.Tests
         }
 
         [Fact]
+        public void LikeOperationOnStringShouldWork()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = QueryString.Create("myValueObject.name", "like,abcd");
+            QueryFactoryHelper.NewQueryFactory(httpContext)
+                .NewFromHttpRequest<User, int>(HttpVerbs.Get);
+        }
+
+        [Fact]
         public void FilterKeywordsShouldBeCaseInsensitive()
         {
             var httpContext = new DefaultHttpContext();
