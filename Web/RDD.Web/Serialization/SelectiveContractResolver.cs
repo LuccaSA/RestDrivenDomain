@@ -11,7 +11,7 @@ namespace RDD.Web.Serialization
     {
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
-            var property = base.CreateProperty(member, memberSerialization);
+            JsonProperty property = base.CreateProperty(member, memberSerialization);
             property.ShouldSerialize = instance => SelectiveSerialisationContext.Current.IsCurrentNodeDefined(property.PropertyName);
             return property;
         }

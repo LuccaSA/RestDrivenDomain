@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using RDD.Domain;
 using RDD.Domain.Helpers.Expressions;
+using RDD.Web.Controllers;
 using RDD.Web.Querying;
+using RDD.Web.Tests.Models;
 using Xunit;
 
 namespace RDD.Web.Tests.Serialization

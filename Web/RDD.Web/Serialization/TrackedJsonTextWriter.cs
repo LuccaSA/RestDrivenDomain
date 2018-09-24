@@ -9,31 +9,34 @@ namespace RDD.Web.Serialization
         public TrackedJsonTextWriter(TextWriter textWriter, PropertyTreeNode node)
             : base(textWriter)
         {
-            SelectiveSerialisationContext.Current = new SelectiveSerialisationContext(node);
+            _selectiveSerializationContext = new SelectiveSerialisationContext(node);
+            SelectiveSerialisationContext.Current = _selectiveSerializationContext;
         }
 
-        public override void WriteEndObject()
-        {
-            SelectiveSerialisationContext.Current.Pop();
-            base.WriteEndObject();
-        }
-
-        public override void WriteEndArray()
-        {
-            SelectiveSerialisationContext.Current.Pop();
-            base.WriteEndArray();
-        }
-
+        private readonly SelectiveSerialisationContext _selectiveSerializationContext;
+        
         public override void WriteStartArray()
         {
-            SelectiveSerialisationContext.Current.Push();
+            _selectiveSerializationContext.Push();
             base.WriteStartArray();
         }
 
         public override void WriteStartObject()
         {
-            SelectiveSerialisationContext.Current.Push();
+            _selectiveSerializationContext.Push();
             base.WriteStartObject();
+        }
+
+        public override void WriteEndArray()
+        {
+            _selectiveSerializationContext.Pop();
+            base.WriteEndArray();
+        }
+
+        public override void WriteEndObject()
+        {
+            _selectiveSerializationContext.Pop();
+            base.WriteEndObject();
         }
 
         protected override void Dispose(bool disposing)

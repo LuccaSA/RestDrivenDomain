@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,12 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Domain;
-using RDD.Domain.Patchers;
 using RDD.Domain.WebServices;
-using RDD.Infra;
-using RDD.Infra.Storage;
 using RDD.Web.Helpers;
-using RDD.Web.Serialization;
+using RDD.Web.Tests.Models;
 
 namespace RDD.Web.Tests.ServerMock
 {
@@ -29,11 +29,11 @@ namespace RDD.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ExchangeRateDbContext>(o => {
+            services.AddDbContext<TestDbContext>(o => {
                     o.UseInMemoryDatabase("Add_writes_to_database");
                 });
 
-            services.AddScoped<DbContext>(s => s.GetRequiredService<ExchangeRateDbContext>());
+            services.AddScoped<DbContext>(s => s.GetRequiredService<TestDbContext>());
             
             services.AddRdd();
             services.AddRddRights<CombinationsHolder, CurPrincipal>();
@@ -47,7 +47,7 @@ namespace RDD.Web.Tests.ServerMock
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, DbContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -56,6 +56,12 @@ namespace RDD.Web.Tests.ServerMock
             app.UseStatusCodePages();
 
             app.UseRdd();
+
+            // sample data
+            if (dbContext != null)
+            {
+                FeedTestData(dbContext);
+            }
 
             app.UseMvc(routes =>
             {
@@ -66,6 +72,48 @@ namespace RDD.Web.Tests.ServerMock
                     template: "{controller}/{action}/{id?}",
                     defaults: new { controller = "Ping", action = "Status" });  
             });
+        }
+
+        private static void FeedTestData(DbContext dbContext)
+        {
+            dbContext.Add(new User
+            {
+                Id = 1,
+                BirthDay = DateTime.Today.AddYears(-42),
+                ContractStart =  DateTime.Today.AddYears(-2),
+                Department = new Department
+                {
+                    Id = 1,
+                    Name = "Dep"
+                },
+                Name = "John",
+                PictureId = Guid.NewGuid(),
+                Salary = 42,
+                TwitterUri = new Uri("https://twitter.com/john"),
+                MyValueObject = new MyValueObject
+                {
+                    Id = 1,
+                    Name = "abcs"
+                },
+                Files = new List<UserFile>
+                {
+                    new UserFile
+                    {
+                        Id = Guid.NewGuid(),
+                        DateUpload = DateTime.Now.AddHours(-24),
+                        FileDescriptor = new FileDescriptor
+                        {
+                            Id = Guid.NewGuid(),
+                            FileName = "thefile.jpg"
+                        }
+                    }
+                }
+            });
+            dbContext.SaveChanges();
+
+            var tmp = dbContext.Set<Department>().ToList();
+            var tmp2 = dbContext.Set<User>().ToList();
+            ;
         }
     }
 }
