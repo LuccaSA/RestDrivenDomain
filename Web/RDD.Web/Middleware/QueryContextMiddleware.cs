@@ -7,18 +7,16 @@ namespace RDD.Web.Middleware
     public class QueryContextMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly QueryMetadata _queryMetadata;
 
-        public QueryContextMiddleware(RequestDelegate next, QueryMetadata queryMetadata)
+        public QueryContextMiddleware(RequestDelegate next)
         {
             _next = next;
-            _queryMetadata = queryMetadata;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context, QueryMetadata queryMetadata)
         {
-            _queryMetadata.StartWatch();
-            await _next(context);
+            queryMetadata.StartWatch();
+            return _next(context);
         }
     }
 }

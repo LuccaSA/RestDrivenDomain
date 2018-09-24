@@ -19,7 +19,7 @@ namespace RDD.Domain.Helpers.Expressions
             Name = name;
         }
 
-        public PropertyTreeNode ParentNode { get; }
+        public PropertyTreeNode ParentNode { get; private set; }
 
         /// <summary>
         /// Should corresponds to a property name, case insensitive
@@ -30,7 +30,31 @@ namespace RDD.Domain.Helpers.Expressions
 
         public string Path
         {
-            get { return ParentNode == null || StringSegment.IsNullOrEmpty(ParentNode.Path) ? Name.Value : ParentNode.Path + "." + Name; }
+            get
+            {
+                var stack = new Stack<PropertyTreeNode>();
+                PropertyTreeNode current = this;
+                while (current != null)
+                {
+                    stack.Push(current);
+                    current = current.ParentNode;
+                }
+                var sb = new StringBuilder();
+                while (stack.Count != 0)
+                {
+                    PropertyTreeNode node = stack.Pop();
+                    if (StringSegment.IsNullOrEmpty(node.Name))
+                    {
+                        continue;
+                    }
+                    sb.Append(node.Name);
+                    if (stack.Count != 0)
+                    {
+                        sb.Append('.');
+                    }
+                }
+                return sb.ToString();
+            }
         }
 
         public PropertyTreeNode GetOrCreateChildNode(StringSegment name)
@@ -53,6 +77,15 @@ namespace RDD.Domain.Helpers.Expressions
 
         public override string ToString() => Path;
 
+        public PropertyTreeNode Reparent(PropertyTreeNode newParent)
+        {
+            newParent.Children = Children;
+            foreach (var n in newParent.Children.Values)
+            {
+                n.ParentNode = newParent;
+            }
+            return newParent;
+        }
 
         public PropertyTreeNode Intersection(PropertyTreeNode other) => this.Intersect(other);
 

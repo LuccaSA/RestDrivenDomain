@@ -28,7 +28,7 @@ namespace RDD.Web.Serialization
         {
             var data = base.PreparePayload(context, out node);
 
-            QueryMetadata queryMetadata = context.GetService<QueryMetadata>();
+            var queryMetadata = context.GetService<QueryMetadata>();
 
             var metaHeader = new MetaHeader()
             {
@@ -41,10 +41,10 @@ namespace RDD.Web.Serialization
             };
 
             // in case of collection, returned json have a specific Items field
+            var root = PropertyTreeNode.NewRoot();
             if (context.ObjectType.GetInterfaces().Contains(typeof(IEnumerable)))
             {
                 // include the Meta paths, with Items
-                PropertyTreeNode root = PropertyTreeNode.NewRoot();
                 root.GetOrCreateChildNode("Header");
                 var items = root.GetOrCreateChildNode("Data")
                     .GetOrCreateChildNode("Items");
@@ -57,16 +57,12 @@ namespace RDD.Web.Serialization
                 }
                 else
                 {
-                    items.Children = node.Children;
-                    //foreach (var n in items.Children.Values)
-                    //{
-                    //    n.ParentNode = items;
-                    //}
+                    node.Reparent(items);
                 }
-                
+
                 node = root;
 
-                return new Meta()
+                return new Meta
                 {
                     Header = metaHeader,
                     Data = new MetaItems { Items = data }
@@ -75,25 +71,20 @@ namespace RDD.Web.Serialization
             else
             {
                 // include the Meta paths, with Data
-                PropertyTreeNode root = PropertyTreeNode.NewRoot();
                 root.GetOrCreateChildNode("Header");
                 var items = root.GetOrCreateChildNode("Data");
+                
                 // If no node structure defined, the whole Data is serialiazed
-                if (node != null)
-                {
-                    items.Children = node.Children;
-                    //foreach (var n in items.Children.Values)
-                    //{
-                    //    n.ParentNode = items;
-                    //}
-                }
+                node?.Reparent(items);
                 node = root;
-                return new Meta()
+
+                return new Meta
                 {
                     Header = metaHeader,
                     Data = data
                 };
             }
         }
+         
     }
 }
