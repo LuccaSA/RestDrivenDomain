@@ -85,7 +85,8 @@ namespace RDD.Web.Helpers
         public static IServiceCollection AddRddSerialization(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, RddSerializationSetup>());
-            services.TryAddScoped<IUrlProvider, UrlProvider>();
+            services.TryAddSingleton<IUrlProvider, UrlProvider>();
+            services.TryAddSingleton<IPluralizationService>(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))));
             services.Configure<MvcJsonOptions>(jsonOptions =>
             {
                 jsonOptions.SerializerSettings.ContractResolver = new SelectiveContractResolver();
@@ -106,6 +107,7 @@ namespace RDD.Web.Helpers
         /// <returns></returns>
         public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
         {
+            SelectiveContractResolver.UrlProvider = app.ApplicationServices.GetRequiredService<IUrlProvider>();
             return app
                 .UseMiddleware<QueryContextMiddleware>()
                 .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
