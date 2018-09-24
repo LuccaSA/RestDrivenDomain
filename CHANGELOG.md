@@ -1,5 +1,8 @@
 # Change log
 
+### New features
+- Paging is now unlimited inside Infra layer, while stay limited to 10 - 1000 items for incoming web requests.
+
 ## 1.2
 
 ### Breaking changes
