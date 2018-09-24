@@ -13,6 +13,7 @@ namespace RDD.Domain.Tests
             var input = @"[{""key"": 1}, {""key"": 2}]";
             var json = new JsonParser().Parse(input);
 
+            Assert.True(json.HasJsonArray((string)null));
             Assert.True(json.HasJsonArray(""));
             Assert.True(json.HasJsonObject("0"));
             Assert.True(json.HasJsonValue("0.key"));
@@ -26,6 +27,24 @@ namespace RDD.Domain.Tests
             Assert.Single(jObject.GetContent() as Dictionary<string, object>);
 
             Assert.Equal("1", json.GetJsonValue("0.key"));
+        }
+
+        [Fact]
+        public void JsonErrorCases()
+        {
+            var input = @"[{""key"": 1}, {""key"": 2}]";
+            var json = new JsonParser().Parse(input);
+
+            Assert.False(json.HasJsonArray("0"));
+            Assert.False(json.HasJsonValue("0"));
+            Assert.False(json.HasJsonObject(""));
+
+            Assert.Throws<ArgumentException>(() => json.GetJsonArray("0"));
+            Assert.Throws<ArgumentException>(() => json.GetJsonArray("key"));
+            Assert.Throws<ArgumentException>(() => json.GetJsonValue("0"));
+            Assert.Throws<ArgumentException>(() => json.GetJsonValue("0.path"));
+            Assert.Throws<ArgumentException>(() => json.GetJsonObject(""));
+            Assert.Throws<ArgumentException>(() => json.GetJsonObject("0.path"));
         }
     }
 }
