@@ -67,5 +67,11 @@ namespace RDD.Web.Tests
                 ISelection<User> result = await _collection.GetAsync(query);
             });
         }
+
+        [Fact]
+        public void Paging_should_start_at_0_result()
+        {
+            Assert.Throws<BadRequestException>(() => new Query<User> { Page = new Page(-10, 10) });
+        }
     }
 }

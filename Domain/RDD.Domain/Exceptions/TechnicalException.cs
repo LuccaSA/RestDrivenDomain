@@ -27,5 +27,11 @@ namespace RDD.Domain.Exceptions
         }
 
         public HttpStatusCode StatusCode => HttpStatusCode.InternalServerError;
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(StatusCode), StatusCode);
+        }
     }
 }
