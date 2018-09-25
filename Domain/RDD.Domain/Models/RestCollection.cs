@@ -66,7 +66,7 @@ namespace RDD.Domain.Models
         {
             ForgeEntity(entity);
 
-            if (!await ValidateEntityAsync(entity, null) || !await OnBeforeCreate(entity))
+            if (!await ValidateEntityAsync(entity, null) || !await OnBeforeCreateAsync(entity))
             {
                 return null;
             }
@@ -81,7 +81,7 @@ namespace RDD.Domain.Models
         /// </summary>
         /// <param name="entity">The entity</param>
         /// <returns>false if the entity should not be created</returns>
-        protected virtual Task<bool> OnBeforeCreate(TEntity entity) => Task.FromResult(true);
+        protected virtual Task<bool> OnBeforeCreateAsync(TEntity entity) => Task.FromResult(true);
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
@@ -103,7 +103,7 @@ namespace RDD.Domain.Models
                 return null;
             }
 
-            bool updated = await UpdateEntityCore(id, entity, oldEntity);
+            bool updated = await UpdateEntityCoreAsync(id, entity, oldEntity);
 
             return updated ? entity : oldEntity;
         }
@@ -174,12 +174,12 @@ namespace RDD.Domain.Models
 
             await OnAfterPatchEntityAsync(oldEntity, newEntity, candidate, query);
             
-            bool updated = await UpdateEntityCore((TKey)newEntity.GetId(), newEntity, oldEntity);
+            bool updated = await UpdateEntityCoreAsync((TKey)newEntity.GetId(), newEntity, oldEntity);
 
             return updated ? newEntity : oldEntity;
         }
 
-        private async Task<bool> UpdateEntityCore(TKey id, TEntity entity, TEntity oldEntity)
+        private async Task<bool> UpdateEntityCoreAsync(TKey id, TEntity entity, TEntity oldEntity)
         {
             if (!await ValidateEntityAsync(entity, oldEntity) || !await OnBeforeUpdateEntityAsync(entity))
             {
