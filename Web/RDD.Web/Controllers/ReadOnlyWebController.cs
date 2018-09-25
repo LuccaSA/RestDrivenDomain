@@ -22,7 +22,7 @@ namespace RDD.Web.Controllers
         }
     }
 
-    [Produces(MetaSelectiveJsonOutputFormatter.MetaDataContentType, SelectiveJsonOutputFormatter.SelectiveContentType)]
+    [Produces(MetaSelectiveJsonOutputFormatter.MetaDataContentType)]
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
         where TAppController : IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>

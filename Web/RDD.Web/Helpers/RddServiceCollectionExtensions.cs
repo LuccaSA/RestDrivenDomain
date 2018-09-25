@@ -17,6 +17,7 @@ using RDD.Web.Serialization.UrlProviders;
 using System;
 using System.Buffers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using RDD.Web.Querying;
 
@@ -91,6 +92,7 @@ namespace RDD.Web.Helpers
             services.Configure<MvcJsonOptions>(jsonOptions =>
             {
                 jsonOptions.SerializerSettings.ContractResolver = new SelectiveContractResolver();
+                jsonOptions.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
             return services;
         }
@@ -130,6 +132,7 @@ namespace RDD.Web.Helpers
 
         public void Configure(MvcOptions options)
         {
+            options.OutputFormatters.Add(new JsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
             options.OutputFormatters.Add(new MetaSelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
             options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
         }

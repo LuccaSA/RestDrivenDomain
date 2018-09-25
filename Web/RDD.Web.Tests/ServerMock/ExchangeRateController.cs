@@ -22,7 +22,7 @@ namespace RDD.Web.Tests.ServerMock
 
         [HttpGet]
         public override Task<ActionResult<IEnumerable<ExchangeRate>>> GetAsync() => base.GetAsync();
-         
+
         [HttpGet("{id}")]
         public override Task<ActionResult<ExchangeRate>> GetByIdAsync(int id) => base.GetByIdAsync(id);
 
@@ -37,5 +37,17 @@ namespace RDD.Web.Tests.ServerMock
 
         [HttpDelete("{id}")]
         public override Task<ActionResult> DeleteByIdAsync(int id) => base.DeleteByIdAsync(id);
+    }
+
+    [Route("NonRdd")]
+    public class NonRddController : ControllerBase
+    {
+        [HttpGet]
+        public ActionResult<NonRddObject> GetData() => Ok(new NonRddObject { Data = "Hello World" });
+    }
+    
+    public class NonRddObject
+    {
+        public string Data { get; set; }
     }
 }

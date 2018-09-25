@@ -30,6 +30,8 @@ namespace RDD.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             services.AddDbContext<TestDbContext>(o =>
             {
                 o.UseInMemoryDatabase("Add_writes_to_database");
@@ -41,8 +43,6 @@ namespace RDD.Web.Tests.ServerMock
 
             services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
-
-            services.AddMvc();
 
             services.AddLogging();
         }

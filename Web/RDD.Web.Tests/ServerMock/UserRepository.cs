@@ -8,7 +8,8 @@ using RDD.Infra;
 using RDD.Infra.Storage;
 using RDD.Web.Tests.Models;
 
-namespace RDD.Web.Tests.ServerMock {
+namespace RDD.Web.Tests.ServerMock
+{
     public class UserRepository : Repository<User>
     {
         public UserRepository(IStorageService storageService, IRightExpressionsHelper<User> rightExpressionsHelper)

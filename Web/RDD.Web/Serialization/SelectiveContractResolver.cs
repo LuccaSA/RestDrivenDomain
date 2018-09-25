@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RDD.Domain;
@@ -21,7 +20,10 @@ namespace RDD.Web.Serialization
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
-            property.ShouldSerialize = instance => SelectiveSerialisationContext.Current.IsCurrentNodeDefined(property.PropertyName);
+            if (SelectiveSerialisationContext.Current != null)
+            {
+                property.ShouldSerialize = instance => SelectiveSerialisationContext.Current.IsCurrentNodeDefined(property.PropertyName);
+            }
             return property;
         }
 
@@ -29,7 +31,7 @@ namespace RDD.Web.Serialization
         {
             var props = base.CreateProperties(type, memberSerialization);
 
-            if (typeof(IEntityBase).IsAssignableFrom(type))
+            if (SelectiveSerialisationContext.Current != null && typeof(IEntityBase).IsAssignableFrom(type))
             {
                 string urlName = "Url";
                 if (props.Any(i => i.PropertyName == "Url"))
@@ -46,29 +48,7 @@ namespace RDD.Web.Serialization
                     Writable = false
                 });
             }
-
             return props;
-        }
-    }
-
-    public class UrlValueProvider : IValueProvider
-    {
-        private readonly IUrlProvider _urlProvider;
-
-        public UrlValueProvider(IUrlProvider urlProvider)
-        {
-            _urlProvider = urlProvider;
-        }
-
-        public void SetValue(object target, object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetValue(object target)
-        {
-            var uri = _urlProvider.GetEntityApiUri(target as IPrimaryKey);
-            return uri.ToString();
         }
     }
 }
