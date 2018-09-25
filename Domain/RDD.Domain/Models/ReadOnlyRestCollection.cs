@@ -1,10 +1,9 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinqKit;
 
 namespace RDD.Domain.Models
 {
@@ -58,6 +57,8 @@ namespace RDD.Domain.Models
                 items = await Repository.PrepareAsync(items, query);
             }
 
+            await OnAfterGetAsync(items);
+
             return new Selection<TEntity>(items, count);
         }
 
@@ -81,14 +82,22 @@ namespace RDD.Domain.Models
         /// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
+        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query = null)
         {
-            return (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
+            Query<TEntity> q;
+            if (query == null)
+            {
+                q = new Query<TEntity>(e => e.Id.Equals(id));
+            }
+            else
+            {
+                q = query;
+                q.Filter = new Filter<TEntity>(q.Filter.Expression.And(e => e.Id.Equals(id)));
+            }
+            var result = await GetAsync(q);
+            return result.Items.FirstOrDefault();
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
-
-        public Task<TEntity> GetByIdAsync(TKey id)
-            => GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Get });
     }
 }
