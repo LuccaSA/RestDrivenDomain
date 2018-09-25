@@ -7,7 +7,6 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.1.1" />
-    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.15" />
     <PackageReference Include="NExtends" Version="2.2.2" />
   </ItemGroup>
 

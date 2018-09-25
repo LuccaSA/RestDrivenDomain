@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LinqKit;
+using NExtends.Expressions;
 
 namespace RDD.Domain.Models
 {
@@ -92,7 +92,7 @@ namespace RDD.Domain.Models
             else
             {
                 q = query;
-                q.Filter = new Filter<TEntity>(q.Filter.Expression.And(e => e.Id.Equals(id)));
+                q.Filter = new Filter<TEntity>(q.Filter.Expression.AndAlso(e => e.Id.Equals(id)));
             }
             var result = await GetAsync(q);
             return result.Items.FirstOrDefault();
