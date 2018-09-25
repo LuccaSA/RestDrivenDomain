@@ -18,6 +18,7 @@ using System;
 using System.Buffers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
 using RDD.Web.Querying;
 
@@ -118,7 +119,7 @@ namespace RDD.Web.Helpers
                 .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
-
+     
     public class RddSerializationSetup : IConfigureOptions<MvcOptions>
     {
         private readonly IOptions<MvcJsonOptions> _jsonOptions;
@@ -132,7 +133,9 @@ namespace RDD.Web.Helpers
 
         public void Configure(MvcOptions options)
         {
-            options.OutputFormatters.Add(new JsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
+            options.ReturnHttpNotAcceptable = true;
+            options.OutputFormatters.RemoveType<JsonOutputFormatter>();
+            options.OutputFormatters.Add(new RddJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
             options.OutputFormatters.Add(new MetaSelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
             options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
         }

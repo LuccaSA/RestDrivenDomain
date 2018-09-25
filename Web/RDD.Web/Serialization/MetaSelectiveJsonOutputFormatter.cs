@@ -85,6 +85,7 @@ namespace RDD.Web.Serialization
                 };
             }
         }
-         
+
+        public override bool CanWriteResult(OutputFormatterCanWriteContext context) => context.ContentType == MetaDataContentType;
     }
 }

@@ -10,10 +10,33 @@ using RDD.Web.Querying;
 
 namespace RDD.Web.Serialization
 {
+    public class RddJsonOutputFormatter : JsonOutputFormatter
+    {
+        public RddJsonOutputFormatter(JsonSerializerSettings serializerSettings, ArrayPool<char> charPool) 
+            : base(serializerSettings, charPool) { }
+
+        public override bool CanWriteResult(OutputFormatterCanWriteContext context)
+        {
+            // C# WebClient doesn't specify requested content type by default. Without explicit content-type,
+            // the DefaultOutputFormatterSelector ignore the metadata content-type part on selection. Here we
+            // ensure our two custom Json content-type are resolved correctly with specific ProduceAttribute
+            // and without any requested content-type
+            if (context.ContentType == MetaSelectiveJsonOutputFormatter.MetaDataContentType)
+            {
+                return false;
+            }
+            if (context.ContentType == SelectiveJsonOutputFormatter.SelectiveContentType)
+            {
+                return false;
+            }
+            return base.CanWriteResult(context);
+        }
+    }
+
     /// <summary>
     /// Selective JsonOutputFormatter letting choose which properties you want to serialize
     /// </summary>
-    public class SelectiveJsonOutputFormatter : JsonOutputFormatter
+    public class SelectiveJsonOutputFormatter : RddJsonOutputFormatter
     {
         private readonly IArrayPool<char> _charPool;
 
@@ -70,5 +93,7 @@ namespace RDD.Web.Serialization
             node = context.HttpContext.ParseFields();
             return context.Object;
         }
+
+        public override bool CanWriteResult(OutputFormatterCanWriteContext context) => context.ContentType == SelectiveContentType;
     }
 }
