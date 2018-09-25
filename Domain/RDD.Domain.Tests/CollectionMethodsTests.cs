@@ -105,7 +105,7 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>(){ CheckRights = false }; 
 
-                await users.CreateAsync(user, query);
+                await users.CreateAsync(user);
 
                 await storage.SaveChangesAsync();
 
@@ -125,7 +125,7 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var query = new Query<User>() { CheckRights = false }; 
 
-                await users.CreateAsync(user, query);
+                await users.CreateAsync(user);
 
                 await storage.SaveChangesAsync();
 

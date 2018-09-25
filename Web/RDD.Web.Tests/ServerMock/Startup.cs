@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,14 +30,14 @@ namespace RDD.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<TestDbContext>(o => {
-                    o.UseInMemoryDatabase("Add_writes_to_database");
-                });
+            services.AddDbContext<TestDbContext>(o =>
+            {
+                o.UseInMemoryDatabase("Add_writes_to_database");
+            });
 
             services.AddScoped<DbContext>(s => s.GetRequiredService<TestDbContext>());
-            
-            services.AddRdd();
-            services.AddRddRights<CombinationsHolder, CurPrincipal>();
+
+            services.AddRdd<CombinationsHolder, CurPrincipal>();
 
             services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
@@ -54,33 +55,40 @@ namespace RDD.Web.Tests.ServerMock
                 app.UseDeveloperExceptionPage();
             }
             app.UseStatusCodePages();
-
             app.UseRdd();
 
             // sample data
-            if (dbContext != null)
-            {
-                FeedTestData(dbContext);
-            }
+            FeedTestData(dbContext);
 
             app.UseMvc(routes =>
             {
-                routes.MapRddDefaultRoutes();
-
                 routes.MapRoute(
                     name: "default_route",
                     template: "{controller}/{action}/{id?}",
-                    defaults: new { controller = "Ping", action = "Status" });  
+                    defaults: new { controller = "Ping", action = "Status" });
             });
         }
 
-        private static void FeedTestData(DbContext dbContext)
+        private static void FeedTestData([NotNull] DbContext dbContext)
         {
+            if (dbContext == null)
+            {
+                throw new ArgumentNullException(nameof(dbContext));
+            }
+
+            for (int i = 0; i < 42; i++)
+            {
+                dbContext.Add(new ExchangeRate
+                {
+                    Name = i.ToString()
+                });
+            }
+
             dbContext.Add(new User
             {
                 Id = 1,
                 BirthDay = DateTime.Today.AddYears(-42),
-                ContractStart =  DateTime.Today.AddYears(-2),
+                ContractStart = DateTime.Today.AddYears(-2),
                 Department = new Department
                 {
                     Id = 1,
@@ -110,10 +118,6 @@ namespace RDD.Web.Tests.ServerMock
                 }
             });
             dbContext.SaveChanges();
-
-            var tmp = dbContext.Set<Department>().ToList();
-            var tmp2 = dbContext.Set<User>().ToList();
-            ;
         }
     }
 }

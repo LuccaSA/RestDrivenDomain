@@ -1,4 +1,5 @@
-﻿using RDD.Domain;
+﻿using System;
+using RDD.Domain;
 using RDD.Domain.Rights;
 using System.Collections.Generic;
 using RDD.Domain.Models.Querying;
@@ -21,6 +22,13 @@ namespace RDD.Infra.Storage
         public virtual void AddRange(IEnumerable<TEntity> entities)
         {
             StorageService.AddRange(entities);
+        }
+
+        public virtual bool Update<T,TKey>(TKey id, TEntity entity)
+            where T : class, TEntity, IEntityBase<T, TKey>
+            where TKey : IEquatable<TKey>
+        {
+            return StorageService.Update(id, entity as T);
         }
 
         public virtual void Remove(TEntity entity)

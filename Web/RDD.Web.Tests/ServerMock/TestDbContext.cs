@@ -8,8 +8,10 @@ namespace RDD.Web.Tests.ServerMock
             : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ExchangeRate>();
             modelBuilder.ApplyConfiguration(new UserDbConfiguration());
         }
     }

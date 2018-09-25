@@ -41,37 +41,24 @@ namespace RDD.Web.Controllers
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
-        public Task<ActionResult<IEnumerable<TEntity>>> GetAsync()
+        public virtual async Task<ActionResult<IEnumerable<TEntity>>> GetAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
             {
-                return ProtectedGetAsync();
+                return NotFound();
             }
-            return Task.FromResult((ActionResult<IEnumerable<TEntity>>)NotFound());
-        }
-
-        public Task<ActionResult<TEntity>> GetByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
-            {
-                return ProtectedGetAsync(id);
-            }
-            return Task.FromResult((ActionResult<TEntity>)NotFound());
-        }
-
-        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedGetAsync()
-        {
             Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Get);
-
             IEnumerable<TEntity> entity = await AppController.GetAsync(query);
-
             return Ok(entity);
         }
 
-        protected virtual async Task<ActionResult<TEntity>> ProtectedGetAsync(TKey id)
+        public virtual async Task<ActionResult<TEntity>> GetByIdAsync(TKey id)
         {
-            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity,TKey>(HttpVerbs.Get);
-
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+            {
+                return NotFound();
+            }
+            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Get);
             TEntity entity = await AppController.GetByIdAsync(id, query);
             if (entity == null)
             {
@@ -80,6 +67,6 @@ namespace RDD.Web.Controllers
             return Ok(entity);
         }
 
-        protected NotFoundObjectResult NotFound(TKey id) => NotFound(new { Id = id, error = $"Resource {id} not found" });
+        protected virtual NotFoundObjectResult NotFound(TKey id) => NotFound(new { Id = id, error = $"Resource {id} not found" });
     }
 }

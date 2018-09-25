@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Application;
@@ -94,9 +95,11 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRdd(this IServiceCollection services)
+        public static IServiceCollection AddRdd<TCombinationsHolder, TPrincipal>(this IServiceCollection services) where TCombinationsHolder : class, ICombinationsHolder
+            where TPrincipal : class, IPrincipal
         {
             return services.AddRddCore()
+                .AddRddRights<TCombinationsHolder, TPrincipal>()
                 .AddRddSerialization();
         }
 

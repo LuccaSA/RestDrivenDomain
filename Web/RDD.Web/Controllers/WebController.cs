@@ -34,57 +34,28 @@ namespace RDD.Web.Controllers
         {
         }
 
-        public Task<ActionResult<TEntity>> PostAsync()
+        public virtual async Task<ActionResult<TEntity>> PostAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
             {
-                return ProtectedPostAsync();
+                return NotFound();
             }
-            return Task.FromResult((ActionResult<TEntity>)NotFound());
-        }
 
-        public Task<ActionResult<TEntity>> PutByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return ProtectedPutAsync(id);
-            }
-            return Task.FromResult((ActionResult<TEntity>)NotFound());
-        }
-
-        public Task<ActionResult<IEnumerable<TEntity>>> PutAsync()
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return ProtectedPutAsync();
-            }
-            return Task.FromResult((ActionResult<IEnumerable<TEntity>>)NotFound());
-        }
-
-        public Task<ActionResult> DeleteByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
-            {
-                return ProtectedDeleteAsync(id);
-            }
-            return Task.FromResult((ActionResult)NotFound());
-        }
-
-        protected virtual async Task<ActionResult<TEntity>> ProtectedPostAsync()
-        {
             Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Post);
             ICandidate<TEntity, TKey> candidate = CandidateFactory.CreateCandidate();
-
             TEntity entity = await AppController.CreateAsync(candidate, query);
-
             return Ok(entity);
         }
 
-        protected virtual async Task<ActionResult<TEntity>> ProtectedPutAsync(TKey id)
+        public virtual async Task<ActionResult<TEntity>> PutByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+            {
+                return NotFound();
+            }
+
             Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Put);
             ICandidate<TEntity, TKey> candidate = CandidateFactory.CreateCandidate();
-
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
             if (entity == null)
             {
@@ -93,44 +64,51 @@ namespace RDD.Web.Controllers
             return Ok(entity);
         }
 
-        protected virtual async Task<ActionResult<IEnumerable<TEntity>>> ProtectedPutAsync()
+        public virtual async Task<ActionResult<IEnumerable<TEntity>>> PutAsync()
         {
-            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Put);
-            IEnumerable<ICandidate<TEntity, TKey>> candidates = CandidateFactory.CreateCandidates();
-
-            if (candidates.Any(c => !c.HasId()))
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
             {
-                return BadRequest("To edit a collection of entities, provide an array of objets with an property id");
+                return NotFound();
             }
 
+            Query<TEntity> query = QueryFactory.NewFromHttpRequest<TEntity, TKey>(HttpVerbs.Put);
+            IEnumerable<ICandidate<TEntity, TKey>> candidates = CandidateFactory.CreateCandidates();
+            if (candidates.Any(c => !c.HasId()))
+            {
+                return BadRequest("To edit a collection of entities, provide an array of objects with an property id");
+            }
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
-
             IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
-
             return Ok(entities);
         }
 
-        protected virtual async Task<ActionResult> ProtectedDeleteAsync(TKey id)
+        public virtual async Task<ActionResult> DeleteByIdAsync(TKey id)
         {
-            await AppController.DeleteByIdAsync(id);
-
-            return Ok();
-        }
-
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync()
-        {
-            IEnumerable<ICandidate<TEntity, TKey>> candidates = CandidateFactory.CreateCandidates();
-
-            if (candidates.Any(c => !c.HasId()))
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
             {
-                return BadRequest("To delete a collection of entities, provide an array of objets with an property id");
+                return NotFound();
             }
 
-            var ids = candidates.Select(c => c.Id).ToList();
-
-            await AppController.DeleteByIdsAsync(ids);
-
+            await AppController.DeleteByIdAsync(id);
             return Ok();
         }
+
+        public virtual async Task<ActionResult> DeleteAsync()
+        {
+            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
+            {
+                return NotFound();
+            }
+
+            IEnumerable<ICandidate<TEntity, TKey>> candidates = CandidateFactory.CreateCandidates();
+            if (candidates.Any(c => !c.HasId()))
+            {
+                return BadRequest("To delete a collection of entities, provide an array of objects with an property id");
+            }
+            var ids = candidates.Select(c => c.Id).ToList();
+            await AppController.DeleteByIdsAsync(ids);
+            return Ok();
+        }
+
     }
 }
