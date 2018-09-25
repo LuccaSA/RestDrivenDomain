@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models;
@@ -13,6 +15,7 @@ namespace RDD.Web.Tests.ServerMock
         public override string Name { get; set; }
     }
 
+    [Route("ExchangeRate")]
     public class ExchangeRateController : WebController<ExchangeRate,int>
     {
         public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper, IRDDSerializer rddSerializer)
@@ -21,5 +24,20 @@ namespace RDD.Web.Tests.ServerMock
         }
 
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
+
+        [HttpGet]
+        public override Task<IActionResult> GetAsync() => base.GetAsync();
+
+        [HttpGet("{id}")]
+        public override Task<IActionResult> GetByIdAsync(int id) => base.GetByIdAsync(id);
+
+        [HttpPut]
+        public override Task<IActionResult> PutAsync() => base.PutAsync();
+
+        [HttpPost]
+        public override Task<IActionResult> PostAsync() => base.PostAsync();
+
+        [HttpDelete("{id}")]
+        public override Task<IActionResult> DeleteByIdAsync(int id) => base.DeleteByIdAsync(id);
     }
 }

@@ -94,13 +94,28 @@ namespace RDD.Infra.Storage
             AfterSaveChangesActions.Enqueue(action);
         }
 
+        public bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TKey : IEquatable<TKey>
+        {
+            var objId = (object)id;
+            var existing = Set<TEntity>().FirstOrDefault(i => i.GetId().Equals(objId));
+            if (existing == null)
+            {
+                return false;
+            }
+            var idx = Cache[typeof(TEntity)].IndexOf(existing);
+            Cache[typeof(TEntity)][idx] = existing;
+            return true;
+        }
+
         public async Task SaveChangesAsync()
         {
-            foreach(var type in Cache.Keys)
+            foreach (var type in Cache.Keys)
             {
                 var index = Indexes[type];
 
-                foreach(var element in Cache[type])
+                foreach (var element in Cache[type])
                 {
                     var entity = (IPrimaryKey)element;
                     var id = entity.GetId().ToString();
@@ -114,7 +129,7 @@ namespace RDD.Infra.Storage
                 Indexes[type] = index;
             }
 
-            while(AfterSaveChangesActions.Any())
+            while (AfterSaveChangesActions.Any())
             {
                 await AfterSaveChangesActions.Dequeue();
             }

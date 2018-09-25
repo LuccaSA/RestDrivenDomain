@@ -29,13 +29,12 @@ namespace RDD.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            DbContextOptions<ExchangeRateDbContext> options = new DbContextOptionsBuilder<ExchangeRateDbContext>()
-                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
-                .Options;
+            services.AddDbContext<ExchangeRateDbContext>(
+                (service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
 
-            services.AddScoped<DbContextOptions>(_ => options);
+            services.TryAddScoped<DbContext>(s => s.GetRequiredService<ExchangeRateDbContext>());
 
-            services.AddRDD<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
+            services.AddRDD<CombinationsHolder, CurPrincipal>();
 
             services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
@@ -46,7 +45,7 @@ namespace RDD.Web.Tests.ServerMock
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, DbContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -54,16 +53,26 @@ namespace RDD.Web.Tests.ServerMock
             }
             app.UseStatusCodePages();
 
+            if (dbContext != null)
+            {
+                for (int i = 0; i < 42; i++)
+                {
+                    dbContext.Add(new ExchangeRate
+                    {
+                        Name = i.ToString()
+                    });
+                }
+                dbContext.SaveChanges();
+            }
+
             app.UseRDD();
 
             app.UseMvc(routes =>
             {
-                routes.MapRDDDefaultRoutes();
-
                 routes.MapRoute(
                     name: "default_route",
                     template: "{controller}/{action}/{id?}",
-                    defaults: new { controller = "Ping", action = "Status" });  
+                    defaults: new { controller = "Ping", action = "Status" });
             });
         }
     }

@@ -1,10 +1,9 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NExtends.Expressions;
 
 namespace RDD.Domain.Models
 {
@@ -29,6 +28,8 @@ namespace RDD.Domain.Models
 
         public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
         {
+            await OnBeforeGetAsync();
+
             var count = 0;
             IEnumerable<TEntity> items = new HashSet<TEntity>();
 
@@ -56,12 +57,45 @@ namespace RDD.Domain.Models
                 items = await Repository.PrepareAsync(items, query);
             }
 
+            await OnAfterGetAsync(items);
+
             return new Selection<TEntity>(items, count);
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
+        /// <summary>
+        /// Central place to filter or add on post query
+        /// </summary>
+        /// <param name="source">Original items</param>
+        /// <returns>Altered items</returns>
+        protected virtual Task<IEnumerable<TEntity>> OnAfterGetAsync(IEnumerable<TEntity> source) 
+            => Task.FromResult(source);
+
+        /// <summary>
+        /// Called before any Get
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Task OnBeforeGetAsync() => Task.CompletedTask;
+
+        /// <summary>
+        /// Si on ne trouve pas l'entité, on renvoie explicitement un NotFound
+        /// puisque c'était explicitement cette entité qui était visée
+        /// NB : on ne sait pas si l'entité existe mais qu'on n'y a pas accès ou si elle n'existe pas, mais c'est logique
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query = null)
         {
-            return (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
+            Query<TEntity> q;
+            if (query == null)
+            {
+                q = new Query<TEntity>(e => e.Id.Equals(id));
+            }
+            else
+            {
+                q = query;
+                q.Filter = new Filter<TEntity>(q.Filter.Expression.AndAlso(e => e.Id.Equals(id)));
+            }
+            var result = await GetAsync(q);
+            return result.Items.FirstOrDefault();
         }
 
         protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
