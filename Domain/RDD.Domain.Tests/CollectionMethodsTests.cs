@@ -1,6 +1,5 @@
 ﻿using Moq;
 using Newtonsoft.Json;
-using RDD.Domain.Exceptions;
 using RDD.Domain.Helpers;
 using RDD.Domain.Mocks;
 using RDD.Domain.Models;
@@ -10,9 +9,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
-using RDD.Web.Helpers;
 using RDD.Web.Models;
-using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;

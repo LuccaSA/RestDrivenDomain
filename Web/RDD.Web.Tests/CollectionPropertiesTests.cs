@@ -50,7 +50,7 @@ namespace RDD.Domain.Tests
             var users = User.GetManyRandomUsers(10000);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var q = new Query<User>();
+            var q = new Query<User>(new QueryPaging(new PagingOptions()));
             var result = await _collection.GetAsync(q);
 
             Assert.Equal(100, result.Count());

@@ -13,7 +13,7 @@ namespace RDD.Domain.Models.Querying
             QueryMetadata = queryMetadata ?? new QueryMetadata();
             Verb = verb ?? HttpVerbs.None;
             Headers = headers ?? new Headers();
-            Paging = paging ?? new QueryPaging(new PagingOptions());
+            Paging = paging ?? QueryPaging.Unlimited;
 
             // copy paging infos for metadatas
             QueryMetadata.Paging = paging == null ? null : new QueryMetadataPaging

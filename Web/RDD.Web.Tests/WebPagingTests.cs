@@ -14,12 +14,12 @@ namespace RDD.Domain.Tests
     public class PagingTests : SingleContextTests
     {
         public PagingTests()
-        { 
+        {
             _storage = _newStorage(Guid.NewGuid().ToString());
             _repo = new OpenRepository<User>(_storage, _rightsService);
             _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
-         
+
         private readonly IRepository<User> _repo;
         private readonly IReadOnlyRestCollection<User, int> _collection;
         private readonly IStorageService _storage;
@@ -31,15 +31,12 @@ namespace RDD.Domain.Tests
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
 
-            var query = new Query<User>(new QueryPaging(new PagingOptions())
-            {
-                ItemPerPage = 10
-            });
+            var query = new Query<User>(new QueryPaging(new PagingOptions(), 0, itemsPerPage: 10));
             var result = await _collection.GetAsync(query);
-            
+
             Assert.Equal(0, query.Paging.PageOffset);
             Assert.Equal(10, query.Paging.ItemPerPage);
-            
+
             Assert.Equal(10, result.Count());
             Assert.Equal(20, query.QueryMetadata.TotalCount);
         }
@@ -53,8 +50,7 @@ namespace RDD.Domain.Tests
                 _repo.AddRange(users);
                 await _storage.SaveChangesAsync();
 
-                var query = new Query<User>();
-                query.Paging.ItemPerPage = 1001;
+                var query = new Query<User>(new QueryPaging(new PagingOptions(), 0, itemsPerPage: 1001));
                 await _collection.GetAsync(query);
             });
         }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <ProjectGuid>{D4493283-1C57-48C9-BA9D-4C7862A40424}</ProjectGuid>
+    <ProjectGuid>{681A88B9-33AE-491D-8DBC-235A60C33DD2}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\RDD.Domain.Mocks\RDD.Domain.Mocks.csproj" />
+    <ProjectReference Include="..\..\Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj" />
     <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
     <ProjectReference Include="..\RDD.Web\RDD.Web.csproj" />
   </ItemGroup>

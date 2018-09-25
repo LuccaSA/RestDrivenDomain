@@ -92,8 +92,14 @@ namespace RDD.Infra.Storage
 
         protected virtual IQueryable<TEntity> ApplyPage(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            var skip = query.Paging.PageOffset * query.Paging.ItemPerPage;
-            return entities.Skip(skip).Take(query.Paging.ItemPerPage);
+            // Skip the skip/take paging step if unlimited to optimize sql query-plan
+            if (query.Paging == QueryPaging.Unlimited)
+            {
+                return entities;
+            }
+            return entities
+                .Skip(query.Paging.PageOffset * query.Paging.ItemPerPage)
+                .Take(query.Paging.ItemPerPage);
         }
 
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)

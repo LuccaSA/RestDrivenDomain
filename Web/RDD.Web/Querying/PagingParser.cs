@@ -13,19 +13,18 @@ namespace RDD.Web.Querying
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<PagingOptions> _rddOptions;
+
         public PagingParser(IHttpContextAccessor httpContextAccessor, IOptions<PagingOptions> rddOptions)
         {
             _httpContextAccessor = httpContextAccessor;
-            this._rddOptions = rddOptions;
+            _rddOptions = rddOptions;
         }
 
         public virtual QueryPaging ParsePaging( )
         {
-            var qp = new QueryPaging(_rddOptions.Value);
-
             if (!_httpContextAccessor.HttpContext.Request.Query.TryGetValue(QueryTokens.Paging, out StringValues pagingValues))
             {
-                return qp;
+                return new QueryPaging(_rddOptions.Value);
             }
 
             if (pagingValues.Count > 1)
@@ -34,42 +33,37 @@ namespace RDD.Web.Querying
             }
 
             string paging = pagingValues.FirstOrDefault();
-            if (String.IsNullOrEmpty(paging))
+            if (String.IsNullOrWhiteSpace(paging))
             {
-                return qp;
+                return new QueryPaging(_rddOptions.Value);
             }
 
             if (paging == "1") //...&paging=1 <=> &paging=0,100
             {
-                qp.PageOffset = 0;
-                qp.ItemPerPage = _rddOptions.Value.DefaultItemsPerPage;
+                int pageOffset = 0;
+                int itemPerPage = _rddOptions.Value.DefaultItemsPerPage;
+                return new QueryPaging(_rddOptions.Value, pageOffset, itemPerPage);
             }
-            else //...&paging=x,y
+
+            //...&paging=x,y
+            var elements = paging.Split(',');
+
+            if (elements.Length == 2)
             {
-                var elements = paging.Split(',');
-
-                if (elements.Length == 2)
+                if (!Int32.TryParse(elements[0], out var pageOffset))
                 {
-                    if (!Int32.TryParse(elements[0], out var pageOffset))
-                    {
-                        throw new BadRequestException($"PageIndex value {elements[0]} not in correct format");
-                    }
-
-                    if (!Int32.TryParse(elements[1], out var itemPerPage))
-                    {
-                        throw new BadRequestException($"ItemsPerPage value {elements[1]} not in correct format");
-                    }
-
-                    qp.PageOffset = pageOffset;
-                    qp.ItemPerPage = itemPerPage;
+                    throw new BadRequestException($"PageIndex value {elements[0]} not in correct format");
                 }
-                else
+
+                if (!Int32.TryParse(elements[1], out var itemPerPage))
                 {
-                    throw new BadRequestException($"{paging} does not respect limit=start,count format");
+                    throw new BadRequestException($"ItemsPerPage value {elements[1]} not in correct format");
                 }
+
+                return new QueryPaging(_rddOptions.Value, pageOffset, itemPerPage);
             }
 
-            return qp;
+            throw new BadRequestException($"{paging} does not respect limit=start,count format");
         }
     }
 }
