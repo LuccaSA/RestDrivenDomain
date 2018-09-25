@@ -2,8 +2,8 @@
 ## Breaking changes
  - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. Now you should directly override the methods you want to expose (like `public GetAsync()`) and decorate with routing attribute (ex `[HttpGet]`). This will allow swagger to discover all the Rdd apis.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**. 
- - **Modification**: Now the updated entity is a clone of the original entity, and is discarded if `ValidateEntity` throws an exception or returns false. This prevent unwanted commit of unvalidated changes.
- - **Modification**: `ValidateEntity` now return a `bool` to discard changes before update
+ - **Modification**: Now the updated entity is a clone of the original entity, and is discarded if `ValidateEntityAsync` throws an exception or returns false. This prevent unwanted commit of unvalidated changes.
+ - **Modification**: `ValidateEntityAsync` now return a `bool` to discard changes before update
  - **Modification**: `OnBeforeUpdateEntity` becomes `OnBeforePatchEntity`
  - **Removed**: `PropertySelector`, `CollectionPropertySelector` and `DictionaryPropertySelector`. Replaced by `IExpression`, `IExpressionChain`, `IExpressionTree` and their implementations. `
  - **Removed**: `FieldExpansionHelper`, `PropertySelectorEqualityComparer`, `PropertySelectorIncludablesExtractor`, `PropertySelectorRootLambdaExtractor`, `PropertySelectorTransferor`, `CollectionFieldsParser`
@@ -39,11 +39,11 @@
  - **Added**: `IAppController.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from the controller.
  - **Added**: `IRestCollection.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from a collection.
  - **Added**: New AppController hook points : 
-   - `OnBeforeCreate` / `OnAfterCreate`
-   - `OnBeforeUpdate` / `OnAfterUpdate`
+   - `OnBeforeCreateAsync` / `OnAfterCreateAsync`
+   - `OnBeforeUpdateAsync` / `OnAfterUpdateAsync`
  - **Added**: New RestCollection hook points : 
    - `OnBeforeGetAsync` / `OnAfterGetAsync`
-   - `OnBeforeCreate` / `OnBeforeUpdateEntity` / `OnBeforePatchEntity` / `OnAfterPatchEntity`
+   - `OnBeforeCreateAsync` / `OnBeforeUpdateEntityAsync` / `OnBeforePatchEntityAsync` / `OnAfterPatchEntityAsync`
 
 # 2.2.3
 ## Bug fixs

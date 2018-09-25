@@ -34,18 +34,18 @@ namespace RDD.Application.Controllers
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             var entity = await Collection.CreateAsync(candidate, query);
-            await OnBeforeCreate(entity.Yield());
+            await OnBeforeCreateAsync(entity.Yield());
             await Storage.SaveChangesAsync();
-            await OnAfterCreate(entity.Yield());
+            await OnAfterCreateAsync(entity.Yield());
             return entity;
         }
 
         public virtual async Task<TEntity> CreateAsync(TEntity candidateEntity)
         {
             var entity = await Collection.CreateAsync(candidateEntity);
-            await OnBeforeCreate(entity.Yield());
+            await OnBeforeCreateAsync(entity.Yield());
             await Storage.SaveChangesAsync();
-            await OnAfterCreate(entity.Yield());
+            await OnAfterCreateAsync(entity.Yield());
             return entity;
         }
 
@@ -61,36 +61,36 @@ namespace RDD.Application.Controllers
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             var entity = await Collection.UpdateByIdAsync(id, candidate, query);
-            await OnBeforeUpdate(entity.Yield());
+            await OnBeforeUpdateAsync(entity.Yield());
             await Storage.SaveChangesAsync();
 
-            await OnAfterUpdate(entity.Yield());
+            await OnAfterUpdateAsync(entity.Yield());
             return entity;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, TEntity candidateEntity)
         {
             var entity = await Collection.UpdateByIdAsync(id, candidateEntity);
-            await OnBeforeUpdate(entity.Yield());
+            await OnBeforeUpdateAsync(entity.Yield());
             await Storage.SaveChangesAsync();
-            await OnAfterUpdate(entity.Yield());
+            await OnAfterUpdateAsync(entity.Yield());
             return entity;
         }
 
         public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
             var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
-            await OnBeforeUpdate(entities);
+            await OnBeforeUpdateAsync(entities);
             await Storage.SaveChangesAsync();
-            await OnAfterUpdate(entities);
+            await OnAfterUpdateAsync(entities);
             return entities;
         }
 
-        protected virtual Task OnBeforeCreate(IEnumerable<TEntity> entity) => Task.CompletedTask;
-        protected virtual Task OnBeforeUpdate(IEnumerable<TEntity> entity) => Task.CompletedTask;
+        protected virtual Task OnBeforeCreateAsync(IEnumerable<TEntity> entity) => Task.CompletedTask;
+        protected virtual Task OnBeforeUpdateAsync(IEnumerable<TEntity> entity) => Task.CompletedTask;
 
-        protected virtual Task OnAfterCreate(IEnumerable<TEntity> entity) => Task.CompletedTask;
-        protected virtual Task OnAfterUpdate(IEnumerable<TEntity> entity) => Task.CompletedTask;
+        protected virtual Task OnAfterCreateAsync(IEnumerable<TEntity> entity) => Task.CompletedTask;
+        protected virtual Task OnAfterUpdateAsync(IEnumerable<TEntity> entity) => Task.CompletedTask;
 
         public async Task DeleteByIdAsync(TKey id)
         {
