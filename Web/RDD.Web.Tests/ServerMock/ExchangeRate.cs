@@ -26,10 +26,18 @@ namespace RDD.Web.Tests.ServerMock
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
 
         [HttpGet]
-        public override Task<IActionResult> GetAsync()
-        {
-            return base.GetAsync();
-        }
+        public override Task<IActionResult> GetAsync() => base.GetAsync();
 
+        [HttpGet("{id}")]
+        public override Task<IActionResult> GetByIdAsync(int id) => base.GetByIdAsync(id);
+
+        [HttpPut]
+        public override Task<IActionResult> PutAsync() => base.PutAsync();
+
+        [HttpPost]
+        public override Task<IActionResult> PostAsync() => base.PostAsync();
+
+        [HttpDelete("{id}")]
+        public override Task<IActionResult> DeleteByIdAsync(int id) => base.DeleteByIdAsync(id);
     }
 }
