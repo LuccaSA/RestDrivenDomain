@@ -1,5 +1,4 @@
 ﻿using RDD.Domain;
-using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -7,12 +6,12 @@ using System.Linq;
 
 namespace RDD.Web.Querying
 {
-    public class QueryFactory<TEntity, TKey>
+    public class WebQueryFactory<TEntity, TKey>
         where TEntity : class, IPrimaryKey<TKey>
     {
         protected HashSet<string> IgnoredFilters { get; set; }
 
-        public QueryFactory()
+        public WebQueryFactory()
         {
             IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -25,7 +24,7 @@ namespace RDD.Web.Querying
             }
         }
 
-        public Query<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
+        public WebQuery<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
         {
             var parameters = httpContextHelper.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
 
@@ -33,10 +32,10 @@ namespace RDD.Web.Querying
             var filters = WebFiltersParser<TEntity>.Parse(parameters);
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             var options = new OptionsParser().Parse(parameters, fields);
-            var page = new PageParser<TEntity>().Parse(parameters);
+            var page = new WebPageParser().Parse(parameters);
             var headers = new HeadersParser().Parse(httpContextHelper.GetHeaders());
 
-            return new Query<TEntity>
+            return new WebQuery<TEntity>
             {
                 Fields = fields,
                 Filter = new WebFiltersContainer<TEntity, TKey>(filters),

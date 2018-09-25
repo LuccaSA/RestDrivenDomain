@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Infra;
+using RDD.Web.Querying;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace RDD.Web.Tests
 {
-    public class PagingTests : SingleContextTests
+    public class WebPaginggTests : SingleContextTests
     {
-        public PagingTests()
+        public WebPaginggTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
             _repo = new OpenRepository<User>(_storage, _rightsService);
@@ -27,10 +29,10 @@ namespace RDD.Domain.Tests
         [Fact]
         public void Changing_query_page_count_should_not_affect_another_query()
         {
-            var query1 = new Query<User>();
+            var query1 = new WebQuery<User>();
             query1.Page.TotalCount = 20;
 
-            var query2 = new Query<User>();
+            var query2 = new WebQuery<User>();
             query2.Page.TotalCount = 10;
 
             Assert.Equal(20, query1.Page.TotalCount);
@@ -43,7 +45,7 @@ namespace RDD.Domain.Tests
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
 
-            var query = new Query<User>();
+            var query = new WebQuery<User>();
             ISelection<User> result = await _collection.GetAsync(query);
 
             Assert.Equal(0, query.Page.Offset);
@@ -61,7 +63,7 @@ namespace RDD.Domain.Tests
                 _repo.AddRange(users);
                 await _storage.SaveChangesAsync();
 
-                var query = new Query<User> { Page = new Page(0, 1001) };
+                var query = new WebQuery<User> { Page = new WebPage(0, 1001) };
                 ISelection<User> result = await _collection.GetAsync(query);
             });
         }

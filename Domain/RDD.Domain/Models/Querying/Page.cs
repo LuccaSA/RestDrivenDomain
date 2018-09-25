@@ -4,16 +4,14 @@ namespace RDD.Domain.Models.Querying
 {
     public class Page
     {
-        protected const int MAX_LIMIT = 1000;
-
-        public static Page Default => new Page(0, 10);
-        public static Page Max => new Page(0, MAX_LIMIT);
+        private const int MAX_LIMIT = int.MaxValue;
+        public static readonly Page Unlimited = new Page(0, MAX_LIMIT);
 
         public int Offset { get; }
         public int Limit { get; }
         public int TotalCount { get; set; }
 
-        public Page(int offset, int limit)
+        private Page(int offset, int limit)
             : this(offset, limit, MAX_LIMIT) { }
 
         protected Page(int offset, int limit, int maxLimit)

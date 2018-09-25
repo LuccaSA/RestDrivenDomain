@@ -16,17 +16,18 @@ namespace RDD.Web.Helpers
         where TEntity : class, IEntityBase<TKey>
     {
         private readonly IHttpContextHelper _httpContextHelper;
-        private readonly QueryFactory<TEntity, TKey> _queryFactory = new QueryFactory<TEntity, TKey>();
+        private readonly WebQueryFactory<TEntity, TKey> _queryFactory = new WebQueryFactory<TEntity, TKey>();
 
         public ApiHelper(IHttpContextHelper httpContextHelper)
         {
             _httpContextHelper = httpContextHelper;
         }
 
-        public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
+        public virtual WebQuery<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {
-            Query<TEntity> query = _queryFactory.FromWebContext(_httpContextHelper, isCollectionCall);
+            var query = _queryFactory.FromWebContext(_httpContextHelper, isCollectionCall);
             query.Verb = verb;
+
             return query;
         }
 

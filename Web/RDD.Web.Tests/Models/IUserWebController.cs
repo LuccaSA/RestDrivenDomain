@@ -1,7 +1,7 @@
 ﻿using RDD.Application;
-using RDD.Domain.Models.Querying;
 using RDD.Web.Controllers;
 using RDD.Web.Helpers;
+using RDD.Web.Querying;
 using RDD.Web.Serialization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace RDD.Web.Tests.Models
         //This method only intend is to check that IUser constraint on ReadOnlyWebController is sufficient and working
         public async Task<IEnumerable<IUser>> GetEnumerableAsync()
         {
-            var query = new Query<IUser>();
+            var query = new WebQuery<IUser>();
             query.Options.CheckRights = false; //Don't care about rights check
 
             return (await AppController.GetAsync(query)).Items;
