@@ -94,7 +94,7 @@ namespace RDD.Infra.Storage
             AfterSaveChangesActions.Enqueue(action);
         }
 
-        public void Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+        public bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
             where TEntity : class, IEntityBase<TEntity, TKey>
             where TKey : IEquatable<TKey>
         {
@@ -102,10 +102,11 @@ namespace RDD.Infra.Storage
             var existing = Set<TEntity>().FirstOrDefault(i => i.GetId().Equals(objId));
             if (existing == null)
             {
-                return;
+                return false;
             }
             var idx = Cache[typeof(TEntity)].IndexOf(existing);
             Cache[typeof(TEntity)][idx] = existing;
+            return true;
         }
 
         public async Task SaveChangesAsync()

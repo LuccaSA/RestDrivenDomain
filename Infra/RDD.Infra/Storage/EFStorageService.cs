@@ -57,16 +57,17 @@ namespace RDD.Infra.Storage
             DbContext.Set<TEntity>().AddRange(entities);
         }
 
-        public virtual void Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+        public virtual bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
             where TEntity : class, IEntityBase<TEntity, TKey>
             where TKey : IEquatable<TKey>
         {    
             var entity = DbContext.Find<TEntity>(id);
             if (entity == null)
             {
-                return;
+                return false;
             }
             DbContext.Entry(entity).CurrentValues.SetValues(toUpdate);
+            return true;
         }
 
         public virtual void Remove<TEntity>(TEntity entity)

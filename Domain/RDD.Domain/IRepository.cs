@@ -10,7 +10,7 @@ namespace RDD.Domain
         void AddRange(IEnumerable<TEntity> entities);
         void Remove(TEntity entity);
 
-        void Update<T,TKey>(TKey id, TEntity entity)
+        bool Update<T, TKey>(TKey id, TEntity entity)
             where T : class, TEntity, IEntityBase<T, TKey>
             where TKey : IEquatable<TKey>;
     }

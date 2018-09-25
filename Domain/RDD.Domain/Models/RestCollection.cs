@@ -186,9 +186,7 @@ namespace RDD.Domain.Models
                 return false;
             }
 
-            Repository.Update<TEntity, TKey>(id, entity);
-
-            return true;
+            return Repository.Update<TEntity, TKey>(id, entity);
         }
     }
 }

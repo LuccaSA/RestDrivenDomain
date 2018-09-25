@@ -16,7 +16,7 @@ namespace RDD.Infra
         Task SaveChangesAsync();
         void AddAfterSaveChangesAction(Task action);
 
-        void Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+        bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
             where TEntity : class, IEntityBase<TEntity, TKey>
             where TKey : IEquatable<TKey>;
     }

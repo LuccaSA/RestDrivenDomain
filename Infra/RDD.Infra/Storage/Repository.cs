@@ -21,11 +21,11 @@ namespace RDD.Infra.Storage
             StorageService.AddRange(entities);
         }
 
-        public virtual void Update<T,TKey>(TKey id, TEntity entity)
+        public virtual bool Update<T,TKey>(TKey id, TEntity entity)
             where T : class, TEntity, IEntityBase<T, TKey>
             where TKey : IEquatable<TKey>
         {
-            StorageService.Update(id, entity as T);
+            return StorageService.Update(id, entity as T);
         }
 
         public virtual void Remove(TEntity entity)
