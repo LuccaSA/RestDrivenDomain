@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NExtends.Expressions;
+using RDD.Domain.Helpers;
 
 namespace RDD.Domain.Models
 {
@@ -13,54 +14,47 @@ namespace RDD.Domain.Models
     {
         public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository)
         {
-            Repository = repository;
+            ReadOnlyRepository = repository;
         }
 
-        protected IReadOnlyRepository<TEntity> Repository { get; set; }
+        protected IReadOnlyRepository<TEntity> ReadOnlyRepository { get; }
 
         public async Task<bool> AnyAsync(Query<TEntity> query)
         {
-            query.Options.NeedEnumeration = false;
-            query.Options.NeedCount = true;
+            query.NeedEnumeration = false;
+            query.NeedCount = true;
 
-            return (await GetAsync(query)).Count > 0;
+            await GetAsync(query);
+            return query.QueryMetadata.TotalCount > 0;
         }
 
-        public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
+        public async Task<IEnumerable<TEntity>> GetAllAsync() => (await GetAsync(new Query<TEntity>()));
+
+        public virtual async Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
             await OnBeforeGetAsync();
 
-            var count = 0;
-            IEnumerable<TEntity> items = new HashSet<TEntity>();
+            var totalCount = -1;
+            IReadOnlyCollection<TEntity> items = null;
 
             //Dans de rares cas on veut seulement le count des entités
-            if (query.Options.NeedCount && !query.Options.NeedEnumeration)
+            if (query.NeedCount && !query.NeedEnumeration)
             {
-                count = await Repository.CountAsync(query);
+                query.QueryMetadata.TotalCount = totalCount = await ReadOnlyRepository.CountAsync(query);
             }
 
             //En général on veut une énumération des entités
-            if (query.Options.NeedEnumeration)
+            if (query.NeedEnumeration)
             {
-                items = await Repository.GetAsync(query);
-
-                count = items.Count();
-
-                //Si y'a plus d'items que le paging max ou que l'offset du paging n'est pas à 0, il faut compter la totalité des entités
-                if (query.Page.Offset > 0 || query.Page.Limit <= count)
-                {
-                    count = await Repository.CountAsync(query);
-                }
-
-                query.Page.TotalCount = count;
-
-                items = await Repository.PrepareAsync(items, query);
+                items = await ReadOnlyRepository.GetAsync(query);
+                query.QueryMetadata.TotalCount = totalCount != -1 ? totalCount : await ReadOnlyRepository.CountAsync(query);
+                items = await ReadOnlyRepository.PrepareAsync(items, query);
             }
-
             await OnAfterGetAsync(items);
-
-            return new Selection<TEntity>(items, count);
+            return items ?? Enumerable.Empty<TEntity>();
         }
+         
+        protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
 
         /// <summary>
         /// Central place to filter or add on post query
@@ -95,9 +89,10 @@ namespace RDD.Domain.Models
                 q.Filter = new Filter<TEntity>(q.Filter.Expression.AndAlso(e => e.Id.Equals(id)));
             }
             var result = await GetAsync(q);
-            return result.Items.FirstOrDefault();
+            return result.FirstOrDefault();
         }
 
-        protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
+        public Task<TEntity> GetByIdAsync(TKey id, HttpVerbs verb = HttpVerbs.Get)
+            => GetByIdAsync(id, new Query<TEntity> { Verb = verb });
     }
 }

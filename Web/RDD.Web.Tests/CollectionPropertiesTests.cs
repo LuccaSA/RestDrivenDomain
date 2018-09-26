@@ -1,14 +1,15 @@
-﻿using RDD.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Infra;
+using RDD.Infra.Storage;
 using RDD.Web.Querying;
 using System;
 using System.Linq;
 using Xunit;
-
-namespace RDD.Web.Tests
+namespace RDD.Domain.Tests
 {
     public class CollectionPropertiesTests : SingleContextTests
     {
@@ -21,14 +22,16 @@ namespace RDD.Web.Tests
             _repo = new OpenRepository<User>(_storage, _rightsService);
             _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
         }
+
         [Fact]
         public async void Count_of_collection_should_tell_10_when_10_entities()
         {
             var users = User.GetManyRandomUsers(10);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var result = await _collection.GetAsync(new WebQuery<User>());
-            Assert.Equal(10, result.Count);
+            var result = await _collection.GetAsync(new Query<User>());
+
+            Assert.Equal(10, result.Count());
         }
         [Fact]
         public async void Count_of_collection_should_tell_100_when_100_entities()
@@ -36,8 +39,10 @@ namespace RDD.Web.Tests
             var users = User.GetManyRandomUsers(100);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var result = await _collection.GetAsync(new WebQuery<User>());
-            Assert.Equal(100, result.Count);
+            var q = new Query<User>();
+            var result = await _collection.GetAsync(q);
+            
+            Assert.Equal(100, q.QueryMetadata.TotalCount);
         }
         [Fact]
         public async void Count_of_collection_should_tell_10000_when_10000_entities()
@@ -45,9 +50,11 @@ namespace RDD.Web.Tests
             var users = User.GetManyRandomUsers(10000);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var result = await _collection.GetAsync(new WebQuery<User>());
-            Assert.Equal(10, result.Items.Count());
-            Assert.Equal(10000, result.Count);
+            var q = new Query<User>(new QueryPaging(new PagingOptions()));
+            var result = await _collection.GetAsync(q);
+
+            Assert.Equal(100, result.Count());
+            Assert.Equal(10000, q.QueryMetadata.TotalCount);
         }
     }
 }

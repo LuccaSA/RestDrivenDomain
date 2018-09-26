@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
 
 namespace RDD.Domain.Tests.Models

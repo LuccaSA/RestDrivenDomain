@@ -22,7 +22,7 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
-                query.Options.CheckRights = false;
+                query.CheckRights = false;
                 var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
 
                 var user = await controller.CreateAsync(candidate, query);
@@ -40,7 +40,7 @@ namespace RDD.Domain.Tests
                 var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
                 var controller = new UsersAppController(storage, users);
                 var query = new Query<User>();
-                query.Options.CheckRights = false;
+                query.CheckRights = false;
                 var candidate1 = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
                 var candidate2 = Candidate<User, int>.Parse(@"{ ""id"": 4 }");
 
@@ -59,8 +59,7 @@ namespace RDD.Domain.Tests
                 var repo = new Repository<User>(storage, _rightsService);
                 var users = new UsersCollectionWithHardcodedGetById(repo, _patcherProvider, Instanciator);
                 var controller = new UsersAppController(storage, users);
-                var query = new Query<User>();
-                query.Options.CheckRights = false;
+                var query = new Query<User>() { CheckRights = false };
                 var candidate = Candidate<User, int>.Parse(@"{ ""id"": 3 }");
 
                 await controller.CreateAsync(candidate, query);

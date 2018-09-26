@@ -2,6 +2,7 @@
 using RDD.Domain;
 using RDD.Domain.Rights;
 using System.Collections.Generic;
+using RDD.Domain.Models.Querying;
 
 namespace RDD.Infra.Storage
 {
@@ -9,7 +10,9 @@ namespace RDD.Infra.Storage
         where TEntity : class
     {
         public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
-            : base(storageService, rightExpressionsHelper) { }
+            : base(storageService, rightExpressionsHelper)
+        {
+        }
 
         public virtual void Add(TEntity entity)
         {

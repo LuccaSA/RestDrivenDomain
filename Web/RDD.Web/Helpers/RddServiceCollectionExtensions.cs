@@ -6,26 +6,31 @@ using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
 using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Infra;
 using RDD.Infra.Storage;
+using RDD.Web.Middleware;
 using RDD.Web.Serialization;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
-using System.Globalization;
+using System;
+using System.Buffers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Options;
+using RDD.Web.Querying;
 
 namespace RDD.Web.Helpers
 {
-    public static class RDDServiceCollectionExtensions
+    public static class RddServiceCollectionExtensions
     {
         /// <summary>
         /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
         /// IRightsService and IRDDSerialization are missing for this setup to be ready
         /// </summary>
-        /// <param name="services"></param>
-        public static IServiceCollection AddRDDCore(this IServiceCollection services)
+        public static IServiceCollection AddRddCore(this IServiceCollection services)
         {
             // register base services
             services.TryAddScoped<IStorageService, EFStorageService>();
@@ -38,13 +43,34 @@ namespace RDD.Web.Helpers
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
-            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddHttpContextAccessor();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
-            services.TryAddScoped(typeof(ApiHelper<,>));
+
+            services.TryAddScoped(typeof(IRightExpressionsHelper<>), typeof(DefaultRightExpressionsHelper<>));
+
+            services.TryAddSingleton<IWebFilterParser, WebFilterParser>();
+            services.TryAddSingleton<IPagingParser, PagingParser>();
+            services.TryAddSingleton<IHeaderParser, HeaderParser>();
+            services.TryAddSingleton<IOrderByParser, OrderByParser>();
+            services.TryAddSingleton<IFieldsParser, FieldsParser>();
+            services.TryAddSingleton<QueryParsers>();
+            services.TryAddSingleton<QueryTokens>();
+
+            services.TryAddScoped<IQueryFactory, QueryFactory>();
+            services.TryAddScoped<QueryMetadata>();
+
+            services.TryAddScoped(typeof(ICandidateFactory<,>), typeof(CandidateFactory<,>));
+
+            services.AddOptions<PagingOptions>();
+
             return services;
         }
 
-        public static IServiceCollection AddRDDRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        /// <summary>
+        /// Adds custom right management to filter entities
+        /// </summary>
+        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
@@ -54,28 +80,30 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
-            where TPrincipal : class, IPrincipal
+        /// <summary>
+        /// Adds Rdd specific serialisation (fields + metadata)
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddRddSerialization(this IServiceCollection services)
         {
-            services.TryAddScoped(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.TryAddScoped<IPluralizationService, PluralizationService>();
-
-            services.AddMemoryCache();
-            services.TryAddScoped<IReflectionProvider, ReflectionProvider>();
-
-            services.TryAddScoped<IUrlProvider, UrlProvider>();
-            services.TryAddScoped<ISerializerProvider, SerializerProvider>();
-            services.TryAddScoped<IRDDSerializer, RDDSerializer>();
-            services.TryAddScoped<IPrincipal, TPrincipal>();
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, RddSerializationSetup>());
+            services.TryAddSingleton<IUrlProvider, UrlProvider>();
+            services.TryAddSingleton<IPluralizationService>(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))));
+            services.Configure<MvcJsonOptions>(jsonOptions =>
+            {
+                jsonOptions.SerializerSettings.ContractResolver = new SelectiveContractResolver();
+                jsonOptions.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
             return services;
         }
 
-        public static IServiceCollection AddRDD<TCombinationsHolder, TPrincipal>(this IServiceCollection services) where TCombinationsHolder : class, ICombinationsHolder
+        public static IServiceCollection AddRdd<TCombinationsHolder, TPrincipal>(this IServiceCollection services) where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            return services.AddRDDCore()
-                .AddRDDRights<TCombinationsHolder, TPrincipal>()
-                .AddRDDSerialization<TPrincipal>();
+            return services.AddRddCore()
+                .AddRddRights<TCombinationsHolder, TPrincipal>()
+                .AddRddSerialization();
         }
 
         /// <summary>
@@ -83,10 +111,33 @@ namespace RDD.Web.Helpers
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
+            SelectiveContractResolver.UrlProvider = app.ApplicationServices.GetRequiredService<IUrlProvider>();
+            return app
+                .UseMiddleware<QueryContextMiddleware>()
+                .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
+     
+    public class RddSerializationSetup : IConfigureOptions<MvcOptions>
+    {
+        private readonly IOptions<MvcJsonOptions> _jsonOptions;
+        private readonly ArrayPool<char> _charPool;
 
+        public RddSerializationSetup(IOptions<MvcJsonOptions> jsonOptions, ArrayPool<char> charPool)
+        {
+            _jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
+            _charPool = charPool ?? throw new ArgumentNullException(nameof(charPool));
+        }
+
+        public void Configure(MvcOptions options)
+        {
+            options.ReturnHttpNotAcceptable = true;
+            options.OutputFormatters.RemoveType<JsonOutputFormatter>();
+            options.OutputFormatters.Add(new RddJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
+            options.OutputFormatters.Add(new MetaSelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
+            options.OutputFormatters.Add(new SelectiveJsonOutputFormatter(_jsonOptions.Value.SerializerSettings, _charPool));
+        }
+    }
 }

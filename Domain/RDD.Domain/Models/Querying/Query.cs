@@ -2,55 +2,105 @@
 using RDD.Domain.Helpers.Expressions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace RDD.Domain.Models.Querying
 {
-    public class Query<TEntity>
-        where TEntity : class
+    public class Query
     {
-        public Stopwatch Watch { get; }
-        public HttpVerbs Verb { get; set; }
-        public IExpressionTree<TEntity> Fields { get; set; }
-        public Filter<TEntity> Filter { get; set; }
-        public List<OrderBy<TEntity>> OrderBys { get; set; }
-        public Page Page { get; set; }
-        public Headers Headers { get; set; }
-        public Options Options { get; set; }
-
-        public Query()
+        protected Query(HttpVerbs? verb, Headers headers = null, QueryPaging paging = null, QueryMetadata queryMetadata = null)
         {
-            Watch = new Stopwatch();
-            Verb = HttpVerbs.Get;
-            Fields = new ExpressionTree<TEntity>();
-            Filter = new Filter<TEntity>();
-            OrderBys = new List<OrderBy<TEntity>>();
-            Options = new Options();
-            Page = Page.Unlimited;
+            QueryMetadata = queryMetadata ?? new QueryMetadata();
+            Verb = verb ?? HttpVerbs.None;
+            Headers = headers ?? new Headers();
+            Paging = paging ?? QueryPaging.Unlimited;
+
+            // copy paging infos for metadatas
+            QueryMetadata.Paging = new QueryMetadataPaging
+            {
+                ItemPerPage = Paging.ItemPerPage,
+                PageOffset = Paging.PageOffset
+            };
+
+            NeedEnumeration = true;
+            CheckRights = true;
+            WithWarnings = true;
         }
 
-        public Query(Expression<Func<TEntity, bool>> filter)
-            : this()
+        public HttpVerbs Verb { get; set; }
+        public Headers Headers { get; }
+        public QueryPaging Paging { get; }
+        public QueryMetadata QueryMetadata { get; }
+
+        /// <summary>
+        /// Est-ce qu'on a besoin du Count
+        /// </summary>
+        public bool NeedCount { get; set; }
+
+        /// <summary>
+        /// Est-ce qu'on a besoin d'énumérer la query
+        /// </summary>
+        public bool NeedEnumeration { get; set; }
+
+        /// <summary>
+        /// Should we FilterRights on GET request, or CheckRightForCreate on POST
+        /// </summary>
+        public bool CheckRights { get; set; }
+
+        public bool WithWarnings { get; set; }
+    }
+
+    public class Query<TEntity> : Query
+        where TEntity : class
+    {
+        public PropertyTreeNode Fields { get; set; }
+
+        public Filter<TEntity> Filter { get; set; }
+        public List<OrderBy<TEntity>> OrderBys { get; set; }
+
+        public Query()
+            : base(HttpVerbs.Get, new Headers())
+        {
+            Fields = null;
+            Filter = new Filter<TEntity>();
+            OrderBys = new List<OrderBy<TEntity>>();
+        }
+
+        public Query(QueryPaging paging)
+            : base(HttpVerbs.Get, new Headers(), paging)
+        {
+            Fields = null;
+            Filter = new Filter<TEntity>();
+            OrderBys = new List<OrderBy<TEntity>>();
+        }
+
+        public Query(Filter<TEntity> filters, List<OrderBy<TEntity>> orderBys, PropertyTreeNode fields, Headers headers, QueryPaging paging, QueryMetadata queryMetadata)
+            : base(HttpVerbs.Get, headers, paging, queryMetadata)
+        {
+            Fields = fields;
+            Filter = filters;
+            OrderBys = orderBys;
+        }
+
+        public Query(Expression<Func<TEntity, bool>> filter, Headers headers = null, QueryPaging paging = null)
+            : base(HttpVerbs.Get, headers, paging)
         {
             Filter = new Filter<TEntity>(filter);
+            OrderBys = new List<OrderBy<TEntity>>();
         }
 
         public Query(Query<TEntity> source)
-            : this()
+            : base(source.Verb, source.Headers, source.Paging)
         {
-            Verb = source.Verb;
-            Fields = source.Fields;
             Filter = source.Filter;
             OrderBys = source.OrderBys;
-            Page = source.Page;
-            Options = source.Options;
         }
 
         public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
-            : this(source)
+            : base(source.Verb, source.Headers, source.Paging)
         {
             Filter = new Filter<TEntity>(filter);
+            OrderBys = source.OrderBys;
         }
     }
 }

@@ -7,6 +7,7 @@ using RDD.Domain.Tests.Models;
 using RDD.Infra;
 using RDD.Infra.Storage;
 using System;
+using RDD.Domain.Models.Querying;
 
 namespace RDD.Domain.Tests.Templates
 {
@@ -15,8 +16,8 @@ namespace RDD.Domain.Tests.Templates
         protected Func<string, IStorageService> _newStorage;
         protected IRightExpressionsHelper<User> _rightsService;
         protected IPatcherProvider _patcherProvider;
-        protected IInstanciator<User> Instanciator { get; set; }
-
+        protected IInstanciator<User> Instanciator { get; }
+ 
         public SingleContextTests()
         {
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));

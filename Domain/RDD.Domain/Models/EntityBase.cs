@@ -9,7 +9,6 @@ namespace RDD.Domain.Models
     {
         public abstract TKey Id { get; set; }
         public abstract string Name { get; set; }
-        public string Url { get; set; }
 
         public virtual object GetId() => Id;
 

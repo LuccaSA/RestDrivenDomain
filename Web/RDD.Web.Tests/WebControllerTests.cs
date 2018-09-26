@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using RDD.Domain.Mocks;
 using Xunit;
 
 namespace RDD.Web.Tests
@@ -21,18 +24,24 @@ namespace RDD.Web.Tests
         {
             using (var storage = new InMemoryStorageService())
             {
-                var repository = new Repository<IUser>(storage, null);
+                var repository = new Repository<IUser>(storage, new RightsServiceMock<IUser>());
                 var collection = new ReadOnlyRestCollection<IUser, int>(repository);
                 var appController = new ReadOnlyAppController<IUser, int>(collection);
 
                 repository.Add(new User { Id = 1 });
                 repository.Add(new AnotherUser { Id = 2 });
+                var ctxHelper = new HttpContextHelper(new HttpContextAccessor()
+                {
+                    HttpContext = new DefaultHttpContext()
+                });
+                var controller = new IUserWebController(appController, new CandidateFactory<IUser, int>(ctxHelper), QueryFactoryHelper.NewQueryFactory());
 
-                var controller = new IUserWebController(appController, new ApiHelper<IUser, int>(null), new Mock<IRDDSerializer>().Object);
+                var results = await controller.GetAsync();
 
-                var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
+                OkObjectResult ok = (OkObjectResult)results.Result;
+                IEnumerable<IUser> found = (IEnumerable<IUser>)ok.Value;
 
-                Assert.Equal(2, results.Count());
+                Assert.Equal(2, found.Count());
             }
         }
     }

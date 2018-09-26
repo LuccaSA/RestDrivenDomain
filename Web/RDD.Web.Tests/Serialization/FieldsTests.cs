@@ -1,179 +1,81 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
-using Moq;
-using Newtonsoft.Json;
 using RDD.Domain;
 using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Helpers;
+using RDD.Web.Controllers;
 using RDD.Web.Querying;
-using RDD.Web.Serialization;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.Serializers;
-using RDD.Web.Serialization.UrlProviders;
-using RDD.Web.Tests.ServerMock;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using RDD.Web.Tests.Models;
 using Xunit;
 
 namespace RDD.Web.Tests.Serialization
 {
     public class FieldsTests
     {
-        [Fact]
-        public void SpecialSelectionFields()
+        public FieldsTests()
         {
-            ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { new Obj1 { Id = 1 }, new Obj1 { Id = 2 } }, 1);
-
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-
-            var fields = new ExpressionParser().ParseTree<Obj1>("collection.count");
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
-
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("Count"));
-            Assert.Equal("1", json.GetJsonValue("Count"));
+            _httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+            _httpContextAccessor.HttpContext.Request.Scheme = "https";
+            _httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
         }
-        [Fact]
-        public void EmptyFieldsSelection()
+
+        private readonly HttpContextAccessor _httpContextAccessor;
+
+        private PropertyTreeNode FieldsFromQuery(string fields)
         {
-            var obj1 = new Obj1
+            var dic = new Dictionary<string, StringValues>();
+            if (fields != null)
             {
-                Id = 1,
-                Name = "1"
-            };
-            ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
-
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { }, true);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
-
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("items.0.Id"));
-            Assert.True(json.HasJsonValue("items.0.Name"));
-            Assert.True(json.HasJsonValue("items.0.Url"));
+                dic.Add(QueryTokens.Fields, fields);
+            }
+            _httpContextAccessor.HttpContext.Request.Query = new QueryCollection(dic);
+            return new FieldsParser(_httpContextAccessor).ParseFields();
         }
-        [Fact]
-        public void EmptyFieldsSingleObject()
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void EmptyFieldsSelection(string field)
         {
-            var obj1 = new Obj1
-            {
-                Id = 1,
-                Name = "1"
-            };
+            var paths = FieldsFromQuery(field).AsExpandedPaths();
+            Assert.Empty(paths);
 
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { }, true);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
-
-            var json = serializer.ToJson(obj1, fields);
-
-            Assert.True(json.HasJsonValue("Id"));
-            Assert.True(json.HasJsonValue("Name"));
-            Assert.True(json.HasJsonValue("Url"));
+            var pathsType = FieldsFromQuery(field).AsExpandedPaths<Obj1>();
+            Assert.Empty(pathsType);
         }
+
         [Fact]
         public void TwoLevelSelection()
         {
-            var obj1 = new Obj1
+            void AssertPaths(IEnumerable<string> extracted)
             {
-                Id = 1,
-                Name = "1",
-                Obj2 = new Obj2
-                {
-                    Id = 2,
-                    Name = "2",
-                    Something = "something",
-                    Else = "else",
-                    Obj3 = new Obj3
-                    {
-                        Id = 3,
-                        Name = "3",
-                        Something = "A",
-                        Else = "B"
-                    }
-                }
-            };
-            ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
+                Assert.Contains("Obj2.Obj3.Something", extracted);
+                Assert.Contains("Obj2.Obj3.Else", extracted);
+                Assert.Contains("Obj2.Else", extracted);
+                Assert.Contains("Obj2.Name", extracted);
+                Assert.DoesNotContain("Obj2.Obj3.Name", extracted);
+            }
 
-            var httpContext = new DefaultHttpContext();
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
+            var pathsUntyped = FieldsFromQuery("Obj2[Id,Name,Obj3[Something,Else],Else]").AsExpandedPaths();
+            AssertPaths(pathsUntyped);
 
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { { "fields", "Obj2[Id,Name,Obj3[Something,Else],Else]" } }, true);
+            var pathsTyped = FieldsFromQuery("Obj2[Id,Name,Obj3[Something,Else],Else]").AsExpandedPaths<Obj1>();
+            AssertPaths(pathsTyped);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
-
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Something"));
-            Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Else"));
-            Assert.True(json.HasJsonValue("items.0.Obj2.Else"));
-            Assert.True(json.HasJsonValue("items.0.Obj2.Name"));
-            Assert.False(json.HasJsonValue("items.0.Obj2.Obj3.Name"));
-        }
-
-        [Fact]
-        public void SerializeSubCollections()
-        {
-            var httpContext = new DefaultHttpContext();
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
-            var reflectionProvider = new ReflectionProvider(new Mock<IMemoryCache>().Object);
-            var serializer = new SerializerProvider(reflectionProvider, urlProvider);
-
-            var obj1 = new Obj1
-            {
-                Obj2s = new List<Obj2>
-                {
-                    new Obj2
-                    {
-                        Id = 1,
-                        Name = "1"
-                    },
-                    new Obj2
-                    {
-                        Id = 2,
-                        Name = "2"
-                    }
-                }
-            };
-
-            var selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { { "fields", "obj2s[id,name]" } }, true);
-
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("items.0.Obj2s.0.Id"));
-            Assert.True(json.HasJsonValue("items.0.Obj2s.0.Name"));
+            var pathsTypedExclusion = FieldsFromQuery("Obj2[Id,Name,Obj3[DoesNotExists,Else],Else]").AsExpandedPaths<Obj1>();
+            Assert.DoesNotContain("Obj2.Obj3.DoesNotExists", pathsTypedExclusion);
         }
     }
 
     public class Obj1 : IEntityBase<int>
     {
-        public int Id { get; set; }
-        public String Name { get; set; }
-        public string Url { get; }
         public Obj2 Obj2 { get; set; }
 
         public List<Obj2> Obj2s { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Url { get; }
 
         public object GetId() => Id;
 
@@ -185,13 +87,11 @@ namespace RDD.Web.Tests.Serialization
 
     public class Obj2 : Obj1
     {
-        public String Something { get; set; }
-        public String Else { get; set; }
+        public string Something { get; set; }
+        public string Else { get; set; }
         public Obj3 Obj3 { get; set; }
     }
 
     public class Obj3 : Obj2
-    {
-
-    }
+    {}
 }

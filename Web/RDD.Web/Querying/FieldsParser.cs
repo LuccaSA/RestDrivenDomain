@@ -1,34 +1,22 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Http;
+using RDD.Domain.Helpers.Expressions;
 
 namespace RDD.Web.Querying
 {
-    public class FieldsParser<T>
+    public class FieldsParser : IFieldsParser
     {
-        public IExpressionTree<T> ParseFields(Dictionary<string, string> parameters, bool isCollectionCall)
-        {
-            if (parameters.ContainsKey(Reserved.fields.ToString()))
-            {
-                return ParseFields(parameters[Reserved.fields.ToString()]);
-            }
-            else if (!isCollectionCall)
-            {
-                return ParseAllProperties();
-            }
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-            return new ExpressionTree<T>();
+        public FieldsParser(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        private IExpressionTree<T> ParseAllProperties()
-        {
-            var fields = string.Join(",", typeof(T).GetProperties().Select(p => p.Name));
-            return ParseFields(fields);
-        }
+        public PropertyTreeNode ParseFields() => _httpContextAccessor.HttpContext.ParseFields();
+    }
 
-        private IExpressionTree<T> ParseFields(string fields)
-        {
-            return new ExpressionParser().ParseTree<T>(fields);
-        }
+    public interface IFieldsParser
+    {
+        PropertyTreeNode ParseFields();
     }
 }

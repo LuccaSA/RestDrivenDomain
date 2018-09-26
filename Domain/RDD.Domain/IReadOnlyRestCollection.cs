@@ -10,7 +10,8 @@ namespace RDD.Domain
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
+        Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query);
+        Task<IEnumerable<TEntity>> GetAllAsync();
         Task<bool> AnyAsync(Query<TEntity> query);
         Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query = null);
     }

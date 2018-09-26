@@ -1,49 +1,37 @@
 ﻿using RDD.Domain;
+using RDD.Domain.Models.Querying;
 using RDD.Infra.Web.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using RDD.Domain.Helpers;
 
 namespace RDD.Web.Querying
 {
-    public class WebQueryFactory<TEntity, TKey>
-        where TEntity : class, IPrimaryKey<TKey>
+    /// <summary>
+    /// Factory to generate Query<T/>.
+    /// </summary>
+    public class QueryFactory : IQueryFactory
     {
-        protected HashSet<string> IgnoredFilters { get; set; }
-
-        public WebQueryFactory()
+        private readonly QueryParsers _queryParsers;
+        private readonly QueryMetadata _queryMetadata;
+       
+        public QueryFactory(QueryMetadata queryMetadata, QueryParsers queryParsers)
         {
-            IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            _queryMetadata = queryMetadata;
+            _queryParsers = queryParsers;
         }
 
-        public void IgnoreFilters(params string[] filters)
+        public Query<TEntity> NewFromHttpRequest<TEntity, TKey>(HttpVerbs? verb)
+            where TEntity : class, IPrimaryKey<TKey>
         {
-            foreach (var filter in filters)
-            {
-                IgnoredFilters.Add(filter);
-            }
-        }
-
-        public WebQuery<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
-        {
-            var parameters = httpContextHelper.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
-
-            var fields = new FieldsParser<TEntity>().ParseFields(parameters, isCollectionCall);
-            var filters = WebFiltersParser<TEntity>.Parse(parameters);
-            var orderBys = new OrderByParser<TEntity>().Parse(parameters);
-            var options = new OptionsParser().Parse(parameters, fields);
-            var page = new WebPageParser().Parse(parameters);
-            var headers = new HeadersParser().Parse(httpContextHelper.GetHeaders());
-
-            return new WebQuery<TEntity>
-            {
-                Fields = fields,
-                Filter = new WebFiltersContainer<TEntity, TKey>(filters),
-                OrderBys = orderBys,
-                Options = options,
-                Page = page,
-                Headers = headers,
-            };
+            return new Query<TEntity>(
+                new WebFiltersContainer<TEntity, TKey>(_queryParsers.WebFilterParser.ParseWebFilters<TEntity>()),
+                _queryParsers.OrderByParser.ParseOrderBys<TEntity>().ToList(),
+                _queryParsers.FieldsParser.ParseFields(),
+                _queryParsers.HeaderParser.ParseHeaders(),
+                _queryParsers.PagingParser.ParsePaging(),
+                _queryMetadata
+            );
         }
     }
 }

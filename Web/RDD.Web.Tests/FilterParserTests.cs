@@ -4,6 +4,9 @@ using RDD.Web.Helpers;
 using RDD.Web.Tests.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using RDD.Domain.Models.Querying;
+using RDD.Web.Querying;
 using Xunit;
 
 namespace RDD.Web.Tests
@@ -13,29 +16,31 @@ namespace RDD.Web.Tests
         [Fact]
         public void LikeOperationOnGuidShouldWork()
         {
-            var httpContextAccessor = new HttpContextAccessor
-            {
-                HttpContext = new DefaultHttpContext()
-            };
-            httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
-            var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
 
-            helper.CreateQuery(HttpVerbs.Get);
+            QueryFactoryHelper.NewQueryFactory(httpContext)
+                .NewFromHttpRequest<User, int>(HttpVerbs.Get);
+        }
+
+        [Fact]
+        public void LikeOperationOnStringShouldWork()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = QueryString.Create("myValueObject.name", "like,abcd");
+            QueryFactoryHelper.NewQueryFactory(httpContext)
+                .NewFromHttpRequest<User, int>(HttpVerbs.Get);
         }
 
         [Fact]
         public void FilterKeywordsShouldBeCaseInsensitive()
         {
-            var httpContextAccessor = new HttpContextAccessor
-            {
-                HttpContext = new DefaultHttpContext()
-            };
-            httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
-            var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper);
-
-            helper.CreateQuery(HttpVerbs.Get);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
+            
+            QueryFactoryHelper.NewQueryFactory(httpContext)
+                .NewFromHttpRequest<User, int>(HttpVerbs.Get);
         }
+         
     }
 }

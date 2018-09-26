@@ -8,7 +8,7 @@ namespace RDD.Domain
         where TEntity : class
     {
         Task<int> CountAsync(Query<TEntity> query);
-        Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query);
-        Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query);
+        Task<IReadOnlyCollection<TEntity>> GetAsync(Query<TEntity> query);
+        Task<IReadOnlyCollection<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query);
     }
 }

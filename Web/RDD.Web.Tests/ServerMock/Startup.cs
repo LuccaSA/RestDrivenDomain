@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,12 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Domain;
-using RDD.Domain.Patchers;
 using RDD.Domain.WebServices;
-using RDD.Infra;
-using RDD.Infra.Storage;
 using RDD.Web.Helpers;
-using RDD.Web.Serialization;
+using RDD.Web.Tests.Models;
 
 namespace RDD.Web.Tests.ServerMock
 {
@@ -29,17 +30,19 @@ namespace RDD.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ExchangeRateDbContext>(
-                (service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
+            services.AddMvc();
 
-            services.TryAddScoped<DbContext>(s => s.GetRequiredService<ExchangeRateDbContext>());
+            services.AddDbContext<TestDbContext>(o =>
+            {
+                o.UseInMemoryDatabase("Add_writes_to_database");
+            });
 
-            services.AddRDD<CombinationsHolder, CurPrincipal>();
+            services.AddScoped<DbContext>(s => s.GetRequiredService<TestDbContext>());
+
+            services.AddRdd<CombinationsHolder, CurPrincipal>();
 
             services.TryAddScoped<IWebServicesCollection, WebServicesCollection>();
             services.AddScoped<ExchangeRateController>();
-
-            services.AddMvc();
 
             services.AddLogging();
         }
@@ -52,20 +55,10 @@ namespace RDD.Web.Tests.ServerMock
                 app.UseDeveloperExceptionPage();
             }
             app.UseStatusCodePages();
+            app.UseRdd();
 
-            if (dbContext != null)
-            {
-                for (int i = 0; i < 42; i++)
-                {
-                    dbContext.Add(new ExchangeRate
-                    {
-                        Name = i.ToString()
-                    });
-                }
-                dbContext.SaveChanges();
-            }
-
-            app.UseRDD();
+            // sample data
+            FeedTestData(dbContext);
 
             app.UseMvc(routes =>
             {
@@ -74,6 +67,57 @@ namespace RDD.Web.Tests.ServerMock
                     template: "{controller}/{action}/{id?}",
                     defaults: new { controller = "Ping", action = "Status" });
             });
+        }
+
+        private static void FeedTestData([NotNull] DbContext dbContext)
+        {
+            if (dbContext == null)
+            {
+                throw new ArgumentNullException(nameof(dbContext));
+            }
+
+            for (int i = 0; i < 42; i++)
+            {
+                dbContext.Add(new ExchangeRate
+                {
+                    Name = i.ToString()
+                });
+            }
+
+            dbContext.Add(new User
+            {
+                Id = 1,
+                BirthDay = DateTime.Today.AddYears(-42),
+                ContractStart = DateTime.Today.AddYears(-2),
+                Department = new Department
+                {
+                    Id = 1,
+                    Name = "Dep"
+                },
+                Name = "John",
+                PictureId = Guid.NewGuid(),
+                Salary = 42,
+                TwitterUri = new Uri("https://twitter.com/john"),
+                MyValueObject = new MyValueObject
+                {
+                    Id = 1,
+                    Name = "abcs"
+                },
+                Files = new List<UserFile>
+                {
+                    new UserFile
+                    {
+                        Id = Guid.NewGuid(),
+                        DateUpload = DateTime.Now.AddHours(-24),
+                        FileDescriptor = new FileDescriptor
+                        {
+                            Id = Guid.NewGuid(),
+                            FileName = "thefile.jpg"
+                        }
+                    }
+                }
+            });
+            dbContext.SaveChanges();
         }
     }
 }

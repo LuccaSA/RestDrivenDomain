@@ -5,6 +5,7 @@ using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Infra.Storage;
 using System.Linq;
+using RDD.Domain.Models.Querying;
 using Xunit;
 
 namespace RDD.Domain.Tests
@@ -37,7 +38,7 @@ namespace RDD.Domain.Tests
 
             var result = await collection.GetAsync(new Query<ConcreteClassThree>());
 
-            Assert.Equal(2, result.Items.Count());
+            Assert.Equal(2, result.Count());
         }
 
         [Fact]
@@ -55,7 +56,7 @@ namespace RDD.Domain.Tests
 
             var result = await collection.GetAsync(new Query<AbstractClass>());
 
-            Assert.Equal(3, result.Items.Count());
+            Assert.Equal(3, result.Count());
         }
     }
 }

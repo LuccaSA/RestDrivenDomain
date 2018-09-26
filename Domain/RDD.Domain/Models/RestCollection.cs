@@ -12,10 +12,9 @@ namespace RDD.Domain.Models
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected new IRepository<TEntity> Repository { get; set; }
-        protected IPatcher<TEntity> Patcher { get; set; }
-
-        protected IInstanciator<TEntity> Instanciator { get;set;}
+        protected IPatcher<TEntity> Patcher { get; }
+        protected IRepository<TEntity> Repository { get; }
+        protected IInstanciator<TEntity> Instanciator { get; }
 
         public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
             : base(repository)
@@ -25,44 +24,16 @@ namespace RDD.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
             Patcher.Patch(entity, candidate.JsonValue);
 
-            ForgeEntity(entity);
-
-            await ValidateEntityAsync(entity, null);
-
-            Repository.Add(entity);
-
-            return entity;
+            return CreateAsync(entity);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
-        {
-            var result = new List<TEntity>();
-
-            foreach (var candidate in candidates)
-            {
-                TEntity entity = Instanciator.InstanciateNew(candidate);
-
-                Patcher.Patch(entity, candidate.JsonValue);
-
-                ForgeEntity(entity);
-
-                await ValidateEntityAsync(entity, null);
-
-                result.Add(entity);
-            }
-
-            Repository.AddRange(result);
-            return result;
-        }
-
-
-        public async Task<TEntity> CreateAsync(TEntity entity)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
             ForgeEntity(entity);
 
@@ -74,6 +45,30 @@ namespace RDD.Domain.Models
             Repository.Add(entity);
 
             return entity;
+        }
+
+        public virtual async Task<IReadOnlyCollection<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        {
+            var result = new List<TEntity>();
+
+            foreach (var candidate in candidates)
+            {
+                TEntity entity = Instanciator.InstanciateNew(candidate);
+
+                Patcher.Patch(entity, candidate.JsonValue);
+
+                ForgeEntity(entity);
+
+                if (!await ValidateEntityAsync(entity, null) || !await OnBeforeCreateAsync(entity))
+                {
+                    continue;
+                }
+
+                result.Add(entity);
+            }
+
+            Repository.AddRange(result);
+            return result;
         }
 
         /// <summary>
@@ -113,11 +108,11 @@ namespace RDD.Domain.Models
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
 
-            var result = new HashSet<TEntity>();
+            var result = new List<TEntity>();
 
             var ids = candidatesByIds.Select(d => d.Key).ToList();
             var expQuery = new Query<TEntity>(query, e => ids.Contains(e.Id));
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
+            var entities = (await GetAsync(expQuery)).ToDictionary(el => el.Id);
 
             foreach (KeyValuePair<TKey, ICandidate<TEntity, TKey>> kvp in candidatesByIds)
             {
@@ -141,10 +136,17 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
-            
-            foreach (var entity in (await GetAsync(expQuery)).Items)
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id))
             {
+                Verb = HttpVerbs.Delete
+            };
+
+            var entities = (await GetAsync(expQuery)).ToDictionary(el => el.Id);
+
+            foreach (TKey id in ids)
+            {
+                var entity = entities[id];
+
                 Repository.Remove(entity);
             }
         }

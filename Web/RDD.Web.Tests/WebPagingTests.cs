@@ -1,21 +1,19 @@
-﻿using RDD.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
 using RDD.Infra;
-using RDD.Web.Querying;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace RDD.Domain.Tests
 {
-    public class WebPaginggTests : SingleContextTests
+    public class PagingTests : SingleContextTests
     {
-        public WebPaginggTests()
+        public PagingTests()
         {
             _storage = _newStorage(Guid.NewGuid().ToString());
             _repo = new OpenRepository<User>(_storage, _rightsService);
@@ -27,31 +25,20 @@ namespace RDD.Web.Tests
         private readonly IStorageService _storage;
 
         [Fact]
-        public void Changing_query_page_count_should_not_affect_another_query()
-        {
-            var query1 = new WebQuery<User>();
-            query1.Page.TotalCount = 20;
-
-            var query2 = new WebQuery<User>();
-            query2.Page.TotalCount = 10;
-
-            Assert.Equal(20, query1.Page.TotalCount);
-        }
-
-        [Fact]
         public async void Default_Paging_should_be_0_to_10()
         {
             IEnumerable<User> users = User.GetManyRandomUsers(20);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
 
-            var query = new WebQuery<User>();
-            ISelection<User> result = await _collection.GetAsync(query);
+            var query = new Query<User>(new QueryPaging(new PagingOptions(), 0, itemsPerPage: 10));
+            var result = await _collection.GetAsync(query);
 
-            Assert.Equal(0, query.Page.Offset);
-            Assert.Equal(10, query.Page.Limit);
-            Assert.Equal(10, result.Items.Count());
-            Assert.Equal(20, result.Count);
+            Assert.Equal(0, query.Paging.PageOffset);
+            Assert.Equal(10, query.Paging.ItemPerPage);
+
+            Assert.Equal(10, result.Count());
+            Assert.Equal(20, query.QueryMetadata.TotalCount);
         }
 
         [Fact]
@@ -63,8 +50,8 @@ namespace RDD.Web.Tests
                 _repo.AddRange(users);
                 await _storage.SaveChangesAsync();
 
-                var query = new WebQuery<User> { Page = new WebPage(0, 1001) };
-                ISelection<User> result = await _collection.GetAsync(query);
+                var query = new Query<User>(new QueryPaging(new PagingOptions(), 0, itemsPerPage: 1001));
+                await _collection.GetAsync(query);
             });
         }
     }
