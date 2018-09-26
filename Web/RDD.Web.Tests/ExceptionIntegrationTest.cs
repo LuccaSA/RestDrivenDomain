@@ -66,6 +66,7 @@ namespace RDD.Web.Tests
                     };
                 });
             });
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.All;
             var response = await _client.GetAsync("/ExchangeRate/");
             Assert.Equal(expected, response.StatusCode);
         }
