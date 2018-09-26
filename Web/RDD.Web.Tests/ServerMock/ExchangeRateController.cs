@@ -8,6 +8,17 @@ using System.Threading.Tasks;
 
 namespace RDD.Web.Tests.ServerMock
 {
+    [Route("OpenExchangeRate")]
+    public class ExchangeRate2Controller : WebController<ExchangeRate, int>
+    {
+        public ExchangeRate2Controller(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper, IRDDSerializer rddSerializer)
+            : base(appController, helper, rddSerializer)
+        {
+        }
+        protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
+        protected override HttpVerbs AllowedByIdHttpVerbs => HttpVerbs.All;
+    }
+
     [Route("ExchangeRate")]
     public class ExchangeRateController : WebController<ExchangeRate, int>
     {
