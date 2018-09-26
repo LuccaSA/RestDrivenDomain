@@ -16,7 +16,7 @@ namespace RDD.Domain.Models.Querying
             Paging = paging ?? QueryPaging.Unlimited;
 
             // copy paging infos for metadatas
-            QueryMetadata.Paging = paging == null ? null : new QueryMetadataPaging
+            QueryMetadata.Paging = new QueryMetadataPaging
             {
                 ItemPerPage = Paging.ItemPerPage,
                 PageOffset = Paging.PageOffset

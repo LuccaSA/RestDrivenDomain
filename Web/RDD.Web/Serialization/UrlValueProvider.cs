@@ -11,7 +11,7 @@ namespace RDD.Web.Serialization
 
         public UrlValueProvider(IUrlProvider urlProvider)
         {
-            _urlProvider = urlProvider;
+            _urlProvider = urlProvider ?? throw new ArgumentNullException(nameof(urlProvider));
         }
 
         public void SetValue(object target, object value)
@@ -21,8 +21,12 @@ namespace RDD.Web.Serialization
 
         public object GetValue(object target)
         {
-            var uri = _urlProvider.GetEntityApiUri(target as IPrimaryKey);
-            return uri.ToString();
+            if (target is IPrimaryKey key)
+            {
+                var uri = _urlProvider.GetEntityApiUri(key);
+                return uri.ToString();
+            }
+            return null;
         }
     }
 }

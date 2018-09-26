@@ -35,14 +35,15 @@ namespace RDD.Web.Serialization
 
         private PropertyTreeNode _currentNode;
         private PropertyTreeNode _currentPropertyNode;
-        private int _untrackedDepth;
-        private bool _untrackedMode;
 
-        public void Push()
+        private bool UntrackedMode => _currentNode.Children == null || _currentNode.Children.Count == 0;
+        private int _untrackedLevel = 0;
+
+        public void Push(string path)
         {
-            if (_untrackedMode)
+            if (UntrackedMode)
             {
-                _untrackedDepth++;
+                _untrackedLevel++;
                 return;
             }
             if (_currentPropertyNode != null)
@@ -53,20 +54,19 @@ namespace RDD.Web.Serialization
             }
         }
 
-        public void Pop()
+        public void Pop(string path)
         {
-            if (_untrackedMode)
-            {
-                _untrackedDepth--;
-                if (_untrackedDepth == 0)
-                {
-                    _untrackedMode = false;
-                }
-                return;
-            }
             if (_stack == null || _stack.Count == 0)
             {
                 return;
+            }
+            if (UntrackedMode)
+            {
+                if (_untrackedLevel > 0)
+                {
+                    _untrackedLevel--;
+                    return;
+                }
             }
             _currentPropertyNode = _stack.Pop();
             _currentNode = _currentPropertyNode.ParentNode;
@@ -78,14 +78,8 @@ namespace RDD.Web.Serialization
             {
                 return true;
             }
-
-            if (_untrackedMode)
+            if (UntrackedMode)
             {
-                return true;
-            }
-            if (_currentNode.Children == null)
-            {
-                _untrackedMode = true;
                 return true;
             }
             if (_currentNode.Children.TryGetValue(propertyName, out var propNode))

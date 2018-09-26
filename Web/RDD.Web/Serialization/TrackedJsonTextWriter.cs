@@ -17,25 +17,25 @@ namespace RDD.Web.Serialization
         
         public override void WriteStartArray()
         {
-            _selectiveSerializationContext.Push();
+            _selectiveSerializationContext.Push(Path);
             base.WriteStartArray();
         }
 
         public override void WriteStartObject()
         {
-            _selectiveSerializationContext.Push();
+            _selectiveSerializationContext.Push(Path);
             base.WriteStartObject();
         }
 
         public override void WriteEndArray()
         {
-            _selectiveSerializationContext.Pop();
+            _selectiveSerializationContext.Pop(Path);
             base.WriteEndArray();
         }
 
         public override void WriteEndObject()
         {
-            _selectiveSerializationContext.Pop();
+            _selectiveSerializationContext.Pop(Path);
             base.WriteEndObject();
         }
 

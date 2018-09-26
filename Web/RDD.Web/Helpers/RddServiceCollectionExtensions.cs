@@ -60,7 +60,7 @@ namespace RDD.Web.Helpers
             services.TryAddScoped<IQueryFactory, QueryFactory>();
             services.TryAddScoped<QueryMetadata>();
 
-            services.TryAddSingleton(typeof(ICandidateFactory<,>), typeof(CandidateFactory<,>));
+            services.TryAddScoped(typeof(ICandidateFactory<,>), typeof(CandidateFactory<,>));
 
             services.AddOptions<PagingOptions>();
 

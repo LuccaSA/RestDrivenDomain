@@ -7,7 +7,7 @@ namespace RDD.Domain.Models.Querying
     public class QueryMetadata
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        
+
         public String EllapsedTime() => _stopwatch.ElapsedMilliseconds + " ms";
 
         public QueryMetadataPaging Paging { get; set; }
