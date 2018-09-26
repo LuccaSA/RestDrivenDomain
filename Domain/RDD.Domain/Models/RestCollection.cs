@@ -33,7 +33,7 @@ namespace RDD.Domain.Models
 
             ForgeEntity(entity);
 
-            await ValidateEntityAsync(entity, null);
+            ValidateEntity(entity, null);
 
             Repository.Add(entity);
 
@@ -52,7 +52,7 @@ namespace RDD.Domain.Models
 
                 ForgeEntity(entity);
 
-                await ValidateEntityAsync(entity, null);
+                ValidateEntity(entity, null);
 
                 result.Add(entity);
             }
@@ -61,51 +61,17 @@ namespace RDD.Domain.Models
             return result;
         }
 
-
-        public async Task<TEntity> CreateAsync(TEntity entity)
-        {
-            ForgeEntity(entity);
-
-            if (!await ValidateEntityAsync(entity, null) || !await OnBeforeCreateAsync(entity))
-            {
-                return null;
-            }
-
-            Repository.Add(entity);
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Called before the entity is created
-        /// </summary>
-        /// <param name="entity">The entity</param>
-        /// <returns>false if the entity should not be created</returns>
-        protected virtual Task<bool> OnBeforeCreateAsync(TEntity entity) => Task.FromResult(true);
-
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
+
             TEntity entity = await GetByIdAsync(id, query);
             if (entity == null)
             {
                 return null;
             }
             return await UpdateAsync(entity, candidate, query);
-        }
-
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, TEntity entity)
-        {
-            TEntity oldEntity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Put });
-            if (oldEntity == null)
-            {
-                return null;
-            }
-
-            bool updated = await UpdateEntityCoreAsync(id, entity, oldEntity);
-
-            return updated ? entity : oldEntity;
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
@@ -151,42 +117,30 @@ namespace RDD.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual Task<bool> ValidateEntityAsync(TEntity entity, TEntity oldEntity) => Task.FromResult(true);
+        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
 
-        protected virtual Task<bool> OnBeforeUpdateEntityAsync(TEntity entity) => Task.FromResult(true);
-
-        protected virtual Task OnBeforePatchEntityAsync(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
+        protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
         /// <summary>
         /// Called after entity update
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
-        protected virtual Task OnAfterPatchEntityAsync(TEntity oldEntity, TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
+        protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
 
-        private async Task<TEntity> UpdateAsync(TEntity oldEntity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
+        private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            await OnBeforePatchEntityAsync(oldEntity, candidate);
+            await OnBeforeUpdateEntity(entity, candidate);
 
-            TEntity newEntity = oldEntity.Clone();
+            TEntity oldEntity = entity.Clone();
 
-            Patcher.Patch(newEntity, candidate.JsonValue);
+            Patcher.Patch(entity, candidate.JsonValue);
 
-            await OnAfterPatchEntityAsync(oldEntity, newEntity, candidate, query);
-            
-            bool updated = await UpdateEntityCoreAsync((TKey)newEntity.GetId(), newEntity, oldEntity);
+            await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 
-            return updated ? newEntity : oldEntity;
-        }
+            ValidateEntity(entity, oldEntity);
 
-        private async Task<bool> UpdateEntityCoreAsync(TKey id, TEntity entity, TEntity oldEntity)
-        {
-            if (!await ValidateEntityAsync(entity, oldEntity) || !await OnBeforeUpdateEntityAsync(entity))
-            {
-                return false;
-            }
-
-            return Repository.Update<TEntity, TKey>(id, entity);
+            return entity;
         }
     }
 }

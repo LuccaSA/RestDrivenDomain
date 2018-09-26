@@ -15,9 +15,5 @@ namespace RDD.Infra
         void Remove<TEntity>(TEntity entity) where TEntity : class;
         Task SaveChangesAsync();
         void AddAfterSaveChangesAction(Task action);
-
-        bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
-            where TEntity : class, IEntityBase<TEntity, TKey>
-            where TKey : IEquatable<TKey>;
     }
 }

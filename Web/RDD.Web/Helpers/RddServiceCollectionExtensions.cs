@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RDD.Application;
@@ -25,9 +26,11 @@ namespace RDD.Web.Helpers
         /// IRightsService and IRDDSerialization are missing for this setup to be ready
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddRDDCore(this IServiceCollection services)
+        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
+            where TDbContext : DbContext
         {
             // register base services
+            services.TryAddScoped<DbContext, TDbContext>();
             services.TryAddScoped<IStorageService, EFStorageService>();
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -70,10 +73,12 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDD<TCombinationsHolder, TPrincipal>(this IServiceCollection services) where TCombinationsHolder : class, ICombinationsHolder
+        public static IServiceCollection AddRDD<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+            where TDbContext : DbContext
+            where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            return services.AddRDDCore()
+            return services.AddRDDCore<TDbContext>()
                 .AddRDDRights<TCombinationsHolder, TPrincipal>()
                 .AddRDDSerialization<TPrincipal>();
         }

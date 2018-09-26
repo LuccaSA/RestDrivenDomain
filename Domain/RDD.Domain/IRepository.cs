@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace RDD.Domain
 {
@@ -9,9 +8,5 @@ namespace RDD.Domain
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);
         void Remove(TEntity entity);
-
-        bool Update<T, TKey>(TKey id, TEntity entity)
-            where T : class, TEntity, IEntityBase<T, TKey>
-            where TKey : IEquatable<TKey>;
     }
 }

@@ -33,12 +33,44 @@ namespace RDD.Web.Controllers
         {
         }
 
-        public virtual async Task<IActionResult> PostAsync()
+        public Task<IActionResult> PostAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
             {
-                return NotFound();
+                return ProtectedPostAsync();
             }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> PutByIdAsync(TKey id)
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+            {
+                return ProtectedPutAsync(id);
+            }
+            return Task.FromResult((IActionResult)NotFound(id));
+        }
+
+        public Task<IActionResult> PutAsync()
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+            {
+                return ProtectedPutAsync();
+            }
+            return Task.FromResult((IActionResult)NotFound());
+        }
+
+        public Task<IActionResult> DeleteByIdAsync(TKey id)
+        {
+            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
+            {
+                return ProtectedDeleteAsync(id);
+            }
+            return Task.FromResult((IActionResult)NotFound(id));
+        }
+
+        protected virtual async Task<IActionResult> ProtectedPostAsync()
+        {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
@@ -47,12 +79,8 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(entity, query));
         }
 
-        public virtual async Task<IActionResult> PutByIdAsync(TKey id)
+        protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return NotFound();
-            }
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
@@ -66,12 +94,8 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(entity, query));
         }
 
-        public virtual async Task<IActionResult> PutAsync()
+        protected virtual async Task<IActionResult> ProtectedPutAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return NotFound();
-            }
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
@@ -87,23 +111,15 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(entities, query));
         }
 
-        public virtual async Task<IActionResult> DeleteByIdAsync(TKey id)
+        protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
-            {
-                return NotFound();
-            }
             await AppController.DeleteByIdAsync(id);
 
             return Ok();
         }
 
-        public virtual async Task<IActionResult> DeleteAsync()
+        protected virtual async Task<IActionResult> ProtectedDeleteAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
-            {
-                return NotFound();
-            }
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
