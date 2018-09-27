@@ -12,6 +12,7 @@ using RDD.Domain.Tests.Templates;
 using RDD.Infra.Storage;
 using RDD.Web.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;

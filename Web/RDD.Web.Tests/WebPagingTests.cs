@@ -71,7 +71,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void Paging_should_start_at_0_result()
         {
-            Assert.Throws<BadRequestException>(() => new Query<User> { Page = new Page(-10, 10) });
+            Assert.Throws<BadRequestException>(() => new Query<User> { Page = new WebPage(-10, 10) });
         }
     }
 }
