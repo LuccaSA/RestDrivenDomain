@@ -25,18 +25,26 @@ namespace RDD.Web.Tests.Serialization
 {
     public class FieldsTests
     {
+        private SerializerProvider GetSerializerProvider()
+        {
+            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+            httpContextAccessor.HttpContext.Request.Scheme = "https";
+            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+
+            return new SerializerProvider(
+                new ReflectionProvider(new Mock<IMemoryCache>().Object),
+                new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor),
+                new List<IInheritanceConfiguration>());
+        }
+
         [Fact]
         public void SpecialSelectionFields()
         {
             ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { new Obj1 { Id = 1 }, new Obj1 { Id = 2 } }, 1);
 
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-
             var fields = new ExpressionParser().ParseTree<Obj1>("collection.count");
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
+            var serializer = GetSerializerProvider();
 
             var json = serializer.ToJson(selection, fields);
 
@@ -53,13 +61,9 @@ namespace RDD.Web.Tests.Serialization
             };
             ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
 
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+            var fields = new FieldsParser().ParseFields<Obj1>("");
 
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { }, true);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
+            var serializer = GetSerializerProvider();
 
             var json = serializer.ToJson(selection, fields);
 
@@ -76,14 +80,9 @@ namespace RDD.Web.Tests.Serialization
                 Name = "1"
             };
 
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+            var fields = new FieldsParser().ParseFields<Obj1>("");
 
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { }, true);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
-
+            var serializer = GetSerializerProvider();
             var json = serializer.ToJson(obj1, fields);
 
             Assert.True(json.HasJsonValue("Id"));
@@ -114,13 +113,9 @@ namespace RDD.Web.Tests.Serialization
             };
             ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
 
-            var httpContext = new DefaultHttpContext();
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
+            var fields = new FieldsParser().ParseFields<Obj1>("Obj2[Id,Name,Obj3[Something,Else],Else]");
 
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { { "fields", "Obj2[Id,Name,Obj3[Something,Else],Else]" } }, true);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new Mock<IMemoryCache>().Object), new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor));
-
+            var serializer = GetSerializerProvider();
             var json = serializer.ToJson(selection, fields);
 
             Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Something"));
@@ -133,11 +128,7 @@ namespace RDD.Web.Tests.Serialization
         [Fact]
         public void SerializeSubCollections()
         {
-            var httpContext = new DefaultHttpContext();
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
-            var reflectionProvider = new ReflectionProvider(new Mock<IMemoryCache>().Object);
-            var serializer = new SerializerProvider(reflectionProvider, urlProvider);
+            var serializer = GetSerializerProvider();
 
             var obj1 = new Obj1
             {
@@ -157,7 +148,7 @@ namespace RDD.Web.Tests.Serialization
             };
 
             var selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
-            var fields = new FieldsParser<Obj1>().ParseFields(new Dictionary<string, string> { { "fields", "obj2s[id,name]" } }, true);
+            var fields = new FieldsParser().ParseFields<Obj1>("obj2s[id,name]");
 
             var json = serializer.ToJson(selection, fields);
 

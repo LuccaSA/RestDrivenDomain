@@ -1,5 +1,8 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: `FieldsParser<T>` -> `FieldsParser`. Methods now carry the generic argument. Thi allows for manipulation where the type is not known at design time.
+ - **Modification**: `SerializerProvider._reflectionProvider` ->`SerializerProvider.ReflectionProvider`
+ - **Modification**: `SerializerProvider._urlProvider_` ->`SerializerProvider.UrlProvider`
  - **Removed**: `PropertySelector`, `CollectionPropertySelector` and `DictionaryPropertySelector`. Replaced by `IExpression`, `IExpressionChain`, `IExpressionTree` and their implementations. `
  - **Removed**: `FieldExpansionHelper`, `PropertySelectorEqualityComparer`, `PropertySelectorIncludablesExtractor`, `PropertySelectorRootLambdaExtractor`, `PropertySelectorTransferor`, `CollectionFieldsParser`
  - **Modification**: `ICandidate.HasProperty(Expression<Func<TEntity, object>> expression)` -> `ICandidate.HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression)`. Allows for better expression (no conversion required to type object). Other changed member include `WebFiltersContainer.RemoveFilter`, `WebFiltersContainer.GetFilter`, `WebFiltersContainer.HasFilter`
@@ -26,6 +29,10 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of th rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
+ - **Added**: `FieldsParser` exposes methods `ParseAllProperties` and `ParseFields` that can be used as generic or with type as argument.
+ - **Added**: `BaseClassInstanciator`, `BaseClassPatcher` and `BaseClassJsonConverter` to properly manage inheritance schemes during edition.
+ - **Added**: `SerializerProvider.InheritanceConfigurations` and `BaseClassSerializer` to properly manage inheritance schemes during exposition.
  - **Added**: `ReadOnlyRepository<T>.IncludeWhiteList`. This allows an automatic white-list approach on the include on a Get query.
  - **Added**: New logic for property and member selection via expression coming from the web. The main interface to manipulate is `IExpression`, that replaces `PropertySelector`. The main implementation to use now are `PropertyExpression`, `EnumerablePropertyExpression`, `ItemExpression`, `ExpressionChain`, or `ExpressionTree`. The parsing and manipulation is ensured by `ExpressionParser` and the visitors `ExpressionChainExtractor`, `ExpressionChainer`.
  - **Added**: `ExpressionEqualityComparer` to compare `Expression` and another one to compare `IExpression`.

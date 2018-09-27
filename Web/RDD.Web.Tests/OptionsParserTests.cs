@@ -11,7 +11,7 @@ namespace RDD.Web.Tests
         public void CountParseHasOptionImplications()
         {
             var dico = new Dictionary<string, string> { { "fields", "collection.count" } };
-            var fields = new FieldsParser<User>().ParseFields(dico, true);
+            var fields = new FieldsParser().ParseFields<User>(dico, true);
             var options = new OptionsParser().Parse(dico, fields);
 
             Assert.True(options.NeedCount);
