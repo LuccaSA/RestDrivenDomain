@@ -21,7 +21,7 @@ namespace RDD.Web.Tests
             var httpContextHelper = new HttpContextHelper(httpContextAccessor);
             var helper = new ApiHelper<User, int>(httpContextHelper);
 
-            helper.CreateQuery(HttpVerbs.Get);
+            helper.CreateQuery(HttpVerb.Get);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace RDD.Web.Tests
             var httpContextHelper = new HttpContextHelper(httpContextAccessor);
             var helper = new ApiHelper<User, int>(httpContextHelper);
 
-            helper.CreateQuery(HttpVerbs.Get);
+            helper.CreateQuery(HttpVerb.Get);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace RDD.Domain.Tests.Models
         public override Task<User> GetByIdAsync(int id, Query<User> query)
         {
             //Only for get, because PUT will always make a GetById( ) to retrieve the entity to update
-            if (query.Verb == Helpers.HttpVerbs.Get)
+            if (query.Verb == Helpers.HttpVerb.Get)
             {
                 return Task.FromResult(new User
                 {

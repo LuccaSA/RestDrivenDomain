@@ -14,7 +14,7 @@ namespace RDD.Domain.Tests.Models
 
         protected override IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            if (query.Verb == Helpers.HttpVerbs.Get)
+            if (query.Verb == Helpers.HttpVerb.Get)
             {
                 return entities;
             }
