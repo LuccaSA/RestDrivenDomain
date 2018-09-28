@@ -18,7 +18,7 @@ namespace RDD.Web.Tests.ServerMock
             : base(appController, helper, rddSerializer)
         {
         }
-        protected override HttpVerb AllowedHttpVerbs => HttpVerb.All;
+        protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
     }
 
     [Route("ExchangeRate")]
@@ -30,8 +30,8 @@ namespace RDD.Web.Tests.ServerMock
         }
 
         //for route testing
-        public static HttpVerb ConfigurableAllowedHttpVerbs = HttpVerb.Get | HttpVerb.Post | HttpVerb.Put;
-        protected override HttpVerb AllowedHttpVerbs => ConfigurableAllowedHttpVerbs;
+        public static HttpVerbs ConfigurableAllowedHttpVerbs = HttpVerbs.Get | HttpVerbs.Post | HttpVerbs.Put;
+        protected override HttpVerbs AllowedHttpVerbs => ConfigurableAllowedHttpVerbs;
 
         [HttpPost("creation")]//testing route override
         public override Task<IActionResult> PostAsync()

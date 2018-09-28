@@ -38,17 +38,17 @@ namespace RDD.Web.Controllers
             RDDSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
         }
 
-        protected virtual HttpVerb AllowedHttpVerbs => HttpVerb.None;
+        protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
         [HttpGet]
         public virtual async Task<IActionResult> GetAsync()
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Get))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Get);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
@@ -58,12 +58,12 @@ namespace RDD.Web.Controllers
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> GetByIdAsync(TKey id)
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Get))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Get, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 

@@ -23,8 +23,8 @@ namespace RDD.Domain.Tests
             Assert.Throws<UnreachableEntityException>(() => helper.GetFilter(new Domain.Models.Querying.Query<User>()));
 
 
-            holder.Setup(h => h.Combinations).Returns(new List<Combination> { new Combination { Verb = Helpers.HttpVerb.Get, Subject = typeof(User), Operation = new Operation() } });
-            var filter = helper.GetFilter(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerb.Get });
+            holder.Setup(h => h.Combinations).Returns(new List<Combination> { new Combination { Verb = Helpers.HttpVerbs.Get, Subject = typeof(User), Operation = new Operation() } });
+            var filter = helper.GetFilter(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
 
             Assert.True(filter.Compile()(null));
         }

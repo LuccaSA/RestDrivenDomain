@@ -64,7 +64,7 @@ namespace RDD.Domain.Models
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerb.Put;
+            query.Verb = HttpVerbs.Put;
 
             TEntity entity = await GetByIdAsync(id, query);
             if (entity == null)
@@ -77,7 +77,7 @@ namespace RDD.Domain.Models
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerb.Put;
+            query.Verb = HttpVerbs.Put;
 
             var result = new HashSet<TEntity>();
 
@@ -98,7 +98,7 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdAsync(TKey id)
         {
-            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerb.Delete });
+            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
             if (entity != null)
             {
                 Repository.Remove(entity);
@@ -107,7 +107,7 @@ namespace RDD.Domain.Models
 
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerb.Delete };
+            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
             
             foreach (var entity in (await GetAsync(expQuery)).Items)
             {

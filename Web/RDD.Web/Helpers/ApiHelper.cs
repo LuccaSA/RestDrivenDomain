@@ -23,7 +23,7 @@ namespace RDD.Web.Helpers
             _httpContextHelper = httpContextHelper;
         }
 
-        public virtual WebQuery<TEntity> CreateQuery(HttpVerb verb, bool isCollectionCall = true)
+        public virtual WebQuery<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {
             var query = _queryFactory.FromWebContext(_httpContextHelper, isCollectionCall);
             query.Verb = verb;

@@ -3,7 +3,7 @@
 namespace RDD.Domain.Helpers
 {
     [Flags]
-    public enum HttpVerb
+    public enum HttpVerbs
     {
         None = 0,
         Get = 1 << 0,

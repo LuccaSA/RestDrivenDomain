@@ -37,12 +37,12 @@ namespace RDD.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> PostAsync()
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Post))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Post))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Post, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
@@ -53,12 +53,12 @@ namespace RDD.Web.Controllers
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> PutByIdAsync(TKey id)
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Put))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Put, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
@@ -74,12 +74,12 @@ namespace RDD.Web.Controllers
         [HttpPut]
         public virtual async Task<IActionResult> PutAsync()
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Put))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Put, false);
+            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))
@@ -97,7 +97,7 @@ namespace RDD.Web.Controllers
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> DeleteByIdAsync(TKey id)
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Delete))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
@@ -110,12 +110,11 @@ namespace RDD.Web.Controllers
         [HttpDelete]
         public virtual async Task<IActionResult> DeleteAsync()
         {
-            if (!AllowedHttpVerbs.HasFlag(HttpVerb.Delete))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
             {
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerb.Delete);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))

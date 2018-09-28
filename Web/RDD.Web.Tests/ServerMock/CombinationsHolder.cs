@@ -15,7 +15,7 @@ namespace RDD.Web.Tests.ServerMock
                 {
                     Operation = new Operation(),
                     Subject = typeof(ExchangeRate),
-                    Verb = HttpVerb.All
+                    Verb = HttpVerbs.All
                 }
             };
         }

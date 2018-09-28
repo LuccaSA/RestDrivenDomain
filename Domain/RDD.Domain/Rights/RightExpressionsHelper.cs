@@ -36,7 +36,7 @@ namespace RDD.Domain.Rights
             return t => true;
         }
 
-        public virtual HashSet<int> GetOperationIds(HttpVerb verb)
+        public virtual HashSet<int> GetOperationIds(HttpVerbs verb)
         {
             var combinations = CombinationsHolder.Combinations.Where(c => c.Subject == typeof(T) && c.Verb.HasFlag(verb));
             return new HashSet<int>(combinations.Select(c => c.Operation.Id));
