@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
@@ -20,6 +21,7 @@ namespace RDD.Web.Controllers
         }
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
         where TAppController : IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
@@ -37,14 +39,13 @@ namespace RDD.Web.Controllers
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
-        protected virtual HttpVerbs AllowedByIdHttpVerbs => HttpVerbs.None;
 
         [HttpGet]
         public virtual async Task<IActionResult> GetAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
@@ -57,9 +58,9 @@ namespace RDD.Web.Controllers
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> GetByIdAsync(TKey id)
         {
-            if (!AllowedByIdHttpVerbs.HasVerb(HttpVerbs.Get))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);

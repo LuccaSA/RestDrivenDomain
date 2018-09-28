@@ -31,7 +31,7 @@ namespace RDD.Web.Tests
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             response = await _client.GetAsync("/ExchangeRate/");
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace RDD.Web.Tests
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             response = await _client.PutAsync("/ExchangeRate/", content);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace RDD.Web.Tests
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             response = await _client.PostAsync("/ExchangeRate/creation", content);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace RDD.Web.Tests
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRate/") { Content = content });
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
             response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRate/") { Content = content });
@@ -85,13 +85,13 @@ namespace RDD.Web.Tests
         [Fact]
         public async Task GetByIdOkAsync()
         {
-            ExchangeRateController.ConfigurableAllowedByIdHttpVerbs = Domain.Helpers.HttpVerbs.Get;
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
             var response = await _client.GetAsync("/ExchangeRate/23");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedByIdHttpVerbs = Domain.Helpers.HttpVerbs.None;
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             response = await _client.GetAsync("/ExchangeRate/23");
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
@@ -100,23 +100,23 @@ namespace RDD.Web.Tests
             var serialized = JsonConvert.SerializeObject(new ExchangeRate { Id = 5, Name = "putted2" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
-            ExchangeRateController.ConfigurableAllowedByIdHttpVerbs = Domain.Helpers.HttpVerbs.Put;
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;
             var response = await _client.PutAsync("/ExchangeRate/5", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedByIdHttpVerbs = Domain.Helpers.HttpVerbs.None;
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             response = await _client.PutAsync("/ExchangeRate/5", content);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
         public async Task DeleteByIdOkAsync()
         {
-            ExchangeRateController.ConfigurableAllowedByIdHttpVerbs = Domain.Helpers.HttpVerbs.None;
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             var response = await _client.DeleteAsync("/ExchangeRate/7");
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedByIdHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
             response = await _client.DeleteAsync("/ExchangeRate/7");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

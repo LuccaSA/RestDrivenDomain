@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
@@ -36,9 +37,9 @@ namespace RDD.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> PostAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Post))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
@@ -52,9 +53,9 @@ namespace RDD.Web.Controllers
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> PutByIdAsync(TKey id)
         {
-            if (!AllowedByIdHttpVerbs.HasVerb(HttpVerbs.Put))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
@@ -73,9 +74,9 @@ namespace RDD.Web.Controllers
         [HttpPut]
         public virtual async Task<IActionResult> PutAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
@@ -96,9 +97,9 @@ namespace RDD.Web.Controllers
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> DeleteByIdAsync(TKey id)
         {
-            if (!AllowedByIdHttpVerbs.HasVerb(HttpVerbs.Delete))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             await AppController.DeleteByIdAsync(id);
@@ -109,9 +110,9 @@ namespace RDD.Web.Controllers
         [HttpDelete]
         public virtual async Task<IActionResult> DeleteAsync()
         {
-            if (!AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
             {
-                return Unauthorized();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
