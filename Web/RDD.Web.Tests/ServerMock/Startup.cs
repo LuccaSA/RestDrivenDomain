@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using RDD.Domain;
-using RDD.Domain.WebServices;
 using RDD.Web.Helpers;
 
 namespace RDD.Web.Tests.ServerMock

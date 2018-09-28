@@ -1,6 +1,6 @@
 # Futur release
 ## Breaking changes
- - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis.
+ - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis if you opt-in.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**
  - **Modification**: `RDDServiceCollectionExtensions` methods no longer require a `DbContext`
  - **Removed**: `CulturedDescriptionAttribute`, `CultureContext`, `IWebServicesCollection`, `WebService`, `Application`, `Enum`, `IIncludable`, `IDownloadableEntity`
@@ -37,6 +37,7 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of th rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `FieldsParser` exposes methods `ParseAllProperties` and `ParseFields` that can be used as generic or with type as argument.
  - **Added**: `BaseClassInstanciator`, `BaseClassPatcher` and `BaseClassJsonConverter` to properly manage inheritance schemes during edition.
