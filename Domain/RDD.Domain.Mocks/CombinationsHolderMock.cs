@@ -1,4 +1,5 @@
 ﻿using RDD.Domain.Models;
+using RDD.Domain.Rights;
 using System.Collections.Generic;
 
 namespace RDD.Domain.Mocks

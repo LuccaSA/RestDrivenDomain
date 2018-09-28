@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace RDD.Domain.Json
 {
@@ -8,10 +7,6 @@ namespace RDD.Domain.Json
         object GetContent();
 
         HashSet<string> GetPaths();
-        IJsonElement Map(Func<object, object> mapper);
-
-        bool RemovePath(string path);
-        bool RemovePath(Queue<string> path);
 
         JsonArray GetJsonArray(string path);
         JsonArray GetJsonArray(Queue<string> path);

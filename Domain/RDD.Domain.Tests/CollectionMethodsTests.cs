@@ -9,11 +9,11 @@ using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
-using RDD.Domain.WebServices;
 using RDD.Infra.Storage;
 using RDD.Web.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 namespace RDD.Domain.Tests
@@ -37,16 +37,12 @@ namespace RDD.Domain.Tests
         {
             using (var storage = _newStorage(Guid.NewGuid().ToString()))
             {
-                var mock = new Mock<ICombinationsHolder>();
-                mock.Setup(h => h.Combinations)
-                    .Returns(new HashSet<Combination>() {
-                        new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerbs.Post },
-                        new Combination { Operation = new Operation { Id = 1 }, Subject = typeof(User), Verb = HttpVerbs.Put }
-                    });
-                var rightService = new RightExpressionsHelper<User>(new WebService { Id = 1, AppOperations = new HashSet<int> { 1 } }, mock.Object);
+                Expression<Func<User, bool>> trueFilter = t => true;
+                var rightService = new Mock<IRightExpressionsHelper<User>>();
+                rightService.Setup(s => s.GetFilter(It.IsAny<Query<User>>())).Returns(trueFilter);
 
                 var user = new User { Id = 3 };
-                var repo = new Repository<User>(storage, rightService);
+                var repo = new Repository<User>(storage, rightService.Object);
                 var users = new UsersCollection(repo, _patcherProvider, Instanciator);
                 var app = new UsersAppController(storage, users);
 

@@ -20,17 +20,9 @@ namespace RDD.Domain.Json
             return Content.Select(e => e == null ? null : e.GetContent()).ToArray();
         }
 
-        public override IJsonElement Map(Func<object, object> mapper)
-        {
-            if (Content == null)
-                return new JsonArray();
-
-            return new JsonArray(Content.Select(e => e == null ? null : e.Map(mapper)));
-        }
-
         public override HashSet<string> GetPaths()
         {
-            return Content.SelectMany((e, index) => e.GetPaths().Select(p => "[" + index + "]" + p)).ToHashSet();
+            return Content.SelectMany((e, index) => e.GetPaths().Select(p => index + "." + p)).ToHashSet();
         }
 
         public List<string> GetEveryJsonValue()
@@ -146,25 +138,6 @@ namespace RDD.Domain.Json
             }
 
             return Content[index].HasKey(path);
-        }
-
-        public override bool RemovePath(Queue<string> path)
-        {
-            if (path == null || path.Count == 0)
-                return false;
-
-            var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
-                return false;
-
-            if (path.Count == 0)
-            {
-                Content.RemoveAt(index);
-                return true;
-            }
-
-            return Content[index].RemovePath(path);
         }
     }
 }

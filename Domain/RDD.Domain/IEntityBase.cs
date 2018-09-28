@@ -1,6 +1,6 @@
 ﻿namespace RDD.Domain
 {
-    public interface IEntityBase : IPrimaryKey, IIncludable
+    public interface IEntityBase : IPrimaryKey
     {
         string Name { get; }
         string Url { get; }

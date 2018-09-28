@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace RDD.Domain.Exceptions
 {
-    public class ForbiddenException : BusinessException
-    { 
-        public ForbiddenException(string message) 
+    [Serializable]
+    public sealed class ForbiddenException : BusinessException
+    {
+        public ForbiddenException(string message)
             : base(message)
         {
         }
 
-        public ForbiddenException(string message, Exception innerException) 
-            : base(message, innerException)
+        private ForbiddenException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 

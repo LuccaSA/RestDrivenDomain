@@ -57,7 +57,7 @@ namespace RDD.Web.Tests
         [Fact]
         public async Task Paging_should_limit_to_1000_result()
         {
-            await Assert.ThrowsAsync<OutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<BadRequestException>(async () =>
             {
                 IEnumerable<User> users = User.GetManyRandomUsers(2000);
                 _repo.AddRange(users);
@@ -66,6 +66,12 @@ namespace RDD.Web.Tests
                 var query = new WebQuery<User> { Page = new WebPage(0, 1001) };
                 ISelection<User> result = await _collection.GetAsync(query);
             });
+        }
+
+        [Fact]
+        public void Paging_should_start_at_0_result()
+        {
+            Assert.Throws<BadRequestException>(() => new Query<User> { Page = new WebPage(-10, 10) });
         }
     }
 }

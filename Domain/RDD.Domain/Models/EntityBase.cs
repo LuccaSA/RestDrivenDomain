@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace RDD.Domain.Models
 {
@@ -13,10 +12,7 @@ namespace RDD.Domain.Models
 
         public virtual object GetId() => Id;
 
-        public virtual void SetId(object id)
-        {
-            Id = (TKey)id;
-        }
+        public virtual void SetId(object id) => Id = (TKey)id;
 
         public virtual TEntity Clone() => (TEntity)MemberwiseClone();
     }
