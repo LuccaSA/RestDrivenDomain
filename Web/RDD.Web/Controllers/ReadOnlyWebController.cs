@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
@@ -20,6 +21,7 @@ namespace RDD.Web.Controllers
         }
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
         where TAppController : IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
@@ -38,28 +40,14 @@ namespace RDD.Web.Controllers
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
-        public Task<IActionResult> GetAsync()
+        [HttpGet]
+        public virtual async Task<IActionResult> GetAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {
-                return ProtectedGetAsync();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            return Task.FromResult((IActionResult)NotFound());
-        }
-
-        public Task<IActionResult> GetByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Get))
-            {
-                return ProtectedGetAsync(id);
-            }
-
-            return Task.FromResult((IActionResult)NotFound(id));
-        }
-
-        protected virtual async Task<IActionResult> ProtectedGetAsync()
-        {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
@@ -67,8 +55,14 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(selection, query));
         }
 
-        protected virtual async Task<IActionResult> ProtectedGetAsync(TKey id)
+        [HttpGet("{id}")]
+        public virtual async Task<IActionResult> GetByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
+            {
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
+            }
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);

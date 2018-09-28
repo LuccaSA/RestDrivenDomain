@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
@@ -33,44 +34,14 @@ namespace RDD.Web.Controllers
         {
         }
 
-        public Task<IActionResult> PostAsync()
+        [HttpPost]
+        public virtual async Task<IActionResult> PostAsync()
         {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Post))
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Post))
             {
-                return ProtectedPostAsync();
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
-            return Task.FromResult((IActionResult)NotFound());
-        }
 
-        public Task<IActionResult> PutByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return ProtectedPutAsync(id);
-            }
-            return Task.FromResult((IActionResult)NotFound(id));
-        }
-
-        public Task<IActionResult> PutAsync()
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Put))
-            {
-                return ProtectedPutAsync();
-            }
-            return Task.FromResult((IActionResult)NotFound());
-        }
-
-        public Task<IActionResult> DeleteByIdAsync(TKey id)
-        {
-            if (AllowedHttpVerbs.HasVerb(HttpVerbs.Delete))
-            {
-                return ProtectedDeleteAsync(id);
-            }
-            return Task.FromResult((IActionResult)NotFound(id));
-        }
-
-        protected virtual async Task<IActionResult> ProtectedPostAsync()
-        {
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
@@ -79,8 +50,14 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(entity, query));
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync(TKey id)
+        [HttpPut("{id}")]
+        public virtual async Task<IActionResult> PutByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
+            {
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
+            }
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
 
@@ -94,14 +71,20 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(entity, query));
         }
 
-        protected virtual async Task<IActionResult> ProtectedPutAsync()
+        [HttpPut]
+        public virtual async Task<IActionResult> PutAsync()
         {
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
+            {
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
+            }
+
             Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))
             {
-                return BadRequest("To edit a collection of entities, provide an array of objets with an property id");
+                return BadRequest("To edit a collection of entities, provide an array of objets with an 'id' property");
             }
 
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
@@ -111,26 +94,35 @@ namespace RDD.Web.Controllers
             return Ok(RDDSerializer.Serialize(entities, query));
         }
 
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync(TKey id)
+        [HttpDelete("{id}")]
+        public virtual async Task<IActionResult> DeleteByIdAsync(TKey id)
         {
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
+            {
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
+            }
+
             await AppController.DeleteByIdAsync(id);
 
             return Ok();
         }
 
-        protected virtual async Task<IActionResult> ProtectedDeleteAsync()
+        [HttpDelete]
+        public virtual async Task<IActionResult> DeleteAsync()
         {
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Delete);
+            if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
+            {
+                return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
+            }
+
             IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
 
             if (candidates.Any(c => !c.HasId()))
             {
-                return BadRequest("To delete a collection of entities, provide an array of objets with an property id");
+                return BadRequest("To delete a collection of entities, provide an array of objets with an 'id' property");
             }
 
-            var ids = candidates.Select(c => c.Id).ToList();
-
-            await AppController.DeleteByIdsAsync(ids);
+            await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id));
 
             return Ok();
         }

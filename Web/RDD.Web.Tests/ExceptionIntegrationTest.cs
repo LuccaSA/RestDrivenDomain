@@ -66,7 +66,7 @@ namespace RDD.Web.Tests
                     };
                 });
             });
-            var response = await _client.GetAsync("/ExchangeRate/");
+            var response = await _client.GetAsync("/OpenExchangeRate/");
             Assert.Equal(expected, response.StatusCode);
         }
 
