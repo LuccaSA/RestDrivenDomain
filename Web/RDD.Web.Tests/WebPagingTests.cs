@@ -1,9 +1,9 @@
-﻿using RDD.Domain;
+﻿using RDD.Application;
+using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
-using RDD.Infra;
 using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;

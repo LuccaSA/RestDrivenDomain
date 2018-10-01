@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Helpers;
+﻿using RDD.Application;
+using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
 using RDD.Domain.Tests.Templates;
-using RDD.Infra;
 using RDD.Infra.Storage;
 using System;
 using Xunit;
