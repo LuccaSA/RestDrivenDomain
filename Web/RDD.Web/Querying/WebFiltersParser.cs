@@ -22,6 +22,7 @@ namespace RDD.Web.Querying
             {"equals", WebFilterOperand.Equals},
             {"notequal", WebFilterOperand.NotEqual},
             {"like", WebFilterOperand.Like},
+            {"fulltext", WebFilterOperand.FullText},
             {"since", WebFilterOperand.Since},
             {"starts", WebFilterOperand.Starts},
             {"until", WebFilterOperand.Until},
