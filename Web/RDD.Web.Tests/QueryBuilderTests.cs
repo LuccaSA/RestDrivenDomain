@@ -219,5 +219,18 @@ namespace RDD.Web.Tests
             Assert.Equal(users[0], goodUser);
             Assert.Equal(users[1], goodUser2);
         }
+
+        [Fact]
+        public void FullTextFilter()
+        {
+            var builder = new QueryBuilder<User, int>();
+            var expression = builder.FullText(PropertyExpression<User>.New(u => u.Name), new List<string> { "search" });
+
+            var goodUser = new User { Name = "searched" };
+            var goodUser2 = new User { Name = "aa search" };
+            var badUser = new User { Name = "searzedzech" };
+
+            Assert.Throws<InvalidOperationException>(() => new List<User> { goodUser, goodUser2, badUser }.AsQueryable().Where(expression).ToList());
+        }
     }
 }

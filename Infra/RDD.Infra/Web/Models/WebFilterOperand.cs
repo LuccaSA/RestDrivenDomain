@@ -16,6 +16,8 @@ namespace RDD.Infra.Web.Models
         Starts,
         [Description("Filter on data containing the following text. usage : users?name=like,a")]
         Like,
+        [Description("full-text search on a compatible field")]
+        FullText,
         [Description("Filter on date for which value is between following parameters. usage : users?dtContractEnd=between,2013-01-01,2014-01-01")]
         Between,
         /// <summary>

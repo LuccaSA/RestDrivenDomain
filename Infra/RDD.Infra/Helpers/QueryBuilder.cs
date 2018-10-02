@@ -1,10 +1,12 @@
-﻿using NExtends.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using NExtends.Expressions;
 using RDD.Domain;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
 using RDD.Infra.Exceptions;
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -154,6 +156,19 @@ namespace RDD.Infra.Helpers
             var toString = typeof(object).GetMethod("ToString", new Type[] { });
 
             return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, Expression.Constant(value.ToLower(), typeof(string)));
+        }
+
+        public Expression<Func<TEntity, bool>> FullText(IExpression field, IList values)
+        {
+            var culture = Expression.Constant(CultureInfo.CurrentCulture.LCID);
+            var columnName = Expression.Constant(field.Name);
+            var efFunction = Expression.Constant(EF.Functions);
+            var value = Expression.Constant(values[0].ToString());
+            var freeText = typeof(SqlServerDbFunctionsExtensions).GetMethod(nameof(SqlServerDbFunctionsExtensions.FreeText), new[] { typeof(DbFunctions), typeof(string), typeof(string), typeof(int) });
+
+            var fieldLambda = field.ToLambdaExpression();
+            var methodCall = Expression.Call(null, freeText, efFunction, columnName, value, culture);
+            return Expression.Lambda<Func<TEntity, bool>>(methodCall, fieldLambda.Parameters[0]);
         }
 
         private Expression<Func<TEntity, bool>> BuildBinaryExpression<T>(Func<Expression, T, Expression> builder, IExpression field, T value)

@@ -93,6 +93,7 @@ namespace RDD.Infra.Helpers
                 case WebFilterOperand.NotEqual: return queryBuilder.NotEqual(filter.Selector, value);
                 case WebFilterOperand.Starts: return queryBuilder.Starts(filter.Selector, value);
                 case WebFilterOperand.Like: return queryBuilder.Like(filter.Selector, value);
+                case WebFilterOperand.FullText: return queryBuilder.FullText(filter.Selector, value);
                 case WebFilterOperand.Between: return queryBuilder.Between(filter.Selector, value);
                 case WebFilterOperand.Since: return queryBuilder.Since(filter.Selector, value);
                 case WebFilterOperand.Until: return queryBuilder.Until(filter.Selector, value);
