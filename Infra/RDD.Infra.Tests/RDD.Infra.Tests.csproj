@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj" />
     <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
     <ProjectReference Include="..\RDD.Infra\RDD.Infra.csproj" />
   </ItemGroup>

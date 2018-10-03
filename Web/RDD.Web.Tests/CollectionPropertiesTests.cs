@@ -1,25 +1,27 @@
-﻿using RDD.Application;
-using RDD.Domain;
+using RDD.Domain.Tests;
 using RDD.Domain.Tests.Models;
-using RDD.Domain.Tests.Templates;
+using RDD.Infra.Storage;
 using RDD.Web.Querying;
-using System;
 using System.Linq;
 using Xunit;
 
 namespace RDD.Web.Tests
 {
-    public class CollectionPropertiesTests : SingleContextTests
+    public class CollectionPropertiesTests : IClassFixture<DefaultFixture>
     {
-        private readonly IRepository<User> _repo;
-        private readonly IReadOnlyRestCollection<User, int> _collection;
-        private readonly IStorageService _storage;
-        public CollectionPropertiesTests()
+        private DefaultFixture _fixture;
+        private InMemoryStorageService _storage;
+        private OpenRepository<User> _repo;
+        private UsersCollection _collection;
+
+        public CollectionPropertiesTests(DefaultFixture fixture)
         {
-            _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new OpenRepository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
+            _fixture = fixture;
+            _storage = new InMemoryStorageService();
+            _repo = new OpenRepository<User>(_storage, _fixture.RightsService);
+            _collection = new UsersCollection(_repo, _fixture.PatcherProvider, _fixture.Instanciator);
         }
+
         [Fact]
         public async void Count_of_collection_should_tell_10_when_10_entities()
         {
@@ -29,6 +31,7 @@ namespace RDD.Web.Tests
             var result = await _collection.GetAsync(new WebQuery<User>());
             Assert.Equal(10, result.Count);
         }
+
         [Fact]
         public async void Count_of_collection_should_tell_100_when_100_entities()
         {
@@ -38,6 +41,7 @@ namespace RDD.Web.Tests
             var result = await _collection.GetAsync(new WebQuery<User>());
             Assert.Equal(100, result.Count);
         }
+
         [Fact]
         public async void Count_of_collection_should_tell_10000_when_10000_entities()
         {

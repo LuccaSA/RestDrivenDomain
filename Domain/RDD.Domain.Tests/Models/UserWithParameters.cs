@@ -26,8 +26,9 @@ namespace RDD.Domain.Tests.Models
             for (var i = 1; i <= howMuch; i++)
             {
                 var name = $"John Doe {i}";
+                var id = Guid.NewGuid();
 
-                result.Add(new User { Id = i, Name = name });
+                result.Add(new User { Id = id, Name = name });
             }
 
             return result;

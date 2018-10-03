@@ -1,11 +1,10 @@
-﻿using RDD.Application;
-using RDD.Domain;
+﻿using RDD.Domain;
 using RDD.Domain.Exceptions;
 using RDD.Domain.Models.Querying;
+using RDD.Domain.Tests;
 using RDD.Domain.Tests.Models;
-using RDD.Domain.Tests.Templates;
+using RDD.Infra.Storage;
 using RDD.Web.Querying;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,18 +12,20 @@ using Xunit;
 
 namespace RDD.Web.Tests
 {
-    public class WebPaginggTests : SingleContextTests
+    public class WebPaginggTests : IClassFixture<DefaultFixture>
     {
-        public WebPaginggTests()
-        {
-            _storage = _newStorage(Guid.NewGuid().ToString());
-            _repo = new OpenRepository<User>(_storage, _rightsService);
-            _collection = new UsersCollection(_repo, _patcherProvider, Instanciator);
-        }
+        private DefaultFixture _fixture;
+        private InMemoryStorageService _storage;
+        private OpenRepository<User> _repo;
+        private UsersCollection _collection;
 
-        private readonly IRepository<User> _repo;
-        private readonly IReadOnlyRestCollection<User, int> _collection;
-        private readonly IStorageService _storage;
+        public WebPaginggTests(DefaultFixture fixture)
+        {
+            _fixture = fixture;
+            _storage = new InMemoryStorageService();
+            _repo = new OpenRepository<User>(_storage, _fixture.RightsService);
+            _collection = new UsersCollection(_repo, _fixture.PatcherProvider, _fixture.Instanciator);
+        }
 
         [Fact]
         public void Changing_query_page_count_should_not_affect_another_query()
