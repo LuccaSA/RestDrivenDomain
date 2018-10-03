@@ -5,10 +5,7 @@ using RDD.Infra.Storage;
 using RDD.Web.Helpers;
 using RDD.Web.Serialization;
 using RDD.Web.Tests.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
