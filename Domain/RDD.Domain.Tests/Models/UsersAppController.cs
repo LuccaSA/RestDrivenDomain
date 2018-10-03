@@ -1,5 +1,5 @@
-﻿using RDD.Application.Controllers;
-using RDD.Infra;
+﻿using RDD.Application;
+using RDD.Application.Controllers;
 
 namespace RDD.Domain.Tests.Models
 {

@@ -34,6 +34,7 @@
  - **Modification**: `IAppController.DeleteByIdsAsync(IEnumerable<TKey> ids) -> IAppController.DeleteByIdsAsync(IList<TKey> ids)`. This breaking change might require you to change your override signatures.
  - **Modification**: `IRestCollection.DeleteByIdsAsync(IEnumerable<TKey> ids) -> IAppController.DeleteByIdsAsync(IList<TKey> ids)`. This breaking change might require you to change your override signatures.
  - **Modification**: Error messages have been modified.
+ - **Modification**: IStorageService is now located inside the Application layer, namespace `RDD.Application`.
 
 ## New features
  - **Added**: CHANGELOG.md

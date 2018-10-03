@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RDD.Application;
 using RDD.Domain.Mocks;
 using RDD.Domain.Models;
 using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
 using RDD.Domain.Tests.Models;
-using RDD.Infra;
 using RDD.Infra.Storage;
 using System;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RDD.Domain;
+using RDD.Application;
 using RDD.Infra.Exceptions;
 using System;
 using System.Collections.Generic;
