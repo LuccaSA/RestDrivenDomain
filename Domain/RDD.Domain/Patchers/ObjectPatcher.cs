@@ -90,6 +90,6 @@ namespace RDD.Domain.Patchers
         }
 
         public T Patch(T patchedObject, JsonObject json)
-            => base.PatchValue(patchedObject, patchedObject.GetType(), json) as T;
+            => PatchValue(patchedObject, patchedObject.GetType(), json) as T;
     }
 }

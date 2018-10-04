@@ -2,7 +2,6 @@
 ## Breaking changes
  - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis if you opt-in.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**
- - **Modification**: `RDDServiceCollectionExtensions` methods no longer require a `DbContext`
  - **Removed**: `CulturedDescriptionAttribute`, `CultureContext`, `IWebServicesCollection`, `WebService`, `Application`, `Enum`, `IIncludable`, `IDownloadableEntity`
  - **Removed**: `IJsonElement.Map`, `IJsonElement.RemovePath`, most `Period` members
  - **Modification**: `BusinessException` and `TechnicalException` ar now `ApplicationException`. Some exceptions constructors have been removed.

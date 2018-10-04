@@ -25,9 +25,7 @@ namespace RDD.Web.Tests.ServerMock
         {
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
 
-            services.TryAddScoped<DbContext>(s => s.GetRequiredService<ExchangeRateDbContext>());
-
-            services.AddRDD<CombinationsHolder, CurPrincipal>();
+            services.AddRDD<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
 
             services.AddScoped<ExchangeRateController>();
 

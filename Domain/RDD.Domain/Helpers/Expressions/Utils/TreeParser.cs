@@ -12,79 +12,98 @@ namespace RDD.Domain.Helpers.Expressions.Utils
         private const char FIELD_SEPARATOR = '.';
         private const char SPACE = ' ';
 
-        public const string Root = "__root__";
-
         public Tree<string> Parse(string input)
         {
-            var result = new Tree<string>(Root);
-
-            if (!string.IsNullOrEmpty(input))
+            var result = new Tree<string>(null);
+            if (string.IsNullOrEmpty(input))
             {
-                var treeStack = new Stack<Tuple<char, List<Tree<string>>>>();
-                AddLevel(treeStack, SPACE);
-
-                foreach (var character in input)
-                {
-                    switch (character)
-                    {
-                        case MULTISELECT_START:
-                            AddLevel(treeStack, MULTISELECT_START);
-                            break;
-
-                        case MULTISELECT_END:
-                            CleanDottedElements(treeStack);
-                            var pop = treeStack.Pop();
-                            if (pop.Item1 != MULTISELECT_START)
-                            {
-                                throw new FormatException("bad format");
-                            }
-                            treeStack.Peek().Item2.Last().AddChildren(pop.Item2);
-                            break;
-
-                        case FIELD_SEPARATOR:
-                            AddLevel(treeStack, FIELD_SEPARATOR);
-                            break;
-
-                        case PROPERTIES_SEPARATOR:
-                            CleanDottedElements(treeStack);
-                            treeStack.Peek().Item2.Add(new Tree<string>(""));
-                            break;
-
-                        case SPACE: break;
-
-                        default:
-                            AddCharacter(treeStack, character);
-                            break;
-                    }
-                }
-
-                CleanDottedElements(treeStack);
-
-                if (treeStack.Count != 1)
-                    throw new FormatException("bad format");
-
-                result.AddChildren(treeStack.Pop().Item2);
+                return result;
             }
+
+            var offset = 0;
+            var resetStackCounts = new Stack<int>();
+            var currentTrees = new Stack<Tree<string>>();
+            currentTrees.Push(result);
+
+            for (var i = 0; i < input.Length; i++)
+            {
+                switch (input[i])
+                {
+                    case MULTISELECT_START:
+                        PushNewSegment(input, ref offset, i, currentTrees, false);
+                        resetStackCounts.Push(currentTrees.Count);
+                        break;
+
+                    case MULTISELECT_END:
+                        if (resetStackCounts.Count == 0)
+                        {
+                            throw new FormatException("Input is not correctly formatted.");
+                        }
+
+                        PushNewSegment(input, ref offset, i, currentTrees, true);
+                        SetCurrentTree(currentTrees, resetStackCounts.Peek());
+                        resetStackCounts.Pop();
+                        break;
+
+                    case FIELD_SEPARATOR:
+                        PushNewSegment(input, ref offset, i, currentTrees, false);
+                        break;
+
+                    case PROPERTIES_SEPARATOR:
+                        PushNewSegment(input, ref offset, i, currentTrees, true);
+                        SetCurrentTree(currentTrees, resetStackCounts.Count == 0 ? 1 : resetStackCounts.Peek());
+                        break;
+
+                    case SPACE:
+                        if (offset != i)
+                        {
+                            throw new FormatException("Spaces are only allowed after separating characters.");
+                        }
+
+                        offset = i + 1;
+                        break;
+                }
+            }
+
+            if (resetStackCounts.Count != 0)
+            {
+                throw new FormatException("Input is not correctly formatted.");
+            }
+
+            PushNewSegment(input, ref offset, input.Length, currentTrees, true);
+
             return result;
         }
 
-        void AddCharacter(Stack<Tuple<char, List<Tree<string>>>> stack, char character)
+        void PushNewSegment(string input, ref int offset, int currentIndex, Stack<Tree<string>> currentTrees, bool allowEmpty)
         {
-            stack.Peek().Item2.Last().Node += character;
-        }
-
-        void CleanDottedElements(Stack<Tuple<char, List<Tree<string>>>> stack)
-        {
-            while (stack.Peek().Item1 == FIELD_SEPARATOR)
+            if (currentIndex - offset > 0)
             {
-                var pop = stack.Pop().Item2;
-                stack.Peek().Item2.Last().AddChildren(pop);
+                var currentSegment = input.Substring(offset, currentIndex - offset);
+                var newCurrentTree = currentTrees.Peek().Children.FirstOrDefault(c => currentSegment.Equals(c.Node, StringComparison.OrdinalIgnoreCase));
+
+                if (newCurrentTree == null)
+                {
+                    newCurrentTree = new Tree<string>(currentSegment);
+                    currentTrees.Peek().AddChild(newCurrentTree);
+                }
+
+                currentTrees.Push(newCurrentTree);
             }
+            else if (!allowEmpty)
+            {
+                throw new FormatException("Members cannot be empty");
+            }
+
+            offset = currentIndex + 1;
         }
 
-        void AddLevel(Stack<Tuple<char, List<Tree<string>>>> stack, char initiator)
+        void SetCurrentTree(Stack<Tree<string>> currentTrees, int targetCount)
         {
-            stack.Push(new Tuple<char, List<Tree<string>>>(initiator, new List<Tree<string>> { new Tree<string>("") }));
+            while (currentTrees.Count != targetCount)
+            {
+                currentTrees.Pop();
+            }
         }
     }
 }
