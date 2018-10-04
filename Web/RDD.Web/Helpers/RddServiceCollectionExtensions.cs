@@ -16,6 +16,7 @@ using RDD.Web.Models;
 using RDD.Web.Serialization;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
+using RDD.Web.Serialization.Serializers;
 using RDD.Web.Serialization.UrlProviders;
 using System;
 using System.Collections.Generic;
@@ -91,17 +92,29 @@ namespace RDD.Web.Helpers
         public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
-            services.AddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.AddSingleton<IPluralizationService, PluralizationService>();
+            //singletons
+            services.TryAddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
+            services.TryAddSingleton<IPluralizationService, PluralizationService>();
+
+            services.AddHttpContextAccessor();
+            services.TryAddSingleton<IUrlProvider, UrlProvider>();
 
             services.AddMemoryCache();
-            services.AddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
 
-            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
-            services.TryAddScoped<IUrlProvider, UrlProvider>();
+            services.TryAddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
+            services.TryAddSingleton<ISerializerProvider, SerializerProvider>();
 
-            services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
-            services.TryAddScoped<ISerializerProvider, SerializerProvider>();
+            services.TryAddSingleton<ArraySerializer>();
+            services.TryAddSingleton<CultureInfoSerializer>();
+            services.TryAddSingleton<DateTimeSerializer>();
+            services.TryAddSingleton<DictionarySerializer>();
+            services.TryAddSingleton<MetadataSerializer>();
+            services.TryAddSingleton<SelectionSerializer>();
+            services.TryAddSingleton<ToStringSerializer>();
+            services.TryAddSingleton<ValueSerializer>();
+
+            //scoped
             services.TryAddScoped<IPrincipal, TPrincipal>();
 
             return services;

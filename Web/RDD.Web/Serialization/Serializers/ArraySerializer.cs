@@ -8,11 +8,16 @@ using System.Linq;
 
 namespace RDD.Web.Serialization.Serializers
 {
-    public class ArraySerializer : Serializer
+    public class ArraySerializer : ISerializer
     {
-        public ArraySerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
+        protected ISerializerProvider SerializerProvider { get; private set; }
 
-        public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        public ArraySerializer(ISerializerProvider serializerProvider)
+        {
+            SerializerProvider = serializerProvider;
+        }
+
+        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
             var genericType = entity.GetType().GetEnumerableOrArrayElementType();
             WriteJson(writer, (entity as IEnumerable).Cast<object>(), fields);

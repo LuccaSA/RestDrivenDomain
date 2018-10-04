@@ -5,11 +5,16 @@ using System;
 
 namespace RDD.Web.Serialization.Serializers
 {
-    public class FuncSerializer<T> : Serializer
+    public class FuncSerializer<T>
     {
-        public FuncSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
+        protected ISerializerProvider SerializerProvider { get; private set; }
 
-        public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        public FuncSerializer(ISerializerProvider serializerProvider)
+        {
+            SerializerProvider = serializerProvider;
+        }
+
+        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
             => WriteJson(writer, entity as Func<T>, fields);
 
         protected void WriteJson(JsonTextWriter writer, Func<T> callback, IExpressionTree fields)

@@ -10,22 +10,23 @@ using System.Reflection;
 
 namespace RDD.Web.Serialization.Serializers
 {
-    public class ObjectSerializer : Serializer
+    public class ObjectSerializer : ISerializer
     {
+        protected ISerializerProvider SerializerProvider { get; private set; }
         protected IReflectionProvider ReflectionProvider { get; private set; }
         protected NamingStrategy NamingStrategy { get; private set; }
 
         public Type WorkingType { get; set; }
 
         public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, Type workingType)
-            : base(serializerProvider)
         {
+            SerializerProvider = serializerProvider;
             NamingStrategy = namingStrategy;
             ReflectionProvider = reflectionProvider;
             WorkingType = workingType;
         }
 
-        public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
             writer.WriteStartObject();
 
