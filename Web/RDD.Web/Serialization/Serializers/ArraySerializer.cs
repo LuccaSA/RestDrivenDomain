@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using NExtends.Primitives.Types;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Serialization.Providers;
 using System.Collections;
@@ -19,7 +18,6 @@ namespace RDD.Web.Serialization.Serializers
 
         public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
-            var genericType = entity.GetType().GetEnumerableOrArrayElementType();
             WriteJson(writer, (entity as IEnumerable).Cast<object>(), fields);
         }
 

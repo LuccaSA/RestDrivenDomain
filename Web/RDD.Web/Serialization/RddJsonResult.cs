@@ -12,20 +12,22 @@ using RDD.Web.Serialization.Providers;
 using System;
 using System.Buffers;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RDD.Web.Serialization
 {
-    public class RddJsonResult<T> : JsonResult
-        where T : class
+    internal static class RddJsonResult
     {
-        private static readonly string DefaultContentType = new MediaTypeHeaderValue("application/json")
+        public static readonly string DefaultContentType = new MediaTypeHeaderValue("application/json")
         {
             Encoding = Encoding.UTF8
         }.ToString();
+    }
 
+    public class RddJsonResult<T> : JsonResult
+        where T : class
+    {
         public IExpressionTree Fields { get; private set; }
 
         public RddJsonResult(T value, IExpressionTree fields)
@@ -40,7 +42,7 @@ namespace RDD.Web.Serialization
             Fields = fields;
         }
 
-        public override async Task ExecuteResultAsync(ActionContext context)
+        public override Task ExecuteResultAsync(ActionContext context)
         {
             if (context == null)
             {
@@ -49,7 +51,7 @@ namespace RDD.Web.Serialization
 
             var response = context.HttpContext.Response;
 
-            ResponseContentTypeHelper.ResolveContentTypeAndEncoding(ContentType, response.ContentType, DefaultContentType,
+            ResponseContentTypeHelper.ResolveContentTypeAndEncoding(ContentType, response.ContentType, RddJsonResult.DefaultContentType,
                 out var resolvedContentType, out var resolvedContentTypeEncoding);
 
             response.ContentType = resolvedContentType;
@@ -62,7 +64,7 @@ namespace RDD.Web.Serialization
             var services = context.HttpContext.RequestServices;
             using (var writer = services.GetService<IHttpResponseStreamWriterFactory>().CreateWriter(response.Body, resolvedContentTypeEncoding))
             {
-                await WriteResult(services, writer, DateTime.Now);
+                return WriteResult(services, writer, DateTime.Now);
             }
         }
 
