@@ -14,8 +14,8 @@ namespace RDD.Web.Tests.ServerMock
     {
         public const string RouteName = "OpenExchangeRate";
 
-        public ExchangeRate2Controller(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        public ExchangeRate2Controller(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper)
+            : base(appController, helper)
         {
         }
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
@@ -24,8 +24,8 @@ namespace RDD.Web.Tests.ServerMock
     [Route("ExchangeRate")]
     public class ExchangeRateController : WebController<ExchangeRate, int>
     {
-        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper)
+            : base(appController, helper)
         {
         }
 

@@ -1,5 +1,5 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Serialization.Providers;
 using System;
 
@@ -9,20 +9,22 @@ namespace RDD.Web.Serialization.Serializers
     {
         public FuncSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionTree fields)
-        {
-            return ToJson(entity as Func<T>, fields);
-        }
+        public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+            => WriteJson(writer, entity as Func<T>, fields);
 
-        protected IJsonElement ToJson(Func<T> callback, IExpressionTree fields)
+        protected void WriteJson(JsonTextWriter writer, Func<T> callback, IExpressionTree fields)
         {
             var serializer = SerializerProvider.GetSerializer(typeof(T));
 
             switch (serializer)
             {
-                case ValueSerializer v: return v.ToJson(callback(), fields);
+                case ValueSerializer v:
+                    v.WriteJson(writer, callback(), fields);
+                    break;
+
                 default:
-                    return new JsonValue { Content = null };
+                    writer.WriteNull();
+                    break;
             }
         }
     }

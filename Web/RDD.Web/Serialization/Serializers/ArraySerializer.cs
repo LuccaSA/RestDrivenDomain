@@ -1,8 +1,7 @@
-﻿using NExtends.Primitives.Types;
+﻿using Newtonsoft.Json;
+using NExtends.Primitives.Types;
 using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
 using RDD.Web.Serialization.Providers;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,29 +12,22 @@ namespace RDD.Web.Serialization.Serializers
     {
         public ArraySerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
 
-        public override IJsonElement ToJson(object entity, IExpressionTree fields)
+        public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
             var genericType = entity.GetType().GetEnumerableOrArrayElementType();
-            return ToJson(genericType, (entity as IEnumerable).Cast<object>(), fields);
+            WriteJson(writer, (entity as IEnumerable).Cast<object>(), fields);
         }
 
-        protected virtual IJsonElement ToJson(Type genericType, IEnumerable<object> entities, IExpressionTree fields)
+        protected virtual void WriteJson(JsonTextWriter writer, IEnumerable<object> entities, IExpressionTree fields)
         {
-            if (genericType == typeof(object))
+            writer.WriteStartArray();
+
+            foreach (var entity in entities)
             {
-                return new JsonArray
-                {
-                    Content = entities.Select(e => SerializerProvider.GetSerializer(e.GetType()).ToJson(e, fields)).ToList()
-                };
+                SerializerProvider.GetSerializer(entity).WriteJson(writer, entity, fields);
             }
-            else
-            {
-                var serializer = SerializerProvider.GetSerializer(genericType);
-                return new JsonArray
-                {
-                    Content = entities.Select(e => e == null ? null : serializer.ToJson(e, fields)).ToList()
-                };
-            }
+
+            writer.WriteEndArray();
         }
     }
 }

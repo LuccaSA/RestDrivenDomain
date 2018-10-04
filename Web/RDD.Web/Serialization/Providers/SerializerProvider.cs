@@ -1,5 +1,7 @@
-﻿using NExtends.Primitives.Types;
+﻿using Newtonsoft.Json.Serialization;
+using NExtends.Primitives.Types;
 using RDD.Domain;
+using RDD.Web.Models;
 using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.Serializers;
 using RDD.Web.Serialization.UrlProviders;
@@ -14,12 +16,14 @@ namespace RDD.Web.Serialization.Providers
     public class SerializerProvider : ISerializerProvider
     {
         protected IReflectionProvider ReflectionProvider { get; set; }
+        protected NamingStrategy NamingStrategy { get; private set; }
         protected IUrlProvider UrlProvider { get; set; }
         protected IEnumerable<IInheritanceConfiguration> InheritanceConfigurations { get; set; }
 
-        public SerializerProvider(IReflectionProvider reflectionProvider, IUrlProvider urlProvider, IEnumerable<IInheritanceConfiguration> inheritanceConfigurations)
+        public SerializerProvider(IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, IUrlProvider urlProvider, IEnumerable<IInheritanceConfiguration> inheritanceConfigurations)
         {
             ReflectionProvider = reflectionProvider ?? throw new ArgumentNullException(nameof(reflectionProvider));
+            NamingStrategy = namingStrategy ?? throw new ArgumentNullException(nameof(namingStrategy));
             UrlProvider = urlProvider ?? throw new ArgumentNullException(nameof(urlProvider));
 
             InheritanceConfigurations = inheritanceConfigurations;
@@ -34,20 +38,21 @@ namespace RDD.Web.Serialization.Providers
 
         public virtual ISerializer GetSerializer(Type type)
         {
-            if (typeof(CultureInfo).IsAssignableFrom(type)) { return new CultureInfoSerializer(this, ReflectionProvider); }
+            if (typeof(CultureInfo).IsAssignableFrom(type)) { return new CultureInfoSerializer(this, ReflectionProvider, NamingStrategy); }
             if (typeof(Uri).IsAssignableFrom(type)) { return new ToStringSerializer(this); }
 
-            if (typeof(ISelection).IsAssignableFrom(type)) { return new SelectionSerializer(this, ReflectionProvider); }
+            if (typeof(Metadata).IsAssignableFrom(type)) { return new MetadataSerializer(this, ReflectionProvider, NamingStrategy); }
+            if (typeof(ISelection).IsAssignableFrom(type)) { return new SelectionSerializer(this, ReflectionProvider, NamingStrategy); }
 
             var inheritanceConfig = InheritanceConfigurations.FirstOrDefault(c => c.BaseType.IsAssignableFrom(type));
             if (inheritanceConfig != null)
             {
-                return new BaseClassSerializer(this, ReflectionProvider, UrlProvider, type);
+                return new BaseClassSerializer(this, ReflectionProvider, NamingStrategy, UrlProvider, type);
             }
 
-            if (typeof(IEntityBase).IsAssignableFrom(type)) { return new EntitySerializer(this, ReflectionProvider, UrlProvider, type); }
+            if (typeof(IEntityBase).IsAssignableFrom(type)) { return new EntitySerializer(this, ReflectionProvider, NamingStrategy, UrlProvider, type); }
 
-            if (typeof(IDictionary).IsAssignableFrom(type)) { return new DictionarySerializer(this, ReflectionProvider); }
+            if (typeof(IDictionary).IsAssignableFrom(type)) { return new DictionarySerializer(this, ReflectionProvider, NamingStrategy); }
             if (type.IsEnumerableOrArray()) { return new ArraySerializer(this); }
             if (typeof(DateTime).IsAssignableFrom(type) || typeof(DateTime?).IsAssignableFrom(type)) { return new DateTimeSerializer(this); }
             if (typeof(string).IsAssignableFrom(type) || type.IsValueType) { return new ValueSerializer(this); }
@@ -57,7 +62,7 @@ namespace RDD.Web.Serialization.Providers
                 return Activator.CreateInstance(typeof(FuncSerializer<>).MakeGenericType(type.GetGenericArguments()), this) as ISerializer;
             }
 
-            return new ObjectSerializer(this, ReflectionProvider, type);
+            return new ObjectSerializer(this, ReflectionProvider, NamingStrategy, type);
         }
     }
 }

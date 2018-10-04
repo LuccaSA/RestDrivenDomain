@@ -1,5 +1,5 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Serialization.Serializers;
 using System;
 
@@ -13,11 +13,8 @@ namespace RDD.Web.Serialization.Providers
 
     public static class ISerializerProviderExtensions
     {
-        public static object Serialize(this ISerializerProvider serializerProvider, object entity, IExpressionTree fields)
-            => serializerProvider.ToJson(entity, fields).GetContent();
-
-        public static IJsonElement ToJson(this ISerializerProvider serializerProvider, object entity, IExpressionTree fields)
-            => serializerProvider.GetSerializer(entity).ToJson(entity, fields);
+        public static void WriteJson(this ISerializerProvider serializerProvider, JsonTextWriter writer, object entity, IExpressionTree fields)
+            => serializerProvider.GetSerializer(entity).WriteJson(writer, entity, fields);
     }
 
 }

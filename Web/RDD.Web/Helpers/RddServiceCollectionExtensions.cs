@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
@@ -90,17 +91,19 @@ namespace RDD.Web.Helpers
         public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
-            services.TryAddScoped(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.TryAddScoped<IPluralizationService, PluralizationService>();
+            services.AddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
+            services.AddSingleton<IPluralizationService, PluralizationService>();
 
             services.AddMemoryCache();
-            services.TryAddScoped<IReflectionProvider, ReflectionProvider>();
+            services.AddSingleton<IReflectionProvider, ReflectionProvider>();
 
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IUrlProvider, UrlProvider>();
+
+            services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
             services.TryAddScoped<ISerializerProvider, SerializerProvider>();
-            services.TryAddScoped<IRDDSerializer, RDDSerializer>();
             services.TryAddScoped<IPrincipal, TPrincipal>();
+
             return services;
         }
 

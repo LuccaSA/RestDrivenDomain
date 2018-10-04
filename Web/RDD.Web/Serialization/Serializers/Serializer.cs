@@ -1,5 +1,5 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Serialization.Providers;
 
 namespace RDD.Web.Serialization.Serializers
@@ -13,6 +13,6 @@ namespace RDD.Web.Serialization.Serializers
             SerializerProvider = serializerProvider;
         }
 
-        public abstract IJsonElement ToJson(object entity, IExpressionTree fields);
+        public abstract void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields);
     }
 }

@@ -1,58 +1,86 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RDD.Domain;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Helpers;
-using RDD.Web.Querying;
 using RDD.Web.Serialization;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.Serializers;
 using RDD.Web.Serialization.UrlProviders;
-using RDD.Web.Tests.ServerMock;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Web.Tests.Serialization
 {
-    public class FieldsTests
+    public partial class FieldsTests
     {
-        private SerializerProvider GetSerializerProvider()
-        {
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+        protected static readonly DateTime GeneratedAt = new DateTime(2000, 01, 01, 0, 0, 0, DateTimeKind.Utc);
 
-            return new SerializerProvider(
-                new ReflectionProvider(new Mock<IMemoryCache>().Object),
-                new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor),
-                new List<IInheritanceConfiguration>());
+        protected Task<string> SerializeAsync<T>(ISelection<T> selection, IExpressionTree fields)
+           where T : class
+        {
+            return SerializeCorrectedFieldsAsync(new RddJsonResult<T>(selection, fields));
         }
 
+        protected Task<string> SerializeAsync<T>(T data, IExpressionTree fields)
+            where T : class
+        {
+            return SerializeCorrectedFieldsAsync(new RddJsonResult<T>(data, fields));
+        }
+
+        protected IServiceProvider GetServices()
+        {
+            var services = new ServiceCollection();
+            services.AddMemoryCache();
+            services.AddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.AddSingleton<ISerializerProvider, SerializerProvider>();
+            services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
+            services.AddSingleton(ArrayPool<char>.Shared);
+
+            var urlProvider = new Mock<IUrlProvider>();
+            urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));
+            urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<Type>(), It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));
+            services.AddSingleton(urlProvider.Object);
+
+
+            return services.BuildServiceProvider();
+        }
+
+        protected async Task<string> SerializeCorrectedFieldsAsync<T>(RddJsonResult<T> result)
+           where T : class
+        {
+            using (var writer = new StringWriter())
+            {
+                await result.WriteResult(GetServices(), writer, GeneratedAt);
+
+                return writer.ToString();
+            }
+        }
+
+        protected string ExpectedInput(string expected)
+            => @"{""header"":{""generated"":""" + GeneratedAt.ToString("yyyy-MM-ddT00:00:00") + @""",""principal"":null},""data"":" + expected + "}";
+
         [Fact]
-        public void SpecialSelectionFields()
+        public async Task SpecialSelectionFields()
         {
             ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { new Obj1 { Id = 1 }, new Obj1 { Id = 2 } }, 1);
 
             var fields = new ExpressionParser().ParseTree<Obj1>("collection.count");
 
-            var serializer = GetSerializerProvider();
+            var json = await SerializeAsync(selection, fields);
 
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("Count"));
-            Assert.Equal("1", json.GetJsonValue("Count"));
+            Assert.Equal(ExpectedInput(@"{""count"":1}"), json);
         }
+
         [Fact]
-        public void EmptyFieldsSelection()
+        public async Task EmptyFieldsSelection()
         {
             var obj1 = new Obj1
             {
@@ -61,18 +89,15 @@ namespace RDD.Web.Tests.Serialization
             };
             ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
 
-            var fields = new FieldsParser().ParseFields<Obj1>("");
+            var fields = new ExpressionParser().ParseTree<Obj1>("");
 
-            var serializer = GetSerializerProvider();
+            var json = await SerializeAsync(selection, fields);
 
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("items.0.Id"));
-            Assert.True(json.HasJsonValue("items.0.Name"));
-            Assert.True(json.HasJsonValue("items.0.Url"));
+            Assert.Equal(ExpectedInput(@"{""items"":[{""id"":1,""name"":""1"",""url"":""http://www.example.org/""}]}"), json);
         }
+
         [Fact]
-        public void EmptyFieldsSingleObject()
+        public async Task EmptyFieldsSingleObject()
         {
             var obj1 = new Obj1
             {
@@ -80,17 +105,14 @@ namespace RDD.Web.Tests.Serialization
                 Name = "1"
             };
 
-            var fields = new FieldsParser().ParseFields<Obj1>("");
+            var fields = new ExpressionParser().ParseTree<Obj1>("");
 
-            var serializer = GetSerializerProvider();
-            var json = serializer.ToJson(obj1, fields);
-
-            Assert.True(json.HasJsonValue("Id"));
-            Assert.True(json.HasJsonValue("Name"));
-            Assert.True(json.HasJsonValue("Url"));
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""id"":1,""name"":""1"",""url"":""http://www.example.org/""}"), json);
         }
+
         [Fact]
-        public void TwoLevelSelection()
+        public async Task TwoLevelSelection()
         {
             var obj1 = new Obj1
             {
@@ -113,23 +135,16 @@ namespace RDD.Web.Tests.Serialization
             };
             ISelection<Obj1> selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
 
-            var fields = new FieldsParser().ParseFields<Obj1>("Obj2[Id,Name,Obj3[Something,Else],Else]");
+            var fields = new ExpressionParser().ParseTree<Obj1>("Obj2[Id,Name,Obj3[Something,Else],Else]");
 
-            var serializer = GetSerializerProvider();
-            var json = serializer.ToJson(selection, fields);
+            var json = await SerializeAsync(selection, fields);
 
-            Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Something"));
-            Assert.True(json.HasJsonValue("items.0.Obj2.Obj3.Else"));
-            Assert.True(json.HasJsonValue("items.0.Obj2.Else"));
-            Assert.True(json.HasJsonValue("items.0.Obj2.Name"));
-            Assert.False(json.HasJsonValue("items.0.Obj2.Obj3.Name"));
+            Assert.Equal(ExpectedInput(@"{""items"":[{""obj2"":{""id"":2,""name"":""2"",""obj3"":{""something"":""A"",""else"":""B""},""else"":""else""}}]}"), json);
         }
 
         [Fact]
-        public void SerializeSubCollections()
+        public async Task SerializeSubCollections()
         {
-            var serializer = GetSerializerProvider();
-
             var obj1 = new Obj1
             {
                 Obj2s = new List<Obj2>
@@ -148,12 +163,10 @@ namespace RDD.Web.Tests.Serialization
             };
 
             var selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
-            var fields = new FieldsParser().ParseFields<Obj1>("obj2s[id,name]");
+            var fields = new ExpressionParser().ParseTree<Obj1>("obj2s[id,name]");
+            var json = await SerializeAsync<Obj1>(selection, fields);
 
-            var json = serializer.ToJson(selection, fields);
-
-            Assert.True(json.HasJsonValue("items.0.Obj2s.0.Id"));
-            Assert.True(json.HasJsonValue("items.0.Obj2s.0.Name"));
+            Assert.Equal(ExpectedInput(@"{""items"":[{""obj2s"":[{""id"":1,""name"":""1""},{""id"":2,""name"":""2""}]}]}"), json);
         }
     }
 
