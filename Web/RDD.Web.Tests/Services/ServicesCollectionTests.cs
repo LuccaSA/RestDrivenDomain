@@ -1,13 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Mocks;
+using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
+using RDD.Domain.Patchers;
+using RDD.Domain.Rights;
 using RDD.Web.Helpers;
 using RDD.Web.Serialization;
 using RDD.Web.Serialization.Providers;
+using RDD.Web.Tests.ServerMock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace RDD.Web.Tests.Services
@@ -91,6 +100,39 @@ namespace RDD.Web.Tests.Services
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
             Assert.NotNull(provider.GetRequiredService<IRDDSerializer>());
             Assert.NotNull(provider.GetRequiredService<IPrincipal>());
+        }
+
+        class FakeRightExpressionsHelper<T> : IRightExpressionsHelper<T>
+            where T : class
+        {
+            public Expression<Func<T, bool>> GetFilter(Query<T> query)
+            {
+                throw new NotImplementedException();
+            }
+        }
+        [Fact]
+        public void TestRddCoreRegister()
+        {
+            var services = new ServiceCollection();
+
+            services.AddRDDCore<ExchangeRateDbContext>();
+            services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(FakeRightExpressionsHelper<>));
+            var provider = services.BuildServiceProvider();
+
+            Assert.NotNull(provider.GetRequiredService<IStorageService>());
+            Assert.NotNull(provider.GetRequiredService<IPatcherProvider>());
+            Assert.NotNull(provider.GetRequiredService<IHttpContextAccessor>());
+            Assert.NotNull(provider.GetRequiredService<IHttpContextHelper>());
+
+            Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IPatcher<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IInstanciator<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IReadOnlyRestCollection<ExchangeRate, int>>());
+            Assert.NotNull(provider.GetRequiredService<IRestCollection<ExchangeRate, int>>());
+            Assert.NotNull(provider.GetRequiredService<IReadOnlyAppController<ExchangeRate, int>>());
+            Assert.NotNull(provider.GetRequiredService<IAppController<ExchangeRate, int>>());
+            Assert.NotNull(provider.GetRequiredService<ApiHelper<ExchangeRate, int>>());
         }
     }
 }
