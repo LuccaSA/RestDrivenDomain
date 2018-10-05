@@ -1,6 +1,6 @@
-﻿using RDD.Domain;
+﻿using Newtonsoft.Json.Serialization;
+using RDD.Domain;
 using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Querying;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.UrlProviders;
@@ -14,8 +14,8 @@ namespace RDD.Web.Serialization.Serializers
     {
         protected IUrlProvider UrlProvider { get; set; }
 
-        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, IUrlProvider urlProvider, Type workingType)
-            : base(serializerProvider, reflectionProvider, workingType)
+        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, IUrlProvider urlProvider, Type workingType)
+            : base(serializerProvider, reflectionProvider, namingStrategy, workingType)
         {
             UrlProvider = urlProvider;
         }

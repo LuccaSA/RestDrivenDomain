@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
+using RDD.Domain.Models;
 using RDD.Domain.Models.Querying;
 using RDD.Web.Helpers;
 using RDD.Web.Serialization;
@@ -17,8 +18,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
+            : base(appController, helper)
         {
         }
     }
@@ -29,8 +30,8 @@ namespace RDD.Web.Controllers
         where TKey : IEquatable<TKey>
     {
 
-        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+            : base(appController, helper)
         {
         }
 
@@ -47,7 +48,7 @@ namespace RDD.Web.Controllers
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
-            return Ok(RDDSerializer.Serialize(entity, query));
+            return new RddJsonResult<TEntity>(entity, query.Fields);
         }
 
         [HttpPut("{id}")]
@@ -68,7 +69,7 @@ namespace RDD.Web.Controllers
                 return NotFound(id);
             }
 
-            return Ok(RDDSerializer.Serialize(entity, query));
+            return new RddJsonResult<TEntity>(entity, query.Fields);
         }
 
         [HttpPut]
@@ -89,9 +90,9 @@ namespace RDD.Web.Controllers
 
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
 
-            IEnumerable<TEntity> entities = await AppController.UpdateByIdsAsync(candidatesByIds, query);
+            var entities = (await AppController.UpdateByIdsAsync(candidatesByIds, query)).ToList();
 
-            return Ok(RDDSerializer.Serialize(entities, query));
+            return new RddJsonResult<TEntity>(new Selection<TEntity>(entities, entities.Count), query.Fields);
         }
 
         [HttpDelete("{id}")]

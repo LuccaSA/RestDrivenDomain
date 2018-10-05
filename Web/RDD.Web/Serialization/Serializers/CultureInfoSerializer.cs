@@ -1,6 +1,7 @@
-﻿using RDD.Domain.Helpers;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using RDD.Domain.Helpers;
 using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using System.Collections.Generic;
@@ -12,13 +13,14 @@ namespace RDD.Web.Serialization.Serializers
     {
         private static HashSet<string> _allowedProperties = new HashSet<string> { "id", "name", "code" };
 
-        public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider) : base(serializerProvider, reflectionProvider, typeof(Culture)) { }
+        public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
+            : base(serializerProvider, reflectionProvider, namingStrategy, typeof(Culture)) { }
 
-        protected override void SerializeProperty(JsonObject partialResult, object entity, IExpressionTree fields, PropertyInfo property)
+        protected override void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyInfo property)
         {
             if (_allowedProperties.Contains(property.Name.ToLower()))
             {
-                base.SerializeProperty(partialResult, entity, fields, property);
+                base.SerializeProperty(writer, entity, fields, property);
             }
         }
     }

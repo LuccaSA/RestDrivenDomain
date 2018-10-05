@@ -1,66 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
-using RDD.Domain;
-using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.UrlProviders;
+﻿using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace RDD.Web.Tests.Serialization
 {
-    public class PropertySerializerTests
+    public partial class FieldsTests
     {
         [Fact]
-        public void PropertySerializer_should_serialize_url_properly()
+        public async Task should_serialize_url_properly()
         {
             var entity = new User { Id = 1 };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
+            var fields = new ExpressionParser().ParseTree<User>("url");
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+            var json = await SerializeAsync(entity, fields);
 
-            var tree = ExpressionTree<User>.New(u => u.Url);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.Equal("https://mon.domain.com/api/users/1", json.GetJsonValue("Url"));
+            Assert.Equal(ExpectedInput(@"{""url"":""http://www.example.org/""}"), json);
         }
 
         [Fact]
-        public void PropertySerializer_should_accept_custom_apiPrefix()
-        {
-            var entity = new User { Id = 1 };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new PrefixUrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
-
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
-
-            var tree = ExpressionTree<User>.New(u => u.Url);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.Equal("https://mon.domain.com/api/lol/users/1", json.GetJsonValue("Url"));
-        }
-
-        class PrefixUrlProvider : UrlProvider
-        {
-            public PrefixUrlProvider(IPluralizationService pluralizationService, IHttpContextAccessor httpContextAccessor) : base(pluralizationService, httpContextAccessor)
-            {
-            }
-
-            protected override string ApiPrefix => "api/lol";
-        }
-
-        [Fact]
-        public void ValueObject_should_serializeAllProperties()
+        public async Task ValueObject_should_serializeAllProperties()
         {
             var entity = new User
             {
@@ -71,22 +32,35 @@ namespace RDD.Web.Tests.Serialization
                     Name = "test"
                 }
             };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+            var fields = ExpressionTree<User>.New(u => u.MyValueObject);
+            var json = await SerializeAsync(entity, fields);
 
-            var tree = ExpressionTree<User>.New(u => u.MyValueObject);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.True(json.HasJsonValue("MyValueObject.Id"));
-            Assert.True(json.HasJsonValue("MyValueObject.Name"));
+            Assert.Equal(ExpectedInput(@"{""myValueObject"":{""id"":123,""name"":""test"",""user"":null}}"), json);
         }
 
         [Fact]
-        public void MultiplePropertiesOnSubTypeShouldSerialize()
+        public async Task ValueObject_should_serializeAllPropertiesButRespectDefault()
+        {
+            var entity = new User
+            {
+                Id = 1,
+                MyValueObject = new MyValueObject
+                {
+                    Id = 2,
+                    Name = "a",
+                    User = new User()
+                }
+            };
+
+            var fields = ExpressionTree<User>.New(u => u.MyValueObject);
+            var json = await SerializeAsync(entity, fields);
+
+            Assert.Equal(ExpectedInput(@"{""myValueObject"":{""id"":2,""name"":""a"",""user"":{""id"":0,""name"":null,""url"":""http://www.example.org/""}}}"), json);
+        }
+
+        [Fact]
+        public async Task MultiplePropertiesOnSubTypeShouldSerialize()
         {
             var entity = new User
             {
@@ -96,24 +70,15 @@ namespace RDD.Web.Tests.Serialization
                     Name = "Department"
                 }
             };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+            var fields = ExpressionTree<User>.New(u => u.Department.Id, (User u) => u.Department.Name);
+            var json = await SerializeAsync(entity, fields);
 
-            var tree = ExpressionTree<User>.New(u => u.Department.Id, (User u) => u.Department.Name);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.True(json.HasJsonValue("Department.Id"));
-            Assert.True(json.HasJsonValue("Department.Name"));
-            Assert.True(json.GetJsonValue("Department.Id") == "1");
-            Assert.True(json.GetJsonValue("Department.Name") == "Department");
+            Assert.Equal(ExpectedInput(@"{""department"":{""id"":1,""name"":""Department""}}"), json);
         }
 
         [Fact]
-        public void SubEntityBase_should_serializeIdNameUrl()
+        public async Task SubEntityBase_should_serializeIdNameUrl()
         {
             var entity = new User
             {
@@ -125,23 +90,15 @@ namespace RDD.Web.Tests.Serialization
                     Url = "/api/departements/2"
                 }
             };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
+            var fields = ExpressionTree<User>.New(u => u.Department);
+            var json = await SerializeAsync(entity, fields);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
-
-            var tree = ExpressionTree<User>.New(u => u.Department);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.True(json.HasJsonValue("Department.Id"));
-            Assert.True(json.HasJsonValue("Department.Name"));
-            Assert.True(json.HasJsonValue("Department.Url"));
+            //url is overriden
+            Assert.Equal(ExpectedInput(@"{""department"":{""id"":2,""name"":""Foo"",""url"":""http://www.example.org/""}}"), json);
         }
 
         [Fact]
-        public void ListSubTypeShouldSerialize()
+        public async Task ListSubTypeShouldSerialize()
         {
             var entity = new Department
             {
@@ -159,24 +116,15 @@ namespace RDD.Web.Tests.Serialization
                     }
                 }
             };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+            var fields = ExpressionTree<Department>.New(u => u.Users);
+            var json = await SerializeAsync(entity, fields);
 
-            var tree = ExpressionTree<Department>.New(u => u.Users);
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.True(json.GetJsonValue("Users.0.Name") == "Peter");
-            Assert.True(json.GetJsonValue("Users.0.Id") == "0");
-            Assert.True(json.GetJsonValue("Users.1.Name") == "Steven");
-            Assert.True(json.GetJsonValue("Users.1.Id") == "1");
+            Assert.Equal(ExpectedInput(@"{""users"":[{""id"":0,""name"":""Peter"",""url"":""http://www.example.org/""},{""id"":1,""name"":""Steven"",""url"":""http://www.example.org/""}]}"), json);
         }
 
         [Fact]
-        public void ListSubTypeWithPropertySelectorShouldSerialize()
+        public async Task ListSubTypeWithPropertySelectorShouldSerialize()
         {
             var entity = new Department
             {
@@ -194,20 +142,11 @@ namespace RDD.Web.Tests.Serialization
                     }
                 }
             };
-            var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-            httpContextAccessor.HttpContext.Request.Scheme = "https";
-            httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
-            var urlProvider = new UrlProvider(new PluralizationService(new Inflector.Inflector(new System.Globalization.CultureInfo("en-US"))), httpContextAccessor);
 
-            var serializer = new SerializerProvider(new ReflectionProvider(new MemoryCache(new MemoryCacheOptions())), urlProvider, new List<IInheritanceConfiguration>());
+            var fields = ExpressionTree<Department>.New(u => u.Users.Select(g => g.Name));
+            var json = await SerializeAsync(entity, fields);
 
-            var tree = ExpressionTree<Department>.New(u => u.Users.Select(g => g.Name));
-            var json = serializer.ToJson(entity, tree) as JsonObject;
-
-            Assert.True(json.GetJsonValue("Users.0.Name") == "Peter");
-            Assert.False(json.HasJsonValue("Users.0.Id"));
-            Assert.True(json.GetJsonValue("Users.1.Name") == "Steven");
-            Assert.False(json.HasJsonValue("Users.0.Id"));
+            Assert.Equal(ExpectedInput(@"{""users"":[{""name"":""Peter""},{""name"":""Steven""}]}"), json);
         }
     }
 }

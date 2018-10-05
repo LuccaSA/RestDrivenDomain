@@ -1,28 +1,35 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 using RDD.Web.Serialization.Providers;
 using System;
 
 namespace RDD.Web.Serialization.Serializers
 {
-    public class FuncSerializer<T> : Serializer
+    public class FuncSerializer<T>
     {
-        public FuncSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
+        protected ISerializerProvider SerializerProvider { get; private set; }
 
-        public override IJsonElement ToJson(object entity, IExpressionTree fields)
+        public FuncSerializer(ISerializerProvider serializerProvider)
         {
-            return ToJson(entity as Func<T>, fields);
+            SerializerProvider = serializerProvider;
         }
 
-        protected IJsonElement ToJson(Func<T> callback, IExpressionTree fields)
+        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+            => WriteJson(writer, entity as Func<T>, fields);
+
+        protected void WriteJson(JsonTextWriter writer, Func<T> callback, IExpressionTree fields)
         {
             var serializer = SerializerProvider.GetSerializer(typeof(T));
 
             switch (serializer)
             {
-                case ValueSerializer v: return v.ToJson(callback(), fields);
+                case ValueSerializer v:
+                    v.WriteJson(writer, callback(), fields);
+                    break;
+
                 default:
-                    return new JsonValue { Content = null };
+                    writer.WriteNull();
+                    break;
             }
         }
     }

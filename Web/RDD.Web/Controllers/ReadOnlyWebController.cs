@@ -15,8 +15,8 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
-            : base(appController, helper, rddSerializer)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
+            : base(appController, helper)
         {
         }
     }
@@ -29,13 +29,11 @@ namespace RDD.Web.Controllers
     {
         protected TAppController AppController { get; }
         protected ApiHelper<TEntity, TKey> Helper { get; }
-        protected IRDDSerializer RDDSerializer { get; set; }
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper, IRDDSerializer rddSerializer)
+        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
         {
             AppController = appController;
             Helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            RDDSerializer = rddSerializer ?? throw new ArgumentNullException(nameof(rddSerializer));
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
@@ -52,7 +50,7 @@ namespace RDD.Web.Controllers
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
-            return Ok(RDDSerializer.Serialize(selection, query));
+            return new RddJsonResult<TEntity>(selection, query.Fields);
         }
 
         [HttpGet("{id}")]
@@ -72,7 +70,7 @@ namespace RDD.Web.Controllers
                 return NotFound(id);
             }
 
-            return Ok(RDDSerializer.Serialize(entity, query));
+            return new RddJsonResult<TEntity>(entity, query.Fields);
         }
 
         protected NotFoundObjectResult NotFound(TKey id) => NotFound(new { Id = id, error = $"Resource {id} not found" });

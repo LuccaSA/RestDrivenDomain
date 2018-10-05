@@ -1,14 +1,11 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
-using RDD.Web.Serialization.Providers;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 
 namespace RDD.Web.Serialization.Serializers
 {
-    public class ValueSerializer : Serializer
+    public class ValueSerializer : ISerializer
     {
-        public ValueSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
-
-        public override IJsonElement ToJson(object entity, IExpressionTree fields)
-            => new JsonValue { Content = entity };
+        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+            => writer.WriteValue(entity);
     }
 }

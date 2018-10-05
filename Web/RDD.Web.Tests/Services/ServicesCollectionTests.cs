@@ -98,7 +98,6 @@ namespace RDD.Web.Tests.Services
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
-            Assert.NotNull(provider.GetRequiredService<IRDDSerializer>());
             Assert.NotNull(provider.GetRequiredService<IPrincipal>());
         }
 

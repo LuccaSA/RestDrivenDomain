@@ -1,26 +1,23 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
-using RDD.Web.Serialization.Providers;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 using System;
 
 namespace RDD.Web.Serialization.Serializers
 {
     public class DateTimeSerializer : ValueSerializer
     {
-        public DateTimeSerializer(ISerializerProvider serializerProvider) : base(serializerProvider) { }
-
-        public override IJsonElement ToJson(object entity, IExpressionTree fields)
+        public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
             switch (entity)
             {
-                case DateTime d: return ToJson(d, fields);
-                default: return base.ToJson(entity, fields);
-            }
-        }
+                case DateTime d:
+                    writer.WriteValue(DateTime.SpecifyKind(d, DateTimeKind.Unspecified));
+                    break;
 
-        public IJsonElement ToJson(DateTime entity, IExpressionTree fields)
-        {
-            return new JsonValue { Content = DateTime.SpecifyKind(entity, DateTimeKind.Unspecified) };
+                default:
+                    base.WriteJson(writer, entity, fields);
+                    break;
+            }
         }
     }
 }

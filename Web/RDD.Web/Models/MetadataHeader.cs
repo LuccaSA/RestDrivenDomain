@@ -7,7 +7,6 @@ namespace RDD.Web.Models
     {
         public DateTime Generated { get; set; }
         public string Principal { get; set; }
-        public MetadataPaging Paging { get; set; }
 
         public MetadataHeader(IPrincipal principal)
         {

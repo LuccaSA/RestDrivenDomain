@@ -1,10 +1,10 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
+﻿using Newtonsoft.Json;
+using RDD.Domain.Helpers.Expressions;
 
 namespace RDD.Web.Serialization.Serializers
 {
     public interface ISerializer
     {
-        IJsonElement ToJson(object entity, IExpressionTree fields);
+        void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields);
     }
 }
