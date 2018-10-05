@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RDD.Application;
 using RDD.Web.Controllers;
+using RDD.Web.Querying;
+using RDD.Web.Serialization;
 using RDD.Web.Helpers;
 using RDD.Web.Querying;
 using System.Collections.Generic;
@@ -11,8 +13,8 @@ namespace RDD.Web.Tests.Models
     [Route("Users")]
     public class UserWebController : ReadOnlyWebController<IUser, int>
     {
-        public UserWebController(IReadOnlyAppController<IUser, int> appController, ApiHelper<IUser, int> apiHelper)
-            : base(appController, apiHelper) { }
+        public UserWebController(IReadOnlyAppController<IUser, int> appController, IQueryParser<IUser> queryParser)
+            : base(appController, queryParser) { }
 
         //This method only intend is to check that IUser constraint on ReadOnlyWebController is sufficient and working
         public async Task<IEnumerable<IUser>> GetEnumerableAsync()

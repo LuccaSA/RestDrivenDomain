@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace RDD.Domain.Helpers.Expressions
 {
-    public class ExpressionParser
+    public class ExpressionParser : IExpressionParser
     {
         public IExpression Parse<TClass>(string input)
             => ParseChain<TClass>(input);

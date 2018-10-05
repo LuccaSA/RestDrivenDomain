@@ -1,39 +1,37 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using RDD.Domain;
-using RDD.Domain.Helpers;
 using RDD.Domain.Helpers.Expressions;
 using RDD.Domain.Json;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Web.Models
+namespace RDD.Web.Querying
 {
     public class Candidate<TEntity, TKey> : ICandidate<TEntity, TKey>
-        where TEntity : IEntityBase<TKey>
+        where TEntity : IPrimaryKey<TKey>
     {
         private readonly JToken _structure;
+
         public TEntity Value { get; private set; }
+
         public JsonObject JsonValue { get; private set; }
 
-        public Candidate(string json, JsonObject jsonValue)
+        public Candidate(JToken structure, JsonObject jsonObject)
         {
-            _structure = JToken.Parse(json);
-            Value = JsonConvert.DeserializeObject<TEntity>(json);
-            JsonValue = jsonValue;
-        }
-        public static Candidate<TEntity, TKey> Parse(string json)
-        {
-            return new Candidate<TEntity, TKey>(json, new JsonParser().Parse(json) as JsonObject);
+            _structure = structure;
+            Value = _structure.ToObject<TEntity>();
+            JsonValue = jsonObject;
         }
 
         public bool HasId() => HasProperty(c => c.Id);
+
         public bool HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression)
         {
             var selector = ExpressionChain<TEntity>.New(expression);
             return ContainsPath(_structure, selector);
         }
+
         TKey ICandidate<TEntity, TKey>.Id => Value.Id;
         object ICandidate<TEntity>.Id => Value.Id;
 
@@ -44,13 +42,12 @@ namespace RDD.Web.Models
                 case JTokenType.Object:
                     {
                         var matchingChild = token.Children<JProperty>().FirstOrDefault(c => string.Equals(c.Name, selector.Current.Name, StringComparison.InvariantCultureIgnoreCase));
-
-                        if (matchingChild != null)
+                        if (matchingChild == null)
                         {
-                            return !selector.HasNext() || ContainsPath(matchingChild.Value, selector.Next);
+                            return false;
                         }
 
-                        return false;
+                        return !selector.HasNext() || ContainsPath(matchingChild.Value, selector.Next);
                     }
 
                 case JTokenType.Array:

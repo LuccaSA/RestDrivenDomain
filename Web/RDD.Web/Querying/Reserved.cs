@@ -26,17 +26,11 @@ namespace RDD.Web.Querying
         notify,
         [Description("Champ utilisé pour récupérer les données dans un autre format: &accept=application/xls")]
         accept,
-        [Description("Champ utilisé pour filtrer en fonction des opérations accessibles")]
-        operations,
         [Description("Champ utilisé en cas de besoin d'odonner les réultats")]
         orderby,
         [Description("Champ utilisé en cas de besoin de paging")]
         paging,
-        [Description("Permet de filtrer les ressources selon les droits de vision de ce principal et pas de curPrincipal => en réalité on fait un Inter() évidemment")]
-        principal,
         [Description("Champ utilisé pour montrer le template -> ne renvoie rien pour le moment")]
-        template,
-        [Description("Champ utilisé pour forcer une action")]
-        nowarning
+        template
     }
 }

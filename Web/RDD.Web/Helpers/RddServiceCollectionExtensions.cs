@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -8,13 +7,16 @@ using Newtonsoft.Json.Serialization;
 using RDD.Application;
 using RDD.Application.Controllers;
 using RDD.Domain;
+using RDD.Domain.Helpers.Expressions;
+using RDD.Domain.Json;
 using RDD.Domain.Models;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Patchers;
 using RDD.Domain.Rights;
-using RDD.Infra;
+using RDD.Infra.Helpers;
 using RDD.Infra.Storage;
 using RDD.Web.Models;
-using RDD.Web.Serialization;
+using RDD.Web.Querying;
 using RDD.Web.Serialization.Providers;
 using RDD.Web.Serialization.Reflection;
 using RDD.Web.Serialization.Serializers;
@@ -37,20 +39,25 @@ namespace RDD.Web.Helpers
         {
             services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
 
-            // register base services
+            services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
+            services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
+            services.TryAddSingleton(typeof(IPatcher<>), typeof(ObjectPatcher<>));
+
+            services.TryAddSingleton<IJsonParser, JsonParser>();
+            services.TryAddSingleton<ICandidateParser, CandidateParser>();
+            services.TryAddSingleton<IStringConverter, StringConverter>();
+            services.TryAddSingleton<IExpressionParser, ExpressionParser>();
+            services.TryAddSingleton(typeof(IWebFilterConverter<>), typeof(WebFilterConverter<>));
+            services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
+
             services.TryAddScoped<IStorageService, EFStorageService>();
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.TryAddScoped<IPatcherProvider, PatcherProvider>();
-            services.TryAddScoped(typeof(IPatcher<>), typeof(ObjectPatcher<>));
             services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
-            services.TryAddScoped(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
-            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
-            services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
-            services.TryAddScoped(typeof(ApiHelper<,>));
+
             return services;
         }
 
@@ -59,10 +66,10 @@ namespace RDD.Web.Helpers
             where TEntity : class, IEntityBase<TEntity, TKey>
             where TKey : IEquatable<TKey>
         {
-            services.AddSingleton<IInheritanceConfiguration>(s => config);
-            services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
-            services.AddScoped<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
-            services.AddScoped<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IInheritanceConfiguration), config));
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IInheritanceConfiguration<TEntity>), config));
+            services.TryAddSingleton<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
+            services.TryAddSingleton<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
 
             if (JsonConvert.DefaultSettings == null)
             {
@@ -135,13 +142,15 @@ namespace RDD.Web.Helpers
         }
 
         /// <summary>
-        /// Register RDD middleware in the pipeline request
+        /// Register RDD middleware in the pipeline request BEFORE UseMVC
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
         public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
+            return app
+                .UseMiddleware<EnableRequestRewindMiddleware>()
+                .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
 }

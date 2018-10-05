@@ -1,5 +1,16 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: unused ``Query.Stopwatch``
+ - **Removed**: `GuidHelper` Logic included in `StringConverter`
+ - **Modification**: `Candidate` constructor nows takes a `JToken` and a `JsonObject`
+ - **Removed**: `Candidate.New` Logic included in `CandidateParser`
+ - **Removed**: `Headers.Headers`, `HeadersParser` and `Headers` class. Unused
+ - **Removed**: `Reserved.operations`, `Reserved.principal` and `Reserved.nowarning` enum members. Unused and/or poorly implemented.
+ - **Removed**: `Options.WithWarnings`, `Options.Accept`, `Options.FilterOperations`, `Options.ImpersonatedPrincipal`. Unused and/or poorly implemented.
+ - **Modification**: `QueryBuilder<TEntity, TKey>` -> ` QueryBuilder<TEntity>`. `Expression<Func<TEntity, bool>> QueryBuilder<T>.Equals(TKey key)` has been removed as it was unused. As a consequence, `PredicateService` and `WebFiltersContainer` follow the same pattern.
+ - **Removed**: `ApiHelper`, `FieldsParser`, `OptionsParser`, `OrderByParser`, `PageParser`, `WebFiltersParser`, `QueryFactory` `HttpContextHelper`, `IHttpContextHelper`. Replaced by `IQueryParser`, `ICandidateParser`
+ - **Modification**: `ReadOnlyWebController` constructor now takes an `IQueryParser` instead of an `ApiHelper`.
+ - **Modification**: `WebController` constructor now takes an `IQueryParser` and a `ICandidateParser` instead of an `ApiHelper`.
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
  - **Removed**: unused metadata.paging in returned json
  - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.
@@ -41,6 +52,9 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: `ICandidateParser`, `IStringConverter`. New query conversion engine
+ - **Added**: `JsonParser.Parse(JToken input)`
+ - **Added**: `IExpressionParser` and `IJsonParser`. Missing interfaces for correct dependency injection logic.
  - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of th rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `FieldsParser` exposes methods `ParseAllProperties` and `ParseFields` that can be used as generic or with type as argument.
@@ -53,6 +67,11 @@
  - **Added**: implicit conversion from a `Filter<T>` to `Expression<T, bool>`.
  - **Added**: `IAppController.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from the controller.
  - **Added**: `IRestCollection.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from a collection.
+ - **Modification**: `Candidate<TEntity, TKey>` constraint has been relaxed from `TEntity : IEntityBase<TKey>` to `IPrimaryKey<TKey>`
+ - **Modification**: `PredicateService<TEntity, TKey>` constraint has been relaxed from `TEntity : IPrimaryKey<TKey>` to `class`.
+
+## Bug fixs
+ - `ExpressionChainExtractor` failed in certain complex cases because `node.Member.DeclaringType` was used instead of `node.Expression.Type`.
 
 # 2.2.3
 ## Bug fixs

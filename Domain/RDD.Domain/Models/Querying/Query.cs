@@ -10,7 +10,6 @@ namespace RDD.Domain.Models.Querying
     public class Query<TEntity>
         where TEntity : class
     {
-        public Stopwatch Watch { get; }
         public HttpVerbs Verb { get; set; }
         public IExpressionTree<TEntity> Fields { get; set; }
         public Filter<TEntity> Filter { get; set; }
@@ -20,7 +19,6 @@ namespace RDD.Domain.Models.Querying
 
         public Query()
         {
-            Watch = new Stopwatch();
             Verb = HttpVerbs.Get;
             Fields = new ExpressionTree<TEntity>();
             Filter = new Filter<TEntity>();
@@ -32,7 +30,7 @@ namespace RDD.Domain.Models.Querying
         public Query(Expression<Func<TEntity, bool>> filter)
             : this()
         {
-            Filter = new Filter<TEntity>(filter);
+            Filter = filter;
         }
 
         public Query(Query<TEntity> source)

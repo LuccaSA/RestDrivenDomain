@@ -17,7 +17,7 @@ namespace RDD.Web.Tests
         {
             var goodGuid = Guid.NewGuid();
             var badGuid = Guid.NewGuid();
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Like(PropertyExpression<User>.New(u => u.PictureId), new List<Guid> { goodGuid });
 
             var goodUser = new User { PictureId = goodGuid };
@@ -31,7 +31,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void Anniversary()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Anniversary(PropertyExpression<User>.New(u => u.BirthDay), new List<DateTime?> { DateTime.Today });
 
             var goodUser = new User { BirthDay = DateTime.Today };
@@ -46,7 +46,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void AnniversaryNotNullable()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Anniversary(PropertyExpression<User>.New(u => u.ContractStart), new List<DateTime> { DateTime.Today });
 
             var goodUser = new User { ContractStart = DateTime.Today };
@@ -60,7 +60,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void NullAnniversary()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Anniversary(PropertyExpression<User>.New(u => u.BirthDay), new List<DateTime?> { DateTime.Today, null });
 
             var goodUser = new User { BirthDay = DateTime.Today };
@@ -76,7 +76,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void UntilOnDatetime()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Anniversary(PropertyExpression<User>.New(u => u.BirthDay), new List<DateTime?> { DateTime.Today, null });
 
             var goodUser = new User { BirthDay = DateTime.Today };
@@ -92,7 +92,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void EqualsFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Equals(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var goodUser = new User { Id = 1 };
@@ -106,7 +106,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void NotEqualsFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.NotEqual(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var goodUser = new User { Id = 3 };
@@ -120,7 +120,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void ContainsAllFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.ContainsAll(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var badUser = new User { Id = 3 };
@@ -133,7 +133,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void GreaterThanOrEqualFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.GreaterThanOrEqual(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var goodUser = new User { Id = 3 };
@@ -149,7 +149,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void LessThanOrEqualFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.LessThanOrEqual(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var goodUser = new User { Id = 0 };
@@ -165,7 +165,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void GreaterThanFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.GreaterThan(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var goodUser = new User { Id = 3 };
@@ -179,7 +179,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void LessThanFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.LessThan(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
 
             var goodUser = new User { Id = 1 };
@@ -193,7 +193,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void BetweenFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Between(PropertyExpression<User>.New(u => u.ContractStart), new List<Period> { new Period(DateTime.Today, DateTime.Today.AddDays(1)) });
 
             var goodUser = new User { ContractStart = DateTime.Today.AddHours(12) };
@@ -207,7 +207,7 @@ namespace RDD.Web.Tests
         [Fact]
         public void StartsFilter()
         {
-            var builder = new QueryBuilder<User, int>();
+            var builder = new WebFilterConverter<User>();
             var expression = builder.Starts(PropertyExpression<User>.New(u => u.Name), new List<string> { "aAa", "bbb" });
 
             var goodUser = new User { Name = "AAAseed" };

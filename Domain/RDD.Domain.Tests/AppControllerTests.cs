@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using RDD.Domain.Json;
+using RDD.Domain.Models.Querying;
 using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
-using RDD.Web.Models;
+using RDD.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace RDD.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
             var id = Guid.NewGuid();
-            var candidate = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id}"" }}");
+            var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
             var user = await controller.CreateAsync(candidate, query);
 
@@ -43,10 +43,10 @@ namespace RDD.Domain.Tests
             query.Options.CheckRights = false;
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            var candidate1 = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id1}"" }}");
-            var candidate2 = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id2}"" }}");
+            var candidate1 = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id1}"" }}");
+            var candidate2 = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id2}"" }}");
 
-            var result = (await controller.CreateAsync(new List<Candidate<User, Guid>> { candidate1, candidate2 }, query)).ToList();
+            var result = (await controller.CreateAsync(new List<ICandidate<User, Guid>> { candidate1, candidate2 }, query)).ToList();
 
             Assert.Equal(id1, result[0].Id);
             Assert.Equal(id2, result[1].Id);
@@ -60,11 +60,12 @@ namespace RDD.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
             var id = Guid.NewGuid();
-            var candidate = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id}"" }}");
+            var parser = new CandidateParser(new JsonParser());
+            var candidate = parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
             await controller.CreateAsync(candidate, query);
 
-            candidate = Candidate<User, Guid>.Parse($@"{{ ""name"": ""newName"" }}");
+            candidate = parser.Parse<User, Guid>(@"{ ""name"": ""newName"" }");
 
             var user = await controller.UpdateByIdAsync(id, candidate, query);
 

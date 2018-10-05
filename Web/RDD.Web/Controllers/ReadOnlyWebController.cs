@@ -4,7 +4,7 @@ using RDD.Application;
 using RDD.Domain;
 using RDD.Domain.Helpers;
 using RDD.Domain.Models.Querying;
-using RDD.Web.Helpers;
+using RDD.Web.Querying;
 using RDD.Web.Serialization;
 using System;
 using System.Threading.Tasks;
@@ -15,25 +15,25 @@ namespace RDD.Web.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
-            : base(appController, helper)
+        protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, IQueryParser<TEntity> queryParser)
+            : base(appController, queryParser)
         {
         }
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
-        where TAppController : IReadOnlyAppController<TEntity, TKey>
+        where TAppController : class, IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
         protected TAppController AppController { get; }
-        protected ApiHelper<TEntity, TKey> Helper { get; }
+        protected IQueryParser<TEntity> QueryParser { get; }
 
-        protected ReadOnlyWebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
+        protected ReadOnlyWebController(TAppController appController, IQueryParser<TEntity> queryParser)
         {
-            AppController = appController;
-            Helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            AppController = appController ?? throw new ArgumentNullException(nameof(appController));
+            QueryParser = queryParser ?? throw new ArgumentNullException(nameof(queryParser));
         }
 
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
@@ -46,7 +46,7 @@ namespace RDD.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get);
+            Query<TEntity> query = QueryParser.Parse(HttpContext, true);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
@@ -61,7 +61,7 @@ namespace RDD.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Get, false);
+            Query<TEntity> query = QueryParser.Parse(HttpContext, true);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
