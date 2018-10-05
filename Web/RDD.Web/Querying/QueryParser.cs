@@ -18,7 +18,7 @@ namespace RDD.Web.Querying
 {
     public class QueryParser
     {
-        protected static readonly IReadOnlyDictionary<string, WebFilterOperand> Operands = new Dictionary<string, WebFilterOperand>(StringComparer.OrdinalIgnoreCase)
+        protected static readonly IReadOnlyDictionary<StringSegment, WebFilterOperand> Operands = new Dictionary<StringSegment, WebFilterOperand>(StringSegmentComparer.OrdinalIgnoreCase)
         {
             {"between", WebFilterOperand.Between},
             {"equals", WebFilterOperand.Equals},
@@ -136,10 +136,10 @@ namespace RDD.Web.Querying
 
         protected virtual List<OrderBy<TEntity>> ParseOrderBy(string value)
         {
-            var orders = value.Split(',');
+            var orders = (value ?? "").Split(',');
             if (orders.Length % 2 != 0)
             {
-                throw new BadRequestException("Correct order format is `orderby=(property,[asc|desc])*`");
+                throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
             }
 
             var result = new List<OrderBy<TEntity>>();
@@ -147,10 +147,16 @@ namespace RDD.Web.Querying
             {
                 if (!DirectionsByKeyword.ContainsKey(orders[i + 1]))
                 {
-                    throw new BadRequestException("Correct order format is `orderby=(property,[asc|desc])*`");
+                    throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
                 }
 
                 var expression = ExpressionParser.Parse<TEntity>(orders[i]);
+
+                if (!expression.ResultType.IsValueType && expression.ResultType.GetInterface(nameof(IComparable)) == null)
+                {
+                    throw new BadRequestException("Order by query parameter is invalid", new FormatException("Selected property is not comparable and Order By cannot be applied."));
+                }
+
                 result.Add(new OrderBy<TEntity>(expression, DirectionsByKeyword[orders[i + 1]]));
             }
 
@@ -173,7 +179,7 @@ namespace RDD.Web.Querying
 
         protected virtual WebFilter<TEntity> ParseFilter(string key, string value)
         {
-            var parts = value.Split(',').ToList();
+            var parts = (value ?? "").Split(',').ToList();
             var operand = ExtractFilterOperand(parts);
 
             var chain = ExpressionParser.ParseChain<TEntity>(key);
@@ -190,27 +196,42 @@ namespace RDD.Web.Querying
                 parts.RemoveAt(0);
                 return result;
             }
+
             return WebFilterOperand.Equals;
         }
 
-        protected virtual IList ConvertFilterValues(WebFilterOperand operand, IExpression expression, IEnumerable<string> parts)
+        protected virtual IList ConvertFilterValues(WebFilterOperand operand, IExpression expression, List<string> parts)
         {
-            var values = StringConverter.ConvertValues(expression, parts);
-
-            if (operand is WebFilterOperand.Between && values.Count == 2 && values[0] is DateTime? && values[1] is DateTime?)
+            try
             {
-                values = new List<Period> { new Period((DateTime)values[0], ((DateTime)values[1]).ToMidnightTimeIfEmpty()) };
-            }
+                var values = StringConverter.ConvertValues(expression.ResultType, parts);
 
-            return values;
+                if (operand is WebFilterOperand.Between)
+                {
+                    if (values.Count == 2 && values[0] is DateTime start && values[1] is DateTime end)
+                    {
+                        values = new List<Period> { new Period(start, end.ToMidnightTimeIfEmpty()) };
+                    }
+                    else
+                    {
+                        throw new BadRequestException("Query parameter is invalid", new FormatException("Correct filter format is 'XXX=between,start,end'."));
+                    }
+                }
+
+                return values;
+            }
+            catch (FormatException e)
+            {
+                throw new BadRequestException("Query parameter is invalid", e);
+            }
         }
 
         protected virtual Page ParsePaging(string input)
         {
-            var elements = input.Split(',');
-            if (elements.Length != 2 || !int.TryParse(elements[0], out var offset) || !int.TryParse(elements[1], out var limit))
+            var elements = new StringTokenizer(input ?? "", new [] { ',' }).ToList();
+            if (elements.Count != 2 || !int.TryParse(elements[0], out var offset) || !int.TryParse(elements[1], out var limit))
             {
-                throw new BadRequestException($"Correct paging format is 'paging=offset,count'.");
+                throw new BadRequestException("Paging query parameter is invalid", new FormatException("Correct paging format is 'paging=offset,count'."));
             }
 
             return new WebPage(offset, limit);

@@ -1,31 +1,24 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Mail;
-using System.Runtime.Serialization;
 
 namespace RDD.Domain.Models.Querying
 {
     public class StringConverter : IStringConverter
     {
-        public List<T> ConvertValues<T>(IExpression expression, IEnumerable<string> values)
-            => (List<T>)ConvertValues(expression, values);
+        public List<T> ConvertValues<T>(IEnumerable<string> values)
+            => (List<T>)ConvertValues(typeof(T), values);
 
-        public IList ConvertValues(IExpression expression, IEnumerable<string> values)
+        public IList ConvertValues(Type type, IEnumerable<string> values)
         {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
-
-            var listConstructorParamType = typeof(List<>).MakeGenericType(expression.ResultType);
+            var listConstructorParamType = typeof(List<>).MakeGenericType(type);
 
             var result = (IList)Activator.CreateInstance(listConstructorParamType);
-            foreach (string value in values)
+            foreach (var value in values)
             {
-                result.Add(ConvertTo(expression.ResultType, value));
+                result.Add(ConvertTo(type, value));
             }
             return result;
         }
