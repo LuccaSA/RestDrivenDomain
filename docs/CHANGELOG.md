@@ -1,5 +1,6 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: ValidateEntity on RestCollection is now ValidateEntityAsync
  - **Modification**: RDD namespace renamed to Rdd
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
