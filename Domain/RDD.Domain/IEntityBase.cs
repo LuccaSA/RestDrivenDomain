@@ -1,4 +1,4 @@
-﻿namespace RDD.Domain
+﻿namespace Rdd.Domain
 {
     public interface IEntityBase : IPrimaryKey
     {

@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Models;
+﻿using Rdd.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public class UserWithParameters : EntityBase<UserWithParameters, int>
     {

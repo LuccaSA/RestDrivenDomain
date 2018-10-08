@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Models;
+﻿using Rdd.Domain.Models;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Rights
+namespace Rdd.Domain.Rights
 {
     public interface ICombinationsHolder
     {

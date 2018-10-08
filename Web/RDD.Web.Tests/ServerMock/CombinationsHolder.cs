@@ -1,9 +1,9 @@
-using RDD.Domain.Helpers;
-using RDD.Domain.Models;
-using RDD.Domain.Rights;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Models;
+using Rdd.Domain.Rights;
 using System.Collections.Generic;
 
-namespace RDD.Web.Tests.ServerMock
+namespace Rdd.Web.Tests.ServerMock
 {
     public class CombinationsHolder : ICombinationsHolder
     {

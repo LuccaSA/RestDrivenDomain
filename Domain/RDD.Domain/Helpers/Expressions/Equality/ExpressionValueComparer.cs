@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions.Equality
+namespace Rdd.Domain.Helpers.Expressions.Equality
 {
     //https://github.com/yuriy-nelipovich/LambdaCompare/blob/master/Neleus.LambdaCompare/Comparer.cs
     //https://github.com/yesmarket/yesmarket.Linq.Expressions/blob/master/yesmarket.Linq.Expressions/Support/ExpressionValueComparer.cs

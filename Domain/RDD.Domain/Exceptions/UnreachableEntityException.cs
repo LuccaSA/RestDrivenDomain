@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace RDD.Domain.Exceptions
+namespace Rdd.Domain.Exceptions
 {
     [Serializable]
     public sealed class UnreachableEntityException : BadRequestException

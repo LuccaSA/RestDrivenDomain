@@ -1,6 +1,6 @@
-﻿using RDD.Domain.Models;
+﻿using Rdd.Domain.Models;
 
-namespace RDD.Web.Tests.Models
+namespace Rdd.Web.Tests.Models
 {
     public class AnotherUser : EntityBase<IUser, int>, IUser
     {

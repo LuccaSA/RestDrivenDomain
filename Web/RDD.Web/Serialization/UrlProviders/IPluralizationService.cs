@@ -1,4 +1,4 @@
-﻿namespace RDD.Web.Serialization.UrlProviders
+﻿namespace Rdd.Web.Serialization.UrlProviders
 {
     public interface IPluralizationService
     {

@@ -1,11 +1,11 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
+﻿using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Models.Querying
+namespace Rdd.Domain.Models.Querying
 {
     public class Query<TEntity>
         where TEntity : class

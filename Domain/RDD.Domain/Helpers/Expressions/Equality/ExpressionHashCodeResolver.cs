@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions.Equality
+namespace Rdd.Domain.Helpers.Expressions.Equality
 {
     class ExpressionHashCodeResolver : ExpressionVisitor
     {

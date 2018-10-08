@@ -1,6 +1,6 @@
-﻿using RDD.Domain.Models;
+﻿using Rdd.Domain.Models;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public abstract class AbstractClass : EntityBase<AbstractClass, int>
     {

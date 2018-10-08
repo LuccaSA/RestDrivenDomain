@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("RDD.Web.Tests")]
+[assembly: InternalsVisibleTo("Rdd.Web.Tests")]

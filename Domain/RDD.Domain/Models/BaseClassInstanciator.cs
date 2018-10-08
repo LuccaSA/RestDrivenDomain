@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDD.Domain.Models
+namespace Rdd.Domain.Models
 {
     public class BaseClassInstanciator<TEntity> : IInstanciator<TEntity>
         where TEntity : class

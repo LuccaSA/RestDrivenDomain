@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDD.Domain.Models
+namespace Rdd.Domain.Models
 {
     public abstract class EntityBase<TEntity, TKey> : IEntityBase<TEntity, TKey>
         where TEntity : class

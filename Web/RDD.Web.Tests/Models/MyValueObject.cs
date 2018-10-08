@@ -1,4 +1,4 @@
-﻿namespace RDD.Web.Tests.Models
+﻿namespace Rdd.Web.Tests.Models
 {
     public class MyValueObject
     {

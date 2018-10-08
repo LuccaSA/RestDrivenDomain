@@ -1,7 +1,7 @@
 ﻿using NExtends.Primitives.Strings;
 using System;
 
-namespace RDD.Domain.Helpers
+namespace Rdd.Domain.Helpers
 {
     public class GuidHelper
     {

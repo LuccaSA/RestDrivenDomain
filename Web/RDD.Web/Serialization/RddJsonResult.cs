@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
-using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Models;
-using RDD.Web.Serialization.Providers;
+using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Models;
+using Rdd.Web.Serialization.Providers;
 using System;
 using System.Buffers;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RDD.Web.Serialization
+namespace Rdd.Web.Serialization
 {
     internal static class RddJsonResult
     {

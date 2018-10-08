@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public class EnumerablePropertyExpression : PropertyExpression
     {

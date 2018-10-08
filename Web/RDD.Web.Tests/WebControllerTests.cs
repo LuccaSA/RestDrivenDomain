@@ -1,15 +1,13 @@
-﻿using Moq;
-using RDD.Application.Controllers;
-using RDD.Domain.Models;
-using RDD.Infra.Storage;
-using RDD.Web.Helpers;
-using RDD.Web.Serialization;
-using RDD.Web.Tests.Models;
+﻿using Rdd.Application.Controllers;
+using Rdd.Domain.Models;
+using Rdd.Infra.Storage;
+using Rdd.Web.Helpers;
+using Rdd.Web.Tests.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class WebControllerTests
     {

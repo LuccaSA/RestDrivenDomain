@@ -1,6 +1,6 @@
-using RDD.Domain.Models;
+using Rdd.Domain.Models;
 
-namespace RDD.Web.Tests.ServerMock
+namespace Rdd.Web.Tests.ServerMock
 {
     public class ExchangeRate : EntityBase<ExchangeRate, int>
     {
