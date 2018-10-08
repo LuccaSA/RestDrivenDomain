@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Newtonsoft.Json;
 using Rdd.Domain.Exceptions;
+using Rdd.Domain.Json;
 using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
@@ -119,6 +120,36 @@ namespace Rdd.Domain.Tests
             await users.UpdateByIdAsync(id, Candidate<User, Guid>.Parse(JsonConvert.SerializeObject(user)), query);
 
             Assert.True(true);
+        }
+
+        class OverrideObjectPatcher<T> : ObjectPatcher<T>
+            where T : class, new()
+        {
+            public OverrideObjectPatcher(IPatcherProvider provider) : base(provider)
+            {
+            }
+
+            public override object PatchValue(object patchedObject, Type expectedType, JsonObject json)
+            {
+                return new T();
+            }
+        }
+
+        [Fact]
+        public async Task Put_on_new_entity()
+        {
+            var id = Guid.NewGuid();
+            var user = new User { Id = id, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
+            _fixture.InMemoryStorage.Add(user);
+            await _fixture.InMemoryStorage.SaveChangesAsync();
+
+            var users = new RestCollection<User, Guid>(_fixture.UsersRepo, new OverrideObjectPatcher<User>(_fixture.PatcherProvider), _fixture.Instanciator);
+            var query = new Query<User>();
+            query.Options.CheckRights = false;
+
+            var updated = await users.UpdateByIdAsync(id, Candidate<User, Guid>.Parse(JsonConvert.SerializeObject(user)), query);
+
+            Assert.Equal(new Guid(), updated.Id);
         }
 
         [Fact]

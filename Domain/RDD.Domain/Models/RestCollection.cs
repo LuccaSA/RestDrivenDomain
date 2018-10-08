@@ -29,11 +29,11 @@ namespace Rdd.Domain.Models
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            entity = Patcher.Patch(entity, candidate.JsonValue);
 
             ForgeEntity(entity);
 
-            ValidateEntity(entity, null);
+            await ValidateEntityAsync(entity, null);
 
             Repository.Add(entity);
 
@@ -48,16 +48,17 @@ namespace Rdd.Domain.Models
             {
                 TEntity entity = Instanciator.InstanciateNew(candidate);
 
-                Patcher.Patch(entity, candidate.JsonValue);
+                entity = Patcher.Patch(entity, candidate.JsonValue);
 
                 ForgeEntity(entity);
 
-                ValidateEntity(entity, null);
+                await ValidateEntityAsync(entity, null);
 
                 result.Add(entity);
             }
 
             Repository.AddRange(result);
+
             return result;
         }
 
@@ -66,12 +67,11 @@ namespace Rdd.Domain.Models
             await OnBeforeUpdateEntity(oldEntity, candidate);
 
             TEntity newEntity = oldEntity.Clone();
-            Patcher.Patch(newEntity, candidate.JsonValue);
-
+            newEntity = Patcher.Patch(newEntity, candidate.JsonValue);
             
             await OnAfterUpdateEntity(oldEntity, newEntity, candidate, query);
 
-            bool updated = UpdateEntityCore((TKey)newEntity.GetId(), newEntity, oldEntity);
+            bool updated = await UpdateEntityCoreAsync((TKey)newEntity.GetId(), newEntity, oldEntity);
 
             return updated ? newEntity : oldEntity;
         }
@@ -83,7 +83,7 @@ namespace Rdd.Domain.Models
             {
                 return null;
             }
-            bool updated = UpdateEntityCore(id, entity, oldEntity);
+            bool updated = await UpdateEntityCoreAsync(id, entity, oldEntity);
             return updated ? entity : oldEntity;
         }
 
@@ -122,9 +122,9 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        private bool UpdateEntityCore(TKey id, TEntity newEntity, TEntity oldEntity)
+        private async Task<bool> UpdateEntityCoreAsync(TKey id, TEntity newEntity, TEntity oldEntity)
         {
-            ValidateEntity(newEntity, oldEntity);
+            await ValidateEntityAsync(newEntity, oldEntity);
 
             return Repository.Update<TEntity, TKey>(id, newEntity);
         }
@@ -150,7 +150,7 @@ namespace Rdd.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
+        protected virtual Task ValidateEntityAsync(TEntity entity, TEntity oldEntity) => Task.CompletedTask;
 
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
