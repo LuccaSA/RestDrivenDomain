@@ -25,7 +25,7 @@ namespace RDD.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
@@ -37,10 +37,10 @@ namespace RDD.Domain.Models
 
             Repository.Add(entity);
 
-            return entity;
+            return Task.FromResult(entity);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        public virtual Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
         {
             var result = new List<TEntity>();
 
@@ -58,7 +58,8 @@ namespace RDD.Domain.Models
             }
 
             Repository.AddRange(result);
-            return result;
+
+            return Task.FromResult((IEnumerable<TEntity>)result);
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
