@@ -1,10 +1,10 @@
-﻿using RDD.Application;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
-using RDD.Domain.Tests.Models;
+﻿using Rdd.Application;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Rights;
+using Rdd.Domain.Tests.Models;
 using System.Linq;
 
-namespace RDD.Infra.Tests
+namespace Rdd.Infra.Tests
 {
     public class UsersRepository : OpenRepository<User>
     {

@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Application\RDD.Application\RDD.Application.csproj" />
-    <ProjectReference Include="..\..\Domain\RDD.Domain\RDD.Domain.csproj" />
+    <ProjectReference Include="..\..\Application\RDD.Application\Rdd.Application.csproj" />
+    <ProjectReference Include="..\..\Domain\RDD.Domain\Rdd.Domain.csproj" />
   </ItemGroup>
 
 </Project>

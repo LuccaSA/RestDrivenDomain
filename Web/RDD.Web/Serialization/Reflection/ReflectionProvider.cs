@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace RDD.Web.Serialization.Reflection
+namespace Rdd.Web.Serialization.Reflection
 {
     public class ReflectionProvider : IReflectionProvider
     {

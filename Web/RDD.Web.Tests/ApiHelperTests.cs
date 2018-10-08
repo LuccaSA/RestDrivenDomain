@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Moq;
-using RDD.Web.Helpers;
-using RDD.Web.Tests.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Moq;
+using Rdd.Web.Helpers;
+using Rdd.Web.Tests.Models;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class ApiHelperTests
     {

@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Serialization.Providers;
+using Rdd.Web.Serialization.Reflection;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace RDD.Web.Serialization.Serializers
+namespace Rdd.Web.Serialization.Serializers
 {
     public class CultureInfoSerializer : ObjectSerializer
     {

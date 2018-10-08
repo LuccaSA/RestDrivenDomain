@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class ExceptionHttpStatusCodeOption
     {

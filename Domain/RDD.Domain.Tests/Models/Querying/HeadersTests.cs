@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Primitives;
 using NExtends.Primitives.Generics;
-using RDD.Web.Querying;
+using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace RDD.Domain.Tests.Models.Querying
+namespace Rdd.Domain.Tests.Models.Querying
 {
     public class HeadersTests
     {
@@ -28,7 +28,7 @@ namespace RDD.Domain.Tests.Models.Querying
 
             var headers = new HeadersParser().Parse(requestHeaders);
 
-            Assert.Equal(false, headers.IfUnmodifiedSince.HasValue);
+            Assert.False(headers.IfUnmodifiedSince.HasValue);
         }
 
         [Fact]

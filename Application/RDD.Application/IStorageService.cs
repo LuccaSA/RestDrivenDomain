@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Application
+namespace Rdd.Application
 {
     public interface IStorageService : IDisposable
     {

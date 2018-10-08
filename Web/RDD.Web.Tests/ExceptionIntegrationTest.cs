@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Helpers;
-using RDD.Web.Tests.ServerMock;
+using Rdd.Domain;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Models.Querying;
+using Rdd.Web.Helpers;
+using Rdd.Web.Tests.ServerMock;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class ExceptionIntegrationTest
     {

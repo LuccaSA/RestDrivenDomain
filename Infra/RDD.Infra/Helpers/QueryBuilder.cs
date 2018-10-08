@@ -1,14 +1,14 @@
 ﻿using NExtends.Expressions;
-using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Infra.Exceptions;
+using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models;
+using Rdd.Infra.Exceptions;
 using System;
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Infra.Helpers
+namespace Rdd.Infra.Helpers
 {
     public class QueryBuilder<TEntity, TKey>
         where TEntity : IPrimaryKey<TKey>

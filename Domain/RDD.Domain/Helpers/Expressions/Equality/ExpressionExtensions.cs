@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Domain.Helpers.Expressions.Equality
+namespace Rdd.Domain.Helpers.Expressions.Equality
 {
     internal static class ExpressionExtensions
     {

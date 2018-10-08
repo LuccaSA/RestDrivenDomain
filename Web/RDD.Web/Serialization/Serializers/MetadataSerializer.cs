@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json.Serialization;
-using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Models;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Models;
+using Rdd.Web.Serialization.Providers;
+using Rdd.Web.Serialization.Reflection;
 using System.Linq;
 
-namespace RDD.Web.Serialization.Serializers
+namespace Rdd.Web.Serialization.Serializers
 {
     public class MetadataSerializer : ObjectSerializer
     {

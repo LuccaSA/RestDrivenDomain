@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Helpers.Expressions.Equality;
+﻿using Rdd.Domain.Helpers.Expressions.Equality;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public class PropertyExpression : IExpression
     {

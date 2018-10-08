@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Helpers.Expressions.Utils;
+﻿using Rdd.Domain.Helpers.Expressions.Utils;
 using System;
 using Xunit;
 
-namespace RDD.Domain.Tests.Members
+namespace Rdd.Domain.Tests.Members
 {
     public class TreeParserTests
     {

@@ -1,7 +1,7 @@
-﻿using RDD.Domain;
+﻿using Rdd.Domain;
 using System;
 
-namespace RDD.Web.Models
+namespace Rdd.Web.Models
 {
     public class Metadata
     {

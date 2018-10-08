@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Mocks
+namespace Rdd.Domain.Mocks
 {
     public abstract class Hierarchy : IEntityBase<Hierarchy, int>
     {

@@ -1,12 +1,12 @@
 ﻿using NExtends.Primitives.Types;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Json;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace RDD.Domain.Patchers
+namespace Rdd.Domain.Patchers
 {
     internal class EnumerablePatcher : IPatcher
 	{

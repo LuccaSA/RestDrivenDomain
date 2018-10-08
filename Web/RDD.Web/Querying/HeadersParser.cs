@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
-using RDD.Domain.Models.Querying;
+using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class HeadersParser
     {

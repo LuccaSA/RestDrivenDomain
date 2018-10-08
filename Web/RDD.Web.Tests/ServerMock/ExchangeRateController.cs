@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RDD.Application;
-using RDD.Domain.Helpers;
-using RDD.Web.Controllers;
-using RDD.Web.Helpers;
-using RDD.Web.Serialization;
+using Rdd.Application;
+using Rdd.Domain.Helpers;
+using Rdd.Web.Controllers;
+using Rdd.Web.Helpers;
 using System.Threading.Tasks;
 
-namespace RDD.Web.Tests.ServerMock
+namespace Rdd.Web.Tests.ServerMock
 {
     [Route(RouteName)]
     [ApiExplorerSettings(IgnoreApi = false)]

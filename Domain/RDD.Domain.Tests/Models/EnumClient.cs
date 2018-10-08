@@ -3,7 +3,7 @@ using NExtends.Primitives.Enums;
 using System;
 using System.Linq;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public abstract class EnumClient
     {

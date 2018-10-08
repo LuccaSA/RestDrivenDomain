@@ -1,21 +1,21 @@
 ﻿using Moq;
 using Newtonsoft.Json;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Mocks;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Patchers;
-using RDD.Domain.Rights;
-using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
-using RDD.Web.Models;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Mocks;
+using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Patchers;
+using Rdd.Domain.Rights;
+using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
+using Rdd.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class CollectionMethodsTests : IClassFixture<DefaultFixture>
     {

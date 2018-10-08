@@ -1,11 +1,11 @@
-﻿using RDD.Domain.Models.Querying;
-using RDD.Domain.Tests.Models;
+﻿using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Tests.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class OrderByConverterTests
     {

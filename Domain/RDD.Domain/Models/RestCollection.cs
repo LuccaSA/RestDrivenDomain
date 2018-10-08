@@ -1,12 +1,12 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Patchers;
+﻿using Rdd.Domain.Helpers;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Domain.Models
+namespace Rdd.Domain.Models
 {
     public class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>

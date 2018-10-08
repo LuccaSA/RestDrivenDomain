@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace RDD.Domain.Exceptions
+namespace Rdd.Domain.Exceptions
 {
     /// <summary>
     /// HttpStatusCode exposition for domain exceptions

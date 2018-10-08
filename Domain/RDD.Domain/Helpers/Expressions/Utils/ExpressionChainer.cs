@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions.Utils
+namespace Rdd.Domain.Helpers.Expressions.Utils
 {
     /// <summary>
     /// This visitor lets you chain two <see cref="LambdaExpression"/> in one.

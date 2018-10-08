@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using NExtends.Primitives.DateTimes;
 using System;
 
-namespace RDD.Domain.Json
+namespace Rdd.Domain.Json
 {
     public class JsonParser
     {

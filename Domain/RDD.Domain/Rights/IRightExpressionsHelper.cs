@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 using System;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Rights
+namespace Rdd.Domain.Rights
 {
     public interface IRightExpressionsHelper<T>
          where T : class

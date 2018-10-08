@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public class RddExpressionEqualityComparer : IEqualityComparer<IExpression>
     {

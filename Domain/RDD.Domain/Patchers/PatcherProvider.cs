@@ -1,10 +1,10 @@
 ﻿using NExtends.Primitives.Types;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Json;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Json;
 using System;
 using System.Collections;
 
-namespace RDD.Domain.Patchers
+namespace Rdd.Domain.Patchers
 {
     public class PatcherProvider : IPatcherProvider
     {

@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using RDD.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Expressions;
 using System;
 
-namespace RDD.Web.Serialization.Serializers
+namespace Rdd.Web.Serialization.Serializers
 {
     public class DateTimeSerializer : ValueSerializer
     {

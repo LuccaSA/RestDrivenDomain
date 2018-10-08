@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Exceptions;
+﻿using Rdd.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class WebPageParser
     {

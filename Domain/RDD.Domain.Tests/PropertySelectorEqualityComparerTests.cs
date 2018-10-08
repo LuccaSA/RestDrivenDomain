@@ -1,9 +1,8 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
+﻿using Rdd.Domain.Helpers.Expressions;
 using System.Collections.Generic;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class PropertySelectorEqualityComparerTests
     {

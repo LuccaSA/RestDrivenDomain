@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Models.Querying
+namespace Rdd.Domain.Models.Querying
 {
     public class Headers
     {

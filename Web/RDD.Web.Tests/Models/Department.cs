@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Models;
+﻿using Rdd.Domain.Models;
 using System.Collections.Generic;
 
-namespace RDD.Web.Tests.Models
+namespace Rdd.Web.Tests.Models
 {
     public class Department : EntityBase<Department, int>
     {

@@ -1,6 +1,6 @@
-﻿using RDD.Domain;
+﻿using Rdd.Domain;
 
-namespace RDD.Web.Tests.Models
+namespace Rdd.Web.Tests.Models
 {
     public interface IUser : IEntityBase<IUser, int>
     {

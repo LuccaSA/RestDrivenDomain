@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Json;
+﻿using Rdd.Domain.Json;
 using System.Reflection;
 
-namespace RDD.Domain.Patchers
+namespace Rdd.Domain.Patchers
 {
     public class BaseClassPatcher<TEntity> : ObjectPatcher<TEntity>
         where TEntity : class

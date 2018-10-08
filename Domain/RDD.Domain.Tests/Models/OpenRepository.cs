@@ -1,10 +1,10 @@
-﻿using RDD.Application;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
-using RDD.Infra.Storage;
+﻿using Rdd.Application;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Rights;
+using Rdd.Infra.Storage;
 using System.Linq;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public class OpenRepository<TEntity> : Repository<TEntity>
         where TEntity : class

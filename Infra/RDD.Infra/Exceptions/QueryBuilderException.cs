@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Exceptions;
+﻿using Rdd.Domain.Exceptions;
 using System;
 using System.Net;
 
-namespace RDD.Infra.Exceptions
+namespace Rdd.Infra.Exceptions
 {
     public class QueryBuilderException : BusinessException
     {

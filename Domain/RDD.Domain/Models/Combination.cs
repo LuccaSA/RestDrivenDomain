@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 using System;
 
-namespace RDD.Domain.Models
+namespace Rdd.Domain.Models
 {
     public class Combination
     {
