@@ -12,12 +12,14 @@ namespace Rdd.Web.Tests
 {
     public class OptionsParserTests
     {
+        QueryParser<User> GetQueryParser()
+               => new QueryParser<User>(new WebFilterConverter<User>(), new PagingParser(), new FilterParser(new StringConverter(), new ExpressionParser()), new FieldsParser(new ExpressionParser()), new OrderByParser(new ExpressionParser()));
+
         [Fact]
         public void CountParseHasOptionImplications()
         {
             var dico = new Dictionary<string, StringValues> { { "fields", "collection.count" } };
-            var parser = new QueryParser<User>(new StringConverter(), new ExpressionParser(), new WebFilterConverter<User>());
-            var query = parser.Parse(HttpVerbs.Get, dico, true);
+            var query = GetQueryParser().Parse(HttpVerbs.Get, dico, true);
 
             Assert.True(query.Options.NeedCount);
             Assert.False(query.Options.NeedEnumeration);

@@ -1,61 +1,34 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using NExtends.Primitives.DateTimes;
 using Rdd.Domain;
-using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers;
-using Rdd.Domain.Helpers.Expressions;
-using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
 using Rdd.Infra.Web.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rdd.Web.Querying
 {
-    public class QueryParser
-    {
-        protected static readonly IReadOnlyDictionary<StringSegment, WebFilterOperand> Operands = new Dictionary<StringSegment, WebFilterOperand>(StringSegmentComparer.OrdinalIgnoreCase)
-        {
-            {"between", WebFilterOperand.Between},
-            {"equals", WebFilterOperand.Equals},
-            {"notequal", WebFilterOperand.NotEqual},
-            {"like", WebFilterOperand.Like},
-            {"since", WebFilterOperand.Since},
-            {"starts", WebFilterOperand.Starts},
-            {"until", WebFilterOperand.Until},
-            {"greaterthan", WebFilterOperand.GreaterThan},
-            {"greaterthanorequal", WebFilterOperand.GreaterThanOrEqual},
-            {"lessthan", WebFilterOperand.LessThan},
-            {"lessthanorequal", WebFilterOperand.LessThanOrEqual}
-        };
-
-        protected static readonly IReadOnlyDictionary<string, SortDirection> DirectionsByKeyword = new Dictionary<string, SortDirection>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "asc", SortDirection.Ascending },
-            { "desc", SortDirection.Descending }
-        };
-
-        protected QueryParser() { }
-    }
-
-    public class QueryParser<TEntity> : QueryParser, IQueryParser<TEntity>
+    public class QueryParser<TEntity> : IQueryParser<TEntity>
         where TEntity : class
     {
-        protected IStringConverter StringConverter { get; private set; }
-        protected IExpressionParser ExpressionParser { get; private set; }
         protected IWebFilterConverter<TEntity> WebFilterConverter { get; private set; }
+        protected IPagingParser PagingParser { get; private set; }
+        protected IFilterParser FilterParser { get; private set; }
+        protected IFieldsParser FieldsParser { get; private set; }
+        protected IOrderByParser OrderByParser { get; private set; }
 
         protected HashSet<string> IgnoredFilters { get; set; }
 
-        public QueryParser(IStringConverter stringConverter, IExpressionParser expressionParser, IWebFilterConverter<TEntity> webFilterConverter)
+        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
         {
-            StringConverter = stringConverter ?? throw new ArgumentNullException(nameof(stringConverter));
-            ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
             WebFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
+            PagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
+            FilterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
+            FieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
+            OrderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
 
             IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -87,7 +60,7 @@ namespace Rdd.Web.Querying
 
             if (query.Fields == null)
             {
-                query.Fields = GetDeFaultFields(isCollectionCall);
+                query.Fields = FieldsParser.GetDeFaultFields<TEntity>(isCollectionCall);
             }
             else if (query.Fields.Contains((ISelection c) => c.Count))
             {
@@ -116,125 +89,22 @@ namespace Rdd.Web.Querying
                 switch (reserved)
                 {
                     case Reserved.fields:
-                        query.Fields = ParseFields(value);
+                        query.Fields = FieldsParser.Parse<TEntity>(value);
                         break;
 
                     case Reserved.orderby:
-                        query.OrderBys = ParseOrderBy(value);
+                        query.OrderBys = OrderByParser.Parse<TEntity>(value);
                         break;
 
                     case Reserved.paging:
-                        query.Page = ParsePaging(value);
+                        query.Page = PagingParser.Parse(value);
                         break;
                 }
             }
             else
             {
-                filters.Add(ParseFilter(key, value));
+                filters.Add(FilterParser.Parse<TEntity>(key, value));
             }
-        }
-
-        protected virtual List<OrderBy<TEntity>> ParseOrderBy(string value)
-        {
-            var orders = (value ?? "").Split(',');
-            if (orders.Length % 2 != 0)
-            {
-                throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
-            }
-
-            var result = new List<OrderBy<TEntity>>();
-            for (var i = 0; i < orders.Length; i += 2)
-            {
-                if (!DirectionsByKeyword.ContainsKey(orders[i + 1]))
-                {
-                    throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
-                }
-
-                var expression = ExpressionParser.Parse<TEntity>(orders[i]);
-
-                if (!expression.ResultType.IsValueType && expression.ResultType.GetInterface(nameof(IComparable)) == null)
-                {
-                    throw new BadRequestException("Order by query parameter is invalid", new FormatException("Selected property is not comparable and Order By cannot be applied."));
-                }
-
-                result.Add(new OrderBy<TEntity>(expression, DirectionsByKeyword[orders[i + 1]]));
-            }
-
-            return result;
-        }
-
-        protected virtual IExpressionTree<TEntity> GetDeFaultFields(bool isCollectionCall)
-        {
-            if (!isCollectionCall)
-            {
-                return ParseFields(string.Join(",", typeof(TEntity).GetProperties().Select(p => p.Name)));
-            }
-            else
-            {
-                return new ExpressionTree<TEntity>();
-            }
-        }
-
-        protected virtual IExpressionTree<TEntity> ParseFields(string fields) => ExpressionParser.ParseTree<TEntity>(fields);
-
-        protected virtual WebFilter<TEntity> ParseFilter(string key, string value)
-        {
-            var parts = (value ?? "").Split(',').ToList();
-            var operand = ExtractFilterOperand(parts);
-
-            var chain = ExpressionParser.ParseChain<TEntity>(key);
-            var values = ConvertFilterValues(operand, chain, parts);
-
-            return new WebFilter<TEntity>(chain, operand, values);
-        }
-
-        protected virtual WebFilterOperand ExtractFilterOperand(List<string> parts)
-        {
-            if (parts[0] != null && Operands.ContainsKey(parts[0]))
-            {
-                var result = Operands[parts[0]];
-                parts.RemoveAt(0);
-                return result;
-            }
-
-            return WebFilterOperand.Equals;
-        }
-
-        protected virtual IList ConvertFilterValues(WebFilterOperand operand, IExpression expression, List<string> parts)
-        {
-            try
-            {
-                var values = StringConverter.ConvertValues(expression.ResultType, parts);
-
-                if (operand is WebFilterOperand.Between)
-                {
-                    if (values.Count == 2 && values[0] is DateTime start && values[1] is DateTime end)
-                    {
-                        values = new List<Period> { new Period(start, end.ToMidnightTimeIfEmpty()) };
-                    }
-                    else
-                    {
-                        throw new BadRequestException("Query parameter is invalid", new FormatException("Correct filter format is 'XXX=between,start,end'."));
-                    }
-                }
-
-                return values;
-            }
-            catch (FormatException e)
-            {
-                throw new BadRequestException("Query parameter is invalid", e);
-            }
-        }
-
-        protected virtual Page ParsePaging(string input)
-        {
-            var elements = new StringTokenizer(input ?? "", new [] { ',' }).ToList();
-            if (elements.Count != 2 || !int.TryParse(elements[0], out var offset) || !int.TryParse(elements[1], out var limit))
-            {
-                throw new BadRequestException("Paging query parameter is invalid", new FormatException("Correct paging format is 'paging=offset,count'."));
-            }
-
-            return new WebPage(offset, limit);
         }
     }
 }

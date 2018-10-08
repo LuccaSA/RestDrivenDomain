@@ -14,6 +14,9 @@ namespace Rdd.Web.Tests
 {
     public class WebControllerTests
     {
+        QueryParser<IUser> GetQueryParser()
+               => new QueryParser<IUser>(new WebFilterConverter<IUser>(), new PagingParser(), new FilterParser(new StringConverter(), new ExpressionParser()), new FieldsParser(new ExpressionParser()), new OrderByParser(new ExpressionParser()));
+
         [Fact]
         public async Task WebControllerShouldWorkOnInterfaces()
         {
@@ -26,7 +29,7 @@ namespace Rdd.Web.Tests
                 repository.Add(new User { Id = 1 });
                 repository.Add(new AnotherUser { Id = 2 });
 
-                var controller = new UserWebController(appController, new QueryParser<IUser>(new StringConverter(), new ExpressionParser(), new WebFilterConverter<IUser>()));
+                var controller = new UserWebController(appController, GetQueryParser());
 
                 var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
 

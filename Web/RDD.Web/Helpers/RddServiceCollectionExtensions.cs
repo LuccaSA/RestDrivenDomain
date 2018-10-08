@@ -48,6 +48,10 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IStringConverter, StringConverter>();
             services.TryAddSingleton<IExpressionParser, ExpressionParser>();
             services.TryAddSingleton(typeof(IWebFilterConverter<>), typeof(WebFilterConverter<>));
+            services.TryAddSingleton<IPagingParser, PagingParser>();
+            services.TryAddSingleton<IFilterParser, FilterParser>();
+            services.TryAddSingleton<IFieldsParser, FieldsParser>();
+            services.TryAddSingleton<IOrderByParser, OrderByParser>();
             services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 
             services.TryAddScoped<IStorageService, EFStorageService>();
