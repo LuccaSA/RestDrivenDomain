@@ -1,8 +1,8 @@
-﻿using RDD.Domain;
-using RDD.Domain.Models;
+﻿using Rdd.Domain;
+using Rdd.Domain.Models;
 using System;
 
-namespace RDD.Web.Tests.Models
+namespace Rdd.Web.Tests.Models
 {
     public class User : EntityBase<User, int>, IUser
     {

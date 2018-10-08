@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Serialization.Serializers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Serialization.Serializers;
 using System;
 
-namespace RDD.Web.Serialization.Providers
+namespace Rdd.Web.Serialization.Providers
 {
     public interface ISerializerProvider
     {

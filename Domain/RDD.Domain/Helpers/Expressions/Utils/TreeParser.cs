@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Domain.Helpers.Expressions.Utils
+namespace Rdd.Domain.Helpers.Expressions.Utils
 {
     internal class TreeParser
     {

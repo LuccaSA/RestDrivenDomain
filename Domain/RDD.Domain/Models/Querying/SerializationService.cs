@@ -1,7 +1,7 @@
 ﻿using NExtends.Primitives.DateTimes;
 using NExtends.Primitives.Strings;
 using NExtends.Primitives.Types;
-using RDD.Domain.Helpers;
+using Rdd.Domain.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Net.Mail;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace RDD.Domain.Models.Querying
+namespace Rdd.Domain.Models.Querying
 {
     public class SerializationService
     {

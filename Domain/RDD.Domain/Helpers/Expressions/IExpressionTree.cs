@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public interface IExpressionTree : IEnumerable<IExpressionChain>, IEquatable<IExpressionTree>
     {

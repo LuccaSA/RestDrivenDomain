@@ -1,12 +1,12 @@
 ﻿using Moq;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models;
-using RDD.Domain.Rights;
-using RDD.Domain.Tests.Models;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Models;
+using Rdd.Domain.Rights;
+using Rdd.Domain.Tests.Models;
 using System.Collections.Generic;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class RightExpressionsHelperTests
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RDD.Domain.Mocks;
+using Rdd.Domain.Mocks;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public class DataContext : DbContext
     {

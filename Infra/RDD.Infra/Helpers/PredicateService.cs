@@ -1,13 +1,13 @@
 ﻿using LinqKit;
-using RDD.Domain;
-using RDD.Infra.Web.Models;
+using Rdd.Domain;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Infra.Helpers
+namespace Rdd.Infra.Helpers
 {
     public class PredicateService<TEntity, TKey>
         where TEntity : IPrimaryKey<TKey>

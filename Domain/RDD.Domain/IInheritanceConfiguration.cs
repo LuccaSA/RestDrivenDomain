@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RDD.Domain
+namespace Rdd.Domain
 {
     public interface IInheritanceConfiguration
     {

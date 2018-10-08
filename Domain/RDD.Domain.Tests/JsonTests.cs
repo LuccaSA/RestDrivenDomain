@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Json;
+﻿using Rdd.Domain.Json;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class JsonTests
     {

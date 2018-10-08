@@ -1,12 +1,12 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Json;
-using RDD.Domain.Patchers;
-using RDD.Domain.Tests.Models;
+﻿using Rdd.Domain.Exceptions;
+using Rdd.Domain.Json;
+using Rdd.Domain.Patchers;
+using Rdd.Domain.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class PatchersTests
     {

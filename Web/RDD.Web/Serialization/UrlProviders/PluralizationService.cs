@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDD.Web.Serialization.UrlProviders
+namespace Rdd.Web.Serialization.UrlProviders
 {
     public class PluralizationService : IPluralizationService
     {

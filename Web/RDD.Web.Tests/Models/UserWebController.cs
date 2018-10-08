@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RDD.Application;
-using RDD.Web.Controllers;
-using RDD.Web.Helpers;
-using RDD.Web.Querying;
+using Rdd.Application;
+using Rdd.Web.Controllers;
+using Rdd.Web.Helpers;
+using Rdd.Web.Querying;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RDD.Web.Tests.Models
+namespace Rdd.Web.Tests.Models
 {
     [Route("Users")]
     public class UserWebController : ReadOnlyWebController<IUser, int>

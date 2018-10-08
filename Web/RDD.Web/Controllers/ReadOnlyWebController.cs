@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RDD.Application;
-using RDD.Domain;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Helpers;
-using RDD.Web.Serialization;
+using Rdd.Application;
+using Rdd.Domain;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Models.Querying;
+using Rdd.Web.Helpers;
+using Rdd.Web.Serialization;
 using System;
 using System.Threading.Tasks;
 
-namespace RDD.Web.Controllers
+namespace Rdd.Web.Controllers
 {
     public abstract class ReadOnlyWebController<TEntity, TKey> : ReadOnlyWebController<IReadOnlyAppController<TEntity, TKey>, TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>

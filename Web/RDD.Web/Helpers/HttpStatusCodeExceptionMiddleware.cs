@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RDD.Domain.Exceptions;
+using Rdd.Domain.Exceptions;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class HttpStatusCodeExceptionMiddleware
     {

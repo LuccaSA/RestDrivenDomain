@@ -1,4 +1,4 @@
-﻿namespace RDD.Domain.Models
+﻿namespace Rdd.Domain.Models
 {
     public interface IInstanciator<TEntity>
     {

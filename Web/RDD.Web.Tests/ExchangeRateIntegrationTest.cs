@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
-using RDD.Web.Tests.ServerMock;
+using Rdd.Web.Tests.ServerMock;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class ExchangeRateIntegrationTest
     {

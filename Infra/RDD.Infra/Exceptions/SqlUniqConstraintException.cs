@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDD.Infra.Exceptions
+namespace Rdd.Infra.Exceptions
 {
     public class SqlUniqConstraintException : Exception
     {

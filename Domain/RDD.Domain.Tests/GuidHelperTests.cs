@@ -1,11 +1,7 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Tests.Models;
-using System;
-using System.Collections.Generic;
+﻿using Rdd.Domain.Helpers;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class GuidHelperTests
     {
