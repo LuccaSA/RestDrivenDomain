@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RDD.Application;
+using RDD.Domain;
 using RDD.Infra.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -120,6 +121,19 @@ namespace RDD.Infra.Storage
         public void Dispose()
         {
             DbContext.Dispose();
+        }
+
+        public virtual bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TKey : IEquatable<TKey>
+        {
+            var entity = DbContext.Find<TEntity>(id);
+            if (entity == null)
+            {
+                return false;
+            }
+            DbContext.Entry(entity).CurrentValues.SetValues(toUpdate);
+            return true;
         }
     }
 }
