@@ -22,11 +22,11 @@ namespace RDD.Infra.Helpers
         public Expression<Func<TObject, bool>> GetPredicate<TObject>()
             where TObject : class
         {
-            var feed = PredicateBuilder.True<TObject>();
+            Expression<Func<TObject, bool>> feed = PredicateBuilder.New<TObject>(f => true);
 
             foreach (var filter in _filters)
             {
-                var sub = PredicateBuilder.False<TObject>();
+                Expression<Func<TObject, bool>> sub = PredicateBuilder.New<TObject>(f => false);
 
                 foreach (var value in filter.Values)
                 {
@@ -72,7 +72,7 @@ namespace RDD.Infra.Helpers
         /// <returns></returns>
         public Expression<Func<TEntity, bool>> GetEntityPredicate(QueryBuilder<TEntity, TKey> queryBuilder)
         {
-            var feed = PredicateBuilder.True<TEntity>();
+            Expression<Func<TEntity, bool>> feed = PredicateBuilder.New<TEntity>(f => true);
             foreach (var filter in _filters)
             {
                 var expression = ToEntityExpression(queryBuilder, filter, filter.Values);
