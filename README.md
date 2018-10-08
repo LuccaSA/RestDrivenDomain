@@ -1,7 +1,7 @@
 # Rest Driven Domain
 
 [![Build status](https://ci.appveyor.com/api/projects/status/edtq86puuj8qma2h?svg=true)](https://ci.appveyor.com/project/LuccaIntegration/restdrivendomain)
-[![codecov](https://codecov.io/gh/LuccaSA/RestDrivenDomain/branch/master/graph/badge.svg)](https://codecov.io/gh/rducom/TarCompressCrypt)
+[![codecov](https://codecov.io/gh/LuccaSA/RestDrivenDomain/branch/master/graph/badge.svg)](https://codecov.io/gh/LuccaSA/RestDrivenDomain)
 [![Sonarcloud coverage](https://sonarcloud.io/api/project_badges/measure?project=RestDrivenDomain&metric=coverage)](https://sonarcloud.io/dashboard?id=RestDrivenDomain)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=RestDrivenDomain&metric=alert_status)](https://sonarcloud.io/dashboard?id=RestDrivenDomain)
 [![Sonarcloud Debt](https://sonarcloud.io/api/project_badges/measure?project=RestDrivenDomain&metric=sqale_index)](https://sonarcloud.io/dashboard?id=RestDrivenDomain)
@@ -50,6 +50,6 @@ This list is subject to future improvements
 RDD provide 4 distinct layers to structurally enforce Domain isolation.
 - **Web** : WebController / ReadOnlyWebController are the main entry point for instanciating the full RDD stack. All web related operations must stay on this layer.
 - **Application** : AppController / ReadOnlyAppController are aimed at providing a global functionnal layer
-- **Domain** : RestCollection / ReadOnlyRestCollection are placeholders for Domain centric opérations
+- **Domain** : RestCollection / ReadOnlyRestCollection are placeholders for Domain centric opÃ©rations
 - **Infra** : Repository / ReadOnlyRepository implements external access to data (via EF, HttpClient, Files, etc)
 
