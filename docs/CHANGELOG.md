@@ -1,5 +1,6 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `Query<TEntity> query` parameter removed from prototype of ReadOnlyRepository Set() method 
  - **Modification**: ValidateEntity on RestCollection is now ValidateEntityAsync
  - **Modification**: RDD namespace renamed to Rdd
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()
