@@ -62,6 +62,31 @@ namespace Rdd.Domain.Models
             return result;
         }
 
+        private async Task<TEntity> UpdateAsync(TEntity oldEntity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
+        {
+            await OnBeforeUpdateEntity(oldEntity, candidate);
+
+            TEntity newEntity = oldEntity.Clone();
+            newEntity = Patcher.Patch(newEntity, candidate.JsonValue);
+            
+            await OnAfterUpdateEntity(oldEntity, newEntity, candidate, query);
+
+            bool updated = await UpdateEntityCoreAsync((TKey)newEntity.GetId(), newEntity, oldEntity);
+
+            return updated ? newEntity : oldEntity;
+        }
+
+        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, TEntity entity)
+        {
+            TEntity oldEntity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Put });
+            if (oldEntity == null)
+            {
+                return null;
+            }
+            bool updated = await UpdateEntityCoreAsync(id, entity, oldEntity);
+            return updated ? entity : oldEntity;
+        }
+
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
@@ -97,6 +122,13 @@ namespace Rdd.Domain.Models
             return result;
         }
 
+        private async Task<bool> UpdateEntityCoreAsync(TKey id, TEntity newEntity, TEntity oldEntity)
+        {
+            await ValidateEntityAsync(newEntity, oldEntity);
+
+            return Repository.Update<TEntity, TKey>(id, newEntity);
+        }
+
         public virtual async Task DeleteByIdAsync(TKey id)
         {
             var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
@@ -129,19 +161,6 @@ namespace Rdd.Domain.Models
         /// </summary>
         protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
 
-        private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
-        {
-            await OnBeforeUpdateEntity(entity, candidate);
-
-            TEntity oldEntity = entity.Clone();
-
-            entity = Patcher.Patch(entity, candidate.JsonValue);
-
-            await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
-
-            await ValidateEntityAsync(entity, oldEntity);
-
-            return entity;
-        }
+      
     }
 }

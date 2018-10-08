@@ -1,4 +1,5 @@
-﻿using Rdd.Application;
+﻿using System;
+using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Rights;
 using System.Collections.Generic;
@@ -24,6 +25,11 @@ namespace Rdd.Infra.Storage
         public virtual void Remove(TEntity entity)
         {
             StorageService.Remove(entity);
+        }
+
+        public virtual bool Update<T, TKey>(TKey id, TEntity entity) where T : class, TEntity, IEntityBase<T, TKey> where TKey : IEquatable<TKey>
+        {
+            return StorageService.Update(id, entity as T);
         }
     }
 }

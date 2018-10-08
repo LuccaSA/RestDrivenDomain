@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Rdd.Domain;
 
 namespace Rdd.Infra.Storage
 {
@@ -120,6 +121,19 @@ namespace Rdd.Infra.Storage
         public void Dispose()
         {
             DbContext.Dispose();
+        }
+
+        public virtual bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TKey : IEquatable<TKey>
+        {
+            var entity = DbContext.Find<TEntity>(id);
+            if (entity == null)
+            {
+                return false;
+            }
+            DbContext.Entry(entity).CurrentValues.SetValues(toUpdate);
+            return true;
         }
     }
 }

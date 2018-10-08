@@ -120,6 +120,22 @@ namespace Rdd.Infra.Storage
                 await AfterSaveChangesActions.Dequeue();
             }
         }
+
+        public bool Update<TEntity, TKey>(TKey id, TEntity toUpdate)
+            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TKey : IEquatable<TKey>
+        {
+            var objId = (object)id;
+            var existing = Set<TEntity>().FirstOrDefault(i => i.GetId().Equals(objId));
+            if (existing == null)
+            {
+                return false;
+            }
+            var idx = Cache[typeof(TEntity)].IndexOf(existing);
+            Cache[typeof(TEntity)][idx] = existing;
+            return true;
+        }
+
         public void Dispose()
         {
             //Nothing to dispose here
