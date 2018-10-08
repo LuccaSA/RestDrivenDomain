@@ -27,7 +27,7 @@ namespace RDD.Infra.Storage
         public virtual Task<int> CountAsync() => CountAsync(new Query<TEntity>());
         public virtual Task<int> CountAsync(Query<TEntity> query)
         {
-            var entities = Set(query);
+            var entities = Set();
 
             if (query.Options.CheckRights)
             {
@@ -45,7 +45,7 @@ namespace RDD.Infra.Storage
 
         public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
-            var entities = Set(query);
+            var entities = Set();
 
             if (query.Options.CheckRights)
             {
@@ -65,7 +65,7 @@ namespace RDD.Infra.Storage
             return Task.FromResult(entities);
         }
 
-        protected virtual IQueryable<TEntity> Set(Query<TEntity> query)
+        protected virtual IQueryable<TEntity> Set()
         {
             return StorageService.Set<TEntity>();
         }
