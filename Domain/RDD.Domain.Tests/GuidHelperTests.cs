@@ -1,8 +1,4 @@
 ﻿using Rdd.Domain.Helpers;
-using Rdd.Domain.Models.Querying;
-using Rdd.Domain.Tests.Models;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Rdd.Domain.Tests

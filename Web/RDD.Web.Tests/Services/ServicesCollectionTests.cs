@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
@@ -10,7 +9,6 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Web.Helpers;
-using Rdd.Web.Serialization;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Tests.ServerMock;
 using System;

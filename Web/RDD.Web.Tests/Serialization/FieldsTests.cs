@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;

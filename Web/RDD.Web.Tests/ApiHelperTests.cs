@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Moq;
+﻿using Moq;
 using Rdd.Web.Helpers;
 using Rdd.Web.Tests.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Rdd.Web.Tests

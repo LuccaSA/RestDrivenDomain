@@ -1,6 +1,4 @@
-﻿using Rdd.Domain.Exceptions;
-using Rdd.Domain.Helpers;
-using Rdd.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;

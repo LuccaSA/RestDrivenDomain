@@ -1,9 +1,7 @@
-﻿using Moq;
-using Rdd.Application.Controllers;
+﻿using Rdd.Application.Controllers;
 using Rdd.Domain.Models;
 using Rdd.Infra.Storage;
 using Rdd.Web.Helpers;
-using Rdd.Web.Serialization;
 using Rdd.Web.Tests.Models;
 using System.Linq;
 using System.Threading.Tasks;

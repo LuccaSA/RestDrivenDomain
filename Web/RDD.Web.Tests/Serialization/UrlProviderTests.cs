@@ -1,8 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
-using Rdd.Domain;
-using Rdd.Domain.Helpers;
-using Rdd.Web.Serialization;
 using Rdd.Web.Serialization.UrlProviders;
 using Rdd.Web.Tests.Models;
 using Xunit;

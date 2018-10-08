@@ -3,7 +3,6 @@ using Rdd.Application;
 using Rdd.Domain.Helpers;
 using Rdd.Web.Controllers;
 using Rdd.Web.Helpers;
-using Rdd.Web.Serialization;
 using System.Threading.Tasks;
 
 namespace Rdd.Web.Tests.ServerMock

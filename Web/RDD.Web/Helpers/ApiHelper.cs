@@ -2,7 +2,6 @@
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Json;
-using Rdd.Domain.Models.Querying;
 using Rdd.Web.Models;
 using Rdd.Web.Querying;
 using System;

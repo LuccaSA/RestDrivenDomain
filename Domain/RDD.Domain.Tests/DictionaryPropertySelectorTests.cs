@@ -1,7 +1,5 @@
-﻿using Rdd.Domain.Helpers;
-using Rdd.Domain.Helpers.Expressions;
+﻿using Rdd.Domain.Helpers.Expressions;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Rdd.Domain.Tests

@@ -1,5 +1,4 @@
-﻿using Rdd.Domain.Helpers;
-using Rdd.Domain.Helpers.Expressions.Equality;
+﻿using Rdd.Domain.Helpers.Expressions.Equality;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

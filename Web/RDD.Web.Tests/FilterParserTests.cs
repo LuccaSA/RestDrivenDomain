@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json.Serialization;
-using Rdd.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 using Rdd.Web.Helpers;
 using Rdd.Web.Tests.Models;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 

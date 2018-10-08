@@ -1,9 +1,6 @@
-﻿using Rdd.Application;
-using Rdd.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests.Models;
-using Rdd.Domain.Tests.Templates;
-using System;
 using Xunit;
 
 namespace Rdd.Domain.Tests
