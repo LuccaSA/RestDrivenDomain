@@ -17,10 +17,10 @@ namespace RDD.Domain.Tests
         }
 
         [Theory]
-        [InlineData("aabbccdd-eeff", "Incomplete Guid with dashes")]
-        [InlineData("aabbccdd-eeff-1111-2222-333333333333", "Full Guid")]
-        [InlineData("aabbccddeeff", "Incomplete Guid without dash")]
-        public void InterpreteStringAsGuid_WHEN_WellFormedStringGuid(string input, string label)
+        [InlineData("aabbccdd-eeff")]
+        [InlineData("aabbccdd-eeff-1111-2222-333333333333")]
+        [InlineData("aabbccddeeff")]
+        public void InterpreteStringAsGuid_WHEN_WellFormedStringGuid(string input)
         {
             _helper.Complete(input);
         }
