@@ -28,7 +28,7 @@ namespace RDD.Domain.Tests.Models.Querying
 
             var headers = new HeadersParser().Parse(requestHeaders);
 
-            Assert.Equal(false, headers.IfUnmodifiedSince.HasValue);
+            Assert.False(headers.IfUnmodifiedSince.HasValue);
         }
 
         [Fact]
