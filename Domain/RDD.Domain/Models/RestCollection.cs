@@ -33,7 +33,7 @@ namespace Rdd.Domain.Models
 
             ForgeEntity(entity);
 
-            ValidateEntity(entity, null);
+            await ValidateEntityAsync(entity, null);
 
             Repository.Add(entity);
 
@@ -52,12 +52,13 @@ namespace Rdd.Domain.Models
 
                 ForgeEntity(entity);
 
-                ValidateEntity(entity, null);
+                await ValidateEntityAsync(entity, null);
 
                 result.Add(entity);
             }
 
             Repository.AddRange(result);
+
             return result;
         }
 
@@ -117,7 +118,7 @@ namespace Rdd.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
+        protected virtual Task ValidateEntityAsync(TEntity entity, TEntity oldEntity) => Task.CompletedTask;
 
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
@@ -138,7 +139,7 @@ namespace Rdd.Domain.Models
 
             await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 
-            ValidateEntity(entity, oldEntity);
+            await ValidateEntityAsync(entity, oldEntity);
 
             return entity;
         }
