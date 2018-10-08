@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RDD.Web.Helpers;
+using Rdd.Web.Helpers;
 
-namespace RDD.Web.Tests.ServerMock
+namespace Rdd.Web.Tests.ServerMock
 {
     public class Startup
     {
@@ -24,7 +24,7 @@ namespace RDD.Web.Tests.ServerMock
         {
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
 
-            services.AddRDD<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
+            services.AddRdd<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
 
             services.AddScoped<ExchangeRateController>();
 
@@ -54,7 +54,7 @@ namespace RDD.Web.Tests.ServerMock
                 dbContext.SaveChanges();
             }
 
-            app.UseRDD();
+            app.UseRdd();
 
             app.UseMvc(routes =>
             {

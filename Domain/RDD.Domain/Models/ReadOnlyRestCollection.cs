@@ -1,12 +1,10 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Domain.Models
+namespace Rdd.Domain.Models
 {
     public class ReadOnlyRestCollection<TEntity, TKey> : IReadOnlyRestCollection<TEntity, TKey>
         where TEntity : class, IEntityBase<TKey>

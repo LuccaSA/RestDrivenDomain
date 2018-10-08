@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RDD.Domain.Models
+namespace Rdd.Domain.Models
 {
     public class Selection<TEntity> : ISelection<TEntity>
         where TEntity : class

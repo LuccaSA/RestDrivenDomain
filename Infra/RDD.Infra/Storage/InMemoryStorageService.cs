@@ -1,12 +1,12 @@
-﻿using RDD.Application;
-using RDD.Domain;
+﻿using Rdd.Application;
+using Rdd.Domain;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Infra.Storage
+namespace Rdd.Infra.Storage
 {
     public class InMemoryStorageService : IStorageService
     {

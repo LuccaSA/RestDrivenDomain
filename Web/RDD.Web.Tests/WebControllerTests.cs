@@ -1,19 +1,16 @@
-﻿using Moq;
-using RDD.Application.Controllers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Infra.Helpers;
-using RDD.Infra.Storage;
-using RDD.Web.Helpers;
-using RDD.Web.Querying;
-using RDD.Web.Serialization;
-using RDD.Web.Tests.Models;
+﻿using Rdd.Application.Controllers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Helpers;
+using Rdd.Infra.Storage;
+using Rdd.Web.Querying;
+using Rdd.Web.Tests.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class WebControllerTests
     {

@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 using System.Collections.Generic;
 using System.Net.Mail;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class SerializationServiceTests
     {

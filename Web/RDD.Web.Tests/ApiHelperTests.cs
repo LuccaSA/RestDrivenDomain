@@ -1,9 +1,9 @@
-using RDD.Domain.Json;
-using RDD.Web.Querying;
-using RDD.Web.Tests.Models;
+using Rdd.Domain.Json;
+using Rdd.Web.Querying;
+using Rdd.Web.Tests.Models;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class ApiHelperTests
     {

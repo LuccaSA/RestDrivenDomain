@@ -1,7 +1,7 @@
-﻿using RDD.Domain.Json;
+﻿using Rdd.Domain.Json;
 using System;
 
-namespace RDD.Domain.Patchers
+namespace Rdd.Domain.Patchers
 {
     public interface IPatcherProvider
     {

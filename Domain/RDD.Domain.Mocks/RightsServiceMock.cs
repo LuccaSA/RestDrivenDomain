@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
+﻿using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Rights;
 using System;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Mocks
+namespace Rdd.Domain.Mocks
 {
     public class RightsServiceMock<T> : IRightExpressionsHelper<T>
         where T : class

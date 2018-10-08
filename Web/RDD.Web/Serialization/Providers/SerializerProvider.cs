@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NExtends.Primitives.Types;
-using RDD.Domain;
-using RDD.Web.Models;
-using RDD.Web.Serialization.Serializers;
+using Rdd.Domain;
+using Rdd.Web.Models;
+using Rdd.Web.Serialization.Serializers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace RDD.Web.Serialization.Providers
+namespace Rdd.Web.Serialization.Providers
 {
     public class SerializerProvider : ISerializerProvider
     {

@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Models;
-using RDD.Domain.Patchers;
+﻿using Rdd.Domain.Models;
+using Rdd.Domain.Patchers;
 using System;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public class UsersCollection : RestCollection<User, Guid>
     {

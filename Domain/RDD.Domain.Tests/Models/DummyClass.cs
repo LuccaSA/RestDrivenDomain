@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
 	public class DummyClass
 	{

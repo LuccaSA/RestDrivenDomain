@@ -1,10 +1,10 @@
-﻿using RDD.Domain;
-using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain;
+using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RDD.Application
+namespace Rdd.Application
 {
     public interface IAppController<TEntity, TKey> : IReadOnlyAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>

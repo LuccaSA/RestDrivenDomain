@@ -1,6 +1,6 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class WebPage : Page
     {

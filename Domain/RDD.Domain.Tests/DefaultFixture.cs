@@ -1,13 +1,13 @@
-﻿using RDD.Application;
-using RDD.Domain.Mocks;
-using RDD.Domain.Models;
-using RDD.Domain.Patchers;
-using RDD.Domain.Rights;
-using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
+﻿using Rdd.Application;
+using Rdd.Domain.Mocks;
+using Rdd.Domain.Models;
+using Rdd.Domain.Patchers;
+using Rdd.Domain.Rights;
+using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
 using System;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class DefaultFixture : IDisposable
     {

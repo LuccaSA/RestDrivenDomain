@@ -1,11 +1,11 @@
-﻿using RDD.Domain.Exceptions;
+﻿using Rdd.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class ExpressionHelper
     {

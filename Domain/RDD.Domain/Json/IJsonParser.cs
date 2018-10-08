@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace RDD.Domain.Json
+namespace Rdd.Domain.Json
 {
     public interface IJsonParser
     {

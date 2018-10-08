@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
-using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Json;
+using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Json;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class Candidate<TEntity, TKey> : ICandidate<TEntity, TKey>
         where TEntity : IPrimaryKey<TKey>

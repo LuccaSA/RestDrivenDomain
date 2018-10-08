@@ -1,11 +1,11 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Tests.Models;
+﻿using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests.Serialization
+namespace Rdd.Web.Tests.Serialization
 {
     public partial class FieldsTests
     {

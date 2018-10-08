@@ -2,7 +2,7 @@
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace RDD.Domain.Exceptions
+namespace Rdd.Domain.Exceptions
 {
     /// <summary>
     /// Should be used for functional exceptions.

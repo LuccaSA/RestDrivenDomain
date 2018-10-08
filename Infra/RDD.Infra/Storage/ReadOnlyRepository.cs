@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RDD.Application;
-using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
+using Rdd.Application;
+using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RDD.Infra.Storage
+namespace Rdd.Infra.Storage
 {
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class

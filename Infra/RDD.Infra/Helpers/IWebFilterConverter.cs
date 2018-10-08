@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using RDD.Infra.Web.Models;
+using Rdd.Infra.Web.Models;
 
-namespace RDD.Infra.Helpers
+namespace Rdd.Infra.Helpers
 {
     public interface IWebFilterConverter<TEntity>
     {

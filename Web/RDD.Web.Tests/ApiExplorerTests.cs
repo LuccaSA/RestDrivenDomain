@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
-using RDD.Web.Tests.ServerMock;
+using Rdd.Web.Tests.ServerMock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class ApiExplorerTests
     {

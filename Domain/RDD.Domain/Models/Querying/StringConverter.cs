@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Mail;
 
-namespace RDD.Domain.Models.Querying
+namespace Rdd.Domain.Models.Querying
 {
     public class StringConverter : IStringConverter
     {

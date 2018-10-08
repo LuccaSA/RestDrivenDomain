@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions.Equality
+namespace Rdd.Domain.Helpers.Expressions.Equality
 {
     public class ExpressionEqualityComparer : IEqualityComparer<Expression>
     {

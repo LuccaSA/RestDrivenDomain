@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
-using RDD.Domain;
-using RDD.Domain.Json;
-using RDD.Domain.Models.Querying;
+using Rdd.Domain;
+using Rdd.Domain.Json;
+using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class CandidateParser : ICandidateParser
     {

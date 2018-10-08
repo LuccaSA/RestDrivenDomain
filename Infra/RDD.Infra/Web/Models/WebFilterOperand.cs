@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace RDD.Infra.Web.Models
+namespace Rdd.Infra.Web.Models
 {
     /// <summary>
     /// Opérateurs de comparaison d'expressions

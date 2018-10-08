@@ -1,14 +1,14 @@
-﻿using RDD.Domain.Json;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Tests.Models;
-using RDD.Web.Querying;
+﻿using Rdd.Domain.Json;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Tests.Models;
+using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class AppControllerTests : IClassFixture<DefaultFixture>
     {

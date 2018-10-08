@@ -1,13 +1,9 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Helpers.Expressions.Utils;
-using System;
+﻿using Rdd.Domain.Helpers.Expressions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using Xunit;
 
-namespace RDD.Domain.Tests.Members
+namespace Rdd.Domain.Tests.Members
 {
     public class ExpressionTreeTests
     {

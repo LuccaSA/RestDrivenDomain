@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Primitives;
-using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models.Querying;
-using RDD.Infra.Helpers;
-using RDD.Web.Querying;
-using RDD.Web.Tests.Models;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Helpers;
+using Rdd.Web.Querying;
+using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class OptionsParserTests
     {

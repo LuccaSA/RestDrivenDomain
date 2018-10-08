@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDD.Domain.Helpers
+namespace Rdd.Domain.Helpers
 {
     [Flags]
     public enum HttpVerbs

@@ -1,11 +1,11 @@
-using RDD.Domain.Tests;
-using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
-using RDD.Web.Querying;
+using Rdd.Domain.Tests;
+using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
+using Rdd.Web.Querying;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class CollectionPropertiesTests : IClassFixture<DefaultFixture>
     {

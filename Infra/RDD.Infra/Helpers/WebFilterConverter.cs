@@ -1,15 +1,15 @@
 ﻿using NExtends.Expressions;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Infra.Exceptions;
-using RDD.Infra.Web.Models;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models;
+using Rdd.Infra.Exceptions;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Infra.Helpers
+namespace Rdd.Infra.Helpers
 {
     public class WebFilterConverter<TEntity> : IWebFilterConverter<TEntity>
     {

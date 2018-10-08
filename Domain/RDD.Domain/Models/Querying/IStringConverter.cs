@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Models.Querying
+namespace Rdd.Domain.Models.Querying
 {
     public interface IStringConverter
     {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class EnableRequestRewindMiddleware
     {

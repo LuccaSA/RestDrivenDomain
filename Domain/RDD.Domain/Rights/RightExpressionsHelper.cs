@@ -1,12 +1,12 @@
-﻿using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain.Exceptions;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Rights
+namespace Rdd.Domain.Rights
 {
     public class RightExpressionsHelper<T> : IRightExpressionsHelper<T>
          where T : class

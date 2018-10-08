@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using RDD.Domain.Helpers;
-using RDD.Domain.Models.Querying;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Models.Querying;
 using System.Collections.Generic;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public interface IQueryParser<TEntity> where TEntity : class
     {

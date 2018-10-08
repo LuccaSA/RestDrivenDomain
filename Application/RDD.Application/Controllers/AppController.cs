@@ -1,10 +1,10 @@
-﻿using RDD.Domain;
-using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain;
+using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RDD.Application.Controllers
+namespace Rdd.Application.Controllers
 {
     public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey>
         where TEntity : class, IEntityBase<TEntity, TKey>
