@@ -1,5 +1,6 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: ValidateEntity on RestCollection is now ValidateEntityAsync
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
  - **Removed**: unused metadata.paging in returned json
  - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.

@@ -25,7 +25,7 @@ namespace RDD.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
@@ -33,14 +33,14 @@ namespace RDD.Domain.Models
 
             ForgeEntity(entity);
 
-            ValidateEntity(entity, null);
+            await ValidateEntityAsync(entity, null);
 
             Repository.Add(entity);
 
-            return Task.FromResult(entity);
+            return entity;
         }
 
-        public virtual Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
         {
             var result = new List<TEntity>();
 
@@ -52,14 +52,14 @@ namespace RDD.Domain.Models
 
                 ForgeEntity(entity);
 
-                ValidateEntity(entity, null);
+                await ValidateEntityAsync(entity, null);
 
                 result.Add(entity);
             }
 
             Repository.AddRange(result);
 
-            return Task.FromResult((IEnumerable<TEntity>)result);
+            return result;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
@@ -118,7 +118,7 @@ namespace RDD.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual void ValidateEntity(TEntity entity, TEntity oldEntity) { }
+        protected virtual Task ValidateEntityAsync(TEntity entity, TEntity oldEntity) => Task.CompletedTask;
 
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
@@ -139,7 +139,7 @@ namespace RDD.Domain.Models
 
             await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 
-            ValidateEntity(entity, oldEntity);
+            await ValidateEntityAsync(entity, oldEntity);
 
             return entity;
         }
