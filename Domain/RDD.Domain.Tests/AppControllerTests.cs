@@ -13,10 +13,12 @@ namespace RDD.Domain.Tests
     public class AppControllerTests : IClassFixture<DefaultFixture>
     {
         private DefaultFixture _fixture;
+        private readonly ICandidateParser _parser;
 
         public AppControllerTests(DefaultFixture fixture)
         {
             _fixture = fixture;
+            _parser = new CandidateParser(new JsonParser());
         }
 
         [Fact]
@@ -27,7 +29,7 @@ namespace RDD.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
             var id = Guid.NewGuid();
-            var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
+            var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
             var user = await controller.CreateAsync(candidate, query);
 
@@ -43,8 +45,8 @@ namespace RDD.Domain.Tests
             query.Options.CheckRights = false;
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            var candidate1 = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id1}"" }}");
-            var candidate2 = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id2}"" }}");
+            var candidate1 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id1}"" }}");
+            var candidate2 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id2}"" }}");
 
             var result = (await controller.CreateAsync(new List<ICandidate<User, Guid>> { candidate1, candidate2 }, query)).ToList();
 
@@ -60,12 +62,11 @@ namespace RDD.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
             var id = Guid.NewGuid();
-            var parser = new CandidateParser(new JsonParser());
-            var candidate = parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
+            var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
             await controller.CreateAsync(candidate, query);
 
-            candidate = parser.Parse<User, Guid>(@"{ ""name"": ""newName"" }");
+            candidate = _parser.Parse<User, Guid>(@"{ ""name"": ""newName"" }");
 
             var user = await controller.UpdateByIdAsync(id, candidate, query);
 

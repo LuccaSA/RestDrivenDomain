@@ -17,12 +17,12 @@
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable, for consistency. Has potential impact on the front end.
  - **Removed**: Unused metadata.paging in returned json
  - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.
- - **Modification**: ``ISerializer`` nows feeds a `JsonTextWriter` instead of returning an object. This allows fot greater pefroemances.
+ - **Modification**: ``ISerializer`` nows feeds a `JsonTextWriter` instead of returning an object. This allows fot greater peformances.
  - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis if you opt-in.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**
  - **Removed**: `CulturedDescriptionAttribute`, `CultureContext`, `IWebServicesCollection`, `WebService`, `Application`, `Enum`, `IIncludable`, `IDownloadableEntity`
- - **Removed**: `IJsonElement.Map`, `IJsonElement.RemovePath`, most `Period` members. Thos objects ar now readonly.
- - **Modification**: `BusinessException` and `TechnicalException` ar now `ApplicationException` and correctly implement `ISerializable` interface
+ - **Removed**: `IJsonElement.Map`, `IJsonElement.RemovePath`, most `Period` members. Those objects are now readonly.
+ - **Modification**: `BusinessException` and `TechnicalException` are now `ApplicationException` and correctly implement `ISerializable` interface
  - **Modification**: `RDD.Domain.ICombinationsHolder` -> `RDD.Domain.Rights.ICombinationsHolder`
  - **Removed**: `OutOfRangeException`. Prefer `BadRequestException` with an innerException of type `ArgumentOutOfRange`.
  - **Modification**: `SerializerProvider._reflectionProvider` ->`SerializerProvider.ReflectionProvider`

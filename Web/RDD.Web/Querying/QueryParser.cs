@@ -74,7 +74,7 @@ namespace RDD.Web.Querying
         public virtual Query<TEntity> Parse(HttpVerbs verb, IEnumerable<KeyValuePair<string, StringValues>> parameters, bool isCollectionCall)
         {
             var filters = new List<WebFilter<TEntity>>();
-            var query = new Query<TEntity>
+            var query = new WebQuery<TEntity>
             {
                 Fields = null,
                 Verb = verb
