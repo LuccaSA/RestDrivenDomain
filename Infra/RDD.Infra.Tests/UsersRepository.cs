@@ -15,7 +15,9 @@ namespace Rdd.Infra.Tests
         {
             if (!query.OrderBys.Any())
             {
-                return entities.OrderBy(u => u.Id.ToString());
+                var orderById = OrderBy<User>.Ascending(u => u.Id);
+
+                return orderById.ApplyOrderBy(entities);
             }
 
             return base.ApplyOrderBys(entities, query);

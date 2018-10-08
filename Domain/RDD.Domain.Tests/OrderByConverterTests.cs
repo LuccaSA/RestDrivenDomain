@@ -75,5 +75,16 @@ namespace Rdd.Domain.Tests
             Assert.Equal(id28, results.ElementAt(3).Id);
             Assert.Equal(id26, results.ElementAt(4).Id);
         }
+
+        [Fact]
+        public void OrderByToStringShouldWork()
+        {
+            var orderby = OrderBy<User>.Ascending(u => u.Id.ToString());
+            var users = User.GetManyRandomUsers(10).AsQueryable();
+
+            var orderedIds = users.OrderBy(u => u.Id.ToString()).Select(i => i.Id).ToList();            
+            var result = orderby.ApplyOrderBy(users);
+            Assert.Equal(orderedIds, result.Select(i => i.Id).ToList());
+        }
     }
 }

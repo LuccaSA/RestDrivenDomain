@@ -35,7 +35,7 @@ namespace Rdd.Web.Querying
 
                     if (orderDirection == "asc" || orderDirection == "desc")
                     {
-                        queue.Add(new OrderBy<TEntity>(orderProperty, orderDirection == "desc" ? SortDirection.Descending : SortDirection.Ascending));
+                        queue.Add(new OrderBy<TEntity>(orderProperty.ToLambdaExpression(), orderDirection == "desc" ? SortDirection.Descending : SortDirection.Ascending));
                     }
                     else
                     {
