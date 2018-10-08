@@ -29,7 +29,7 @@ namespace Rdd.Domain.Models
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            entity = Patcher.Patch(entity, candidate.JsonValue);
 
             ForgeEntity(entity);
 
@@ -48,7 +48,7 @@ namespace Rdd.Domain.Models
             {
                 TEntity entity = Instanciator.InstanciateNew(candidate);
 
-                Patcher.Patch(entity, candidate.JsonValue);
+                entity = Patcher.Patch(entity, candidate.JsonValue);
 
                 ForgeEntity(entity);
 
@@ -135,7 +135,7 @@ namespace Rdd.Domain.Models
 
             TEntity oldEntity = entity.Clone();
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            entity = Patcher.Patch(entity, candidate.JsonValue);
 
             await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
 
