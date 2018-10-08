@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Serialization.Providers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Serialization.Providers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Web.Serialization.Serializers
+namespace Rdd.Web.Serialization.Serializers
 {
     public class ArraySerializer : ISerializer
     {

@@ -1,6 +1,6 @@
-﻿using RDD.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 
-namespace RDD.Domain.Mocks
+namespace Rdd.Domain.Mocks
 {
     public class PrincipalMock : IPrincipal
     {

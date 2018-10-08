@@ -1,11 +1,11 @@
-﻿using RDD.Domain.Models.Querying;
-using RDD.Domain.Tests;
-using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
+﻿using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Tests;
+using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Infra.Tests
+namespace Rdd.Infra.Tests
 {
     public class CollectionTests : DatabaseTest, IClassFixture<DefaultFixture>
     {

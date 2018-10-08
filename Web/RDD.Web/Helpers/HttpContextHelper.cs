@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class HttpContextHelper : IHttpContextHelper
     {

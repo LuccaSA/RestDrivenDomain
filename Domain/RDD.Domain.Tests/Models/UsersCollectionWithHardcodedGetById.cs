@@ -1,10 +1,10 @@
-﻿using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Patchers;
+﻿using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Patchers;
 using System;
 using System.Threading.Tasks;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public class UsersCollectionWithHardcodedGetById : UsersCollection
     {

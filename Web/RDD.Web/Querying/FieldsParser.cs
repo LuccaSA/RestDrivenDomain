@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Helpers.Expressions;
+﻿using Rdd.Domain.Helpers.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class FieldsParser
     {

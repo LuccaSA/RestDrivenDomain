@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 
-namespace RDD.Web
+namespace Rdd.Web
 {
     public interface IHttpContextHelper
     {

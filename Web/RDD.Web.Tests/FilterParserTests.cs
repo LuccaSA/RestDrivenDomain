@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json.Serialization;
-using RDD.Domain.Helpers;
-using RDD.Web.Helpers;
-using RDD.Web.Tests.Models;
-using System.Linq;
+﻿using Rdd.Domain.Helpers;
+using Rdd.Web.Helpers;
+using Rdd.Web.Tests.Models;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class FilterParserTests
     {

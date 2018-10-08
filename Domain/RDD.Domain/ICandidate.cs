@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Json;
+﻿using Rdd.Domain.Json;
 using System;
 using System.Linq.Expressions;
 
-namespace RDD.Domain
+namespace Rdd.Domain
 {
     public interface ICandidate<TEntity>
     {

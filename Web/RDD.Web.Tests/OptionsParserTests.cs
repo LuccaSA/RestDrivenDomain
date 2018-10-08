@@ -1,9 +1,9 @@
-﻿using RDD.Web.Tests.Models;
+﻿using Rdd.Web.Tests.Models;
 using Xunit;
-using RDD.Web.Querying;
+using Rdd.Web.Querying;
 using System.Collections.Generic;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class OptionsParserTests
     {

@@ -1,9 +1,9 @@
-﻿using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Tests.Models;
+﻿using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Tests.Models;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class PropertySelectorTransferorTests
     {

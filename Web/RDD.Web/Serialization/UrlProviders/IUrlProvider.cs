@@ -1,7 +1,7 @@
-﻿using RDD.Domain;
+﻿using Rdd.Domain;
 using System;
 
-namespace RDD.Web.Serialization.UrlProviders
+namespace Rdd.Web.Serialization.UrlProviders
 {
     public interface IUrlProvider
     {

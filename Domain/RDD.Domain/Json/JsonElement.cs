@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Json
+namespace Rdd.Domain.Json
 {
     public abstract class JsonElement : IJsonElement
     {

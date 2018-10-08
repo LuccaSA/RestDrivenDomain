@@ -1,13 +1,12 @@
-﻿using RDD.Domain.Helpers.Expressions.Equality;
-using RDD.Domain.Helpers.Expressions.Utils;
+﻿using Rdd.Domain.Helpers.Expressions.Equality;
+using Rdd.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Xunit;
 
-namespace RDD.Domain.Tests.Members
+namespace Rdd.Domain.Tests.Members
 {
     public class ExpressionChainerTests
     {

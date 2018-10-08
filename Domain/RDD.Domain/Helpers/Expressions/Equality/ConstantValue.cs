@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace RDD.Domain.Helpers.Expressions.Equality
+namespace Rdd.Domain.Helpers.Expressions.Equality
 {
     internal class ConstantValue
     {

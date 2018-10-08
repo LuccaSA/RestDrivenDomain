@@ -1,14 +1,13 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Infra.Helpers;
-using RDD.Web.Tests.Models;
+﻿using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models;
+using Rdd.Infra.Helpers;
+using Rdd.Web.Tests.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class QueryBuilderTests
     {

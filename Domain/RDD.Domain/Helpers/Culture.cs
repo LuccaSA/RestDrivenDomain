@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace RDD.Domain.Helpers
+namespace Rdd.Domain.Helpers
 {
     public class Culture
     {

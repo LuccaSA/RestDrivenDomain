@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RDD.Domain
+namespace Rdd.Domain
 {
     public interface IReadOnlyRepository<TEntity>
         where TEntity : class

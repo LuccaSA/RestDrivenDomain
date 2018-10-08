@@ -1,4 +1,4 @@
-﻿using RDD.Domain.Exceptions;
+﻿using Rdd.Domain.Exceptions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Net;
 using System.Runtime.Serialization;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     public class ExceptionTests
     {

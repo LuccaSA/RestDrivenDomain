@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RDD.Application;
-using RDD.Domain;
-using RDD.Infra.Exceptions;
+using Rdd.Application;
+using Rdd.Infra.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Rdd.Domain;
 
-namespace RDD.Infra.Storage
+namespace Rdd.Infra.Storage
 {
     public class EFStorageService : IStorageService
     {

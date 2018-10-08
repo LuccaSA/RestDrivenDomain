@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Models;
-using RDD.Domain.Rights;
+﻿using Rdd.Domain.Models;
+using Rdd.Domain.Rights;
 using System.Collections.Generic;
 
-namespace RDD.Domain.Mocks
+namespace Rdd.Domain.Mocks
 {
     public class CombinationsHolderMock : ICombinationsHolder
     {

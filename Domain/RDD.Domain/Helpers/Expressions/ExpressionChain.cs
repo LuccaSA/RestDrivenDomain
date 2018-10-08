@@ -1,10 +1,10 @@
-﻿using RDD.Domain.Helpers.Expressions.Equality;
-using RDD.Domain.Helpers.Expressions.Utils;
+﻿using Rdd.Domain.Helpers.Expressions.Equality;
+using Rdd.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public class ExpressionChain : IExpressionChain
     {

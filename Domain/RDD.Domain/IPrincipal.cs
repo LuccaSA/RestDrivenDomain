@@ -1,6 +1,6 @@
-﻿using RDD.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 
-namespace RDD.Domain
+namespace Rdd.Domain
 {
     public enum PrincipalType
     {

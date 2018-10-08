@@ -1,10 +1,10 @@
-﻿using RDD.Application;
-using RDD.Domain;
-using RDD.Domain.Rights;
-using System;
+﻿using System;
+using Rdd.Application;
+using Rdd.Domain;
+using Rdd.Domain.Rights;
 using System.Collections.Generic;
 
-namespace RDD.Infra.Storage
+namespace Rdd.Infra.Storage
 {
     public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
         where TEntity : class

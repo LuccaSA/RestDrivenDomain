@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions.Utils
+namespace Rdd.Domain.Helpers.Expressions.Utils
 {
     /// <summary>
     /// This visitor lets you extract an <see cref="IExpressionChain"/> from a <see cref="LambdaExpression"/>

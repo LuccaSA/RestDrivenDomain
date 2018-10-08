@@ -1,8 +1,8 @@
-using RDD.Application;
-using RDD.Application.Controllers;
+using Rdd.Application;
+using Rdd.Application.Controllers;
 using System;
 
-namespace RDD.Domain.Tests.Models
+namespace Rdd.Domain.Tests.Models
 {
     public class UsersAppController : AppController<UsersCollection, User, Guid>
     {
