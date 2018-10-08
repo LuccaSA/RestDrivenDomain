@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain", "Domain\RDD.Domain\Rdd.Domain.csproj", "{64D838DB-55D3-4F2E-8EDB-CF1866B3939B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain", "Domain\Rdd.Domain\Rdd.Domain.csproj", "{64D838DB-55D3-4F2E-8EDB-CF1866B3939B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra", "Infra\RDD.Infra\Rdd.Infra.csproj", "{ED772E81-78BC-4126-8A4F-CB6EAFA72A4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra", "Infra\Rdd.Infra\Rdd.Infra.csproj", "{ED772E81-78BC-4126-8A4F-CB6EAFA72A4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web", "Web\RDD.Web\Rdd.Web.csproj", "{35EB26DD-BF14-4B20-A644-9E566F51EA76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web", "Web\Rdd.Web\Rdd.Web.csproj", "{35EB26DD-BF14-4B20-A644-9E566F51EA76}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Mocks", "Domain\RDD.Domain.Mocks\Rdd.Domain.Mocks.csproj", "{BD795F44-973F-4B40-863F-A75FC90A7FAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Mocks", "Domain\Rdd.Domain.Mocks\Rdd.Domain.Mocks.csproj", "{BD795F44-973F-4B40-863F-A75FC90A7FAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Tests", "Domain\RDD.Domain.Tests\Rdd.Domain.Tests.csproj", "{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Tests", "Domain\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj", "{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra.Tests", "Infra\RDD.Infra.Tests\Rdd.Infra.Tests.csproj", "{F57353AE-696A-4941-B7B6-780A32445898}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra.Tests", "Infra\Rdd.Infra.Tests\Rdd.Infra.Tests.csproj", "{F57353AE-696A-4941-B7B6-780A32445898}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web.Tests", "Web\RDD.Web.Tests\Rdd.Web.Tests.csproj", "{D4493283-1C57-48C9-BA9D-4C7862A40424}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web.Tests", "Web\Rdd.Web.Tests\Rdd.Web.Tests.csproj", "{D4493283-1C57-48C9-BA9D-4C7862A40424}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Application", "Application\RDD.Application\Rdd.Application.csproj", "{C07BD97E-A1DC-47FB-9C00-23B6B3CB70B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Application", "Application\Rdd.Application\Rdd.Application.csproj", "{C07BD97E-A1DC-47FB-9C00-23B6B3CB70B8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{505AAC10-0297-43ED-8097-22B0CB65030B}"
 	ProjectSection(SolutionItems) = preProject
