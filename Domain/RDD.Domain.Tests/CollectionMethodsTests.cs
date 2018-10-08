@@ -18,13 +18,13 @@ using Xunit;
 
 namespace Rdd.Domain.Tests
 {
-    public class CollectionMethodsTests : IClassFixture<DefaultFixture>
+    public class CollectionMethodsTests 
     {
-        private DefaultFixture _fixture;
+        private readonly DefaultFixture _fixture;
 
-        public CollectionMethodsTests(DefaultFixture fixture)
+        public CollectionMethodsTests()
         {
-            _fixture = fixture;
+            _fixture = new DefaultFixture();
         }
 
         [Fact]
