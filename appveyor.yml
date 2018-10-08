@@ -48,7 +48,7 @@ before_build:
     )
 
 build_script:
-- ps: msbuild "Rdd.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:DebugType=Full /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- ps: dotnet build Rdd.sln -c Debug -v minimal
 
 test_script:
 - OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Domain\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
@@ -58,7 +58,6 @@ test_script:
 - Codecov.1.0.5\tools\codecov -f coverage-opencover.xml
 
 after_test:
-- ps: msbuild "Rdd.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true
 - ps: dotnet pack Domain\Rdd.Domain\Rdd.Domain.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Infra\Rdd.Infra\Rdd.Infra.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - ps: dotnet pack Application\Rdd.Application\Rdd.Application.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
