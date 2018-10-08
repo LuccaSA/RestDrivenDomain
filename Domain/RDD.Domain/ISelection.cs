@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RDD.Domain
+namespace Rdd.Domain
 {
     public interface ISelection
     {

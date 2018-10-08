@@ -5,34 +5,34 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using RDD.Application;
-using RDD.Application.Controllers;
-using RDD.Domain;
-using RDD.Domain.Models;
-using RDD.Domain.Patchers;
-using RDD.Domain.Rights;
-using RDD.Infra;
-using RDD.Infra.Storage;
-using RDD.Web.Models;
-using RDD.Web.Serialization;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.Serializers;
-using RDD.Web.Serialization.UrlProviders;
+using Rdd.Application;
+using Rdd.Application.Controllers;
+using Rdd.Domain;
+using Rdd.Domain.Models;
+using Rdd.Domain.Patchers;
+using Rdd.Domain.Rights;
+using Rdd.Infra;
+using Rdd.Infra.Storage;
+using Rdd.Web.Models;
+using Rdd.Web.Serialization;
+using Rdd.Web.Serialization.Providers;
+using Rdd.Web.Serialization.Reflection;
+using Rdd.Web.Serialization.Serializers;
+using Rdd.Web.Serialization.UrlProviders;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
-    public static class RDDServiceCollectionExtensions
+    public static class RddServiceCollectionExtensions
     {
         /// <summary>
-        /// Register minimum RDD dependecies. Set up RDD services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
-        /// DbContext, IRightsService and IRDDSerialization are missing for this setup to be functional
+        /// Register minimum Rdd dependecies. Set up Rdd services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
+        /// DbContext, IRightsService and IRddSerialization are missing for this setup to be functional
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddRDDCore<TDbContext>(this IServiceCollection services)
+        public static IServiceCollection AddRddCore<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
             services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
@@ -83,7 +83,7 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDDRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
@@ -93,7 +93,7 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDDSerialization<TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
             where TPrincipal : class, IPrincipal
         {
             //singletons
@@ -124,22 +124,22 @@ namespace RDD.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRDD<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRdd<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
             where TDbContext : DbContext
             where TCombinationsHolder : class, ICombinationsHolder
             where TPrincipal : class, IPrincipal
         {
-            return services.AddRDDCore<TDbContext>()
-                .AddRDDRights<TCombinationsHolder, TPrincipal>()
-                .AddRDDSerialization<TPrincipal>();
+            return services.AddRddCore<TDbContext>()
+                .AddRddRights<TCombinationsHolder, TPrincipal>()
+                .AddRddSerialization<TPrincipal>();
         }
 
         /// <summary>
-        /// Register RDD middleware in the pipeline request
+        /// Register Rdd middleware in the pipeline request
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseRDD(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
         {
             return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }

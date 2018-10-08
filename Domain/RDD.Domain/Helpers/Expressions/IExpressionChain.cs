@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public interface IExpressionChain : IExpression
     {

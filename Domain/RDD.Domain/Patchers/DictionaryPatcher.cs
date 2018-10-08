@@ -1,11 +1,11 @@
 ﻿using NExtends.Primitives.Strings;
-using RDD.Domain.Json;
+using Rdd.Domain.Json;
 using System;
 using System.Collections;
 using System.Globalization;
 using System.Reflection;
 
-namespace RDD.Domain.Patchers
+namespace Rdd.Domain.Patchers
 {
     class DictionaryPatcher : IPatcher
 	{

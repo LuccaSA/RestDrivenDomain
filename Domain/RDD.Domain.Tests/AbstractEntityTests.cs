@@ -1,13 +1,13 @@
-﻿using RDD.Domain.Mocks;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Rights;
-using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
+﻿using Rdd.Domain.Mocks;
+using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Rights;
+using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Domain.Tests
+namespace Rdd.Domain.Tests
 {
     internal class AbstractClassCollection : ReadOnlyRestCollection<AbstractClass, int>
     {

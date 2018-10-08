@@ -1,16 +1,16 @@
-﻿using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Json;
-using RDD.Domain.Models.Querying;
-using RDD.Web.Models;
-using RDD.Web.Querying;
+﻿using Rdd.Domain;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Json;
+using Rdd.Domain.Models.Querying;
+using Rdd.Web.Models;
+using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class ApiHelper<TEntity, TKey>
         where TEntity : class, IEntityBase<TKey>

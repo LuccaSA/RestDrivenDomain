@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Primitives;
 using NExtends.Primitives.Generics;
-using RDD.Web.Querying;
+using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace RDD.Domain.Tests.Models.Querying
+namespace Rdd.Domain.Tests.Models.Querying
 {
     public class HeadersTests
     {

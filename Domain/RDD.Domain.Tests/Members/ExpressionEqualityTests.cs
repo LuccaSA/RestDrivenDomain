@@ -1,5 +1,5 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions.Equality;
+﻿using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions.Equality;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace RDD.Domain.Tests.Members
+namespace Rdd.Domain.Tests.Members
 {
     public class ExpressionEqualityTests
     {

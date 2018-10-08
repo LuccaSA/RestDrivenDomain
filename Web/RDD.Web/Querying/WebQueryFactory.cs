@@ -1,10 +1,10 @@
-﻿using RDD.Domain;
-using RDD.Infra.Web.Models;
+﻿using Rdd.Domain;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class WebQueryFactory<TEntity, TKey>
         where TEntity : class, IPrimaryKey<TKey>

@@ -1,14 +1,14 @@
-﻿using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Infra.Web.Models;
-using RDD.Web.Tests.Models;
+﻿using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Infra.Web.Models;
+using Rdd.Web.Tests.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class WebFiltersContainerTests
     {

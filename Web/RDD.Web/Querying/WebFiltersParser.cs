@@ -1,16 +1,16 @@
 ﻿using NExtends.Primitives.DateTimes;
 using NExtends.Primitives.Strings;
-using RDD.Domain;
-using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Infra.Web.Models;
+using Rdd.Domain;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class WebFiltersParser
     {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RDD.Domain.Tests.Models;
+using Rdd.Domain.Tests.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RDD.Infra.Tests
+namespace Rdd.Infra.Tests
 {
     public class DatabaseTest
     {

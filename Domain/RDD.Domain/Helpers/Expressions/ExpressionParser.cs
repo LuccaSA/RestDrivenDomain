@@ -1,4 +1,4 @@
-﻿using RDD.Domain.Helpers.Expressions.Utils;
+﻿using Rdd.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace RDD.Domain.Helpers.Expressions
+namespace Rdd.Domain.Helpers.Expressions
 {
     public class ExpressionParser
     {

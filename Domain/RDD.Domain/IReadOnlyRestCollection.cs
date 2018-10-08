@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RDD.Domain.Models.Querying;
+using Rdd.Domain.Models.Querying;
 
-namespace RDD.Domain
+namespace Rdd.Domain
 {
     public interface IReadOnlyRestCollection<TEntity, TKey> 
         where TEntity : class, IEntityBase<TKey>

@@ -1,11 +1,11 @@
-﻿using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Helpers;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models.Querying;
+﻿using Rdd.Domain;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models.Querying;
 using System.Collections.Generic;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public class OrderByParser<TEntity>
         where TEntity : class

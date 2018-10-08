@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace RDD.Web.Querying
+namespace Rdd.Web.Querying
 {
     public enum Reserved
     {

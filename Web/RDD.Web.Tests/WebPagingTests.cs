@@ -1,16 +1,16 @@
-﻿using RDD.Domain;
-using RDD.Domain.Exceptions;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Tests;
-using RDD.Domain.Tests.Models;
-using RDD.Infra.Storage;
-using RDD.Web.Querying;
+﻿using Rdd.Domain;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Tests;
+using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
+using Rdd.Web.Querying;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class WebPaginggTests : IClassFixture<DefaultFixture>
     {

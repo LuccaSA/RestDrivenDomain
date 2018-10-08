@@ -1,7 +1,7 @@
-﻿using RDD.Web.Serialization.UrlProviders;
+﻿using Rdd.Web.Serialization.UrlProviders;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class PluralizationServiceTests
     {

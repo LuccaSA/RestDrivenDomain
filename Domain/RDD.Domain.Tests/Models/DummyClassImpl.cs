@@ -1,4 +1,4 @@
-﻿namespace RDD.Domain.Tests.Models
+﻿namespace Rdd.Domain.Tests.Models
 {
 	public class DummyClassImpl : DummyClassAbstract
 	{

@@ -1,25 +1,25 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using RDD.Application;
-using RDD.Domain;
-using RDD.Domain.Helpers;
-using RDD.Domain.Mocks;
-using RDD.Domain.Models;
-using RDD.Domain.Models.Querying;
-using RDD.Domain.Patchers;
-using RDD.Domain.Rights;
-using RDD.Web.Helpers;
-using RDD.Web.Serialization;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Tests.ServerMock;
+using Rdd.Application;
+using Rdd.Domain;
+using Rdd.Domain.Helpers;
+using Rdd.Domain.Mocks;
+using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Patchers;
+using Rdd.Domain.Rights;
+using Rdd.Web.Helpers;
+using Rdd.Web.Serialization;
+using Rdd.Web.Serialization.Providers;
+using Rdd.Web.Tests.ServerMock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace RDD.Web.Tests.Services
+namespace Rdd.Web.Tests.Services
 {
     public class ServicesCollectionTests
     {
@@ -94,7 +94,7 @@ namespace RDD.Web.Tests.Services
         {
             var services = new ServiceCollection();
 
-            services.AddRDDSerialization<Principal>();
+            services.AddRddSerialization<Principal>();
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
@@ -114,7 +114,7 @@ namespace RDD.Web.Tests.Services
         {
             var services = new ServiceCollection();
 
-            services.AddRDDCore<ExchangeRateDbContext>();
+            services.AddRddCore<ExchangeRateDbContext>();
             services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(FakeRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
 

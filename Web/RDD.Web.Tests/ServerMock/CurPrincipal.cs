@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using RDD.Domain;
-using RDD.Domain.Helpers;
+using Rdd.Domain;
+using Rdd.Domain.Helpers;
 
-namespace RDD.Web.Tests.ServerMock
+namespace Rdd.Web.Tests.ServerMock
 {
     public class CurPrincipal : IPrincipal
     {

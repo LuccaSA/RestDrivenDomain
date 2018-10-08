@@ -1,13 +1,13 @@
-﻿using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models.Querying;
-using RDD.Infra.Helpers;
+﻿using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDD.Infra.Web.Models
+namespace Rdd.Infra.Web.Models
 {
     public class WebFiltersContainer<TEntity, TKey> : Filter<TEntity>
         where TEntity : IPrimaryKey<TKey>

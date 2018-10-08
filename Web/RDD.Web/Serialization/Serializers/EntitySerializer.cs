@@ -1,14 +1,14 @@
 ﻿using Newtonsoft.Json.Serialization;
-using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.UrlProviders;
+using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Web.Serialization.Providers;
+using Rdd.Web.Serialization.Reflection;
+using Rdd.Web.Serialization.UrlProviders;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace RDD.Web.Serialization.Serializers
+namespace Rdd.Web.Serialization.Serializers
 {
     public class EntitySerializer : ObjectSerializer
     {

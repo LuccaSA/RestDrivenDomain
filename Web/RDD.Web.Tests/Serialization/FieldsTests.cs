@@ -3,13 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using RDD.Domain;
-using RDD.Domain.Helpers.Expressions;
-using RDD.Domain.Models;
-using RDD.Web.Serialization;
-using RDD.Web.Serialization.Providers;
-using RDD.Web.Serialization.Reflection;
-using RDD.Web.Serialization.UrlProviders;
+using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models;
+using Rdd.Web.Serialization;
+using Rdd.Web.Serialization.Providers;
+using Rdd.Web.Serialization.Reflection;
+using Rdd.Web.Serialization.UrlProviders;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RDD.Web.Tests.Serialization
+namespace Rdd.Web.Tests.Serialization
 {
     public partial class FieldsTests
     {

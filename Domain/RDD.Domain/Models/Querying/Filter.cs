@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace RDD.Domain.Models.Querying
+namespace Rdd.Domain.Models.Querying
 {
     public class Filter<TEntity>
     {

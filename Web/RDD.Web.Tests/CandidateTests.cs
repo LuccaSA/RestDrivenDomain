@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
-using RDD.Domain.Mocks;
-using RDD.Web.Models;
-using RDD.Web.Tests.Models;
+using Rdd.Domain.Mocks;
+using Rdd.Web.Models;
+using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace RDD.Web.Tests
+namespace Rdd.Web.Tests
 {
     public class CandidateTests
     {

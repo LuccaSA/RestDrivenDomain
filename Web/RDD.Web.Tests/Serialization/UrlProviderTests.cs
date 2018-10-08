@@ -1,13 +1,13 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
-using RDD.Domain;
-using RDD.Domain.Helpers;
-using RDD.Web.Serialization;
-using RDD.Web.Serialization.UrlProviders;
-using RDD.Web.Tests.Models;
+using Rdd.Domain;
+using Rdd.Domain.Helpers;
+using Rdd.Web.Serialization;
+using Rdd.Web.Serialization.UrlProviders;
+using Rdd.Web.Tests.Models;
 using Xunit;
 
-namespace RDD.Web.Tests.Serialization
+namespace Rdd.Web.Tests.Serialization
 {
     public class UrlProviderTests
     {

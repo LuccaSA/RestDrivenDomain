@@ -32,7 +32,7 @@ notifications:
 install:
   - ps: wget "https://raw.githubusercontent.com/rducom/ALM/master/build/ComputeVersion.ps1" -outfile "ComputeVersion.ps1"
   - ps: . .\ComputeVersion.ps1
-  - ps: $version = Compute "Web\RDD.Web\RDD.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
+  - ps: $version = Compute "Web\Rdd.Web\Rdd.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
   - ps: Update-AppveyorBuild -Version $version.Semver
   - dotnet tool install --global dotnet-sonarscanner
   - nuget install OpenCover -Version 4.6.519 
@@ -48,21 +48,21 @@ before_build:
     )
 
 build_script:
-- ps: msbuild "RDD.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:DebugType=Full /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- ps: msbuild "Rdd.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:DebugType=Full /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 test_script:
-- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Domain\RDD.Domain.Tests\RDD.Domain.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
-- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Infra\RDD.Infra.Tests\RDD.Infra.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
-- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Web\RDD.Web.Tests\RDD.Web.Tests.csproj" -filter:"+[RDD*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Domain\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Infra\Rdd.Infra.Tests\Rdd.Infra.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Web\Rdd.Web.Tests\Rdd.Web.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
 - dotnet sonarscanner end /d:"sonar.login=%SONAR_TOKEN%"
 - Codecov.1.0.5\tools\codecov -f coverage-opencover.xml
 
 after_test:
-- ps: msbuild "RDD.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true
-- ps: dotnet pack Domain\RDD.Domain\RDD.Domain.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack Infra\RDD.Infra\RDD.Infra.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack Application\RDD.Application\RDD.Application.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack Web\RDD.Web\RDD.Web.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: msbuild "Rdd.sln" /m /verbosity:minimal /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true
+- ps: dotnet pack Domain\Rdd.Domain\Rdd.Domain.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Infra\Rdd.Infra\Rdd.Infra.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Application\Rdd.Application\Rdd.Application.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack Web\Rdd.Web\Rdd.Web.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - echo Starting Myget publish
 - ps: if($env:deploy_unstable -eq "true") { foreach ($nuget in Get-ChildItem -Path .\artifacts\* -Include *.nupkg) { nuget push $nuget $env:MYGET_TOKEN -Source https://www.myget.org/F/lucca/api/v2/package -SymbolSource https://www.myget.org/F/lucca/symbols/api/v2/package -SymbolApiKey $env:MYGET_TOKEN } }
 

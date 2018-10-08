@@ -1,8 +1,8 @@
-﻿using RDD.Domain.Helpers.Expressions;
+﻿using Rdd.Domain.Helpers.Expressions;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace RDD.Infra.Web.Models
+namespace Rdd.Infra.Web.Models
 {
     public class WebFilter<TEntity>
     {

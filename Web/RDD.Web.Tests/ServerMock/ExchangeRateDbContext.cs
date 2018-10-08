@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace RDD.Web.Tests.ServerMock
+namespace Rdd.Web.Tests.ServerMock
 {
     public class ExchangeRateDbContext : DbContext
     {

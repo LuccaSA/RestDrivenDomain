@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace RDD.Web.Helpers
+namespace Rdd.Web.Helpers
 {
     public class NameValueCollectionHelper
     {
