@@ -1,5 +1,6 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `Query<TEntity> query` parameter removed from prototype of ReadOnlyRepository Set() method 
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
  - **Removed**: unused metadata.paging in returned json
  - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.
