@@ -15,10 +15,5 @@ namespace Rdd.Web.Tests.Models
         public Guid PictureId { get; set; }
         public DateTime? BirthDay { get; set; }
         public DateTime ContractStart { get; set; }
-
-        IUser ICloneable<IUser>.Clone()
-        {
-            return this;
-        }
     }
 }
