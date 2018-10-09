@@ -38,7 +38,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var services = new ServiceCollection();
             services.AddMemoryCache();
-            services.AddSingleton<IInheritanceConfiguration>(new InheritanceConfiguration());
+            services.AddSingleton<IInheritanceConfiguration, InheritanceConfiguration>();
             services.AddSingleton<IReflectionProvider, ReflectionProvider>();
             services.AddSingleton<ISerializerProvider, SerializerProvider>();
             services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());

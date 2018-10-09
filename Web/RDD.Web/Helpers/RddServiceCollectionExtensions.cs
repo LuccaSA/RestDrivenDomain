@@ -57,8 +57,8 @@ namespace Rdd.Web.Helpers
             where TEntity : class, IEntityBase<TEntity, TKey>
             where TKey : IEquatable<TKey>
         {
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IInheritanceConfiguration), config));
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IInheritanceConfiguration<TEntity>), config));
+            services.AddSingleton<IInheritanceConfiguration>(s => config);
+            services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
             services.TryAddSingleton<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
             services.TryAddSingleton<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
 
