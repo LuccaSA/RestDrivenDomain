@@ -1,9 +1,11 @@
 # Futur release
 ## Breaking changes
  - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
- - **Removed**: `IClonable<>` interface & Clone() method
- - **Removed**: `Query<TEntity> query` parameter removed from prototype of ReadOnlyRepository Set() method 
- - **Modification**: ValidateEntity on RestCollection is now ValidateEntityAsync
+ - **Removed**: `IClonable<>` interface & ``Clone()`` method
+ - **Removed**: `Query<TEntity> query` parameter removed from prototype of ``ReadOnlyRepository.Set()`` method 
+ - **Modification**: ``ValidateEntity`` on RestCollection is now ``ValidateEntityAsync``
+ - **Modification**: ``AppController`` now depends on a `IUnitOfWork`.
+ - **Removed**: `IStorageService.AddAfterSaveChangesAction`. Use code in application layer instead.
  - **Modification**: RDD namespace renamed to Rdd
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
@@ -43,7 +45,6 @@
  - **Modification**: `IAppController.DeleteByIdsAsync(IEnumerable<TKey> ids) -> IAppController.DeleteByIdsAsync(IList<TKey> ids)`. This breaking change might require you to change your override signatures.
  - **Modification**: `IRestCollection.DeleteByIdsAsync(IEnumerable<TKey> ids) -> IAppController.DeleteByIdsAsync(IList<TKey> ids)`. This breaking change might require you to change your override signatures.
  - **Modification**: Error messages have been modified.
- - **Modification**: IStorageService is now located inside the Application layer, namespace `RDD.Application`.
 
 ## New features
  - **Added**: CHANGELOG.md

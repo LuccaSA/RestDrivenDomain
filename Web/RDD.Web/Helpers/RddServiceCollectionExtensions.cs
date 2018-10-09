@@ -37,6 +37,8 @@ namespace Rdd.Web.Helpers
 
             // register base services
             services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped<IUnitOfWork>(s => s.GetService<IStorageService>());
+
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.TryAddScoped<IPatcherProvider, PatcherProvider>();
