@@ -1,7 +1,7 @@
-﻿using Rdd.Application;
-using Rdd.Domain.Models.Querying;
+﻿using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Storage;
 using System.Linq;
 
 namespace Rdd.Infra.Tests

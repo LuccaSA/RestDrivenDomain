@@ -12,12 +12,10 @@ namespace Rdd.Infra.Storage
     public class EFStorageService : IStorageService
     {
         protected DbContext DbContext { get; }
-        protected Queue<Task> AfterSaveChangesActions { get; }
 
         public EFStorageService(DbContext dbContext)
         {
             DbContext = dbContext;
-            AfterSaveChangesActions = new Queue<Task>();
         }
 
         public virtual IQueryable<TEntity> Set<TEntity>()
@@ -69,21 +67,11 @@ namespace Rdd.Infra.Storage
             DbContext.Set<TEntity>().RemoveRange(entities);
         }
 
-        public void AddAfterSaveChangesAction(Task action)
-        {
-            AfterSaveChangesActions.Enqueue(action);
-        }
-
         public virtual async Task SaveChangesAsync()
         {
             try
             {
                 await DbContext.SaveChangesAsync();
-
-                while(AfterSaveChangesActions.Count > 0)
-                {
-                    await AfterSaveChangesActions.Dequeue();
-                }
             }
             catch (DbUpdateException ex)
             {

@@ -10,8 +10,8 @@ namespace Rdd.Application.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        public AppController(IStorageService storage, IRestCollection<TEntity, TKey> collection)
-            : base(storage, collection)
+        public AppController(IUnitOfWork unitOfWork, IRestCollection<TEntity, TKey> collection)
+            : base(unitOfWork, collection)
         {
         }
     }
@@ -21,19 +21,19 @@ namespace Rdd.Application.Controllers
         where TEntity : class, IEntityBase<TEntity, TKey>
         where TKey : IEquatable<TKey>
     {
-        protected IStorageService Storage { get; }
+        protected IUnitOfWork UnitOfWork { get; }
 
-        public AppController(IStorageService storage, TCollection collection)
+        public AppController(IUnitOfWork unitOfWork, TCollection collection)
             : base(collection)
         {
-            Storage = storage;
+            UnitOfWork = unitOfWork;
         }
 
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             var entity = await Collection.CreateAsync(candidate, query);
 
-            await Storage.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return entity;
         }
@@ -42,7 +42,7 @@ namespace Rdd.Application.Controllers
         {
             var entities = await Collection.CreateAsync(candidates, query);
 
-            await Storage.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return entities;
         }
@@ -51,7 +51,7 @@ namespace Rdd.Application.Controllers
         {
             var entity = await Collection.UpdateByIdAsync(id, candidate, query);
 
-            await Storage.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return entity;
         }
@@ -60,7 +60,7 @@ namespace Rdd.Application.Controllers
         {
             var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
 
-            await Storage.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return entities;
         }
@@ -69,14 +69,14 @@ namespace Rdd.Application.Controllers
         {
             await Collection.DeleteByIdAsync(id);
 
-            await Storage.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             await Collection.DeleteByIdsAsync(ids);
 
-            await Storage.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
         }
     }
 }
