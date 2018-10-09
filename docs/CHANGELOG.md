@@ -1,5 +1,6 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `IClonable<>` interface & Clone() method
  - **Removed**: `Query<TEntity> query` parameter removed from prototype of ReadOnlyRepository Set() method 
  - **Modification**: ValidateEntity on RestCollection is now ValidateEntityAsync
  - **Modification**: RDD namespace renamed to Rdd
