@@ -27,6 +27,11 @@ namespace Rdd.Domain.Mocks
         public string SuperProperty { get; set; }
     }
 
+    public class SuperSuper : Super
+    {
+        public string SuperSuperProperty { get; set; }
+    }
+
     public class InheritanceConfiguration : IInheritanceConfiguration<Hierarchy>
     {
         public Type BaseType => typeof(Hierarchy);
@@ -35,7 +40,8 @@ namespace Rdd.Domain.Mocks
 
         public IReadOnlyDictionary<string, Type> Mappings => new Dictionary<string, Type>
         {
-            { "super", typeof(Super) }
+            { "super", typeof(Super) },
+            { "supersuper", typeof(SuperSuper) }
         };
     }
 }

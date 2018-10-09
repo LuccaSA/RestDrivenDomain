@@ -3,6 +3,7 @@ using Moq;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Web.Serialization;
 using Rdd.Web.Serialization.Providers;
@@ -37,6 +38,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var services = new ServiceCollection();
             services.AddMemoryCache();
+            services.AddSingleton<IInheritanceConfiguration, InheritanceConfiguration>();
             services.AddSingleton<IReflectionProvider, ReflectionProvider>();
             services.AddSingleton<ISerializerProvider, SerializerProvider>();
             services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());

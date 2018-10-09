@@ -62,8 +62,8 @@ namespace Rdd.Web.Helpers
         {
             services.AddSingleton<IInheritanceConfiguration>(s => config);
             services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
-            services.AddScoped<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
-            services.AddScoped<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
+            services.TryAddSingleton<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
+            services.TryAddSingleton<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
 
             if (JsonConvert.DefaultSettings == null)
             {

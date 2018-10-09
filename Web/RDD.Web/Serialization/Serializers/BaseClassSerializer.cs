@@ -15,7 +15,7 @@ namespace Rdd.Web.Serialization.Serializers
 
         protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {
-            return new FieldsParser().ParseAllProperties(WorkingType);
+            return new FieldsParser().ParseAllProperties(entity.GetType());
         }
     }
 }

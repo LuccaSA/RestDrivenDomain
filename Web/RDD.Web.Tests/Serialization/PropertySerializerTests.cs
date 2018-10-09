@@ -1,4 +1,6 @@
 ﻿using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Mocks;
+using Rdd.Domain.Models;
 using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,25 @@ namespace Rdd.Web.Tests.Serialization
             var json = await SerializeAsync(entity, fields);
 
             Assert.Equal(ExpectedInput(@"{""url"":""http://www.example.org/""}"), json);
+        }
+
+        [Fact]
+        public async Task HierarchySerialization()
+        {
+            var entity = new Super();
+            var entity2 = new SuperSuper();
+            var fields = new ExpressionParser().ParseTree<Super>("");
+
+            var json = await SerializeAsync(entity, fields);
+            Assert.Contains("superProperty", json);
+
+            json = await SerializeAsync(new List<Hierarchy> { entity, entity2 }, fields);
+            Assert.Contains("superProperty", json);
+            Assert.Contains("superSuperProperty", json);
+
+            json = await SerializeAsync(new Selection<Hierarchy>(new List<Hierarchy> { entity, entity2 }, 0), fields);
+            Assert.Contains("superProperty", json);
+            Assert.Contains("superSuperProperty", json);
         }
 
         [Fact]
