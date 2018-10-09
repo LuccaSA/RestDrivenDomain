@@ -19,13 +19,13 @@ using Xunit;
 
 namespace Rdd.Domain.Tests
 {
-    public class CollectionMethodsTests : IClassFixture<DefaultFixture>
+    public class CollectionMethodsTests 
     {
-        private DefaultFixture _fixture;
+        private readonly DefaultFixture _fixture;
 
-        public CollectionMethodsTests(DefaultFixture fixture)
+        public CollectionMethodsTests()
         {
-            _fixture = fixture;
+            _fixture = new DefaultFixture();
         }
 
         [Fact]
@@ -123,6 +123,36 @@ namespace Rdd.Domain.Tests
             var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>(JsonConvert.SerializeObject(user));
             await users.UpdateByIdAsync(id, candidate, query);
             Assert.True(true);
+        }
+
+        class OverrideObjectPatcher<T> : ObjectPatcher<T>
+            where T : class, new()
+        {
+            public OverrideObjectPatcher(IPatcherProvider provider) : base(provider)
+            {
+            }
+
+            public override object PatchValue(object patchedObject, Type expectedType, JsonObject json)
+            {
+                return new T();
+            }
+        }
+
+        [Fact]
+        public async Task Put_on_new_entity()
+        {
+            var id = Guid.NewGuid();
+            var user = new User { Id = id, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
+            _fixture.InMemoryStorage.Add(user);
+            await _fixture.InMemoryStorage.SaveChangesAsync();
+
+            var users = new RestCollection<User, Guid>(_fixture.UsersRepo, new OverrideObjectPatcher<User>(_fixture.PatcherProvider), _fixture.Instanciator);
+            var query = new Query<User>();
+            query.Options.CheckRights = false;
+
+            var updated = await users.UpdateByIdAsync(id, new CandidateParser(new JsonParser()).Parse<User, Guid>(JsonConvert.SerializeObject(user)), query);
+
+            Assert.Equal(new Guid(), updated.Id);
         }
 
         [Fact]

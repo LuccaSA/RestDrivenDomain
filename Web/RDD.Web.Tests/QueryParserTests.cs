@@ -8,6 +8,7 @@ using Rdd.Infra.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -72,7 +73,11 @@ namespace Rdd.Web.Tests
 
             Assert.Single(query.OrderBys);
             Assert.Equal(direction, query.OrderBys[0].Direction);
-            Assert.Equal(new ExpressionParser().Parse<User>(output), query.OrderBys[0].Expression);
+            Assert.Equal
+            (
+                new PropertyExpression { LambdaExpression = new ExpressionParser().Parse<User>(output).ToLambdaExpression() }.Property,
+                new PropertyExpression { LambdaExpression = query.OrderBys[0].LambdaExpression }.Property
+            );
         }
 
         [Theory]

@@ -29,11 +29,11 @@ namespace Rdd.Domain.Models
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            entity = Patcher.Patch(entity, candidate.JsonValue);
 
             ForgeEntity(entity);
 
-            await ValidateEntityAsync(entity, null);
+            await ValidateEntityAsync(entity);
 
             Repository.Add(entity);
 
@@ -48,11 +48,11 @@ namespace Rdd.Domain.Models
             {
                 TEntity entity = Instanciator.InstanciateNew(candidate);
 
-                Patcher.Patch(entity, candidate.JsonValue);
+                entity = Patcher.Patch(entity, candidate.JsonValue);
 
                 ForgeEntity(entity);
 
-                await ValidateEntityAsync(entity, null);
+                await ValidateEntityAsync(entity);
 
                 result.Add(entity);
             }
@@ -118,7 +118,7 @@ namespace Rdd.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual Task ValidateEntityAsync(TEntity entity, TEntity oldEntity) => Task.CompletedTask;
+        protected virtual Task ValidateEntityAsync(TEntity entity) => Task.CompletedTask;
 
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
@@ -127,19 +127,17 @@ namespace Rdd.Domain.Models
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
-        protected virtual Task OnAfterUpdateEntity(TEntity oldEntity, TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
+        protected virtual Task OnAfterUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
 
         private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             await OnBeforeUpdateEntity(entity, candidate);
 
-            TEntity oldEntity = entity.Clone();
+            entity = Patcher.Patch(entity, candidate.JsonValue);
 
-            Patcher.Patch(entity, candidate.JsonValue);
+            await OnAfterUpdateEntity(entity, candidate, query);
 
-            await OnAfterUpdateEntity(oldEntity, entity, candidate, query);
-
-            await ValidateEntityAsync(entity, oldEntity);
+            await ValidateEntityAsync(entity);
 
             return entity;
         }

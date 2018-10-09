@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Rdd.Domain.Tests.Models;
 using System;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Rdd.Infra.Tests
         {
             return new DbContextOptionsBuilder<DataContext>()
                 .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0")
+                .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
                 .Options;
         }
 

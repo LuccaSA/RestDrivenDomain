@@ -13,7 +13,5 @@ namespace Rdd.Domain.Models
         public virtual object GetId() => Id;
 
         public virtual void SetId(object id) => Id = (TKey)id;
-
-        public virtual TEntity Clone() => (TEntity)MemberwiseClone();
     }
 }

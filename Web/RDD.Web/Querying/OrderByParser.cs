@@ -45,7 +45,7 @@ namespace Rdd.Web.Querying
                     throw new BadRequestException("Order by query parameter is invalid", new FormatException("Selected property is not comparable and Order By cannot be applied."));
                 }
 
-                result.Add(new OrderBy<TEntity>(expression, DirectionsByKeyword[orders[i + 1]]));
+                result.Add(new OrderBy<TEntity>(expression.ToLambdaExpression(), DirectionsByKeyword[orders[i + 1]]));
             }
 
             return result;
