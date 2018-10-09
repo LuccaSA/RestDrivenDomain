@@ -1,5 +1,6 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
  - **Removed**: `IClonable<>` interface & ``Clone()`` method
  - **Removed**: `Query<TEntity> query` parameter removed from prototype of ``ReadOnlyRepository.Set()`` method 
  - **Modification**: ``ValidateEntity`` on RestCollection is now ``ValidateEntityAsync``
