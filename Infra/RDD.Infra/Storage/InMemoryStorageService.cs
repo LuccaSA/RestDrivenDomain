@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
 {
-    public class InMemoryStorageService : IStorageService
+    public class InMemoryStorageService : IStorageService, IUnitOfWork
     {
         public Dictionary<Type, IList> Cache { get; }
         public Dictionary<Type, int> Indexes { get; }
