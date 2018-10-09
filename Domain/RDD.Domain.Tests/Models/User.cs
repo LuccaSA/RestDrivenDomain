@@ -14,17 +14,15 @@ namespace Rdd.Domain.Tests.Models
         public decimal Salary { get; set; }
         public Department Department { get; set; }
         public Guid PictureId { get; set; }
+        public Guid? FriendId { get; set; }
 
-        public static IEnumerable<User> GetManyRandomUsers(int howMuch)
+        public static IEnumerable<User> GetManyRandomUsers(int count)
         {
             var result = new List<User>();
 
-            for (var i = 1; i <= howMuch; i++)
+            for (var i = 1; i <= count; i++)
             {
-                var name = $"John Doe {i}";
-                var id = Guid.NewGuid();
-
-                result.Add(new User { Id = id, Name = name });
+                result.Add(new User { Id = Guid.NewGuid(), Name = $"John Doe {i}", FriendId = (i % 2 == 0 ? (Guid?)null : Guid.NewGuid()) });
             }
 
             return result;
