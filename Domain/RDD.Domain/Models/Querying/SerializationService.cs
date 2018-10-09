@@ -51,7 +51,7 @@ namespace Rdd.Domain.Models.Querying
         {
             Type listConstructorParamType = typeof(List<>).MakeGenericType(property.PropertyType.GetEnumerableOrArrayElementType());
             var result = (IList) Activator.CreateInstance(listConstructorParamType);
-
+            
             foreach (string value in values)
             {
                 result.Add(TryConvert(value, property.PropertyType.GetEnumerableOrArrayElementType()));
