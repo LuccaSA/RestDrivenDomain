@@ -4,6 +4,7 @@
  - **Removed**: `Query<TEntity> query` parameter removed from prototype of ``ReadOnlyRepository.Set()`` method 
  - **Modification**: ``ValidateEntity`` on RestCollection is now ``ValidateEntityAsync``
  - **Modification**: ``AppController`` now depends on a `IUnitOfWork`.
+ - **Modification**: `IStorageService` cannot directly save changes, use code in application layer.
  - **Removed**: `IStorageService.AddAfterSaveChangesAction`. Use code in application layer instead.
  - **Modification**: RDD namespace renamed to Rdd
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()

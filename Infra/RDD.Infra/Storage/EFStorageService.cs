@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
 {
-    public class EFStorageService : IStorageService
+    public class EFStorageService : IStorageService, IUnitOfWork
     {
         protected DbContext DbContext { get; }
 

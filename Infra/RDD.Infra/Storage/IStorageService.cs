@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
 {
-    public interface IStorageService : IUnitOfWork
+    public interface IStorageService
     {
         IQueryable<TEntity> Set<TEntity>() where TEntity : class;
         Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities) where TEntity : class;

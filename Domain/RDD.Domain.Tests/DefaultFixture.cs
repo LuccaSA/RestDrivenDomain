@@ -1,5 +1,4 @@
-﻿using Rdd.Application;
-using Rdd.Domain.Mocks;
+﻿using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
@@ -14,7 +13,7 @@ namespace Rdd.Domain.Tests
         public IRightExpressionsHelper<User> RightsService { get; private set; }
         public IPatcherProvider PatcherProvider { get; private set; }
         public IInstanciator<User> Instanciator { get; private set; }
-        public IStorageService InMemoryStorage { get; private set; }
+        public InMemoryStorageService InMemoryStorage { get; private set; }
         public IRepository<User> UsersRepo { get; private set; }
 
         public DefaultFixture()
