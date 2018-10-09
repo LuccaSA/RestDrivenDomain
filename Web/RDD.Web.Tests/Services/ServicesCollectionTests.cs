@@ -8,6 +8,7 @@ using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
+using Rdd.Infra.Storage;
 using Rdd.Web.Helpers;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Tests.ServerMock;
@@ -116,6 +117,7 @@ namespace Rdd.Web.Tests.Services
             services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(FakeRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
 
+            Assert.NotNull(provider.GetRequiredService<IUnitOfWork>());
             Assert.NotNull(provider.GetRequiredService<IStorageService>());
             Assert.NotNull(provider.GetRequiredService<IPatcherProvider>());
             Assert.NotNull(provider.GetRequiredService<IHttpContextAccessor>());
