@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rdd.Domain.Mocks;
 
 namespace Rdd.Domain.Tests.Models
 {

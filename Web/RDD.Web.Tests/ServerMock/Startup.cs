@@ -22,11 +22,11 @@ namespace Rdd.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRddSerialization<CurPrincipal>();
+            services.AddRddSerialization();
 
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
 
-            services.AddRdd<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
+            services.AddRdd<ExchangeRateDbContext>(Domain.Rights.RightDefaultMode.Open);
 
             services.AddScoped<ExchangeRateController>();
 

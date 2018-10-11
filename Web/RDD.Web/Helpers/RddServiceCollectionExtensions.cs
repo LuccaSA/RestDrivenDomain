@@ -84,18 +84,21 @@ namespace Rdd.Web.Helpers
             return services;
         }
 
-        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
-            where TCombinationsHolder : class, ICombinationsHolder
-            where TPrincipal : class, IPrincipal
+        public static IServiceCollection AddRddDefaultRights(this IServiceCollection services, RightDefaultMode mode)
         {
-            services.TryAddScoped(typeof(IRightExpressionsHelper<>), typeof(RightExpressionsHelper<>));
-            services.TryAddScoped<IPrincipal, TPrincipal>();
-            services.TryAddScoped<ICombinationsHolder, TCombinationsHolder>();
+            switch (mode)
+            {
+                case RightDefaultMode.Closed:
+                    services.TryAddSingleton(typeof(IRightExpressionsHelper<>), typeof(ClosedRightExpressionsHelper<>));
+                    break;
+                case RightDefaultMode.Open:
+                    services.TryAddSingleton(typeof(IRightExpressionsHelper<>), typeof(OpenRightExpressionsHelper<>));
+                    break;
+            }
             return services;
         }
 
-        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
-            where TPrincipal : class, IPrincipal
+        public static IServiceCollection AddRddSerialization(this IServiceCollection services)
         {
             //singletons
             services.TryAddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
@@ -119,20 +122,20 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<ToStringSerializer>();
             services.TryAddSingleton<ValueSerializer>();
 
-            //scoped
-            services.TryAddScoped<IPrincipal, TPrincipal>();
-
             return services;
         }
 
-        public static IServiceCollection AddRdd<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static IServiceCollection AddRdd<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
-            where TCombinationsHolder : class, ICombinationsHolder
-            where TPrincipal : class, IPrincipal
+            => services.AddRdd<TDbContext>(RightDefaultMode.Closed);
+
+        public static IServiceCollection AddRdd<TDbContext>(this IServiceCollection services, RightDefaultMode mode)
+            where TDbContext : DbContext
         {
-            return services.AddRddCore<TDbContext>()
-                .AddRddRights<TCombinationsHolder, TPrincipal>()
-                .AddRddSerialization<TPrincipal>();
+            return services
+                .AddRddCore<TDbContext>()
+                .AddRddDefaultRights(mode)
+                .AddRddSerialization();
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using Rdd.Domain.Mocks;
-using Rdd.Domain.Models;
+﻿using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
@@ -18,7 +17,7 @@ namespace Rdd.Domain.Tests
 
         public DefaultFixture()
         {
-            RightsService = new RightsServiceMock<User>();
+            RightsService = new OpenRightExpressionsHelper<User>();
             PatcherProvider = new PatcherProvider();
             Instanciator = new DefaultInstanciator<User>();
             InMemoryStorage = new InMemoryStorageService();

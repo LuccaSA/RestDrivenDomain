@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Rdd.Domain.Mocks;
 using Rdd.Web.Models;
 using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
@@ -65,7 +64,11 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_fail_without_config()
         {
-            JsonConvert.DefaultSettings = null;
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>()
+            };
+
             Assert.Throws<JsonSerializationException>(GetCandidate);
         }
 
@@ -76,7 +79,7 @@ namespace Rdd.Web.Tests
             {
                 Converters = new List<JsonConverter>
                 {
-                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
+                    new BaseClassJsonConverter<Domain.Tests.Models.Hierarchy>(new Domain.Tests.Models.InheritanceConfiguration())
                 }
             };
 
@@ -84,6 +87,6 @@ namespace Rdd.Web.Tests
             Assert.True(candidate.HasProperty(d => d.Id));
         }
 
-        private static Candidate<Hierarchy, int> GetCandidate() => Candidate<Hierarchy, int>.Parse(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
+        private static Candidate<Domain.Tests.Models.Hierarchy, int> GetCandidate() => Candidate<Domain.Tests.Models.Hierarchy, int>.Parse(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
     }
 }

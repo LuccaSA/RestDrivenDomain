@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Json;
-using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
@@ -77,7 +76,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
         {
-            var repo = new Repository<UserWithParameters>(_fixture.InMemoryStorage, new RightsServiceMock<UserWithParameters>());
+            var repo = new Repository<UserWithParameters>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<UserWithParameters>());
             var users = new UsersCollectionWithParameters(repo, _fixture.PatcherProvider, new InstanciatorImplementation());
             var query = new Query<UserWithParameters>();
             query.Options.CheckRights = false;

@@ -1,5 +1,9 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: Unused `UnreachableEntityException`, `RightExpressionsHelper`, `ICombinationsHolder`. Replaced by `Closed/OpenRightExpressionsHelper`. To correctly handle rights, please implement your version, or use external librairy (`Lucca.Core.Rights`).
+ - **Modification**: `AddRddRights<TCombinationsHolder, TPrincipal>()` -> `AddRddDefaultRights(RightDefaultMode mode)`
+ - **Modification**: `AddRddSerialization<TPrincipal>()` -> `AddRddSerialization()`
+ - **Modification**: `AddRdd<TDbContext, TCombinationsHolder, TPrincipal>` -> `AddRdd<TDbContext>`
  - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
  - **Removed**: `IClonable<>` interface & ``Clone()`` method
  - **Removed**: `Query<TEntity> query` parameter removed from prototype of ``ReadOnlyRepository.Set()`` method 
