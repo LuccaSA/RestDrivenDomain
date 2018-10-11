@@ -12,6 +12,8 @@ using Rdd.Web.Serialization.Providers;
 using System;
 using System.Buffers;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,9 +70,25 @@ namespace Rdd.Web.Serialization
             }
         }
 
+        private string GetPrincipalName(IServiceProvider services)
+        {
+            var principal = services.GetService<ClaimsPrincipal>();
+            if (principal == null)
+            {
+                return null;
+            }
+            var name = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            if (name == null)
+            {
+                return null;
+            }
+
+            return name.Value;
+        }
+
         internal async Task WriteResult(IServiceProvider services, TextWriter writer, DateTime generatedAt)
         {
-            Value = new Metadata(Value, services.GetService<IPrincipal>(), generatedAt);
+            Value = new Metadata(Value, GetPrincipalName(services), generatedAt);
 
             using (var jsonWriter = new JsonTextWriter(writer))
             {

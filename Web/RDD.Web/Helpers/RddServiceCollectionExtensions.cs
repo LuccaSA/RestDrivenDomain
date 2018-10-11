@@ -52,6 +52,8 @@ namespace Rdd.Web.Helpers
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
             services.TryAddScoped(typeof(ApiHelper<,>));
+
+            services.TryAddTransient(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
             return services;
         }
 

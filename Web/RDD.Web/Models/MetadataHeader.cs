@@ -1,5 +1,4 @@
-﻿using Rdd.Domain;
-using System;
+﻿using System;
 
 namespace Rdd.Web.Models
 {
@@ -8,10 +7,9 @@ namespace Rdd.Web.Models
         public DateTime Generated { get; set; }
         public string Principal { get; set; }
 
-        public MetadataHeader(IPrincipal principal)
+        public MetadataHeader(string principalName)
         {
-            Principal = principal?.Name;
+            Principal = principalName;
         }
     }
-
 }
