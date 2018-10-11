@@ -5,7 +5,7 @@ using System.Net.Mail;
 
 namespace Rdd.Domain.Tests.Models
 {
-    public class UserWithParameters : EntityBase<UserWithParameters, int>
+    public class UserWithParameters : EntityBase<int>
     {
         public override int Id { get; set; }
         public override string Name { get; set; }

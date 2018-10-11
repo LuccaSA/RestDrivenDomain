@@ -6,6 +6,9 @@
  - **Modification**: Patchers now use ``IReflectionHelper``, are public and registered for performances boost.
  - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
  - **Removed**: `IClonable<>` interface & ``Clone()`` method
+ - **Removed**: `IEntityBase<TEntity, TKey>`, `EntityBase<TEntity, TKey>` and usages. This can be directly replaced by `IEntityBase<TKey>` or `EntityBase<TKey>`.
+ - **Removed**: ``IPrimaryKey.SetId()``
+ - **Modification**: ``EntityBase<TKey>.Url`` has attribute `NotMapped`
  - **Removed**: `Query<TEntity> query` parameter removed from prototype of ``ReadOnlyRepository.Set()`` method 
  - **Modification**: ``ValidateEntity`` on RestCollection is now ``ValidateEntityAsync``
  - **Modification**: ``AppController`` now depends on a `IUnitOfWork`.

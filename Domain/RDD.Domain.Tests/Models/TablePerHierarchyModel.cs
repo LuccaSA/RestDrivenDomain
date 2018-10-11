@@ -2,7 +2,7 @@
 
 namespace Rdd.Domain.Tests.Models
 {
-    public abstract class AbstractClass : EntityBase<AbstractClass, int>
+    public abstract class AbstractClass : EntityBase<int>
     {
         public override int Id { get; set; }
 
@@ -12,7 +12,7 @@ namespace Rdd.Domain.Tests.Models
     public class ConcreteClassOne : AbstractClass { }
     public class ConcreteClassTwo : AbstractClass { }
 
-    public class ConcreteClassThree : EntityBase<ConcreteClassThree, int>
+    public class ConcreteClassThree : EntityBase<int>
     {
         public override int Id { get; set; }
         public override string Name { get; set; }

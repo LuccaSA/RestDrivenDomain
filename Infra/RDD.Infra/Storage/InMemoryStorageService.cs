@@ -90,24 +90,6 @@ namespace Rdd.Infra.Storage
 
         public Task SaveChangesAsync()
         {
-            foreach (var type in Cache.Keys)
-            {
-                var index = Indexes[type];
-
-                foreach (var element in Cache[type])
-                {
-                    var entity = (IPrimaryKey)element;
-                    var id = entity.GetId().ToString();
-
-                    if (id == 0.ToString())
-                    {
-                        entity.SetId(++index);
-                    }
-                }
-
-                Indexes[type] = index;
-            }
-
             return Task.CompletedTask;
         }
 
