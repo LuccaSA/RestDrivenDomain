@@ -56,7 +56,7 @@ namespace Rdd.Application.Controllers
             return entity;
         }
 
-        public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
             var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
 
