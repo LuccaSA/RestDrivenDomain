@@ -55,12 +55,8 @@ namespace Rdd.Web.Tests.Services
         {
             var services = new ServiceCollection();
 
-            services.AddRdd<ExchangeRateDbContext>(builder =>
-            {
-                builder
-                    .AddInheritance<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration())
-                    .AddInheritance<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
-            });
+            services.AddRddInheritanceConfiguration<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration());
+            services.AddRddInheritanceConfiguration<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
 
             var provider = services.BuildServiceProvider();
 
@@ -84,11 +80,23 @@ namespace Rdd.Web.Tests.Services
         }
 
         [Fact]
-        public void TestRddRegister()
+        public void TestRddSerializationRegister()
         {
             var services = new ServiceCollection();
 
-            services.AddRdd<ExchangeRateDbContext>();
+            services.AddRddSerialization();
+            var provider = services.BuildServiceProvider();
+
+            Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
+        }
+
+        [Fact]
+        public void TestRddCoreRegister()
+        {
+            var services = new ServiceCollection();
+
+            services.AddRddCore<ExchangeRateDbContext>();
+            services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(OpenRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<IUnitOfWork>());
@@ -106,8 +114,6 @@ namespace Rdd.Web.Tests.Services
             Assert.NotNull(provider.GetRequiredService<IReadOnlyAppController<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IAppController<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<ApiHelper<ExchangeRate, int>>());
-
-            Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
         }
     }
 }
