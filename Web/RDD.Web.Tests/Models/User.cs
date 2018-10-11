@@ -1,10 +1,9 @@
-﻿using Rdd.Domain;
-using Rdd.Domain.Models;
+﻿using Rdd.Domain.Models;
 using System;
 
 namespace Rdd.Web.Tests.Models
 {
-    public class User : EntityBase<User, int>, IUser
+    public class User : EntityBase<int>, IUser
     {
         public override int Id { get; set; }
         public override string Name { get; set; }

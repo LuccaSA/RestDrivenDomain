@@ -57,7 +57,7 @@ namespace Rdd.Web.Helpers
 
         public static IServiceCollection AddRddInheritanceConfiguration<TConfig, TEntity, TKey>(this IServiceCollection services, TConfig config)
             where TConfig : class, IInheritanceConfiguration<TEntity>
-            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TEntity : class, IEntityBase<TKey>
             where TKey : IEquatable<TKey>
         {
             services.AddSingleton<IInheritanceConfiguration>(s => config);
