@@ -10,5 +10,7 @@ namespace Rdd.Domain.Helpers.Reflection
 
         object GetValue(object target, PropertyInfo property);
         void SetValue(object target, PropertyInfo property, object value);
+
+        bool IsPseudoValue(Type type);
     }
 }

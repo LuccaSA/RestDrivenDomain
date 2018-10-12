@@ -115,6 +115,7 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IUrlProvider, UrlProvider>();
 
             services.TryAddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
+            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
             services.TryAddSingleton<ISerializerProvider, SerializerProvider>();
 
             services.TryAddSingleton<ArraySerializer>();

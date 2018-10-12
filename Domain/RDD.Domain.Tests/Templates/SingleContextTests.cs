@@ -36,7 +36,7 @@ namespace Rdd.Domain.Tests.Templates
 
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
             _rightsService = new RightsServiceMock<User>();
-            _patcherProvider = new PatcherProvider(provider);
+            _patcherProvider = new PatcherProvider(provider, provider.GetService<IReflectionHelper>());
             Instanciator = new DefaultInstanciator<User>();
         }
 

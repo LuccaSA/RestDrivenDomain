@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NExtends.Primitives.Types;
 using Rdd.Domain;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Models;
 using Rdd.Web.Serialization.Serializers;
 using System;
@@ -8,70 +9,27 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 
 namespace Rdd.Web.Serialization.Providers
 {
     public class SerializerProvider : ISerializerProvider
     {
-        protected static readonly IReadOnlyCollection<Type> ValueTypes = new HashSet<Type>
-        {
-            typeof(char),
-            typeof(char?),
-            typeof(bool),
-            typeof(bool?),
-            typeof(sbyte),
-            typeof(sbyte?),
-            typeof(short),
-            typeof(short?),
-            typeof(ushort),
-            typeof(ushort?),
-            typeof(int),
-            typeof(int?),
-            typeof(byte),
-            typeof(byte?),
-            typeof(uint),
-            typeof(uint?),
-            typeof(long),
-            typeof(long?),
-            typeof(ulong),
-            typeof(ulong?),
-            typeof(float),
-            typeof(float?),
-            typeof(double),
-            typeof(double?),
-            typeof(DateTimeOffset),
-            typeof(DateTimeOffset?),
-            typeof(decimal),
-            typeof(decimal?),
-            typeof(Guid),
-            typeof(Guid?),
-            typeof(TimeSpan),
-            typeof(TimeSpan?),
-            typeof(BigInteger),
-            typeof(BigInteger?),
-            typeof(string),
-            typeof(byte[]),
-            typeof(DBNull),
-            //ces cas sont gérés autrement
-            typeof(DateTime),
-            typeof(DateTime?),
-            typeof(Uri),
-        };
+        protected IServiceProvider Services { get; set; }
+        protected IReflectionHelper IReflectionHelper { get; set; }
 
         protected IEnumerable<IInheritanceConfiguration> InheritanceConfigurations { get; set; }
-        protected IServiceProvider Services { get; set; }
 
-        public SerializerProvider(IServiceProvider services, IEnumerable<IInheritanceConfiguration> inheritanceConfigurations)
+        public SerializerProvider(IEnumerable<IInheritanceConfiguration> inheritanceConfigurations, IServiceProvider services, IReflectionHelper reflectionHelper)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
+            IReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
 
             InheritanceConfigurations = inheritanceConfigurations;
         }
 
         public ISerializer GetSerializer(object entity)
         {
-            if (entity == null) { return ActivatorUtilities.CreateInstance<ValueSerializer>(Services); }
+            if (entity == null) { return Services.GetService<ValueSerializer>(); }
 
             return GetSerializer(entity.GetType());
         }
@@ -91,7 +49,7 @@ namespace Rdd.Web.Serialization.Providers
             if (typeof(Uri).IsAssignableFrom(type)) { return Services.GetService<ToStringSerializer>(); }
             if (typeof(IDictionary).IsAssignableFrom(type)) { return Services.GetService<DictionarySerializer>(); }
             if (typeof(DateTime).IsAssignableFrom(type) || typeof(DateTime?).IsAssignableFrom(type)) { return Services.GetService<DateTimeSerializer>(); }
-            if (ValueTypes.Contains(type) || type.IsEnum) { return Services.GetService<ValueSerializer>(); }
+            if (IReflectionHelper.IsPseudoValue(type)) { return Services.GetService<ValueSerializer>(); }
             if (type.IsEnumerableOrArray()) { return Services.GetService<ArraySerializer>(); }
 
             return Services.GetService<ObjectSerializer>();

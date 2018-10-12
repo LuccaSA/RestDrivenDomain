@@ -50,6 +50,7 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: `IReflectionHelper.IsPseudoValue(Type type)` for types serialized and deserialized as JSON value.
  - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of th rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `FieldsParser` exposes methods `ParseAllProperties` and `ParseFields` that can be used as generic or with type as argument.
