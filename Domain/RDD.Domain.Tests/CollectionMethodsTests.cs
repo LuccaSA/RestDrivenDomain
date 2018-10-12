@@ -126,7 +126,7 @@ namespace Rdd.Domain.Tests
         class OverrideObjectPatcher<T> : ObjectPatcher<T>
             where T : class, new()
         {
-            public OverrideObjectPatcher(IPatcherProvider provider) : base(provider, new ReflectionProvider())
+            public OverrideObjectPatcher(IPatcherProvider provider) : base(provider, new ReflectionHelper())
             {
             }
 
@@ -179,7 +179,7 @@ namespace Rdd.Domain.Tests
             {
                 var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
                 var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
-                var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionProvider), instanciator);
+                var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper), instanciator);
 
                 JsonConvert.DefaultSettings = () => new JsonSerializerSettings
                 {
@@ -198,7 +198,7 @@ namespace Rdd.Domain.Tests
         {
             var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
             var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
-            var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionProvider, new InheritanceConfiguration()), instanciator);
+            var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper, new InheritanceConfiguration()), instanciator);
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {

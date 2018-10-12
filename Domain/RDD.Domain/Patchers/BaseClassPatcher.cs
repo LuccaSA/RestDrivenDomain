@@ -9,8 +9,8 @@ namespace Rdd.Domain.Patchers
     {
         private readonly IInheritanceConfiguration<TEntity> _configuration;
 
-        public BaseClassPatcher(IPatcherProvider provider, IReflectionProvider reflectionProvider, IInheritanceConfiguration<TEntity> configuration)
-            : base(provider, reflectionProvider)
+        public BaseClassPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper, IInheritanceConfiguration<TEntity> configuration)
+            : base(provider, reflectionHelper)
         {
             _configuration = configuration;
         }

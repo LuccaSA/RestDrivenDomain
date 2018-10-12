@@ -11,16 +11,16 @@ namespace Rdd.Domain.Patchers
     public class DictionaryPatcher : IPatcher
 	{
         protected IPatcherProvider Provider { get; set; }
-        protected IReflectionProvider ReflectionProvider { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
-        public DictionaryPatcher(IPatcherProvider provider, IReflectionProvider reflectionProvider)
+        public DictionaryPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            ReflectionProvider = reflectionProvider ?? throw new ArgumentNullException(nameof(reflectionProvider));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
         }
 
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
-            => ReflectionProvider.GetValue(patchedObject, property);
+            => ReflectionHelper.GetValue(patchedObject, property);
 
         object IPatcher.PatchValue(object patchedObject, Type expectedType, IJsonElement json)
 		{

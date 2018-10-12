@@ -9,8 +9,8 @@ namespace Rdd.Web.Serialization.Serializers
 {
     public class MetadataSerializer : ObjectSerializer
     {
-        public MetadataSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy) { }
+        public MetadataSerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy)
+            : base(serializerProvider, reflectionHelper, namingStrategy) { }
 
         protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {

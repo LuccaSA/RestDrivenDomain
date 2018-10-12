@@ -9,8 +9,8 @@ namespace Rdd.Web.Serialization.Serializers
 {
     public class BaseClassSerializer : EntitySerializer
     {
-        public BaseClassSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, IUrlProvider urlProvider)
-            : base(serializerProvider, reflectionProvider, namingStrategy, urlProvider) { }
+        public BaseClassSerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy, IUrlProvider urlProvider)
+            : base(serializerProvider, reflectionHelper, namingStrategy, urlProvider) { }
 
         protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {

@@ -17,7 +17,7 @@ namespace Rdd.Domain.Tests
         public IServiceProvider ServiceProvider { get; private set; }
         public IRightExpressionsHelper<User> RightsService { get; private set; }
         public IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
-        public IReflectionProvider ReflectionProvider => ServiceProvider.GetService<IReflectionProvider>();
+        public IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
         public IInstanciator<User> Instanciator { get; private set; }
         public InMemoryStorageService InMemoryStorage { get; private set; }
         public IRepository<User> UsersRepo { get; private set; }
@@ -26,7 +26,7 @@ namespace Rdd.Domain.Tests
         {
             var services = new ServiceCollection();
 
-            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
             services.TryAddSingleton<EnumerablePatcher>();
             services.TryAddSingleton<DictionaryPatcher>();

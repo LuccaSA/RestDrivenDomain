@@ -12,8 +12,8 @@ namespace Rdd.Web.Serialization.Serializers
     {
         private static HashSet<string> _allowedProperties = new HashSet<string> { "id", "name", "code" };
 
-        public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy) { }
+        public CultureInfoSerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy)
+            : base(serializerProvider, reflectionHelper, namingStrategy) { }
 
         protected override void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyInfo property)
         {

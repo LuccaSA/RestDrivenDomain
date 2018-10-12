@@ -37,7 +37,7 @@ namespace Rdd.Web.Helpers
         {
             services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
 
-            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
 
             services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();

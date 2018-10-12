@@ -24,7 +24,7 @@ namespace Rdd.Domain.Tests.Templates
         {
             var services = new ServiceCollection();
 
-            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
             services.TryAddSingleton<EnumerablePatcher>();
             services.TryAddSingleton<DictionaryPatcher>();

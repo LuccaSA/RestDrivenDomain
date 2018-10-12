@@ -6,12 +6,12 @@ using System.Reflection;
 
 namespace Rdd.Domain.Helpers.Reflection
 {
-    public class ReflectionProvider : IReflectionProvider
+    public class ReflectionHelper : IReflectionHelper
     {
         private readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertiesByType;
         private readonly ConcurrentDictionary<PropertyInfo, ExpressionValueProvider> _providersByProperty;
 
-        public ReflectionProvider()
+        public ReflectionHelper()
         {
             _propertiesByType = new ConcurrentDictionary<Type, PropertyInfo[]>();
             _providersByProperty = new ConcurrentDictionary<PropertyInfo, ExpressionValueProvider>();

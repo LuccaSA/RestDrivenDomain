@@ -10,8 +10,8 @@ namespace Rdd.Web.Serialization.Serializers
 {
     public class SelectionSerializer : ObjectSerializer
     {
-        public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy) { }
+        public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy)
+            : base(serializerProvider, reflectionHelper, namingStrategy) { }
 
         public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
             => WriteJson(writer, entity as ISelection, fields);

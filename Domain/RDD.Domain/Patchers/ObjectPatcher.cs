@@ -11,16 +11,16 @@ namespace Rdd.Domain.Patchers
     public class ObjectPatcher : IPatcher
     {
         protected IPatcherProvider Provider { get; set; }
-        protected IReflectionProvider ReflectionProvider { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
-        public ObjectPatcher(IPatcherProvider provider, IReflectionProvider reflectionProvider)
+        public ObjectPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            ReflectionProvider = reflectionProvider ?? throw new ArgumentNullException(nameof(reflectionProvider));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
         }
 
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
-            => ReflectionProvider.GetValue(patchedObject, property);
+            => ReflectionHelper.GetValue(patchedObject, property);
 
         object IPatcher.PatchValue(object patchedObject, Type expectedType, IJsonElement json)
         {
@@ -38,7 +38,7 @@ namespace Rdd.Domain.Patchers
             }
 
             var entityType = Nullable.GetUnderlyingType(expectedType) ?? expectedType;
-            var properties = ReflectionProvider.GetProperties(entityType).ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
+            var properties = ReflectionHelper.GetProperties(entityType).ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
 
             foreach (var kvp in GetKvps(expectedType, json.Content))
             {
@@ -74,14 +74,14 @@ namespace Rdd.Domain.Patchers
         }
 
         protected virtual void PatchProperty(object patchedObject, object value, PropertyInfo property)
-            => ReflectionProvider.SetValue(patchedObject, property, value);
+            => ReflectionHelper.SetValue(patchedObject, property, value);
     }
 
     public class ObjectPatcher<T> : ObjectPatcher, IPatcher<T>
         where T : class
     {
-        public ObjectPatcher(IPatcherProvider provider, IReflectionProvider reflectionProvider)
-            : base(provider, reflectionProvider)
+        public ObjectPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper)
+            : base(provider, reflectionHelper)
         {
         }
 

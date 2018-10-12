@@ -13,8 +13,8 @@ namespace Rdd.Web.Serialization.Serializers
     {
         protected IUrlProvider UrlProvider { get; set; }
 
-        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, IUrlProvider urlProvider)
-            : base(serializerProvider, reflectionProvider, namingStrategy)
+        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy, IUrlProvider urlProvider)
+            : base(serializerProvider, reflectionHelper, namingStrategy)
         {
             UrlProvider = urlProvider;
         }

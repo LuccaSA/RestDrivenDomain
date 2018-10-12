@@ -13,14 +13,14 @@ namespace Rdd.Web.Serialization.Serializers
     public class ObjectSerializer : ISerializer
     {
         protected ISerializerProvider SerializerProvider { get; private set; }
-        protected IReflectionProvider ReflectionProvider { get; private set; }
+        protected IReflectionHelper ReflectionHelper { get; private set; }
         protected NamingStrategy NamingStrategy { get; private set; }
-        
-        public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
+
+        public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy)
         {
-            SerializerProvider = serializerProvider;
-            NamingStrategy = namingStrategy;
-            ReflectionProvider = reflectionProvider;
+            SerializerProvider = serializerProvider ?? throw new ArgumentNullException(nameof(serializerProvider));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
+            NamingStrategy = namingStrategy ?? throw new ArgumentNullException(nameof(namingStrategy));
         }
 
         public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
@@ -40,7 +40,7 @@ namespace Rdd.Web.Serialization.Serializers
             if (fields == null || !fields.Children.Any())
             {
                 var type = entity.GetType();
-                return new ExpressionParser().ParseTree(entity.GetType(), string.Join(",", ReflectionProvider.GetProperties(type).Select(p => p.Name)));
+                return new ExpressionParser().ParseTree(entity.GetType(), string.Join(",", ReflectionHelper.GetProperties(type).Select(p => p.Name)));
             }
 
             return fields;
@@ -70,6 +70,6 @@ namespace Rdd.Web.Serialization.Serializers
             => NamingStrategy.GetPropertyName(property.Name, false);
 
         protected virtual object GetRawValue(object entity, IExpressionTree fields, PropertyInfo property)
-            => ReflectionProvider.GetValue(entity, property);
+            => ReflectionHelper.GetValue(entity, property);
     }
 }

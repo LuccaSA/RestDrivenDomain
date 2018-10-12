@@ -38,13 +38,13 @@ namespace Rdd.Domain.Tests
 
         IServiceProvider ServiceProvider;
         IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
-        IReflectionProvider ReflectionProvider => ServiceProvider.GetService<IReflectionProvider>();
+        IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
 
         public PatchersTests()
         {
             var services = new ServiceCollection();
 
-            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
             services.TryAddSingleton<EnumerablePatcher>();
             services.TryAddSingleton<DictionaryPatcher>();
@@ -61,7 +61,7 @@ namespace Rdd.Domain.Tests
             var input = @"{intDico: { 1: 1, 2: 3 }, customFields: { 1: {code:""hey !""}, 2: {code:""salut""} }}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Equal(1, newPatched.IntDico[1]);
@@ -76,7 +76,7 @@ namespace Rdd.Domain.Tests
             var input = @"{customFields: { 1: null, 2: {code:""test""} }}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Null(newPatched.CustomFields[1]);
@@ -89,7 +89,7 @@ namespace Rdd.Domain.Tests
             var input = @"{keyStringValueStringDico: { ""yo"": null, ""man"": ""test"" }}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Null(newPatched.KeyStringValueStringDico["yo"]);
@@ -102,7 +102,7 @@ namespace Rdd.Domain.Tests
             var input = @"{intNullableDico: { 1: null, 2: 3 }}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Null(newPatched.IntNullableDico[1]);
@@ -115,7 +115,7 @@ namespace Rdd.Domain.Tests
             var input = @"{stringDico: { 1: null, 2: ""test"" }}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Null(newPatched.StringDico[1]);
@@ -128,7 +128,7 @@ namespace Rdd.Domain.Tests
             Assert.Throws<BadRequestException>(() =>
             {
                 var json = new JsonParser().Parse(@"{intDico: { 1: null, 2: 3 }}");
-                IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+                IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
                 patcher.Patch(new ToPatch(), json);
             });
         }
@@ -139,7 +139,7 @@ namespace Rdd.Domain.Tests
             var input = @"{days: {code: ""Tue""}}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Equal(TestEnum.Tue, newPatched.Days.Value);
@@ -151,7 +151,7 @@ namespace Rdd.Domain.Tests
             var input = @"{aCollection: [{mon: ""object""}, {autre: ""test""}]}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Equal(2, newPatched.ACollection.Count);
@@ -165,7 +165,7 @@ namespace Rdd.Domain.Tests
             var input = @"{arrayOfInt: [1, 2, 3, 4]}";
             var json = new JsonParser().Parse(input);
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.Patch(newPatched, json);
 
             Assert.Equal(4, newPatched.ArrayOfInt.Length);
@@ -179,7 +179,7 @@ namespace Rdd.Domain.Tests
         public void PatchFromAnonymous()
         {
             var newPatched = new ToPatch();
-            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionProvider);
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
             patcher.PatchFromAnonymous(newPatched, new { arrayOfInt = new[] { 1, 2, 3, 4 } });
 
             Assert.Equal(4, newPatched.ArrayOfInt.Length);
