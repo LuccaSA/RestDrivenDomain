@@ -11,7 +11,7 @@
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
  - **Removed**: unused metadata.paging in returned json
- - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.
+ - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`. `FuncSerializer` is also dropped.
  - **Modification**: ``ISerializer`` nows feeds a `JsonTextWriter` instead of returning an object
  - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis if you opt-in.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**

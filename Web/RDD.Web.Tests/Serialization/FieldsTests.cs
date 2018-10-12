@@ -8,6 +8,7 @@ using Rdd.Domain.Models;
 using Rdd.Web.Serialization;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Serialization.Reflection;
+using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
 using System.Buffers;
@@ -43,6 +44,18 @@ namespace Rdd.Web.Tests.Serialization
             services.AddSingleton<ISerializerProvider, SerializerProvider>();
             services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
             services.AddSingleton(ArrayPool<char>.Shared);
+
+            services.AddSingleton<ArraySerializer>();
+            services.AddSingleton<BaseClassSerializer>();
+            services.AddSingleton<CultureInfoSerializer>();
+            services.AddSingleton<DateTimeSerializer>();
+            services.AddSingleton<DictionarySerializer>();
+            services.AddSingleton<EntitySerializer>();
+            services.AddSingleton<MetadataSerializer>();
+            services.AddSingleton<ObjectSerializer>();
+            services.AddSingleton<SelectionSerializer>();
+            services.AddSingleton<ToStringSerializer>();
+            services.AddSingleton<ValueSerializer>();
 
             var urlProvider = new Mock<IUrlProvider>();
             urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));

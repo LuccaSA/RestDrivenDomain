@@ -111,10 +111,13 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<ISerializerProvider, SerializerProvider>();
 
             services.TryAddSingleton<ArraySerializer>();
+            services.TryAddSingleton<BaseClassSerializer>();
             services.TryAddSingleton<CultureInfoSerializer>();
             services.TryAddSingleton<DateTimeSerializer>();
             services.TryAddSingleton<DictionarySerializer>();
+            services.TryAddSingleton<EntitySerializer>();
             services.TryAddSingleton<MetadataSerializer>();
+            services.TryAddSingleton<ObjectSerializer>();
             services.TryAddSingleton<SelectionSerializer>();
             services.TryAddSingleton<ToStringSerializer>();
             services.TryAddSingleton<ValueSerializer>();

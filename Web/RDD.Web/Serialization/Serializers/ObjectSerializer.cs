@@ -15,15 +15,12 @@ namespace Rdd.Web.Serialization.Serializers
         protected ISerializerProvider SerializerProvider { get; private set; }
         protected IReflectionProvider ReflectionProvider { get; private set; }
         protected NamingStrategy NamingStrategy { get; private set; }
-
-        public Type WorkingType { get; set; }
-
-        public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, Type workingType)
+        
+        public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
         {
             SerializerProvider = serializerProvider;
             NamingStrategy = namingStrategy;
             ReflectionProvider = reflectionProvider;
-            WorkingType = workingType;
         }
 
         public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
@@ -42,8 +39,8 @@ namespace Rdd.Web.Serialization.Serializers
         {
             if (fields == null || !fields.Children.Any())
             {
-                return new ExpressionParser().ParseTree(WorkingType,
-                    string.Join(",", ReflectionProvider.GetProperties(WorkingType).Select(p => p.Name)));
+                var type = entity.GetType();
+                return new ExpressionParser().ParseTree(entity.GetType(), string.Join(",", ReflectionProvider.GetProperties(type).Select(p => p.Name)));
             }
 
             return fields;

@@ -12,7 +12,7 @@ namespace Rdd.Web.Serialization.Serializers
     public class DictionarySerializer : ObjectSerializer
     {
         public DictionarySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy) 
-            : base(serializerProvider, reflectionProvider, namingStrategy, typeof(IDictionary)) { }
+            : base(serializerProvider, reflectionProvider, namingStrategy) { }
 
         public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
             => WriteJson(writer, entity as IDictionary, fields);

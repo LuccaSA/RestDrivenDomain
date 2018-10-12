@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Serialization;
-using Rdd.Domain.Helpers;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Models;
 using Rdd.Web.Serialization.Providers;
@@ -11,7 +10,7 @@ namespace Rdd.Web.Serialization.Serializers
     public class MetadataSerializer : ObjectSerializer
     {
         public MetadataSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy, typeof(Culture)) { }
+            : base(serializerProvider, reflectionProvider, namingStrategy) { }
 
         protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {
