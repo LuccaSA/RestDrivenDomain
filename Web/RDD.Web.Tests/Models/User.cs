@@ -5,8 +5,6 @@ namespace Rdd.Web.Tests.Models
 {
     public class User : EntityBase<int>, IUser
     {
-        public override int Id { get; set; }
-        public override string Name { get; set; }
         public MyValueObject MyValueObject { get; set; }
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
