@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rdd.Application;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
@@ -19,9 +22,21 @@ namespace Rdd.Domain.Tests.Templates
 
         public SingleContextTests()
         {
+            var services = new ServiceCollection();
+
+            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
+            services.TryAddSingleton<EnumerablePatcher>();
+            services.TryAddSingleton<DictionaryPatcher>();
+            services.TryAddSingleton<ValuePatcher>();
+            services.TryAddSingleton<DynamicPatcher>();
+            services.TryAddSingleton<ObjectPatcher>();
+
+            var provider = services.BuildServiceProvider();
+
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
             _rightsService = new RightsServiceMock<User>();
-            _patcherProvider = new PatcherProvider();
+            _patcherProvider = new PatcherProvider(provider);
             Instanciator = new DefaultInstanciator<User>();
         }
 

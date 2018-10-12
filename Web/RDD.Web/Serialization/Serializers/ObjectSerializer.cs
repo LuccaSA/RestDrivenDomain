@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -70,6 +70,6 @@ namespace Rdd.Web.Serialization.Serializers
             => NamingStrategy.GetPropertyName(property.Name, false);
 
         protected virtual object GetRawValue(object entity, IExpressionTree fields, PropertyInfo property)
-            => property.GetValue(entity, null);
+            => ReflectionProvider.GetValue(entity, property);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Rdd.Domain.Json;
+﻿using Rdd.Domain.Helpers.Reflection;
+using Rdd.Domain.Json;
 using System.Reflection;
 
 namespace Rdd.Domain.Patchers
@@ -8,8 +9,8 @@ namespace Rdd.Domain.Patchers
     {
         private readonly IInheritanceConfiguration<TEntity> _configuration;
 
-        public BaseClassPatcher(IPatcherProvider provider, IInheritanceConfiguration<TEntity> configuration)
-            : base(provider)
+        public BaseClassPatcher(IPatcherProvider provider, IReflectionProvider reflectionProvider, IInheritanceConfiguration<TEntity> configuration)
+            : base(provider, reflectionProvider)
         {
             _configuration = configuration;
         }

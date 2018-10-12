@@ -8,13 +8,15 @@ using Newtonsoft.Json.Serialization;
 using Rdd.Application;
 using Rdd.Application.Controllers;
 using Rdd.Domain;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
+using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Infra.Storage;
 using Rdd.Web.Models;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
@@ -35,6 +37,17 @@ namespace Rdd.Web.Helpers
         {
             services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
 
+            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
+
+            services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
+            services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
+            services.TryAddSingleton<EnumerablePatcher>();
+            services.TryAddSingleton<DictionaryPatcher>();
+            services.TryAddSingleton<ValuePatcher>();
+            services.TryAddSingleton<DynamicPatcher>();
+            services.TryAddSingleton<ObjectPatcher>();
+            services.TryAddSingleton(typeof(IPatcher<>), typeof(ObjectPatcher<>));
+
             // register base services
             services.TryAddScoped<EFStorageService>();
             services.TryAddScoped<IStorageService>(s => s.GetService<EFStorageService>());
@@ -42,10 +55,7 @@ namespace Rdd.Web.Helpers
 
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.TryAddScoped<IPatcherProvider, PatcherProvider>();
-            services.TryAddScoped(typeof(IPatcher<>), typeof(ObjectPatcher<>));
             services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
-            services.TryAddScoped(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
@@ -103,9 +113,6 @@ namespace Rdd.Web.Helpers
 
             services.AddHttpContextAccessor();
             services.TryAddSingleton<IUrlProvider, UrlProvider>();
-
-            services.AddMemoryCache();
-            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
 
             services.TryAddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
             services.TryAddSingleton<ISerializerProvider, SerializerProvider>();

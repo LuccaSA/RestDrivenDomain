@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using System.Collections.Generic;
 using System.Reflection;
 

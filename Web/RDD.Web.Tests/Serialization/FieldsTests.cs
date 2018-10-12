@@ -3,11 +3,11 @@ using Moq;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Web.Serialization;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
@@ -38,7 +38,6 @@ namespace Rdd.Web.Tests.Serialization
         protected IServiceProvider GetServices()
         {
             var services = new ServiceCollection();
-            services.AddMemoryCache();
             services.AddSingleton<IInheritanceConfiguration, InheritanceConfiguration>();
             services.AddSingleton<IReflectionProvider, ReflectionProvider>();
             services.AddSingleton<ISerializerProvider, SerializerProvider>();
