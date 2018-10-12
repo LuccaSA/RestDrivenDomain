@@ -169,5 +169,32 @@ namespace Rdd.Web.Tests.Serialization
 
             Assert.Equal(ExpectedInput(@"{""users"":[{""name"":""Peter""},{""name"":""Steven""}]}"), json);
         }
+
+        [Fact]
+        public async Task ListKeyValuePairSerialize()
+        {
+            var values = new List<KeyValuePair<int, string>>
+            {
+                new KeyValuePair<int, string>(2, "deux"),
+                new KeyValuePair<int, string>(3, "trois"),
+            };
+
+            var json = await SerializeAsync(values, new ExpressionTree());
+
+            Assert.Equal(ExpectedInput(@"[{""key"":2,""value"":""deux""},{""key"":3,""value"":""trois""}]"), json);
+        }
+
+        [Theory]
+        [InlineData(null, "null")]
+        [InlineData(Test.A, "0")]
+        public async Task NullableEnum(Test? value, string result)
+        {
+            var entity = new Department { Enum = value };
+
+            var fields = ExpressionTree<Department>.New(u => u.Enum);
+            var json = await SerializeAsync(entity, fields);
+
+            Assert.Equal(ExpectedInput($@"{{""enum"":{result}}}"), json);
+        }
     }
 }
