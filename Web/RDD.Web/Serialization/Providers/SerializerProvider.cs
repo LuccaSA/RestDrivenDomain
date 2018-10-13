@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NExtends.Primitives.Types;
 using Rdd.Domain;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Models;
 using Rdd.Web.Serialization.Serializers;
 using System;
@@ -13,19 +14,22 @@ namespace Rdd.Web.Serialization.Providers
 {
     public class SerializerProvider : ISerializerProvider
     {
-        protected IEnumerable<IInheritanceConfiguration> InheritanceConfigurations { get; set; }
         protected IServiceProvider Services { get; set; }
+        protected IReflectionHelper IReflectionHelper { get; set; }
 
-        public SerializerProvider(IServiceProvider services, IEnumerable<IInheritanceConfiguration> inheritanceConfigurations)
+        protected IEnumerable<IInheritanceConfiguration> InheritanceConfigurations { get; set; }
+
+        public SerializerProvider(IEnumerable<IInheritanceConfiguration> inheritanceConfigurations, IServiceProvider services, IReflectionHelper reflectionHelper)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
+            IReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
 
             InheritanceConfigurations = inheritanceConfigurations;
         }
 
         public ISerializer GetSerializer(object entity)
         {
-            if (entity == null) { return ActivatorUtilities.CreateInstance<ValueSerializer>(Services); }
+            if (entity == null) { return Services.GetService<ValueSerializer>(); }
 
             return GetSerializer(entity.GetType());
         }
@@ -34,26 +38,21 @@ namespace Rdd.Web.Serialization.Providers
         {
             if (InheritanceConfigurations.Any(c => c.BaseType.IsAssignableFrom(type)))
             {
-                return ActivatorUtilities.CreateInstance<BaseClassSerializer>(Services, type);
+                return Services.GetService<BaseClassSerializer>();
             }
 
-            if (typeof(Metadata).IsAssignableFrom(type)) { return ActivatorUtilities.GetServiceOrCreateInstance<MetadataSerializer>(Services); }
-            if (typeof(ISelection).IsAssignableFrom(type)) { return ActivatorUtilities.GetServiceOrCreateInstance<SelectionSerializer>(Services); }
-            if (typeof(IEntityBase).IsAssignableFrom(type)) { return ActivatorUtilities.CreateInstance<EntitySerializer>(Services, type); }
+            if (typeof(Metadata).IsAssignableFrom(type)) { return Services.GetService<MetadataSerializer>(); }
+            if (typeof(ISelection).IsAssignableFrom(type)) { return Services.GetService<SelectionSerializer>(); }
+            if (typeof(IEntityBase).IsAssignableFrom(type)) { return Services.GetService<EntitySerializer>(); }
 
-            if (typeof(CultureInfo).IsAssignableFrom(type)) { return ActivatorUtilities.GetServiceOrCreateInstance<CultureInfoSerializer>(Services); }
-            if (typeof(Uri).IsAssignableFrom(type)) { return ActivatorUtilities.GetServiceOrCreateInstance<ToStringSerializer>(Services); }
-            if (typeof(IDictionary).IsAssignableFrom(type)) { return ActivatorUtilities.GetServiceOrCreateInstance<DictionarySerializer>(Services); }
-            if (typeof(DateTime).IsAssignableFrom(type) || typeof(DateTime?).IsAssignableFrom(type)) { return ActivatorUtilities.GetServiceOrCreateInstance<DateTimeSerializer>(Services); }
-            if (typeof(string).IsAssignableFrom(type) || type.IsValueType) { return ActivatorUtilities.GetServiceOrCreateInstance<ValueSerializer>(Services); }
-            if (type.IsEnumerableOrArray()) { return ActivatorUtilities.GetServiceOrCreateInstance<ArraySerializer>(Services); }
+            if (typeof(CultureInfo).IsAssignableFrom(type)) { return Services.GetService<CultureInfoSerializer>(); }
+            if (typeof(Uri).IsAssignableFrom(type)) { return Services.GetService<ToStringSerializer>(); }
+            if (typeof(IDictionary).IsAssignableFrom(type)) { return Services.GetService<DictionarySerializer>(); }
+            if (typeof(DateTime).IsAssignableFrom(type) || typeof(DateTime?).IsAssignableFrom(type)) { return Services.GetService<DateTimeSerializer>(); }
+            if (IReflectionHelper.IsPseudoValue(type)) { return Services.GetService<ValueSerializer>(); }
+            if (type.IsEnumerableOrArray()) { return Services.GetService<ArraySerializer>(); }
 
-            if (type.IsGenericType && typeof(Func<>).IsAssignableFrom(type.GetGenericTypeDefinition()))
-            {
-                return ActivatorUtilities.GetServiceOrCreateInstance(Services, typeof(FuncSerializer<>).MakeGenericType(type.GetGenericArguments())) as ISerializer;
-            }
-
-            return ActivatorUtilities.CreateInstance<ObjectSerializer>(Services, type);
+            return Services.GetService<ObjectSerializer>();
         }
     }
 }

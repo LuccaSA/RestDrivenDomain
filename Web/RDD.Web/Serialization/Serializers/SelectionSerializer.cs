@@ -2,16 +2,16 @@
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using System.Linq;
 
 namespace Rdd.Web.Serialization.Serializers
 {
     public class SelectionSerializer : ObjectSerializer
     {
-        public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy, typeof(ISelection)) { }
+        public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy)
+            : base(serializerProvider, reflectionHelper, namingStrategy) { }
 
         public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
             => WriteJson(writer, entity as ISelection, fields);

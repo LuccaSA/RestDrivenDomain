@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using Rdd.Web.Serialization.UrlProviders;
-using System;
 using System.Linq;
 using System.Reflection;
 
@@ -14,8 +13,8 @@ namespace Rdd.Web.Serialization.Serializers
     {
         protected IUrlProvider UrlProvider { get; set; }
 
-        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, IUrlProvider urlProvider, Type workingType)
-            : base(serializerProvider, reflectionProvider, namingStrategy, workingType)
+        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionHelper reflectionHelper, NamingStrategy namingStrategy, IUrlProvider urlProvider)
+            : base(serializerProvider, reflectionHelper, namingStrategy)
         {
             UrlProvider = urlProvider;
         }
@@ -34,7 +33,7 @@ namespace Rdd.Web.Serialization.Serializers
         {
             if (property.Name == "Url")
             {
-                return UrlProvider?.GetEntityApiUri(WorkingType, entity as IPrimaryKey);
+                return UrlProvider?.GetEntityApiUri(entity as IPrimaryKey);
             }
 
             return base.GetRawValue(entity, fields, property);

@@ -1,4 +1,5 @@
 ﻿using NExtends.Primitives.Strings;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
 using System;
 using System.Collections;
@@ -7,19 +8,19 @@ using System.Reflection;
 
 namespace Rdd.Domain.Patchers
 {
-    class DictionaryPatcher : IPatcher
+    public class DictionaryPatcher : IPatcher
 	{
         protected IPatcherProvider Provider { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
-		public DictionaryPatcher(IPatcherProvider provider)
-		{
-            Provider = provider;
-		}
+        public DictionaryPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper)
+        {
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
+        }
 
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
-        {
-            return property.GetValue(patchedObject);
-        }
+            => ReflectionHelper.GetValue(patchedObject, property);
 
         object IPatcher.PatchValue(object patchedObject, Type expectedType, IJsonElement json)
 		{
