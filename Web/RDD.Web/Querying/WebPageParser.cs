@@ -40,7 +40,7 @@ namespace Rdd.Web.Querying
                         throw new BadRequestException(String.Format("Limit value {0} not in correct format", elements[1]));
                     }
 
-                    return new Page(offset, limit, rddOptions.Value.MaximumPaging);
+                    return new Page(offset, limit, rddOptions.Value.PagingMaximumLimit);
                 }
                 else
                 {

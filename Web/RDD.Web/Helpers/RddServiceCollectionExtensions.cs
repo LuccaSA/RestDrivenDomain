@@ -66,9 +66,9 @@ namespace Rdd.Web.Helpers
         public static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services, Action<RddOptions> onConfigure)
             where TDbContext : DbContext
         {
-            var options = services.AddRddCore<TDbContext>();
+            var builder = services.AddRddCore<TDbContext>();
             services.Configure(onConfigure);
-            return options;
+            return builder;
         }
 
         public static RddBuilder AddJsonConverter(this RddBuilder rddBuilder, JsonConverter jsonConverter)

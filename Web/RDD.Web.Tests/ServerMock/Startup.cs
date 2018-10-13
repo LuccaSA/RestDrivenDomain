@@ -29,7 +29,7 @@ namespace Rdd.Web.Tests.ServerMock
                 .AddRdd<ExchangeRateDbContext>(rdd =>
                 {
                     rdd.PagingLimit = 10;
-                    rdd.MaximumPaging = 4242;
+                    rdd.PagingMaximumLimit = 4242;
                 })
                 .WithDefaultRights(RightDefaultMode.Open);
 
