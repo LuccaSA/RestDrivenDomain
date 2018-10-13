@@ -5,6 +5,9 @@ using Rdd.Web.Helpers;
 using Rdd.Web.Tests.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Rdd.Web.Querying;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -23,7 +26,16 @@ namespace Rdd.Web.Tests
                 repository.Add(new User { Id = 1 });
                 repository.Add(new AnotherUser { Id = 2 });
 
-                var controller = new UserWebController(appController, new ApiHelper<IUser, int>(null));
+                var httpContextHelper = new HttpContextHelper(new HttpContextAccessor
+                {
+                    HttpContext = new DefaultHttpContext()
+                });
+
+                var query = new WebQueryFactory<IUser, int>(Options.Create(new RddOptions()));
+ 
+                var apiHelper = new ApiHelper<IUser, int>(httpContextHelper, query);
+
+                var controller = new UserWebController(appController, apiHelper);
 
                 var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
 

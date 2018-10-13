@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rdd.Domain.Rights;
 using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Tests.ServerMock
@@ -24,7 +25,13 @@ namespace Rdd.Web.Tests.ServerMock
         {
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
 
-            services.AddRdd<ExchangeRateDbContext>(b => b.SetDefaultRights(Domain.Rights.RightDefaultMode.Open));
+            services
+                .AddRdd<ExchangeRateDbContext>(rdd =>
+                {
+                    rdd.PagingLimit = 10;
+                    rdd.PagingMaximumLimit = 4242;
+                })
+                .WithDefaultRights(RightDefaultMode.Open);
 
             services.AddScoped<ExchangeRateController>();
 

@@ -3,6 +3,9 @@ using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using Rdd.Domain.Models.Querying;
+using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Querying
 {
@@ -10,9 +13,11 @@ namespace Rdd.Web.Querying
         where TEntity : class, IPrimaryKey<TKey>
     {
         protected HashSet<string> IgnoredFilters { get; set; }
+        private readonly IOptions<RddOptions> _rddOptions;
 
-        public WebQueryFactory()
+        public WebQueryFactory(IOptions<RddOptions> rddOptions)
         {
+            _rddOptions = rddOptions;
             IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -24,7 +29,7 @@ namespace Rdd.Web.Querying
             }
         }
 
-        public WebQuery<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
+        public Query<TEntity> FromWebContext(IHttpContextHelper httpContextHelper, bool isCollectionCall)
         {
             var parameters = httpContextHelper.GetQueryNameValuePairs().Where(v => !IgnoredFilters.Contains(v.Key)).ToDictionary(k => k.Key.ToLower(), k => k.Value);
 
@@ -32,10 +37,10 @@ namespace Rdd.Web.Querying
             var filters = WebFiltersParser<TEntity>.Parse(parameters);
             var orderBys = new OrderByParser<TEntity>().Parse(parameters);
             var options = new OptionsParser().Parse(parameters, fields);
-            var page = new WebPageParser().Parse(parameters);
+            var page = new PagingParser().Parse(parameters, _rddOptions);
             var headers = new HeadersParser().Parse(httpContextHelper.GetHeaders());
 
-            return new WebQuery<TEntity>
+            return new Query<TEntity>
             {
                 Fields = fields,
                 Filter = new WebFiltersContainer<TEntity, TKey>(filters),

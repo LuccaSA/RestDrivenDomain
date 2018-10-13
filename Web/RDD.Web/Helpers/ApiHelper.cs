@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Rdd.Domain.Models.Querying;
 
 namespace Rdd.Web.Helpers
 {
@@ -15,14 +16,15 @@ namespace Rdd.Web.Helpers
         where TEntity : class, IEntityBase<TKey>
     {
         private readonly IHttpContextHelper _httpContextHelper;
-        private readonly WebQueryFactory<TEntity, TKey> _queryFactory = new WebQueryFactory<TEntity, TKey>();
+        private readonly WebQueryFactory<TEntity, TKey> _queryFactory; // = new WebQueryFactory<TEntity, TKey>();
 
-        public ApiHelper(IHttpContextHelper httpContextHelper)
+        public ApiHelper(IHttpContextHelper httpContextHelper, WebQueryFactory<TEntity, TKey> queryFactory)
         {
             _httpContextHelper = httpContextHelper;
+            _queryFactory = queryFactory;
         }
 
-        public virtual WebQuery<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
+        public virtual Query<TEntity> CreateQuery(HttpVerbs verb, bool isCollectionCall = true)
         {
             var query = _queryFactory.FromWebContext(_httpContextHelper, isCollectionCall);
             query.Verb = verb;
