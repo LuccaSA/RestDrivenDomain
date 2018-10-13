@@ -54,9 +54,10 @@ namespace Rdd.Web.Tests.Services
         public void TestInheritanceRegister()
         {
             var services = new ServiceCollection();
+            var setup = new RddBuilder(services);
 
-            services.AddRddInheritanceConfiguration<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration());
-            services.AddRddInheritanceConfiguration<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
+            setup.AddRddInheritanceConfiguration<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration());
+            setup.AddRddInheritanceConfiguration<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
 
             var provider = services.BuildServiceProvider();
 
@@ -83,8 +84,9 @@ namespace Rdd.Web.Tests.Services
         public void TestRddSerializationRegister()
         {
             var services = new ServiceCollection();
+            var setup = new RddBuilder(services);
+            setup.AddRddSerialization();
 
-            services.AddRddSerialization();
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
