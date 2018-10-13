@@ -26,7 +26,11 @@ namespace Rdd.Web.Tests.ServerMock
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
 
             services
-                .AddRdd<ExchangeRateDbContext>()
+                .AddRdd<ExchangeRateDbContext>(rdd =>
+                {
+                    rdd.PagingLimit = 10;
+                    rdd.MaximumPaging = 4242;
+                })
                 .WithDefaultRights(RightDefaultMode.Open);
 
             services.AddScoped<ExchangeRateController>();
