@@ -1,5 +1,7 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Options;
+using Moq;
 using Rdd.Web.Helpers;
+using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using Xunit;
 
@@ -17,7 +19,10 @@ namespace Rdd.Web.Tests
             httpContextHelper.Setup(h => h.GetContentType())
                 .Returns("application/json");
 
-            var helper = new ApiHelper<User, int>(httpContextHelper.Object);
+            var options = Options.Create(new RddOptions());
+            var queryBuilder = new WebQueryFactory<User, int>(options);
+
+            var helper = new ApiHelper<User, int>(httpContextHelper.Object, queryBuilder);
 
             var candidate = helper.CreateCandidate();
 
