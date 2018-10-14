@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Rdd.Domain.Patchers
 {
-    internal class EnumerablePatcher : IPatcher
+    public class EnumerablePatcher : IPatcher
 	{
         protected IPatcherProvider Provider { get; set; }
 

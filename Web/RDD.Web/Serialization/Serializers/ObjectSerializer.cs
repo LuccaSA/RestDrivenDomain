@@ -2,28 +2,23 @@
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Rdd.Web.Serialization.Serializers
 {
     public class ObjectSerializer : ISerializer
     {
         protected ISerializerProvider SerializerProvider { get; private set; }
-        protected IReflectionProvider ReflectionProvider { get; private set; }
         protected NamingStrategy NamingStrategy { get; private set; }
+        protected Dictionary<Type, IExpressionTree> DefaultFields { get; set; }
 
-        public Type WorkingType { get; set; }
-
-        public ObjectSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, Type workingType)
+        public ObjectSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
         {
-            SerializerProvider = serializerProvider;
-            NamingStrategy = namingStrategy;
-            ReflectionProvider = reflectionProvider;
-            WorkingType = workingType;
+            SerializerProvider = serializerProvider ?? throw new ArgumentNullException(nameof(serializerProvider));
+            NamingStrategy = namingStrategy ?? throw new ArgumentNullException(nameof(namingStrategy));
+            DefaultFields = new Dictionary<Type, IExpressionTree>();
         }
 
         public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
@@ -40,10 +35,15 @@ namespace Rdd.Web.Serialization.Serializers
 
         protected virtual IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {
-            if (fields == null || !fields.Children.Any())
+            if (fields == null || fields.Children.Count == 0)
             {
-                return new ExpressionParser().ParseTree(WorkingType,
-                    string.Join(",", ReflectionProvider.GetProperties(WorkingType).Select(p => p.Name)));
+                var type = entity.GetType();
+                if (!DefaultFields.ContainsKey(type))
+                {
+                    DefaultFields[type] = new ExpressionParser().ParseTree(type, string.Join(",", type.GetProperties().Select(p => p.Name)));
+                }
+
+                return DefaultFields[type];
             }
 
             return fields;
@@ -51,28 +51,24 @@ namespace Rdd.Web.Serialization.Serializers
 
         protected virtual void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
-            var property = (fields.Node.ToLambdaExpression().Body as MemberExpression).Member as PropertyInfo;
-            SerializeProperty(writer, entity, fields, property);
+            SerializeProperty(writer, entity, fields, fields.Node as PropertyExpression);
         }
 
-        protected virtual void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyInfo property)
+        protected virtual void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyExpression property)
         {
-            var key = GetKey(entity, fields, property);
-            var value = GetRawValue(entity, fields, property);
-
-            WriteKvp(writer, key, value, fields, property);
+            WriteKvp(writer, GetKey(entity, fields, property), GetRawValue(entity, fields, property), fields, property);
         }
 
-        protected virtual void WriteKvp(JsonTextWriter writer, string key, object value, IExpressionTree fields, PropertyInfo property)
+        protected virtual void WriteKvp(JsonTextWriter writer, string key, object value, IExpressionTree fields, PropertyExpression property)
         {
             writer.WritePropertyName(key, true);
-            SerializerProvider.GetSerializer(value).WriteJson(writer, value, fields);
+            SerializerProvider.ResolveSerializer(value).WriteJson(writer, value, fields);
         }
 
-        protected virtual string GetKey(object entity, IExpressionTree fields, PropertyInfo property)
+        protected virtual string GetKey(object entity, IExpressionTree fields, PropertyExpression property)
             => NamingStrategy.GetPropertyName(property.Name, false);
 
-        protected virtual object GetRawValue(object entity, IExpressionTree fields, PropertyInfo property)
-            => property.GetValue(entity, null);
+        protected virtual object GetRawValue(object entity, IExpressionTree fields, PropertyExpression property)
+            => property.ValueProvider.GetValue(entity);
     }
 }

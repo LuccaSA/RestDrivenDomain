@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Rdd.Domain.Patchers
 {
-    class DynamicPatcher : IPatcher
+    public class DynamicPatcher : IPatcher
 	{
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject) => null;
 
