@@ -1,7 +1,9 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Models.Querying;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Rdd.Domain.Helpers;
 
 namespace Rdd.Application.Controllers
 {
@@ -27,8 +29,23 @@ namespace Rdd.Application.Controllers
             Collection = collection;
         }
 
-        public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
+        public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
+        {
+            var entities = await Collection.GetAsync(query);
+            await OnAfterGetAsync(entities.Items);
+            return entities;
+        }
 
-        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
+        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
+        {
+            var entity = await Collection.GetByIdAsync(id, query);
+            await OnAfterGetAsync(entity.Yield());
+            return entity;
+        }
+
+        /// <summary>
+        /// Called after all Get methods, should be used to apply custom modifications before items are returned via API 
+        /// </summary>
+        protected virtual Task OnAfterGetAsync(IEnumerable<TEntity> entities) => Task.CompletedTask;
     }
 }

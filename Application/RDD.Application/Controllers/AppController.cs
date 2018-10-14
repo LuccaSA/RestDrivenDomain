@@ -2,7 +2,9 @@
 using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Rdd.Domain.Helpers;
 
 namespace Rdd.Application.Controllers
 {
@@ -33,7 +35,9 @@ namespace Rdd.Application.Controllers
         {
             var entity = await Collection.CreateAsync(candidate, query);
 
+            await OnBeforeSaveEntitiesAsync(entity.Yield());
             await UnitOfWork.SaveChangesAsync();
+            await OnAfterSaveEntitiesAsync(entity.Yield());
 
             return entity;
         }
@@ -42,7 +46,9 @@ namespace Rdd.Application.Controllers
         {
             var entities = await Collection.CreateAsync(candidates, query);
 
+            await OnBeforeSaveEntitiesAsync(entities);
             await UnitOfWork.SaveChangesAsync();
+            await OnAfterSaveEntitiesAsync(entities);
 
             return entities;
         }
@@ -51,7 +57,9 @@ namespace Rdd.Application.Controllers
         {
             var entity = await Collection.UpdateByIdAsync(id, candidate, query);
 
+            await OnBeforeSaveEntitiesAsync(entity.Yield());
             await UnitOfWork.SaveChangesAsync();
+            await OnAfterSaveEntitiesAsync(entity.Yield());
 
             return entity;
         }
@@ -60,7 +68,9 @@ namespace Rdd.Application.Controllers
         {
             var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
 
+            await OnBeforeSaveEntitiesAsync(entities);
             await UnitOfWork.SaveChangesAsync();
+            await OnAfterSaveEntitiesAsync(entities);
 
             return entities;
         }
@@ -69,14 +79,28 @@ namespace Rdd.Application.Controllers
         {
             await Collection.DeleteByIdAsync(id);
 
+            await OnBeforeSaveEntitiesAsync(Enumerable.Empty<TEntity>());
             await UnitOfWork.SaveChangesAsync();
+            await OnAfterSaveEntitiesAsync(Enumerable.Empty<TEntity>());
         }
 
         public async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             await Collection.DeleteByIdsAsync(ids);
 
+            await OnBeforeSaveEntitiesAsync(Enumerable.Empty<TEntity>());
             await UnitOfWork.SaveChangesAsync();
+            await OnAfterSaveEntitiesAsync(Enumerable.Empty<TEntity>());
         }
+
+        /// <summary>
+        /// Called before SaveChangesAsync(), last opportunity to modify entities
+        /// </summary>
+        protected virtual Task OnBeforeSaveEntitiesAsync(IEnumerable<TEntity> entities) => Task.CompletedTask;
+
+        /// <summary>
+        /// Called after SaveChangesAsync(), should be used to apply custom modifications before items are returned via API
+        /// </summary>
+        protected virtual Task OnAfterSaveEntitiesAsync(IEnumerable<TEntity> entities) => Task.CompletedTask;
     }
 }
