@@ -33,11 +33,13 @@ namespace Rdd.Domain.Models
 
             ForgeEntity(entity);
 
-            await ValidateOrDiscardAsync(entity);
+            if (await ValidateOrDiscardAsync(entity))
+            {
+                Repository.Add(entity);
+                return entity;
+            }
 
-            Repository.Add(entity);
-
-            return entity;
+            return null;
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
@@ -52,9 +54,10 @@ namespace Rdd.Domain.Models
 
                 ForgeEntity(entity);
 
-                await ValidateOrDiscardAsync(entity);
-
-                result.Add(entity);
+                if (await ValidateOrDiscardAsync(entity))
+                {
+                    result.Add(entity);
+                }
             }
 
             Repository.AddRange(result);
@@ -118,21 +121,33 @@ namespace Rdd.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        private async Task ValidateOrDiscardAsync(TEntity entity)
+        private async Task<bool> ValidateOrDiscardAsync(TEntity entity)
         {
+            bool isValid;
             try
             {
-                await ValidateEntityAsync(entity);
+                isValid = await ValidateEntityAsync(entity);
             }
             catch (Exception)
             {
                 Repository.DiscardChanges(entity);
                 throw;
             }
+
+            if (!isValid)
+            {
+                Repository.DiscardChanges(entity);
+            }
+
+            return isValid;
         }
 
-
-        protected virtual Task ValidateEntityAsync(TEntity entity) => Task.CompletedTask;
+        /// <summary>
+        /// Validates an entity, and discard changes if entity is invalid.
+        /// </summary>
+        /// <param name="entity">The entity to validate</param>
+        /// <returns>True if entity is valid</returns>
+        protected virtual Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(true);
 
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
