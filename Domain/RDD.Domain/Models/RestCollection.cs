@@ -15,7 +15,7 @@ namespace Rdd.Domain.Models
         protected new IRepository<TEntity> Repository { get; set; }
         protected IPatcher<TEntity> Patcher { get; set; }
 
-        protected IInstanciator<TEntity> Instanciator { get;set;}
+        protected IInstanciator<TEntity> Instanciator { get; set; }
 
         public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
             : base(repository)
@@ -33,7 +33,7 @@ namespace Rdd.Domain.Models
 
             ForgeEntity(entity);
 
-            await ValidateEntityAsync(entity);
+            await ValidateOrDiscardAsync(entity);
 
             Repository.Add(entity);
 
@@ -52,7 +52,7 @@ namespace Rdd.Domain.Models
 
                 ForgeEntity(entity);
 
-                await ValidateEntityAsync(entity);
+                await ValidateOrDiscardAsync(entity);
 
                 result.Add(entity);
             }
@@ -109,7 +109,7 @@ namespace Rdd.Domain.Models
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
-            
+
             foreach (var entity in (await GetAsync(expQuery)).Items)
             {
                 Repository.Remove(entity);
@@ -117,6 +117,20 @@ namespace Rdd.Domain.Models
         }
 
         protected virtual void ForgeEntity(TEntity entity) { }
+
+        private async Task ValidateOrDiscardAsync(TEntity entity)
+        {
+            try
+            {
+                await ValidateEntityAsync(entity);
+            }
+            catch (Exception)
+            {
+                Repository.DiscardChanges(entity);
+                throw;
+            }
+        }
+
 
         protected virtual Task ValidateEntityAsync(TEntity entity) => Task.CompletedTask;
 
@@ -137,7 +151,7 @@ namespace Rdd.Domain.Models
 
             await OnAfterUpdateEntity(entity, candidate, query);
 
-            await ValidateEntityAsync(entity);
+            await ValidateOrDiscardAsync(entity);
 
             return entity;
         }

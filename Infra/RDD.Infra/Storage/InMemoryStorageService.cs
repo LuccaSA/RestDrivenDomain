@@ -70,6 +70,11 @@ namespace Rdd.Infra.Storage
             Cache[typeof(TEntity)].Remove(entity);
         }
 
+        public void DiscardChanges<TEntity>(TEntity entity) where TEntity : class
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddRange<TEntity>(IEnumerable<TEntity> entities)
             where TEntity : class
         {

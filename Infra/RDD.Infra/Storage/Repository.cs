@@ -25,5 +25,10 @@ namespace Rdd.Infra.Storage
         {
             StorageService.Remove(entity);
         }
+
+        public void DiscardChanges(TEntity entity)
+        {
+            StorageService.DiscardChanges(entity);
+        }
     }
 }
