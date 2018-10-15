@@ -30,9 +30,7 @@ namespace Rdd.Web.Tests
             var parser = QueryParserHelper.GetQueryParser<User>();
             parser.IgnoreFilters("pipo");
 
-            var query = parser.Parse(HttpVerbs.Get, dico, true);
-
-            //no bug
+            parser.Parse(HttpVerbs.Get, dico, true);
         }
 
         [Theory]

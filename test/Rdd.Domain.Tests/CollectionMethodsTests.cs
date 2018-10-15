@@ -43,8 +43,7 @@ namespace Rdd.Domain.Tests
             var rightService = new Mock<IRightExpressionsHelper<User>>();
             rightService.Setup(s => s.GetFilter(It.IsAny<Query<User>>())).Returns(trueFilter);
 
-            var id = Guid.NewGuid();
-            var user = new User { Id = id };
+            var id = Guid.NewGuid(); 
             var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object);
             var users = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var app = new UsersAppController(_fixture.InMemoryStorage, users);

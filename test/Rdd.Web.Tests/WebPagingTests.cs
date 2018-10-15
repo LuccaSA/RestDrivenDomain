@@ -53,7 +53,7 @@ namespace Rdd.Web.Tests
                 await _storage.SaveChangesAsync();
 
                 var query = new Query<User> { Page = new Page(0, 1001, 1000) };
-                ISelection<User> result = await _collection.GetAsync(query);
+                await _collection.GetAsync(query);
             });
         }
 
