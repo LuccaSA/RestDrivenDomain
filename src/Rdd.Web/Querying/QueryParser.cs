@@ -3,7 +3,6 @@ using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
-using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,33 +45,44 @@ namespace Rdd.Web.Querying
 
         public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
         { 
-            var filters = new List<WebFilter<TEntity>>();
             var query = new Query<TEntity>
             {
                 Fields = null,
                 Verb = GetVerb(request)
             };
 
-            foreach (var parameter in request.Query.Where(v => !string.IsNullOrEmpty(v.Key) && !IgnoredFilters.Contains(v.Key)))
+            if (request.Query.TryGetValue(Reserved.Fields, out var fieldValue))
             {
-                ParseParameter(parameter.Key, parameter.Value, query, filters);
+                query.Fields = _fieldsParser.Parse<TEntity>(fieldValue);
+                if (query.Fields.Contains((ISelection c) => c.Count))
+                {
+                    query.Options.NeedCount = true;
+                    query.Options.NeedEnumeration = query.Fields.Children.Count() != 1;
+                }
             }
-
-            if (query.Fields == null)
+            else
             {
                 query.Fields = _fieldsParser.GetDeFaultFields<TEntity>(isCollectionCall);
             }
-            else if (query.Fields.Contains((ISelection c) => c.Count))
+
+            if (request.Query.TryGetValue(Reserved.Orderby, out var orderByValue))
             {
-                query.Options.NeedCount = true;
-                query.Options.NeedEnumeration = query.Fields.Children.Count() != 1;
+                query.OrderBys = _orderByParser.Parse<TEntity>(orderByValue);
             }
 
-            if (query.Page == Page.Unlimited)
+            if (request.Query.TryGetValue(Reserved.Paging, out var pageValue))
+            {
+                query.Page = _pagingParser.Parse(pageValue);
+            }
+            else
             {
                 query.Page = _rddOptions.Value.DefaultPage;
             }
 
+            var filters = request.Query
+                .Where(kv => !Reserved.Keywords.Contains(kv.Key))
+                .Select(kv => _filterParser.Parse<TEntity>(kv.Key, kv.Value));
+             
             query.Filter = _webFilterConverter.ToExpression(filters);
 
             return query;
@@ -85,31 +95,6 @@ namespace Rdd.Web.Querying
             if (HttpMethods.IsPut(request.Method)) return HttpVerbs.Put;
             if (HttpMethods.IsDelete(request.Method)) return HttpVerbs.Delete;
             return HttpVerbs.None;
-        }
-
-        protected virtual void ParseParameter(string key, string value, Query<TEntity> query, List<WebFilter<TEntity>> filters)
-        {
-            if (Enum.TryParse<Reserved>(key, true, out var reserved))
-            {
-                switch (reserved)
-                {
-                    case Reserved.fields:
-                        query.Fields = _fieldsParser.Parse<TEntity>(value);
-                        break;
-
-                    case Reserved.orderby:
-                        query.OrderBys = _orderByParser.Parse<TEntity>(value);
-                        break;
-
-                    case Reserved.paging:
-                        query.Page = _pagingParser.Parse(value);
-                        break;
-                }
-            }
-            else
-            {
-                filters.Add(_filterParser.Parse<TEntity>(key, value));
-            }
         }
     }
 }
