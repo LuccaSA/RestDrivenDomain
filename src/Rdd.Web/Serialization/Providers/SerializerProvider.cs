@@ -16,14 +16,14 @@ namespace Rdd.Web.Serialization.Providers
     {
         protected Dictionary<Type, ISerializer> Serializers { get; set; }
         protected IServiceProvider Services { get; set; }
-        protected IReflectionHelper IReflectionHelper { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
         protected IEnumerable<IInheritanceConfiguration> InheritanceConfigurations { get; set; }
 
         public SerializerProvider(IEnumerable<IInheritanceConfiguration> inheritanceConfigurations, IServiceProvider services, IReflectionHelper reflectionHelper)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
-            IReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
 
             Serializers = new Dictionary<Type, ISerializer>();
             InheritanceConfigurations = inheritanceConfigurations;
@@ -46,7 +46,7 @@ namespace Rdd.Web.Serialization.Providers
         {
             if (typeof(CultureInfo).IsAssignableFrom(type)) { return Services.GetService<CultureInfoSerializer>(); }
             if (typeof(Uri).IsAssignableFrom(type)) { return Services.GetService<ToStringSerializer>(); }
-            if (IReflectionHelper.IsPseudoValue(type)) { return Services.GetService<ValueSerializer>(); }
+            if (ReflectionHelper.IsPseudoValue(type)) { return Services.GetService<ValueSerializer>(); }
 
             if (typeof(IDictionary).IsAssignableFrom(type)) { return Services.GetService<DictionarySerializer>(); }
             if (type.IsEnumerableOrArray()) { return Services.GetService<ArraySerializer>(); }

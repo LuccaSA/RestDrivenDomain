@@ -11,12 +11,12 @@ namespace Rdd.Domain.Patchers
     public class PatcherProvider : IPatcherProvider
     {
         protected IServiceProvider Services { get; set; }
-        protected IReflectionHelper IReflectionHelper { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
         public PatcherProvider(IServiceProvider services, IReflectionHelper reflectionHelper)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
-            IReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
         }
 
         public virtual IPatcher GetPatcher(Type expectedType, IJsonElement json)
@@ -36,7 +36,7 @@ namespace Rdd.Domain.Patchers
                 return Services.GetService<DictionaryPatcher>();
             }
 
-            if (IReflectionHelper.IsPseudoValue(expectedType) || expectedType.GetNullableType().IsValueType)
+            if (ReflectionHelper.IsPseudoValue(expectedType) || expectedType.GetNullableType().IsValueType)
             {
                 return Services.GetService<ValuePatcher>();
             }
