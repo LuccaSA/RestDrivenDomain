@@ -1,4 +1,6 @@
-﻿using Rdd.Domain.Models.Querying;
+﻿using System;
+using System.Collections.Generic;
+using Rdd.Domain.Models.Querying;
 
 namespace Rdd.Web.Helpers
 {
@@ -13,6 +15,14 @@ namespace Rdd.Web.Helpers
         public int PagingLimit { get; set; } = 10;
 
         public int PagingMaximumLimit { get; set; } = 1000;
+      
+        public void IgnoreFilters(params string[] filters)
+        {
+            foreach (var filter in filters)
+            {
+                IgnoredFilters.Add(filter);
+            }
+        }
 
         internal Page DefaultPage
         {
@@ -26,6 +36,8 @@ namespace Rdd.Web.Helpers
                 return _defaultWebPage;
             }
         }
+
+        internal HashSet<string> IgnoredFilters { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         private Page _defaultWebPage;
     }

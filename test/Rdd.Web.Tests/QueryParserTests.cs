@@ -9,6 +9,7 @@ using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Rdd.Web.Helpers;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -30,8 +31,11 @@ namespace Rdd.Web.Tests
         public void IgnoredAndBadFilters()
         {
             var request = HttpVerbs.Get.NewRequest(  ("pipo", "nope") , ("", "oulala") );
-            var parser = QueryParserHelper.GetQueryParser<User>();
-            parser.IgnoreFilters("pipo");
+
+            var options = new RddOptions();
+            options.IgnoreFilters("pipo");
+
+            var parser = QueryParserHelper.GetQueryParser<User>(options);
 
             var query = parser.Parse(request, true);
         }
@@ -73,8 +77,6 @@ namespace Rdd.Web.Tests
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
         [InlineData("aaaa")]
         [InlineData("id")]
         [InlineData("id,")]
@@ -108,8 +110,6 @@ namespace Rdd.Web.Tests
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
         [InlineData("aaaa")]
         [InlineData("0,")]
         [InlineData(",0")]

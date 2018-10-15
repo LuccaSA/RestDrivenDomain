@@ -8,7 +8,6 @@ namespace Rdd.Web.Querying
 {
     public interface IQueryParser<TEntity> where TEntity : class
     {
-        void IgnoreFilters(params string[] filters);
         Query<TEntity> Parse(HttpRequest request, bool isCollectionCall);
     }
 }

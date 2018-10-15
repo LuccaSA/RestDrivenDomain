@@ -1,6 +1,8 @@
 ﻿using Rdd.Domain.Exceptions;
 using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Rdd.Domain.Models.Querying;
 using Rdd.Web.Helpers;
 
@@ -15,12 +17,14 @@ namespace Rdd.Web.Querying
             _rddOptions = rddOptions;
         }
         
-        public Page Parse(string input)
+        public Page Parse(HttpRequest request)
         {
-            if (input == null)
+            if (!request.Query.TryGetValue(Reserved.Paging, out var pageValue) || StringValues.IsNullOrEmpty(pageValue))
             {
-                throw new BadRequestException(nameof(input));
+                return _rddOptions.Value.DefaultPage;
             }
+
+            var input = pageValue.ToString();
 
             if (input == "1") //...&paging=1 <=> &paging=0,100
             {
