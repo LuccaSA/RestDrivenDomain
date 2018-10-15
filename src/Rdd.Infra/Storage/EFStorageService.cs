@@ -122,9 +122,9 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public async Task<string> ExecuteScriptAsync(string script)
+        public virtual Task<int> ExecuteScriptAsync(string script)
         {
-            return (await DbContext.Database.ExecuteSqlCommandAsync(script)).ToString();
+            return DbContext.Database.ExecuteSqlCommandAsync(script);
         }
 
         public void Dispose()
