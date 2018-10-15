@@ -11,6 +11,7 @@
  - **Modification**: ``IExpressionTree.Children`` type changed ``IEnumerable<IExpressionTree>``-> ``IReadOnlyCollection<IExpressionTree>``
  - **Modification**: ``IReflectionProvider``-> ``IReflectionHelper``
  - **Modification**: Patchers now use ``IReflectionHelper``, are public and registered for performances boost.
+ - **Modification**: AppController now exposes ``SaveChangesAsync(IEnumerable<TEntity> entities)`` to save pending changes. The ``entities`` must be feeded with modified entities
  - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
  - **Removed**: `IClonable<>` interface & ``Clone()`` method
  - **Removed**: `IEntityBase<TEntity, TKey>`, `EntityBase<TEntity, TKey>` and usages. This can be directly replaced by `IEntityBase<TKey>` or `EntityBase<TKey>`.
@@ -87,6 +88,7 @@
  - **Added**: `IJsonParser`. Missing interfaces for correct dependency injection logic.
  - **Modification**: Using RDD now forces the httpReques to enable Rewind, cf ``EnableRequestRewindMiddleware``.
  - **Added**: `IReflectionHelper.IsPseudoValue(Type type)` for types serialized and deserialized as JSON value.
+ - **Added**: new OnBeforeSaveEntitiesAsync and OnAfterSaveEntitiesAsync methods on AppController
  - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of the rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `BaseClassInstanciator`, `BaseClassPatcher` and `BaseClassJsonConverter` to properly manage inheritance schemes during edition.

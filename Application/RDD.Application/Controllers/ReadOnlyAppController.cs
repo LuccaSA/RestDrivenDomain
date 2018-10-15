@@ -1,7 +1,9 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Models.Querying;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Rdd.Domain.Helpers;
 
 namespace Rdd.Application.Controllers
 {
@@ -30,5 +32,7 @@ namespace Rdd.Application.Controllers
         public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
 
         public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
+
+
     }
 }
