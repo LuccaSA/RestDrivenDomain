@@ -15,7 +15,7 @@ namespace Rdd.Domain.Models
         protected new IRepository<TEntity> Repository { get; set; }
         protected IPatcher<TEntity> Patcher { get; set; }
 
-        protected IInstanciator<TEntity> Instanciator { get;set;}
+        protected IInstanciator<TEntity> Instanciator { get; set; }
 
         public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
             : base(repository)
@@ -33,11 +33,13 @@ namespace Rdd.Domain.Models
 
             ForgeEntity(entity);
 
-            await ValidateEntityAsync(entity);
+            if (await ValidateOrDiscardAsync(entity))
+            {
+                Repository.Add(entity);
+                return entity;
+            }
 
-            Repository.Add(entity);
-
-            return entity;
+            return null;
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
@@ -52,9 +54,10 @@ namespace Rdd.Domain.Models
 
                 ForgeEntity(entity);
 
-                await ValidateEntityAsync(entity);
-
-                result.Add(entity);
+                if (await ValidateOrDiscardAsync(entity))
+                {
+                    result.Add(entity);
+                }
             }
 
             Repository.AddRange(result);
@@ -109,7 +112,7 @@ namespace Rdd.Domain.Models
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
         {
             var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
-            
+
             foreach (var entity in (await GetAsync(expQuery)).Items)
             {
                 Repository.Remove(entity);
@@ -118,7 +121,29 @@ namespace Rdd.Domain.Models
 
         protected virtual void ForgeEntity(TEntity entity) { }
 
-        protected virtual Task ValidateEntityAsync(TEntity entity) => Task.CompletedTask;
+        private async Task<bool> ValidateOrDiscardAsync(TEntity entity)
+        {
+            bool isValid = false;
+            try
+            {
+                isValid = await ValidateEntityAsync(entity);
+            }
+            finally
+            {
+                if (!isValid)
+                {
+                    Repository.DiscardChanges(entity);
+                }
+            }
+            return isValid;
+        }
+
+        /// <summary>
+        /// Validates an entity, and discard changes if entity is invalid.
+        /// </summary>
+        /// <param name="entity">The entity to validate</param>
+        /// <returns>True if entity is valid</returns>
+        protected virtual Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(true);
 
         protected virtual Task OnBeforeUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate) => Task.CompletedTask;
 
@@ -137,7 +162,7 @@ namespace Rdd.Domain.Models
 
             await OnAfterUpdateEntity(entity, candidate, query);
 
-            await ValidateEntityAsync(entity);
+            await ValidateOrDiscardAsync(entity);
 
             return entity;
         }

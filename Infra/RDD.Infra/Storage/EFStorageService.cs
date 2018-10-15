@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Rdd.Infra.Storage
 {
@@ -65,6 +66,34 @@ namespace Rdd.Infra.Storage
             where TEntity : class
         {
             DbContext.Set<TEntity>().RemoveRange(entities);
+        }
+
+        public void DiscardChanges<TEntity>(TEntity entity)
+            where TEntity : class
+        {
+            EntityEntry<TEntity> entry = DbContext.Entry(entity);
+            if (entry == null)
+            {
+                return;
+            }
+            switch (entry.State)
+            {
+                case EntityState.Modified:
+                    entry.State = EntityState.Unchanged;
+                    break;
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified; //Revert changes made to deleted entity.
+                    entry.State = EntityState.Unchanged;
+                    break;
+                case EntityState.Added:
+                    entry.State = EntityState.Detached;
+                    break;
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entry.State), "Unknown EntityState");
+            }
         }
 
         public virtual async Task SaveChangesAsync()

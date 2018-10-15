@@ -1,5 +1,7 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: ``ValidateEntity`` on RestCollection now is ``ValidateEntityAsync`` and returns a bool
+  - **Modification**: RestCollection now return null or empty collection if entity is not validated
  - **Removed**: `IPrincipal`. Rdd now uses current `ClaimsPrincipal`
  - **Removed**: Unused `UnreachableEntityException`, `RightExpressionsHelper`, `ICombinationsHolder`. Replaced by `Closed/OpenRightExpressionsHelper`. To correctly handle rights, please implement your version, or use external librairy (`Lucca.Core.Rights`).
  - **Modification**: `AddRddRights<TCombinationsHolder, TPrincipal>()` -> `AddRddDefaultRights(RightDefaultMode mode)`

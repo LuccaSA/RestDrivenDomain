@@ -12,5 +12,6 @@ namespace Rdd.Infra.Storage
         void Add<TEntity>(TEntity entity) where TEntity : class;
         void AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         void Remove<TEntity>(TEntity entity) where TEntity : class;
+        void DiscardChanges<TEntity>(TEntity entity) where TEntity : class;
     }
 }
