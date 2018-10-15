@@ -21,7 +21,9 @@ namespace Rdd.Domain.Patchers
         public static object PatchFromAnonymous(this IPatcher patcher, object patchedObject, object anonymousObject)
         {
             if (anonymousObject == null)
+            {
                 return patchedObject;
+            }
 
             return Patch(patcher, patchedObject, new JsonParser().ParseFromAnonymous(anonymousObject));
         }
@@ -29,7 +31,9 @@ namespace Rdd.Domain.Patchers
         public static object Patch(this IPatcher patcher, object patchedObject, IJsonElement json)
         {
             if (patchedObject == null)
+            {
                 throw new ArgumentNullException("patchedObject");
+            }
 
             return patcher.PatchValue(patchedObject, patchedObject.GetType(), json);
         }

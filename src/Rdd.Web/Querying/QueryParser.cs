@@ -84,10 +84,26 @@ namespace Rdd.Web.Querying
 
         protected virtual HttpVerbs GetVerb(HttpContext context)
         {
-            if (HttpMethods.IsGet(context.Request.Method)) return HttpVerbs.Get;
-            if (HttpMethods.IsPost(context.Request.Method)) return HttpVerbs.Post;
-            if (HttpMethods.IsPut(context.Request.Method)) return HttpVerbs.Put;
-            if (HttpMethods.IsDelete(context.Request.Method)) return HttpVerbs.Delete;
+            if (HttpMethods.IsGet(context.Request.Method))
+            {
+                return HttpVerbs.Get;
+            }
+
+            if (HttpMethods.IsPost(context.Request.Method))
+            {
+                return HttpVerbs.Post;
+            }
+
+            if (HttpMethods.IsPut(context.Request.Method))
+            {
+                return HttpVerbs.Put;
+            }
+
+            if (HttpMethods.IsDelete(context.Request.Method))
+            {
+                return HttpVerbs.Delete;
+            }
+
             return HttpVerbs.None;
         }
 

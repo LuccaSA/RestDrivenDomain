@@ -30,9 +30,11 @@ namespace Rdd.Domain.Patchers
 		public object PatchValue(object patchedObject, Type expectedType, JsonObject json)
 		{
 			if (json == null)
-				return null;
+            {
+                return null;
+            }
 
-			return PatchValue(patchedObject as IDictionary, expectedType, json);
+            return PatchValue(patchedObject as IDictionary, expectedType, json);
 		}
 
 		protected object PatchValue(IDictionary patchedObject, Type expectedType, JsonObject json)

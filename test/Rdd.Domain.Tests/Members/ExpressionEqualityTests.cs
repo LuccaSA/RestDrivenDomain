@@ -18,7 +18,11 @@ namespace Rdd.Domain.Tests.Members
             public override bool Equals(object obj)
             {
                 var other = obj as Address;
-                if (other == null) return false;
+                if (other == null)
+                {
+                    return false;
+                }
+
                 return Suburb.Equals(other.Suburb) && Postcode.Equals(other.Postcode);
             }
 
@@ -41,7 +45,11 @@ namespace Rdd.Domain.Tests.Members
             public override bool Equals(object obj)
             {
                 var other = obj as Customer;
-                if (other == null) return false;
+                if (other == null)
+                {
+                    return false;
+                }
+
                 return Name.Equals(other.Name) && ((Address == null && other.Address == null) || (Address?.Equals(other.Address) ?? false));
             }
 

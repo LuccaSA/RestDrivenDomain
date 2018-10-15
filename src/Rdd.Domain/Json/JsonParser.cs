@@ -16,7 +16,9 @@ namespace Rdd.Domain.Json
         public IJsonElement Parse(JToken input)
         {
             if (input == null)
+            {
                 return null;
+            }
 
             switch (input.Type)
             {

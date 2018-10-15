@@ -33,7 +33,9 @@ namespace Rdd.Domain.Json
         public List<string> GetEveryJsonValue(string path)
         {
             if (Content == null)
+            {
                 return null;
+            }
 
             return Content.Select(e => e.GetJsonValue(path)).ToList();
         }
@@ -41,7 +43,9 @@ namespace Rdd.Domain.Json
         public bool HasEveryJsonValue(string path)
         {
             if (Content == null || Content.Count == 0)
+            {
                 return false;
+            }
 
             return Content.All(e => e.HasJsonValue(path));
         }
@@ -49,12 +53,16 @@ namespace Rdd.Domain.Json
         public override JsonArray GetJsonArray(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return this;
+            }
 
             var currentPath = path.Dequeue();
             int index;
             if (!int.TryParse(currentPath, out index))
+            {
                 throw new ArgumentException("Path on a json array must be a valid integer");
+            }
 
             return Content[index].GetJsonArray(path);
         }
@@ -62,12 +70,16 @@ namespace Rdd.Domain.Json
         public override JsonObject GetJsonObject(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 throw new ArgumentException("The suggested empty json path does not exist on this json array");
+            }
 
             var currentPath = path.Dequeue();
             int index;
             if (!int.TryParse(currentPath, out index))
+            {
                 throw new ArgumentException("Path on a json array must be a valid integer");
+            }
 
             return Content[index].GetJsonObject(path);
         }
@@ -75,12 +87,16 @@ namespace Rdd.Domain.Json
         public override string GetJsonValue(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 throw new ArgumentException("The suggested empty json path does not exist on this json array");
+            }
 
             var currentPath = path.Dequeue();
             int index;
             if (!int.TryParse(currentPath, out index))
+            {
                 throw new ArgumentException("Path on a json array must be a valid integer");
+            }
 
             return Content[index].GetJsonValue(path);
         }
@@ -88,12 +104,16 @@ namespace Rdd.Domain.Json
         public override bool HasJsonArray(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return true;
+            }
 
             var currentPath = path.Dequeue();
             int index;
             if (!int.TryParse(currentPath, out index))
+            {
                 throw new ArgumentException("Path on a json array must be a valid integer");
+            }
 
             return Content[index].HasJsonArray(path);
         }
@@ -101,12 +121,16 @@ namespace Rdd.Domain.Json
         public override bool HasJsonObject(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return false;
+            }
 
             var currentPath = path.Dequeue();
             int index;
             if (!int.TryParse(currentPath, out index))
+            {
                 return false;
+            }
 
             return Content[index].HasJsonObject(path);
         }
@@ -114,12 +138,16 @@ namespace Rdd.Domain.Json
         public override bool HasJsonValue(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return false;
+            }
 
             var currentPath = path.Dequeue();
             int index;
             if (!int.TryParse(currentPath, out index))
+            {
                 return false;
+            }
 
             return Content[index].HasJsonValue(path);
         }

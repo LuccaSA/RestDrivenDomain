@@ -30,9 +30,11 @@ namespace Rdd.Domain.Patchers
 		public virtual object PatchValue(object patchedObject, Type expectedType, JsonArray json)
 		{
 			if (json == null || json.Content == null)
-				return null;
+            {
+                return null;
+            }
 
-			var result = new List<object>();
+            var result = new List<object>();
 			var elementType = expectedType.GetEnumerableOrArrayElementType();
 
 			foreach (var element in json.Content)

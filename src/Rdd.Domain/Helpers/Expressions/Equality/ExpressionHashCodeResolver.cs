@@ -15,7 +15,11 @@ namespace Rdd.Domain.Helpers.Expressions.Equality
 
         public override Expression Visit(Expression node)
         {
-            if (null == node) return null;
+            if (null == node)
+            {
+                return null;
+            }
+
             var constantValue = ConstantValue.New(node);
             if (constantValue != null)
             {
