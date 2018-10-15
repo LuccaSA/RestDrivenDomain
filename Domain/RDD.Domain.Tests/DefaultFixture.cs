@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Rdd.Application;
 using Rdd.Domain.Helpers.Reflection;
-using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
@@ -36,7 +34,7 @@ namespace Rdd.Domain.Tests
 
             ServiceProvider = services.BuildServiceProvider();
 
-            RightsService = new RightsServiceMock<User>();
+            RightsService = new OpenRightExpressionsHelper<User>();
             Instanciator = new DefaultInstanciator<User>();
             InMemoryStorage = new InMemoryStorageService();
             UsersRepo = new Repository<User>(InMemoryStorage, RightsService);

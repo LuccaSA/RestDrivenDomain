@@ -1,5 +1,10 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `IPrincipal`. Rdd now uses current `ClaimsPrincipal`
+ - **Removed**: Unused `UnreachableEntityException`, `RightExpressionsHelper`, `ICombinationsHolder`. Replaced by `Closed/OpenRightExpressionsHelper`. To correctly handle rights, please implement your version, or use external librairy (`Lucca.Core.Rights`).
+ - **Modification**: `AddRddRights<TCombinationsHolder, TPrincipal>()` -> `AddRddDefaultRights(RightDefaultMode mode)`
+ - **Modification**: `AddRddSerialization<TPrincipal>()` -> `AddRddSerialization()`
+ - **Modification**: `AddRdd<TDbContext, TCombinationsHolder, TPrincipal>` -> `AddRdd<TDbContext>`
  - **Modification**: ``PropertyExpression`` now requires a Lambda in its constructor, and drops some unused members, but gains `IValueProvider ValueProvider`
  - **Modification**: ``IExpressionTree.Children`` type changed ``IEnumerable<IExpressionTree>``-> ``IReadOnlyCollection<IExpressionTree>``
  - **Modification**: ``IReflectionProvider``-> ``IReflectionHelper``

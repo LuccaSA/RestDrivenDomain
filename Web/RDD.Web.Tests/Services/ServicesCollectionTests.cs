@@ -3,11 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
-using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
+using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using Rdd.Web.Helpers;
 using Rdd.Web.Serialization.Providers;
@@ -54,9 +54,10 @@ namespace Rdd.Web.Tests.Services
         public void TestInheritanceRegister()
         {
             var services = new ServiceCollection();
+            var setup = new RddBuilder(services);
 
-            services.AddRddInheritanceConfiguration<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration());
-            services.AddRddInheritanceConfiguration<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
+            setup.AddRddInheritanceConfiguration<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration());
+            setup.AddRddInheritanceConfiguration<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
 
             var provider = services.BuildServiceProvider();
 
@@ -79,42 +80,25 @@ namespace Rdd.Web.Tests.Services
             Assert.Empty(configs);
         }
 
-        class Principal : IPrincipal
-        {
-            public int Id => throw new NotImplementedException();
-            public string Token { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-            public string Name => throw new NotImplementedException();
-            public Culture Culture => throw new NotImplementedException();
-            public PrincipalType Type => throw new NotImplementedException();
-        }
-
         [Fact]
         public void TestRddSerializationRegister()
         {
             var services = new ServiceCollection();
+            var setup = new RddBuilder(services);
+            setup.AddRddSerialization();
 
-            services.AddRddSerialization<Principal>();
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
-            Assert.NotNull(provider.GetRequiredService<IPrincipal>());
         }
 
-        class FakeRightExpressionsHelper<T> : IRightExpressionsHelper<T>
-            where T : class
-        {
-            public Expression<Func<T, bool>> GetFilter(Query<T> query)
-            {
-                throw new NotImplementedException();
-            }
-        }
         [Fact]
         public void TestRddCoreRegister()
         {
             var services = new ServiceCollection();
 
             services.AddRddCore<ExchangeRateDbContext>();
-            services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(FakeRightExpressionsHelper<>));
+            services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(OpenRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<IUnitOfWork>());

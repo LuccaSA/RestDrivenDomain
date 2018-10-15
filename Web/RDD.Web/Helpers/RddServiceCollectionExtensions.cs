@@ -15,13 +15,14 @@ using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Infra.Storage;
-using Rdd.Web.Models;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
+using Rdd.Web.Models;
+using Rdd.Web.Querying;
 
 namespace Rdd.Web.Helpers
 {
@@ -32,9 +33,10 @@ namespace Rdd.Web.Helpers
         /// DbContext, IRightsService and IRddSerialization are missing for this setup to be functional
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddRddCore<TDbContext>(this IServiceCollection services)
+        public static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
+            services.AddOptions<RddOptions>();
             services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
 
             services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
@@ -52,6 +54,7 @@ namespace Rdd.Web.Helpers
             services.TryAddScoped<EFStorageService>();
             services.TryAddScoped<IStorageService>(s => s.GetService<EFStorageService>());
             services.TryAddScoped<IUnitOfWork>(s => s.GetService<EFStorageService>());
+            services.TryAddScoped(typeof(WebQueryFactory<,>));
 
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -62,52 +65,78 @@ namespace Rdd.Web.Helpers
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
             services.TryAddScoped(typeof(ApiHelper<,>));
-            return services;
+
+            // closed by default, overridable with AddRddDefaultRights
+            services.TryAddSingleton(typeof(IRightExpressionsHelper<>), typeof(ClosedRightExpressionsHelper<>));
+
+            return new RddBuilder(services)
+                .ApplyRddSetupOptions();
         }
 
-        public static IServiceCollection AddRddInheritanceConfiguration<TConfig, TEntity, TKey>(this IServiceCollection services, TConfig config)
+        public static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services, Action<RddOptions> onConfigure)
+            where TDbContext : DbContext
+        {
+            var builder = services.AddRddCore<TDbContext>();
+            services.Configure(onConfigure);
+            return builder;
+        }
+
+        public static RddBuilder AddJsonConverter(this RddBuilder rddBuilder, JsonConverter jsonConverter)
+        {
+            rddBuilder.JsonConverters.Add(jsonConverter);
+            return rddBuilder;
+        }
+
+        private static RddBuilder ApplyRddSetupOptions(this RddBuilder rddBuilder)
+        {
+            rddBuilder.Services.PostConfigure<MvcJsonOptions>(o =>
+            {
+                foreach (JsonConverter converter in rddBuilder.JsonConverters)
+                {
+                    o.SerializerSettings.Converters.Add(converter);
+                }
+            });
+            return rddBuilder;
+        }
+
+        public static RddBuilder AddRddInheritanceConfiguration<TConfig, TEntity, TKey>(this RddBuilder rddBuilder, TConfig config)
             where TConfig : class, IInheritanceConfiguration<TEntity>
             where TEntity : class, IEntityBase<TKey>
             where TKey : IEquatable<TKey>
         {
+            var services = rddBuilder.Services;
+
             services.AddSingleton<IInheritanceConfiguration>(s => config);
             services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
+
             services.TryAddSingleton<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
             services.TryAddSingleton<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
 
-            if (JsonConvert.DefaultSettings == null)
-            {
-                JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Converters = new List<JsonConverter> { new BaseClassJsonConverter<TEntity>(config) } };
-            }
-            else
-            {
-                var initSettings = JsonConvert.DefaultSettings;
-                JsonConvert.DefaultSettings = () =>
-                {
-                    var result = initSettings();
-                    result.Converters = result.Converters ?? new List<JsonConverter>();
-                    result.Converters.Add(new BaseClassJsonConverter<TEntity>(config));
-                    return result;
-                };
-            }
+            rddBuilder.AddJsonConverter(new BaseClassJsonConverter<TEntity>(config));
 
-            return services;
+            return rddBuilder;
         }
 
-        public static IServiceCollection AddRddRights<TCombinationsHolder, TPrincipal>(this IServiceCollection services)
-            where TCombinationsHolder : class, ICombinationsHolder
-            where TPrincipal : class, IPrincipal
+        public static RddBuilder WithDefaultRights(this RddBuilder rddBuilder, RightDefaultMode mode)
         {
-            services.TryAddScoped(typeof(IRightExpressionsHelper<>), typeof(RightExpressionsHelper<>));
-            services.TryAddScoped<IPrincipal, TPrincipal>();
-            services.TryAddScoped<ICombinationsHolder, TCombinationsHolder>();
-            return services;
+            switch (mode)
+            {
+                case RightDefaultMode.Closed:
+                    rddBuilder.Services.AddSingleton(typeof(IRightExpressionsHelper<>), typeof(ClosedRightExpressionsHelper<>));
+                    break;
+                case RightDefaultMode.Open:
+                    rddBuilder.Services.AddSingleton(typeof(IRightExpressionsHelper<>), typeof(OpenRightExpressionsHelper<>));
+                    break;
+                default:
+                    throw new ArgumentException("Invalid right mode", nameof(mode));
+            }
+            return rddBuilder;
         }
 
-        public static IServiceCollection AddRddSerialization<TPrincipal>(this IServiceCollection services)
-            where TPrincipal : class, IPrincipal
+        public static RddBuilder AddRddSerialization(this RddBuilder rddBuilder)
         {
-            //singletons
+            var services = rddBuilder.Services;
+
             services.TryAddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
             services.TryAddSingleton<IPluralizationService, PluralizationService>();
 
@@ -129,20 +158,23 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<ToStringSerializer>();
             services.TryAddSingleton<ValueSerializer>();
 
-            //scoped
-            services.TryAddScoped<IPrincipal, TPrincipal>();
-
-            return services;
+            return rddBuilder;
+        }
+        
+        public static RddBuilder AddRdd<TDbContext>(this IServiceCollection services)
+            where TDbContext : DbContext
+        {
+            return services
+                .AddRddCore<TDbContext>()
+                .AddRddSerialization();
         }
 
-        public static IServiceCollection AddRdd<TDbContext, TCombinationsHolder, TPrincipal>(this IServiceCollection services)
+        public static RddBuilder AddRdd<TDbContext>(this IServiceCollection services, Action<RddOptions> onConfigure)
             where TDbContext : DbContext
-            where TCombinationsHolder : class, ICombinationsHolder
-            where TPrincipal : class, IPrincipal
         {
-            return services.AddRddCore<TDbContext>()
-                .AddRddRights<TCombinationsHolder, TPrincipal>()
-                .AddRddSerialization<TPrincipal>();
+            return services
+                .AddRddCore<TDbContext>(onConfigure)
+                .AddRddSerialization();
         }
 
         /// <summary>

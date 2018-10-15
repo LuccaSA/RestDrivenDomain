@@ -2,6 +2,8 @@
 using Rdd.Web.Helpers;
 using Rdd.Web.Tests.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Rdd.Web.Querying;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -17,7 +19,9 @@ namespace Rdd.Web.Tests
             };
             httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("pictureId", "like,aabbccdd-eeff");
             var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper);
+            var options = Options.Create(new RddOptions());
+
+            var helper = new ApiHelper<User, int>(httpContextHelper, new WebQueryFactory<User, int>(options));
 
             helper.CreateQuery(HttpVerbs.Get);
         }
@@ -31,7 +35,9 @@ namespace Rdd.Web.Tests
             };
             httpContextAccessor.HttpContext.Request.QueryString = QueryString.Create("name", "NOTEQUAL,foo");
             var httpContextHelper = new HttpContextHelper(httpContextAccessor);
-            var helper = new ApiHelper<User, int>(httpContextHelper);
+            var options = Options.Create(new RddOptions());
+
+            var helper = new ApiHelper<User, int>(httpContextHelper, new WebQueryFactory<User, int>(options));
 
             helper.CreateQuery(HttpVerbs.Get);
         }

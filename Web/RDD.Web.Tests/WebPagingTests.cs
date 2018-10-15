@@ -28,25 +28,14 @@ namespace Rdd.Web.Tests
         }
 
         [Fact]
-        public void Changing_query_page_count_should_not_affect_another_query()
-        {
-            var query1 = new WebQuery<User>();
-            query1.Page.TotalCount = 20;
-
-            var query2 = new WebQuery<User>();
-            query2.Page.TotalCount = 10;
-
-            Assert.Equal(20, query1.Page.TotalCount);
-        }
-
-        [Fact]
         public async void Default_Paging_should_be_0_to_10()
         {
             IEnumerable<User> users = User.GetManyRandomUsers(20);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
 
-            var query = new WebQuery<User>();
+            var query = new Query<User>();
+            query.Page = new Page(0, 10, int.MaxValue);
             ISelection<User> result = await _collection.GetAsync(query);
 
             Assert.Equal(0, query.Page.Offset);
@@ -64,7 +53,7 @@ namespace Rdd.Web.Tests
                 _repo.AddRange(users);
                 await _storage.SaveChangesAsync();
 
-                var query = new WebQuery<User> { Page = new WebPage(0, 1001) };
+                var query = new Query<User> { Page = new Page(0, 1001, 1000) };
                 ISelection<User> result = await _collection.GetAsync(query);
             });
         }
@@ -72,7 +61,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Paging_should_start_at_0_result()
         {
-            Assert.Throws<BadRequestException>(() => new Query<User> { Page = new WebPage(-10, 10) });
+            Assert.Throws<BadRequestException>(() => new Query<User> { Page = new Page(-10, 10, int.MaxValue) });
         }
     }
 }

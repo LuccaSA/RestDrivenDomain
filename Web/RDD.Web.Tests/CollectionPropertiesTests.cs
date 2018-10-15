@@ -3,6 +3,7 @@ using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using Rdd.Web.Querying;
 using System.Linq;
+using Rdd.Domain.Models.Querying;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -28,7 +29,7 @@ namespace Rdd.Web.Tests
             var users = User.GetManyRandomUsers(10);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var result = await _collection.GetAsync(new WebQuery<User>());
+            var result = await _collection.GetAsync(new Query<User>());
             Assert.Equal(10, result.Count);
         }
 
@@ -38,7 +39,7 @@ namespace Rdd.Web.Tests
             var users = User.GetManyRandomUsers(100);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var result = await _collection.GetAsync(new WebQuery<User>());
+            var result = await _collection.GetAsync(new Query<User>());
             Assert.Equal(100, result.Count);
         }
 
@@ -48,7 +49,10 @@ namespace Rdd.Web.Tests
             var users = User.GetManyRandomUsers(10000);
             _repo.AddRange(users);
             await _storage.SaveChangesAsync();
-            var result = await _collection.GetAsync(new WebQuery<User>());
+            var result = await _collection.GetAsync(new Query<User>()
+            {
+                Page = new Page(0, 10,int.MaxValue)
+            });
             Assert.Equal(10, result.Items.Count());
             Assert.Equal(10000, result.Count);
         }

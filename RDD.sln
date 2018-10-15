@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra", "Infra\Rdd.Infr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web", "Web\Rdd.Web\Rdd.Web.csproj", "{35EB26DD-BF14-4B20-A644-9E566F51EA76}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Mocks", "Domain\Rdd.Domain.Mocks\Rdd.Domain.Mocks.csproj", "{BD795F44-973F-4B40-863F-A75FC90A7FAE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Tests", "Domain\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj", "{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra.Tests", "Infra\Rdd.Infra.Tests\Rdd.Infra.Tests.csproj", "{F57353AE-696A-4941-B7B6-780A32445898}"
@@ -44,10 +42,6 @@ Global
 		{35EB26DD-BF14-4B20-A644-9E566F51EA76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35EB26DD-BF14-4B20-A644-9E566F51EA76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35EB26DD-BF14-4B20-A644-9E566F51EA76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}.Release|Any CPU.ActiveCfg = Release|Any CPU

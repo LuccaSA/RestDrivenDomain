@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rdd.Application;
 using Rdd.Domain.Helpers.Reflection;
-using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
@@ -35,8 +34,8 @@ namespace Rdd.Domain.Tests.Templates
             var provider = services.BuildServiceProvider();
 
             _newStorage = name => new EFStorageService(new DataContext(GetOptions(name)));
-            _rightsService = new RightsServiceMock<User>();
             _patcherProvider = new PatcherProvider(provider, provider.GetService<IReflectionHelper>());
+            _rightsService = new OpenRightExpressionsHelper<User>();
             Instanciator = new DefaultInstanciator<User>();
         }
 
