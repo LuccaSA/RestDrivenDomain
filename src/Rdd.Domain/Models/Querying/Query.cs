@@ -26,6 +26,16 @@ namespace Rdd.Domain.Models.Querying
             Page = Page.Unlimited;
         }
 
+        public Query(IExpressionTree<TEntity> fields, List<OrderBy<TEntity>> orderBys, Page page, Filter<TEntity> filters, HttpVerbs httpVerbs)
+        {
+            Fields = fields;
+            OrderBys = orderBys;
+            Page = page;
+            Filter = filters;
+            Verb = httpVerbs;
+            Options = new Options();
+        }
+
         public Query(Expression<Func<TEntity, bool>> filter)
             : this()
         {

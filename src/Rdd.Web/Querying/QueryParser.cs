@@ -16,7 +16,7 @@ namespace Rdd.Web.Querying
         private readonly IFilterParser _filterParser;
         private readonly IFieldsParser _fieldsParser;
         private readonly IOrderByParser _orderByParser;
-         
+
         public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
         {
             _webFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
@@ -29,14 +29,14 @@ namespace Rdd.Web.Querying
         public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
         {
             var query = new Query<TEntity>
-            {
-                Fields = _fieldsParser.Parse<TEntity>(request, isCollectionCall),
-                OrderBys = _orderByParser.Parse<TEntity>(request),
-                Page = _pagingParser.Parse(request),
-                Filter = _filterParser.Parse(request, _webFilterConverter),
-                Verb = GetVerb(request),
-            };
-             
+            (
+                 _fieldsParser.Parse<TEntity>(request, isCollectionCall),
+                 _orderByParser.Parse<TEntity>(request),
+                 _pagingParser.Parse(request),
+                 _filterParser.Parse(request, _webFilterConverter),
+                GetVerb(request)
+            );
+
             if (query.Fields.Contains((ISelection c) => c.Count))
             {
                 query.Options.NeedCount = true;
