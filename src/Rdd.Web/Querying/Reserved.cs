@@ -48,7 +48,7 @@ namespace Rdd.Web.Querying
         [Description("Champ utilisé pour montrer le template -> ne renvoie rien pour le moment")]
         public const string Template = "template";
 
-        public static HashSet<string> Keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> _keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             JQuery,
             Randomnumber,
@@ -65,5 +65,7 @@ namespace Rdd.Web.Querying
             Paging,
             Template
         };
+
+        public static bool IsKeyword(string value) => _keywords.Contains(value);
     }
 }

@@ -59,7 +59,7 @@ namespace Rdd.Web.Querying
         {
             var filters = request.Query
                 .Where(kv => !String.IsNullOrWhiteSpace(kv.Key)
-                    && !Reserved.Keywords.Contains(kv.Key) 
+                    && !Reserved.IsKeyword(kv.Key) 
                     && !_rddOptions.Value.IgnoredFilters.Contains(kv.Key))
                 .Select(kv => Parse<TEntity>(kv.Key, kv.Value));
 
