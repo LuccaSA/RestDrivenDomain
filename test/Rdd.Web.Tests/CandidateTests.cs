@@ -88,7 +88,7 @@ namespace Rdd.Web.Tests
             {
                 Converters = new List<JsonConverter>
                 {
-                    new BaseClassJsonConverter<Domain.Tests.Models.Hierarchy>(new Domain.Tests.Models.InheritanceConfiguration())
+                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
                 }
             };
 
