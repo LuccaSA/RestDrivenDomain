@@ -1,4 +1,5 @@
-﻿using Rdd.Domain.Helpers.Reflection;
+﻿using System;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
 using System.Reflection;
 
@@ -17,7 +18,7 @@ namespace Rdd.Domain.Patchers
 
         protected override void PatchProperty(object patchedObject, PropertyInfo property, IJsonElement element)
         {
-            if (property.Name.ToUpper() == _configuration.Discriminator.ToUpper())
+            if (String.Equals(property.Name, _configuration.Discriminator, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

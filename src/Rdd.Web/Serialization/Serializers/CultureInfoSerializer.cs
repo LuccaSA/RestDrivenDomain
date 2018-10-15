@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
@@ -8,14 +9,14 @@ namespace Rdd.Web.Serialization.Serializers
 {
     public class CultureInfoSerializer : ObjectSerializer
     {
-        private static HashSet<string> _allowedProperties = new HashSet<string> { "id", "name", "code" };
+        private static HashSet<string> _allowedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "id", "name", "code" };
 
         public CultureInfoSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
             : base(serializerProvider, namingStrategy) { }
 
         protected override void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyExpression property)
         {
-            if (_allowedProperties.Contains(property.Name.ToLower()))
+            if (_allowedProperties.Contains(property.Name))
             {
                 base.SerializeProperty(writer, entity, fields, property);
             }
