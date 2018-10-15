@@ -128,10 +128,6 @@ namespace Rdd.Domain.Models
             {
                 isValid = await ValidateEntityAsync(entity);
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 if (!isValid)
