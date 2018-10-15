@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Rdd.Web.Controllers
 {
     public abstract class ReadOnlyWebController<TEntity, TKey> : ReadOnlyWebController<IReadOnlyAppController<TEntity, TKey>, TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected ReadOnlyWebController(IReadOnlyAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
@@ -24,7 +24,7 @@ namespace Rdd.Web.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
         where TAppController : IReadOnlyAppController<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected TAppController AppController { get; }

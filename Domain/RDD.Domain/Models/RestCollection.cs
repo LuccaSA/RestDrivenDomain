@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Rdd.Domain.Models
 {
     public class RestCollection<TEntity, TKey> : ReadOnlyRestCollection<TEntity, TKey>, IRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected new IRepository<TEntity> Repository { get; set; }

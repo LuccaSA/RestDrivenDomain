@@ -2,7 +2,7 @@
 
 namespace Rdd.Web.Tests.Models
 {
-    public interface IUser : IEntityBase<IUser, int>
+    public interface IUser : IEntityBase<int>
     {
     }
 }
