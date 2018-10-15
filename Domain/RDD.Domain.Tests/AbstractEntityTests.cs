@@ -1,6 +1,6 @@
-﻿using Rdd.Domain.Mocks;
-using Rdd.Domain.Models;
+﻿using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
+using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async void NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
-            var rightsService = new RightsServiceMock<ConcreteClassThree>();
+            var rightsService = new OpenRightExpressionsHelper<ConcreteClassThree>();
             var storage = new InMemoryStorageService();
             var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService);
 
@@ -42,7 +42,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
-            var rightsService = new RightsServiceMock<AbstractClass>();
+            var rightsService = new OpenRightExpressionsHelper<AbstractClass>();
             var storage = new InMemoryStorageService();
             var repo = new OpenRepository<AbstractClass>(storage, rightsService);
 

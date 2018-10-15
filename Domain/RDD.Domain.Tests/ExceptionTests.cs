@@ -20,7 +20,6 @@ namespace Rdd.Domain.Tests
                 yield return new object[] { new TechnicalException("lol") };
                 yield return new object[] { new TechnicalException("lol", new Exception("")) };
                 yield return new object[] { new UnauthorizedException("lol") };
-                yield return new object[] { new UnreachableEntityException(typeof(object)) };
                 yield return new object[] { new UnsupportedContentTypeException("lol") };
             }
 

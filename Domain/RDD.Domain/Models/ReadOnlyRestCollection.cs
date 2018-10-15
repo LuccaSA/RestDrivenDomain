@@ -49,8 +49,6 @@ namespace Rdd.Domain.Models
                     count = await Repository.CountAsync(query);
                 }
 
-                query.Page.TotalCount = count;
-
                 items = await Repository.PrepareAsync(items, query);
             }
 

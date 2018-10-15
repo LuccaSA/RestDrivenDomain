@@ -19,7 +19,6 @@
     <ProjectReference Include="..\..\Application\RDD.Application\Rdd.Application.csproj" />
     <ProjectReference Include="..\..\Infra\RDD.Infra\Rdd.Infra.csproj" />
     <ProjectReference Include="..\..\Web\RDD.Web\Rdd.Web.csproj" />
-    <ProjectReference Include="..\RDD.Domain.Mocks\Rdd.Domain.Mocks.csproj" />
     <ProjectReference Include="..\RDD.Domain\Rdd.Domain.csproj" />
   </ItemGroup>
 
