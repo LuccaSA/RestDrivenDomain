@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RDD.Domain\Rdd.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Rdd.Domain\Rdd.Domain.csproj" />
   </ItemGroup>
 
 </Project>

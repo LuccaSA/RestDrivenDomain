@@ -14,9 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\RDD.Domain.Tests\Rdd.Domain.Tests.csproj" />
-    <ProjectReference Include="..\..\Domain\RDD.Domain\Rdd.Domain.csproj" />
-    <ProjectReference Include="..\RDD.Infra\Rdd.Infra.csproj" />
+    <ProjectReference Include="..\..\src\Rdd.Infra\Rdd.Infra.csproj" />
+    <ProjectReference Include="..\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" />
   </ItemGroup>
 
 </Project>

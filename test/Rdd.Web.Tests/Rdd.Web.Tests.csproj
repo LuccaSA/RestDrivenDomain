@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <ProjectGuid>{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}</ProjectGuid>
+    <ProjectGuid>{D4493283-1C57-48C9-BA9D-4C7862A40424}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
     <PackageReference Include="Moq" Version="4.8.3" />
@@ -16,10 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Application\RDD.Application\Rdd.Application.csproj" />
-    <ProjectReference Include="..\..\Infra\RDD.Infra\Rdd.Infra.csproj" />
-    <ProjectReference Include="..\..\Web\RDD.Web\Rdd.Web.csproj" />
-    <ProjectReference Include="..\RDD.Domain\Rdd.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Rdd.Domain\Rdd.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Rdd.Web\Rdd.Web.csproj" />
+    <ProjectReference Include="..\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" />
   </ItemGroup>
 
 </Project>
