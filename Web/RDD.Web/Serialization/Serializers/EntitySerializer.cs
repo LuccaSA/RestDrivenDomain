@@ -2,11 +2,7 @@
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using Rdd.Web.Serialization.UrlProviders;
-using System;
-using System.Linq;
-using System.Reflection;
 
 namespace Rdd.Web.Serialization.Serializers
 {
@@ -14,27 +10,33 @@ namespace Rdd.Web.Serialization.Serializers
     {
         protected IUrlProvider UrlProvider { get; set; }
 
-        public EntitySerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy, IUrlProvider urlProvider, Type workingType)
-            : base(serializerProvider, reflectionProvider, namingStrategy, workingType)
+        public EntitySerializer(ISerializerProvider serializerProvider,  NamingStrategy namingStrategy, IUrlProvider urlProvider)
+            : base(serializerProvider, namingStrategy)
         {
             UrlProvider = urlProvider;
         }
 
         protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
         {
-            if (fields == null || !fields.Children.Any())
+            if (fields == null || fields.Children.Count == 0)
             {
-                return new ExpressionParser().ParseTree(entity.GetType(), "id,name,url");
+                var type = entity.GetType();
+                if (!DefaultFields.ContainsKey(type))
+                {
+                    DefaultFields[type] = new ExpressionParser().ParseTree(type, "id,name,url");
+                }
+
+                return DefaultFields[type];
             }
 
             return base.CorrectFields(entity, fields);
         }
 
-        protected override object GetRawValue(object entity, IExpressionTree fields, PropertyInfo property)
+        protected override object GetRawValue(object entity, IExpressionTree fields, PropertyExpression property)
         {
-            if (property.Name == "Url")
+            if (property.Name == nameof(IEntityBase.Url))
             {
-                return UrlProvider?.GetEntityApiUri(WorkingType, entity as IPrimaryKey);
+                return UrlProvider?.GetEntityApiUri(entity as IPrimaryKey);
             }
 
             return base.GetRawValue(entity, fields, property);

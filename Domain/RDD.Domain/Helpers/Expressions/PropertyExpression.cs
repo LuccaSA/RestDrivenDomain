@@ -1,4 +1,5 @@
-﻿using Rdd.Domain.Helpers.Expressions.Equality;
+﻿using Newtonsoft.Json.Serialization;
+using Rdd.Domain.Helpers.Expressions.Equality;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -7,13 +8,19 @@ namespace Rdd.Domain.Helpers.Expressions
 {
     public class PropertyExpression : IExpression
     {
-        public LambdaExpression LambdaExpression { get; set; }
+        public IValueProvider ValueProvider { get; }
+        public LambdaExpression LambdaExpression { get; }
 
-        public Expression Body => LambdaExpression?.Body;
-        public MemberExpression MemberExpression => Body as MemberExpression;
-        public PropertyInfo Property => MemberExpression?.Member as PropertyInfo;
+        public PropertyInfo Property { get; }
         public string Name => Property?.Name;
         public virtual Type ResultType => Property.PropertyType;
+
+        public PropertyExpression(LambdaExpression lambdaExpression)
+        {
+            LambdaExpression = lambdaExpression;
+            Property = (LambdaExpression?.Body as MemberExpression).Member as PropertyInfo;
+            ValueProvider = new ExpressionValueProvider(Property);
+        }
 
         public virtual bool Equals(IExpression other)
             => other != null && new ExpressionEqualityComparer().Equals(other.ToLambdaExpression(), LambdaExpression);
@@ -26,6 +33,6 @@ namespace Rdd.Domain.Helpers.Expressions
     public static class PropertyExpression<TClass>
     {
         public static PropertyExpression New<TProp>(Expression<Func<TClass, TProp>> lambda)
-            => new PropertyExpression { LambdaExpression = lambda };
+            => new PropertyExpression(lambda);
     }
 }

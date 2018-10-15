@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Rdd.Domain.Mocks
 {
-    public abstract class Hierarchy : IEntityBase<Hierarchy, int>
+    public abstract class Hierarchy : IEntityBase<int>
     {
         public string BaseProperty { get; set; }
 

@@ -55,19 +55,19 @@ namespace Rdd.Web.Helpers
                 overridenStatus = _options?.Value?.StatusCodeMapping(ex);
             }
             context.Response.Clear();
-            context.Response.StatusCode = overridenStatus.HasValue ? (int)overridenStatus.Value : 500;
+            context.Response.StatusCode = (int)(overridenStatus ?? HttpStatusCode.BadRequest);
             context.Response.ContentType = "application/json";
         }
 
         private static async Task StatusCodeExceptionResponse(HttpContext context, Exception ex, IStatusCodeException eStatus)
         {
-            int httpCode = (int)eStatus.StatusCode;
+            var httpCode = eStatus.StatusCode;
             context.Response.Clear();
-            context.Response.StatusCode = httpCode;
+            context.Response.StatusCode = (int)httpCode;
             context.Response.ContentType = "application/json";
 
             // We provide detailled logs only with functional exceptions
-            if (httpCode >= 400 && httpCode < 500)
+            if (httpCode >= HttpStatusCode.BadRequest && httpCode < HttpStatusCode.InternalServerError)
             {
                 await context.Response.WriteAsync(ex.Message);
             }

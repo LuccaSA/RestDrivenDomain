@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Rdd.Application.Controllers
 {
     public class AppController<TEntity, TKey> : AppController<IRestCollection<TEntity, TKey>, TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         public AppController(IUnitOfWork unitOfWork, IRestCollection<TEntity, TKey> collection)
@@ -18,7 +18,7 @@ namespace Rdd.Application.Controllers
 
     public class AppController<TCollection, TEntity, TKey> : ReadOnlyAppController<TCollection, TEntity, TKey>, IAppController<TEntity, TKey>
         where TCollection : IRestCollection<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected IUnitOfWork UnitOfWork { get; }
@@ -56,7 +56,7 @@ namespace Rdd.Application.Controllers
             return entity;
         }
 
-        public async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
             var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
 

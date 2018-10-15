@@ -5,8 +5,15 @@
  - **Modification**: `AddRddRights<TCombinationsHolder, TPrincipal>()` -> `AddRddDefaultRights(RightDefaultMode mode)`
  - **Modification**: `AddRddSerialization<TPrincipal>()` -> `AddRddSerialization()`
  - **Modification**: `AddRdd<TDbContext, TCombinationsHolder, TPrincipal>` -> `AddRdd<TDbContext>`
+ - **Modification**: ``PropertyExpression`` now requires a Lambda in its constructor, and drops some unused members, but gains `IValueProvider ValueProvider`
+ - **Modification**: ``IExpressionTree.Children`` type changed ``IEnumerable<IExpressionTree>``-> ``IReadOnlyCollection<IExpressionTree>``
+ - **Modification**: ``IReflectionProvider``-> ``IReflectionHelper``
+ - **Modification**: Patchers now use ``IReflectionHelper``, are public and registered for performances boost.
  - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
  - **Removed**: `IClonable<>` interface & ``Clone()`` method
+ - **Removed**: `IEntityBase<TEntity, TKey>`, `EntityBase<TEntity, TKey>` and usages. This can be directly replaced by `IEntityBase<TKey>` or `EntityBase<TKey>`.
+ - **Removed**: ``IPrimaryKey.SetId()``
+ - **Modification**: ``EntityBase<TKey>.Url`` has attribute `NotMapped`
  - **Removed**: `Query<TEntity> query` parameter removed from prototype of ``ReadOnlyRepository.Set()`` method 
  - **Modification**: ``ValidateEntity`` on RestCollection is now ``ValidateEntityAsync``
  - **Modification**: ``AppController`` now depends on a `IUnitOfWork`.
@@ -16,7 +23,7 @@
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
  - **Removed**: unused metadata.paging in returned json
- - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.
+ - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`. `FuncSerializer` is also dropped, `DateTimeSerializer` is replaced by native `JsonTextWriter` option.
  - **Modification**: ``ISerializer`` nows feeds a `JsonTextWriter` instead of returning an object
  - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis if you opt-in.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**
@@ -54,6 +61,7 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: `IReflectionHelper.IsPseudoValue(Type type)` for types serialized and deserialized as JSON value.
  - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of th rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `FieldsParser` exposes methods `ParseAllProperties` and `ParseFields` that can be used as generic or with type as argument.

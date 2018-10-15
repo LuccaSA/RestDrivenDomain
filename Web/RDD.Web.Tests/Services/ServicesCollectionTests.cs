@@ -22,7 +22,7 @@ namespace Rdd.Web.Tests.Services
 {
     public class ServicesCollectionTests
     {
-        public abstract class Hierarchy2 : IEntityBase<Hierarchy2, int>
+        public abstract class Hierarchy2 : IEntityBase<int>
         {
             public string Name { get; set; }
             public string Url { get; set; }

@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Rdd.Domain.Patchers
 {
-    class ValuePatcher : IPatcher
+    public class ValuePatcher : IPatcher
 	{
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
         {
