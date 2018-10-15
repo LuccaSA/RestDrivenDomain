@@ -19,20 +19,18 @@ namespace Rdd.Benchmarks
         object _value;
         IExpressionTree _fields;
         TextWriter _writer;
-        IServiceProvider _services;
+        IServiceProvider _servicesProvider;
         ISerializerProvider _serializer;
         JsonSerializer _jsonSerializer;
 
-        class User : IPrincipal
+        class User
         {
             public int Id { get; set; }
             public DateTime BirthDay { get; set; }
             public List<Other> Properties { get; set; }
-
             public string Token { get; set; }
             public string Name { get; set; }
             public Culture Culture { get; set; }
-            public PrincipalType Type { get; set; }
         }
 
         class Other
@@ -46,9 +44,13 @@ namespace Rdd.Benchmarks
         {
             _value = Enumerable.Range(0, 100).Select(i => new User { Id = i, BirthDay = new DateTime(2000, 1, 1), Properties = Enumerable.Range(0, 100).Select(j => new Other { Id = j, Name = i + "  " + j }).ToList() }).ToList();
 
-            _services = new ServiceCollection().AddRddSerialization<User>().BuildServiceProvider();
-            _serializer = _services.GetService<ISerializerProvider>();
-            _fields =  new ExpressionParser().ParseTree(typeof(User), "id,birthday,properties[id,name],token,name,culture,type");
+            var services = new ServiceCollection();
+            var builder = new RddBuilder(services);
+            builder.AddRddSerialization();
+
+            _servicesProvider = services.BuildServiceProvider();
+            _serializer = _servicesProvider.GetService<ISerializerProvider>();
+            _fields = new ExpressionParser().ParseTree(typeof(User), "id,birthday,properties[id,name],token,name,culture");
             _jsonSerializer = JsonSerializer.CreateDefault();
 
             _writer = StreamWriter.Null;
@@ -57,7 +59,7 @@ namespace Rdd.Benchmarks
         [Benchmark]
         public void Rdd()
         {
-            using (var jsonWriter = new JsonTextWriter(_writer) { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified})
+            using (var jsonWriter = new JsonTextWriter(_writer) { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified })
             {
                 jsonWriter.CloseOutput = false;
                 jsonWriter.AutoCompleteOnClose = false;

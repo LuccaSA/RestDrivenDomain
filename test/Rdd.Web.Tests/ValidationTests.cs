@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rdd.Domain;
+using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Web.Helpers;
 using Rdd.Web.Models;
+using Rdd.Web.Querying;
 using Rdd.Web.Tests.ServerMock;
 using Xunit;
 
@@ -41,7 +43,7 @@ namespace Rdd.Web.Tests
             // act
             var collection = provider.GetRequiredService<IRestCollection<ExchangeRate, int>>();
 
-            var candidate = Candidate<ExchangeRate, int>.Parse(@"{ ""name"": ""something""}");
+            var candidate = new CandidateParser(new JsonParser()).Parse<ExchangeRate, int>(@"{ ""name"": ""something""}");
 
             ExchangeRate ok;
             try
