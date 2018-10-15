@@ -123,22 +123,22 @@ namespace Rdd.Domain.Models
 
         private async Task<bool> ValidateOrDiscardAsync(TEntity entity)
         {
-            bool isValid;
+            bool isValid = false;
             try
             {
                 isValid = await ValidateEntityAsync(entity);
             }
             catch (Exception)
             {
-                Repository.DiscardChanges(entity);
                 throw;
             }
-
-            if (!isValid)
+            finally
             {
-                Repository.DiscardChanges(entity);
+                if (!isValid)
+                {
+                    Repository.DiscardChanges(entity);
+                }
             }
-
             return isValid;
         }
 
