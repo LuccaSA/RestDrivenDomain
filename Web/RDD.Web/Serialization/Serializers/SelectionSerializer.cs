@@ -3,23 +3,20 @@ using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using System.Linq;
 
 namespace Rdd.Web.Serialization.Serializers
 {
     public class SelectionSerializer : ObjectSerializer
     {
-        public SelectionSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy, typeof(ISelection)) { }
+        public SelectionSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
+            : base(serializerProvider, namingStrategy) { }
 
         public override void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
             => WriteJson(writer, entity as ISelection, fields);
 
         protected void WriteJson(JsonTextWriter writer, ISelection selection, IExpressionTree fields)
         {
-            var items = selection.GetItems();
-
             var countField = fields.Children.FirstOrDefault(c => c.Node.Name == nameof(ISelection.Count) && typeof(ISelection).IsAssignableFrom(c.Node.ToLambdaExpression().Parameters[0].Type));
 
             var normalFields = new ExpressionTree
@@ -32,6 +29,7 @@ namespace Rdd.Web.Serialization.Serializers
 
             if (countField == null || normalFields.Children.Count != 0)
             {
+                var items = selection.GetItems();
                 WriteKvp(writer, NamingStrategy.GetPropertyName("items", false), items, normalFields, null);
             }
 

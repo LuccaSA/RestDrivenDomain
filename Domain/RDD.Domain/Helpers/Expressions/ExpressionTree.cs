@@ -10,7 +10,7 @@ namespace Rdd.Domain.Helpers.Expressions
     {
         public IExpression Node { get; set; }
 
-        IEnumerable<IExpressionTree> IExpressionTree.Children => Children;
+        IReadOnlyCollection<IExpressionTree> IExpressionTree.Children => Children;
         public List<IExpressionTree> Children { get; set; }
 
         public ExpressionTree()

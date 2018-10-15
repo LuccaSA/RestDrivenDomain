@@ -72,7 +72,7 @@ namespace Rdd.Web.Serialization
         {
             Value = new Metadata(Value, services.GetService<IPrincipal>(), generatedAt);
 
-            using (var jsonWriter = new JsonTextWriter(writer))
+            using (var jsonWriter = new JsonTextWriter(writer) { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified })
             {
                 jsonWriter.ArrayPool = new JsonArrayPool<char>(services.GetService<ArrayPool<char>>());
                 jsonWriter.CloseOutput = false;

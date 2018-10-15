@@ -110,11 +110,11 @@ namespace Rdd.Domain.Helpers.Expressions
 
             if (typeof(IEnumerable).IsAssignableFrom(returnType) && returnType != typeof(string) && !typeof(IDictionary).IsAssignableFrom(returnType))
             {
-                return new EnumerablePropertyExpression { LambdaExpression = lambda };
+                return new EnumerablePropertyExpression(lambda);
             }
             else
             {
-                return new PropertyExpression { LambdaExpression = lambda };
+                return new PropertyExpression(lambda);
             }
         }
 
