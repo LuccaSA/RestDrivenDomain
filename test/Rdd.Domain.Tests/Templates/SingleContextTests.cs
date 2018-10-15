@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Rdd.Application;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;

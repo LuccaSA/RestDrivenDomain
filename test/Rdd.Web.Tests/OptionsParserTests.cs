@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 using Rdd.Domain.Helpers;
 using System.Collections.Generic;
 using Rdd.Web.Tests.Models;
