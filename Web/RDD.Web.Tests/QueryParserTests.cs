@@ -75,8 +75,8 @@ namespace Rdd.Web.Tests
             Assert.Equal(direction, query.OrderBys[0].Direction);
             Assert.Equal
             (
-                new PropertyExpression { LambdaExpression = new ExpressionParser().Parse<User>(output).ToLambdaExpression() }.Property,
-                new PropertyExpression { LambdaExpression = query.OrderBys[0].LambdaExpression }.Property
+                new PropertyExpression(new ExpressionParser().Parse<User>(output).ToLambdaExpression()).Property,
+                new PropertyExpression(query.OrderBys[0].LambdaExpression).Property
             );
         }
 

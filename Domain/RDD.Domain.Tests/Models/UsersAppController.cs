@@ -6,7 +6,7 @@ namespace Rdd.Domain.Tests.Models
 {
     public class UsersAppController : AppController<UsersCollection, User, Guid>
     {
-        public UsersAppController(IStorageService storage, UsersCollection collection)
-            : base(storage, collection) { }
+        public UsersAppController(IUnitOfWork unitOfWork, UsersCollection collection)
+            : base(unitOfWork, collection) { }
     }
 }

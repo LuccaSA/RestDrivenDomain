@@ -1,4 +1,5 @@
 ﻿using Rdd.Domain.Exceptions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
 using System;
 using System.Collections.Generic;
@@ -10,16 +11,16 @@ namespace Rdd.Domain.Patchers
     public class ObjectPatcher : IPatcher
     {
         protected IPatcherProvider Provider { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
-        public ObjectPatcher(IPatcherProvider provider)
+        public ObjectPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper)
         {
-            Provider = provider;
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
         }
 
         object IPatcher.InitialValue(PropertyInfo property, object patchedObject)
-        {
-            return property.GetValue(patchedObject);
-        }
+            => ReflectionHelper.GetValue(patchedObject, property);
 
         object IPatcher.PatchValue(object patchedObject, Type expectedType, IJsonElement json)
         {
@@ -37,7 +38,7 @@ namespace Rdd.Domain.Patchers
             }
 
             var entityType = Nullable.GetUnderlyingType(expectedType) ?? expectedType;
-            var properties = entityType.GetProperties().ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
+            var properties = ReflectionHelper.GetProperties(entityType).ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
 
             foreach (var kvp in GetKvps(expectedType, json.Content))
             {
@@ -65,27 +66,22 @@ namespace Rdd.Domain.Patchers
 
         protected virtual void PatchProperty(object patchedObject, PropertyInfo property, IJsonElement element)
         {
-            var propertySetter = property.GetSetMethod();
-            if (propertySetter == null)
-                throw new ForbiddenException($"Property {property.Name} of type {property.DeclaringType.Name} is not writable");
-
             var patcher = Provider.GetPatcher(property.PropertyType, element);
             var initialValue = patcher.InitialValue(property, patchedObject);
             var value = patcher.PatchValue(initialValue, property.PropertyType, element);
 
-            PatchProperty(propertySetter, patchedObject, value, property);
+            PatchProperty(patchedObject, value, property);
         }
 
-        protected virtual void PatchProperty(MethodInfo propertySetter, object patchedObject, object value, PropertyInfo property)
-        {
-            propertySetter.Invoke(patchedObject, new[] { value });
-        }
+        protected virtual void PatchProperty(object patchedObject, object value, PropertyInfo property)
+            => ReflectionHelper.SetValue(patchedObject, property, value);
     }
 
     public class ObjectPatcher<T> : ObjectPatcher, IPatcher<T>
         where T : class
     {
-        public ObjectPatcher(IPatcherProvider provider) : base(provider)
+        public ObjectPatcher(IPatcherProvider provider, IReflectionHelper reflectionHelper)
+            : base(provider, reflectionHelper)
         {
         }
 

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Rdd.Web.Controllers
 {
     public abstract class WebController<TEntity, TKey> : WebController<IAppController<TEntity, TKey>, TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected WebController(IAppController<TEntity, TKey> appController, ICandidateParser candidateParser, IQueryParser<TEntity> queryParser)
@@ -27,7 +27,7 @@ namespace Rdd.Web.Controllers
 
     public abstract class WebController<TAppController, TEntity, TKey> : ReadOnlyWebController<TAppController, TEntity, TKey>
         where TAppController : class, IAppController<TEntity, TKey>
-        where TEntity : class, IEntityBase<TEntity, TKey>
+        where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
         protected ICandidateParser CandidateParser { get; }

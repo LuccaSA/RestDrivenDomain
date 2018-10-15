@@ -1,4 +1,6 @@
 ﻿using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Mocks;
+using Rdd.Domain.Models;
 using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,25 @@ namespace Rdd.Web.Tests.Serialization
             var json = await SerializeAsync(entity, fields);
 
             Assert.Equal(ExpectedInput(@"{""url"":""http://www.example.org/""}"), json);
+        }
+
+        [Fact]
+        public async Task HierarchySerialization()
+        {
+            var entity = new Super();
+            var entity2 = new SuperSuper();
+            var fields = new ExpressionParser().ParseTree<Super>("");
+
+            var json = await SerializeAsync(entity, fields);
+            Assert.Contains("superProperty", json);
+
+            json = await SerializeAsync(new List<Hierarchy> { entity, entity2 }, fields);
+            Assert.Contains("superProperty", json);
+            Assert.Contains("superSuperProperty", json);
+
+            json = await SerializeAsync(new Selection<Hierarchy>(new List<Hierarchy> { entity, entity2 }, 0), fields);
+            Assert.Contains("superProperty", json);
+            Assert.Contains("superSuperProperty", json);
         }
 
         [Fact]
@@ -147,6 +168,33 @@ namespace Rdd.Web.Tests.Serialization
             var json = await SerializeAsync(entity, fields);
 
             Assert.Equal(ExpectedInput(@"{""users"":[{""name"":""Peter""},{""name"":""Steven""}]}"), json);
+        }
+
+        [Fact]
+        public async Task ListKeyValuePairSerialize()
+        {
+            var values = new List<KeyValuePair<int, string>>
+            {
+                new KeyValuePair<int, string>(2, "deux"),
+                new KeyValuePair<int, string>(3, "trois"),
+            };
+
+            var json = await SerializeAsync(values, new ExpressionTree());
+
+            Assert.Equal(ExpectedInput(@"[{""key"":2,""value"":""deux""},{""key"":3,""value"":""trois""}]"), json);
+        }
+
+        [Theory]
+        [InlineData(null, "null")]
+        [InlineData(Test.A, "0")]
+        public async Task NullableEnum(Test? value, string result)
+        {
+            var entity = new Department { Enum = value };
+
+            var fields = ExpressionTree<Department>.New(u => u.Enum);
+            var json = await SerializeAsync(entity, fields);
+
+            Assert.Equal(ExpectedInput($@"{{""enum"":{result}}}"), json);
         }
     }
 }

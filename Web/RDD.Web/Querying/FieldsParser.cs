@@ -25,6 +25,11 @@ namespace Rdd.Web.Querying
             }
         }
 
+        public virtual IExpressionTree ParseDefaultFields(Type type)
+        {
+            return ExpressionParser.ParseTree(type, string.Join(",", type.GetProperties().Select(p => p.Name)));
+        }
+
         public virtual IExpressionTree<TEntity> Parse<TEntity>(string fields) => ExpressionParser.ParseTree<TEntity>(fields);
     }
 }
