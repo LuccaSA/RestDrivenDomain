@@ -15,14 +15,12 @@ namespace Rdd.Web.Tests
 {
     public class QueryParserTests
     {
-        QueryParser<User> GetQueryParser()
-            => new QueryParser<User>(new WebFilterConverter<User>(), new PagingParser(), new FilterParser(new StringConverter(), new ExpressionParser()), new FieldsParser(new ExpressionParser()), new OrderByParser(new ExpressionParser()));
-
+ 
         [Fact]
         public void CountParseHasOptionImplications()
         {
             var dico = new Dictionary<string, StringValues> { { "fields", "collection.count" } };
-            var query = GetQueryParser().Parse(HttpVerbs.Get, dico, true);
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true);
 
             Assert.True(query.Options.NeedCount);
             Assert.False(query.Options.NeedEnumeration);
@@ -32,7 +30,7 @@ namespace Rdd.Web.Tests
         public void IgnoredAndBadFilters()
         {
             var dico = new Dictionary<string, StringValues> { { "pipo", "nope" }, { "", "oulala" } };
-            var parser = GetQueryParser();
+            var parser = QueryParserHelper.GetQueryParser<User>();
             parser.IgnoreFilters("pipo");
 
             var query = parser.Parse(HttpVerbs.Get, dico, true);
@@ -51,7 +49,7 @@ namespace Rdd.Web.Tests
             var httpcontext = new DefaultHttpContext();
             httpcontext.Request.Method = input.ToString();
 
-            var query = GetQueryParser().Parse(httpcontext, true); ;
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(httpcontext, true); ;
 
             Assert.Equal(query.Verb, input);
         }
@@ -69,7 +67,7 @@ namespace Rdd.Web.Tests
         {
             var dico = new Dictionary<string, StringValues> { { "orderby", input } };
 
-            var query = GetQueryParser().Parse(HttpVerbs.Get, dico, true);
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true);
 
             Assert.Single(query.OrderBys);
             Assert.Equal(direction, query.OrderBys[0].Direction);
@@ -98,7 +96,7 @@ namespace Rdd.Web.Tests
         {
             var dico = new Dictionary<string, StringValues> { { "orderby", input } };
 
-            Assert.Throws<BadRequestException>(() => GetQueryParser().Parse(HttpVerbs.Get, dico, true));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true));
         }
 
         [Theory]
@@ -110,7 +108,7 @@ namespace Rdd.Web.Tests
         {
             var dico = new Dictionary<string, StringValues> { { "paging", input } };
 
-            var query = GetQueryParser().Parse(HttpVerbs.Get, dico, true);
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true);
 
             Assert.Equal(offset, query.Page.Offset);
             Assert.Equal(limit, query.Page.Limit);
@@ -128,7 +126,7 @@ namespace Rdd.Web.Tests
         {
             var dico = new Dictionary<string, StringValues> { { "paging", input } };
 
-            Assert.Throws<BadRequestException>(() => GetQueryParser().Parse(HttpVerbs.Get, dico, true));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true));
         }
 
         [Theory]
@@ -139,7 +137,7 @@ namespace Rdd.Web.Tests
         {
             var dico = new Dictionary<string, StringValues> { { key, value } };
 
-            Assert.Throws<BadRequestException>(() => GetQueryParser().Parse(HttpVerbs.Get, dico, true));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true));
         }
     }
 }

@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\RDD.Domain.Mocks\Rdd.Domain.Mocks.csproj" />
     <ProjectReference Include="..\..\Domain\RDD.Domain.Tests\Rdd.Domain.Tests.csproj" />
     <ProjectReference Include="..\..\Domain\RDD.Domain\Rdd.Domain.csproj" />
     <ProjectReference Include="..\RDD.Web\Rdd.Web.csproj" />

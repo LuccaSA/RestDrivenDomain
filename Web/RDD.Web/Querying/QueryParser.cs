@@ -8,6 +8,8 @@ using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Querying
 {
@@ -19,16 +21,18 @@ namespace Rdd.Web.Querying
         private readonly IFilterParser _filterParser;
         private readonly IFieldsParser _fieldsParser;
         private readonly IOrderByParser _orderByParser;
+        private readonly IOptions<RddOptions> _rddOptions;
 
         protected HashSet<string> IgnoredFilters { get; set; }
 
-        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
+        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser, IOptions<RddOptions> rddOptions)
         {
             _webFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
             _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
             _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
             _fieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
             _orderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
+            _rddOptions = rddOptions;
 
             IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -47,7 +51,7 @@ namespace Rdd.Web.Querying
         public virtual Query<TEntity> Parse(HttpVerbs verb, IEnumerable<KeyValuePair<string, StringValues>> parameters, bool isCollectionCall)
         {
             var filters = new List<WebFilter<TEntity>>();
-            var query = new WebQuery<TEntity>
+            var query = new Query<TEntity>
             {
                 Fields = null,
                 Verb = verb
@@ -66,6 +70,11 @@ namespace Rdd.Web.Querying
             {
                 query.Options.NeedCount = true;
                 query.Options.NeedEnumeration = query.Fields.Children.Count() != 1;
+            }
+
+            if (query.Page == Page.Unlimited)
+            {
+                query.Page = _rddOptions.Value.DefaultPage;
             }
 
             query.Filter = _webFilterConverter.ToExpression(filters);

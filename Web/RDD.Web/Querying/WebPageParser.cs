@@ -1,51 +1,52 @@
 ﻿using Rdd.Domain.Exceptions;
 using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using Rdd.Domain.Models.Querying;
+using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Querying
 {
-    public class WebPageParser
+    public class PagingParser : IPagingParser
     {
-        public WebPage Parse(Dictionary<string, string> parameters)
+        private readonly IOptions<RddOptions> _rddOptions;
+
+        public PagingParser(IOptions<RddOptions> rddOptions)
         {
-            if (parameters.ContainsKey(Reserved.paging.ToString()))
+            _rddOptions = rddOptions;
+        }
+        
+        public Page Parse(string input)
+        {
+            if (input == null)
             {
-                return Parse(parameters[Reserved.paging.ToString()]);
+                throw new BadRequestException(nameof(input));
             }
 
-            return WebPage.Default;
-        }
-
-        protected WebPage Parse(string paging)
-        {
-            if (paging == "1") //...&paging=1 <=> &paging=0,100
+            if (input == "1") //...&paging=1 <=> &paging=0,100
             {
-                return WebPage.Default;
+                return _rddOptions.Value.DefaultPage;
             }
             else //...&paging=x,y
             {
-                var elements = paging.Split(',');
+                var elements = input.Split(',');
 
                 if (elements.Length == 2)
                 {
-                    int offset;
-                    int limit;
-
-                    if (!Int32.TryParse(elements[0], out offset))
+                    if (!Int32.TryParse(elements[0], out int offset))
                     {
                         throw new BadRequestException(String.Format("Offset value {0} not in correct format", elements[0]));
                     }
 
-                    if (!Int32.TryParse(elements[1], out limit))
+                    if (!Int32.TryParse(elements[1], out int limit))
                     {
                         throw new BadRequestException(String.Format("Limit value {0} not in correct format", elements[1]));
                     }
 
-                    return new WebPage(offset, limit);
+                    return new Page(offset, limit, _rddOptions.Value.PagingMaximumLimit);
                 }
                 else
                 {
-                    throw new BadRequestException(String.Format("{0} does not respect limit=start,count format", paging));
+                    throw new BadRequestException(String.Format("{0} does not respect limit=start,count format", input));
                 }
             }
         }

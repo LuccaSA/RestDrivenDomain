@@ -1,13 +1,14 @@
 using Newtonsoft.Json;
 using Rdd.Domain;
 using Rdd.Domain.Json;
-using Rdd.Domain.Mocks;
 using Rdd.Web.Models;
 using Rdd.Web.Querying;
-using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Rdd.Domain.Tests.Models;
 using Xunit;
+using Department = Rdd.Web.Tests.Models.Department;
+using User = Rdd.Web.Tests.Models.User;
 
 namespace Rdd.Web.Tests
 {
@@ -72,7 +73,11 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_fail_without_config()
         {
-            JsonConvert.DefaultSettings = null;
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>()
+            };
+
             Assert.Throws<JsonSerializationException>(GetCandidate);
         }
 
@@ -83,7 +88,7 @@ namespace Rdd.Web.Tests
             {
                 Converters = new List<JsonConverter>
                 {
-                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
+                    new BaseClassJsonConverter<Domain.Tests.Models.Hierarchy>(new Domain.Tests.Models.InheritanceConfiguration())
                 }
             };
 

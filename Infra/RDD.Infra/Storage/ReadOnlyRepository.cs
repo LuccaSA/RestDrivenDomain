@@ -54,7 +54,12 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyFilters(entities, query);
             entities = ApplyOrderBys(entities, query);
-            entities = ApplyPage(entities, query);
+
+            if (query.Page != Page.Unlimited)
+            {
+                entities = ApplyPage(entities, query);
+            }
+
             entities = ApplyIncludes(entities, query);
 
             return StorageService.EnumerateEntitiesAsync(entities);

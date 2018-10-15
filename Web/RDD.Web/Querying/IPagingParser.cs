@@ -1,7 +1,9 @@
-﻿namespace Rdd.Web.Querying
+﻿using Rdd.Domain.Models.Querying;
+
+namespace Rdd.Web.Querying
 {
     public interface IPagingParser
     {
-        WebPage Parse(string input);
+        Page Parse(string input);
     }
 }
