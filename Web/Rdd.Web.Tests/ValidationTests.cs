@@ -6,6 +6,7 @@ using Rdd.Domain;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
+using Rdd.Domain.Rights;
 using Rdd.Web.Helpers;
 using Rdd.Web.Models;
 using Rdd.Web.Tests.ServerMock;
@@ -25,7 +26,10 @@ namespace Rdd.Web.Tests
         {
             // arrange
             var services = new ServiceCollection();
-            services.AddRdd<ExchangeRateDbContext, CombinationsHolder, CurPrincipal>();
+            services
+                .AddRdd<ExchangeRateDbContext>()
+                .WithDefaultRights(RightDefaultMode.Open);
+
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase("validation"); });
             services.AddScoped(typeof(IRestCollection<,>), collectionType);
             var provider = services.BuildServiceProvider();
@@ -60,7 +64,7 @@ namespace Rdd.Web.Tests
             }
         }
 
-        public class ValidationFailCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TEntity, TKey> where TKey : IEquatable<TKey>
+        public class ValidationFailCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
             public ValidationFailCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
@@ -68,7 +72,7 @@ namespace Rdd.Web.Tests
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(false);
         }
 
-        public class ValidationOkCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TEntity, TKey> where TKey : IEquatable<TKey>
+        public class ValidationOkCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
             public ValidationOkCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
@@ -76,7 +80,7 @@ namespace Rdd.Web.Tests
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(true);
         }
 
-        public class ValidationThrowCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TEntity, TKey> where TKey : IEquatable<TKey>
+        public class ValidationThrowCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
             public ValidationThrowCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
@@ -84,7 +88,7 @@ namespace Rdd.Web.Tests
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => throw new NotImplementedException();
         }
 
-        public class ValidationThrowAsyncCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TEntity, TKey> where TKey : IEquatable<TKey>
+        public class ValidationThrowAsyncCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
             public ValidationThrowAsyncCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
