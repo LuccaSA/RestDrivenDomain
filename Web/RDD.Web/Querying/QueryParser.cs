@@ -14,21 +14,21 @@ namespace Rdd.Web.Querying
     public class QueryParser<TEntity> : IQueryParser<TEntity>
         where TEntity : class
     {
-        protected IWebFilterConverter<TEntity> WebFilterConverter { get; private set; }
-        protected IPagingParser PagingParser { get; private set; }
-        protected IFilterParser FilterParser { get; private set; }
-        protected IFieldsParser FieldsParser { get; private set; }
-        protected IOrderByParser OrderByParser { get; private set; }
+        private readonly IWebFilterConverter<TEntity> _webFilterConverter;
+        private readonly IPagingParser _pagingParser;
+        private readonly IFilterParser _filterParser;
+        private readonly IFieldsParser _fieldsParser;
+        private readonly IOrderByParser _orderByParser;
 
         protected HashSet<string> IgnoredFilters { get; set; }
 
         public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
         {
-            WebFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
-            PagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
-            FilterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
-            FieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
-            OrderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
+            _webFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
+            _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
+            _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
+            _fieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
+            _orderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
 
             IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -60,7 +60,7 @@ namespace Rdd.Web.Querying
 
             if (query.Fields == null)
             {
-                query.Fields = FieldsParser.GetDeFaultFields<TEntity>(isCollectionCall);
+                query.Fields = _fieldsParser.GetDeFaultFields<TEntity>(isCollectionCall);
             }
             else if (query.Fields.Contains((ISelection c) => c.Count))
             {
@@ -68,7 +68,7 @@ namespace Rdd.Web.Querying
                 query.Options.NeedEnumeration = query.Fields.Children.Count() != 1;
             }
 
-            query.Filter = WebFilterConverter.ToExpression(filters);
+            query.Filter = _webFilterConverter.ToExpression(filters);
 
             return query;
         }
@@ -89,21 +89,21 @@ namespace Rdd.Web.Querying
                 switch (reserved)
                 {
                     case Reserved.fields:
-                        query.Fields = FieldsParser.Parse<TEntity>(value);
+                        query.Fields = _fieldsParser.Parse<TEntity>(value);
                         break;
 
                     case Reserved.orderby:
-                        query.OrderBys = OrderByParser.Parse<TEntity>(value);
+                        query.OrderBys = _orderByParser.Parse<TEntity>(value);
                         break;
 
                     case Reserved.paging:
-                        query.Page = PagingParser.Parse(value);
+                        query.Page = _pagingParser.Parse(value);
                         break;
                 }
             }
             else
             {
-                filters.Add(FilterParser.Parse<TEntity>(key, value));
+                filters.Add(_filterParser.Parse<TEntity>(key, value));
             }
         }
     }
