@@ -5,12 +5,12 @@ namespace Rdd.Domain.Models.Querying
 {
     public class Filter<TEntity>
     {
-        public Expression<Func<TEntity, bool>> Expression { get; protected set; }
+        public virtual Expression<Func<TEntity, bool>> Expression { get; }
 
         public Filter() : this(e => true) { }
         public Filter(Expression<Func<TEntity, bool>> expression)
         {
-            Expression = expression;
+            Expression = expression ?? (e => true);
         }
 
         public static implicit operator Filter<TEntity>(Expression<Func<TEntity, bool>> expression) => new Filter<TEntity>(expression);

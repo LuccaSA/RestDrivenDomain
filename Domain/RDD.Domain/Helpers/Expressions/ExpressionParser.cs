@@ -1,4 +1,6 @@
-﻿using Rdd.Domain.Helpers.Expressions.Utils;
+﻿using Microsoft.Extensions.Primitives;
+using Rdd.Domain.Exceptions;
+using Rdd.Domain.Helpers.Expressions.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Reflection;
 
 namespace Rdd.Domain.Helpers.Expressions
 {
-    public class ExpressionParser
+    public class ExpressionParser : IExpressionParser
     {
         public IExpression Parse<TClass>(string input)
             => ParseChain<TClass>(input);
@@ -16,19 +18,20 @@ namespace Rdd.Domain.Helpers.Expressions
             => ParseChain(classType, input);
 
         public IExpressionChain ParseChain<TClass>(string input)
-            => TreeToChain(ParseTree<TClass>(input));
+            => ParseChain<ExpressionChain<TClass>>(typeof(TClass), new Queue<StringSegment>(new StringTokenizer(input, new[] { '.' })));
         public IExpressionChain ParseChain(Type classType, string input)
-            => TreeToChain(ParseTree(classType, input));
+            => ParseChain<ExpressionChain>(classType, new Queue<StringSegment>(new StringTokenizer(input, new[] { '.' })));
 
-        private IExpressionChain TreeToChain(IExpressionTree tree)
+        private TChain ParseChain<TChain>(Type classType, Queue<StringSegment> tokens)
+            where TChain : ExpressionChain, new()
         {
-            var chains = tree.ToList();
-            if (chains.Count != 1)
+            if (tokens.Count == 0)
             {
-                throw new ArgumentException("Invalid input");
+                return null;
             }
 
-            return chains.First();
+            var expression = GetExpression(classType, tokens.Dequeue().Value);
+            return new TChain { Current = expression, Next = ParseChain<ExpressionChain>(expression.ResultType, tokens) };
         }
 
         public IExpressionChain ParseChain(LambdaExpression lambda)
@@ -103,6 +106,11 @@ namespace Rdd.Domain.Helpers.Expressions
             }
 
             var property = GetPropertyInfo(classType, member);
+            if (property == null)
+            {
+                throw new BadRequestException($"Selected property {member} does not exist on objet of type {classType.Name}");
+            }
+
             var returnType = property.PropertyType;
 
             var propertyExpression = Expression.Property(parameter, property);

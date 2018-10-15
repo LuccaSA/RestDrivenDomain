@@ -1,7 +1,9 @@
-﻿using Rdd.Web.Tests.Models;
-using Xunit;
-using Rdd.Web.Querying;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using Rdd.Domain.Helpers;
 using System.Collections.Generic;
+using Rdd.Web.Tests.Models;
+using Xunit;
 
 namespace Rdd.Web.Tests
 {
@@ -10,12 +12,11 @@ namespace Rdd.Web.Tests
         [Fact]
         public void CountParseHasOptionImplications()
         {
-            var dico = new Dictionary<string, string> { { "fields", "collection.count" } };
-            var fields = new FieldsParser().ParseFields<User>(dico, true);
-            var options = new OptionsParser().Parse(dico, fields);
+            var dico = new Dictionary<string, StringValues> { { "fields", "collection.count" } };
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(HttpVerbs.Get, dico, true);
 
-            Assert.True(options.NeedCount);
-            Assert.False(options.NeedEnumeration);
+            Assert.True(query.Options.NeedCount);
+            Assert.False(query.Options.NeedEnumeration);
         }
     }
 }

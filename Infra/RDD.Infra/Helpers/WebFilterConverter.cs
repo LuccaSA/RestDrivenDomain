@@ -1,21 +1,44 @@
 ﻿using NExtends.Expressions;
-using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models;
 using Rdd.Infra.Exceptions;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace Rdd.Infra.Helpers
 {
-    public class QueryBuilder<TEntity, TKey>
-        where TEntity : IPrimaryKey<TKey>
+    public class WebFilterConverter<TEntity> : IWebFilterConverter<TEntity>
     {
         private const int EF_EXPRESSION_TREE_MAX_DEPTH = 1000;
 
-        public Expression<Func<TEntity, bool>> OrFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
+        public Expression<Func<TEntity, bool>> ToExpression(IEnumerable<WebFilter<TEntity>> filters) => filters.Select(ToExpression).AndAggregation();
+
+        public Expression<Func<TEntity, bool>> ToExpression(WebFilter<TEntity> filter)
+        {
+            switch (filter.Operand)
+            {
+                case WebFilterOperand.Equals: return Equals(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.NotEqual: return NotEqual(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Starts: return Starts(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Like: return Like(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Between: return Between(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Since: return Since(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Until: return Until(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Anniversary: return Anniversary(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.GreaterThan: return GreaterThan(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.GreaterThanOrEqual: return GreaterThanOrEqual(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.LessThan: return LessThan(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.LessThanOrEqual: return LessThanOrEqual(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.ContainsAll: return ContainsAll(filter.ExpressionChain, filter.Values);
+                default: throw new NotImplementedException($"Unhandled operand : {filter.Operand}");
+            }
+        }
+
+        protected Expression<Func<TEntity, bool>> OrFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
         {
             if (values.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
             {
@@ -25,7 +48,7 @@ namespace Rdd.Infra.Helpers
             return values.Cast<TProp>().Select(filter).OrAggregation();
         }
 
-        public Expression<Func<TEntity, bool>> AndFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
+        protected Expression<Func<TEntity, bool>> AndFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
         {
             if (values.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
             {
@@ -34,28 +57,26 @@ namespace Rdd.Infra.Helpers
             return values.Cast<TProp>().Select(filter).AndAggregation();
         }
 
-        public virtual Expression<Func<TEntity, bool>> Equals(TKey key) => t => t.Id.Equals(key);
-
-        public Expression<Func<TEntity, bool>> Equals(IExpression field, IList values) => BuildBinaryExpression(Contains, field, values);
+        public Expression<Func<TEntity, bool>> Equals(IExpression field, IList values) => BuildLambda(Contains, field, values);
         protected virtual Expression Contains(Expression leftExpression, IList values)
         {
             return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, Expression.Constant(values), leftExpression);
         }
 
-        public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values) => BuildBinaryExpression(NotEqual, field, values);
+        public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values) => BuildLambda(NotEqual, field, values);
         protected virtual Expression NotEqual(Expression leftExpression, IList values)
         {
             return Expression.Not(Contains(leftExpression, values));
         }
 
-        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildBinaryExpression(Equal, field, value), values);
+        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildLambda(Equal, field, value), values);
         protected virtual Expression Equal(Expression leftExpression, object value)
         {
             return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
         }
 
-        public Expression<Func<TEntity, bool>> Since(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(GreaterThanOrEqual, field, value), values);
-        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(GreaterThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> Since(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(GreaterThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(GreaterThanOrEqual, field, value), values);
         protected virtual Expression GreaterThanOrEqual(Expression leftExpression, object value)
         {
             if (value == null)
@@ -68,8 +89,8 @@ namespace Rdd.Infra.Helpers
             }
         }
 
-        public Expression<Func<TEntity, bool>> Until(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(LessThanOrEqual, field, value), values);
-        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(LessThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> Until(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(LessThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(LessThanOrEqual, field, value), values);
         protected virtual Expression LessThanOrEqual(Expression leftExpression, object value)
         {
             if (value == null)
@@ -82,19 +103,19 @@ namespace Rdd.Infra.Helpers
             }
         }
 
-        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(GreaterThan, field, value), values);
+        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(GreaterThan, field, value), values);
         protected virtual Expression GreaterThan(Expression leftExpression, object value)
         {
             return Expression.GreaterThan(leftExpression, Expression.Constant(value, leftExpression.Type));
         }
 
-        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(LessThan, field, value), values);
+        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(LessThan, field, value), values);
         protected virtual Expression LessThan(Expression leftExpression, object value)
         {
             return Expression.LessThan(leftExpression, Expression.Constant(value, leftExpression.Type));
         }
 
-        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IList values) => OrFactory<DateTime?>(value => BuildBinaryExpression(Anniversary, field, value), values);
+        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IList values) => OrFactory<DateTime?>(value => BuildLambda(Anniversary, field, value), values);
         protected virtual Expression Anniversary(Expression leftExpression, DateTime? value)
         {
             if (leftExpression.Type == typeof(DateTime?))
@@ -127,7 +148,7 @@ namespace Rdd.Infra.Helpers
             }
         }
 
-        public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<Period>(value => BuildBinaryExpression(Between, field, value), values);
+        public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<Period>(value => BuildLambda(Between, field, value), values);
         protected virtual Expression Between(Expression leftExpression, Period value)
         {
             var expressionRightSince = Expression.Constant(value.Start, leftExpression.Type);
@@ -137,7 +158,7 @@ namespace Rdd.Infra.Helpers
             return Expression.AndAlso(sinceExpression, untilExpression);
         }
 
-        public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => BuildBinaryExpression(Starts, field, value), values);
+        public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => BuildLambda(Starts, field, value), values);
         protected virtual Expression Starts(Expression leftExpression, string value)
         {
             var startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
@@ -146,7 +167,7 @@ namespace Rdd.Infra.Helpers
             return Expression.Call(Expression.Call(leftExpression, toLower), startsWith, Expression.Constant(value.ToLower(), typeof(string)));
         }
 
-        public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => BuildBinaryExpression(Like, field, value.ToString()), values);
+        public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(Like, field, value.ToString()), values);
         protected virtual Expression Like(Expression leftExpression, string value)
         {
             var contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
@@ -156,7 +177,7 @@ namespace Rdd.Infra.Helpers
             return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, Expression.Constant(value.ToLower(), typeof(string)));
         }
 
-        private Expression<Func<TEntity, bool>> BuildBinaryExpression<T>(Func<Expression, T, Expression> builder, IExpression field, T value)
+        protected Expression<Func<TEntity, bool>> BuildLambda<TValue>(Func<Expression, TValue, Expression> builder, IExpression field, TValue value)
         {
             var fieldLambda = field.ToLambdaExpression();
             var expression = builder(fieldLambda.Body, value);

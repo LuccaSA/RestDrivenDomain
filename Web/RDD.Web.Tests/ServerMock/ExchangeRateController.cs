@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
 using Rdd.Domain.Helpers;
+using Rdd.Domain.Models.Querying;
 using Rdd.Web.Controllers;
-using Rdd.Web.Helpers;
+using Rdd.Web.Querying;
 using System.Threading.Tasks;
 
 namespace Rdd.Web.Tests.ServerMock
@@ -13,8 +14,8 @@ namespace Rdd.Web.Tests.ServerMock
     {
         public const string RouteName = "OpenExchangeRate";
 
-        public ExchangeRate2Controller(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper)
-            : base(appController, helper)
+        public ExchangeRate2Controller(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser)
+            : base(appController, candidateParser, queryParser)
         {
         }
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
@@ -23,8 +24,8 @@ namespace Rdd.Web.Tests.ServerMock
     [Route("ExchangeRate")]
     public class ExchangeRateController : WebController<ExchangeRate, int>
     {
-        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ApiHelper<ExchangeRate, int> helper)
-            : base(appController, helper)
+        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser)
+            : base(appController, candidateParser, queryParser)
         {
         }
 

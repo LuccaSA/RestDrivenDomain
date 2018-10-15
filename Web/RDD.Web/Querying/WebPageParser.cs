@@ -1,32 +1,34 @@
 ﻿using Rdd.Domain.Exceptions;
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using Rdd.Domain.Models.Querying;
 using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Querying
 {
-    public class PagingParser
+    public class PagingParser : IPagingParser
     {
-        public Page Parse(Dictionary<string, string> parameters, IOptions<RddOptions> rddOptions)
-        {
-            if (parameters.ContainsKey(Reserved.paging.ToString()))
-            {
-                return Parse(parameters[Reserved.paging.ToString()], rddOptions);
-            }
-            return rddOptions.Value.DefaultPage;
-        }
+        private readonly IOptions<RddOptions> _rddOptions;
 
-        protected Page Parse(string paging, IOptions<RddOptions> rddOptions)
+        public PagingParser(IOptions<RddOptions> rddOptions)
         {
-            if (paging == "1") //...&paging=1 <=> &paging=0,100
+            _rddOptions = rddOptions;
+        }
+        
+        public Page Parse(string input)
+        {
+            if (input == null)
             {
-                return rddOptions.Value.DefaultPage;
+                throw new BadRequestException(nameof(input));
+            }
+
+            if (input == "1") //...&paging=1 <=> &paging=0,100
+            {
+                return _rddOptions.Value.DefaultPage;
             }
             else //...&paging=x,y
             {
-                var elements = paging.Split(',');
+                var elements = input.Split(',');
 
                 if (elements.Length == 2)
                 {
@@ -40,11 +42,11 @@ namespace Rdd.Web.Querying
                         throw new BadRequestException(String.Format("Limit value {0} not in correct format", elements[1]));
                     }
 
-                    return new Page(offset, limit, rddOptions.Value.PagingMaximumLimit);
+                    return new Page(offset, limit, _rddOptions.Value.PagingMaximumLimit);
                 }
                 else
                 {
-                    throw new BadRequestException(String.Format("{0} does not respect limit=start,count format", paging));
+                    throw new BadRequestException(String.Format("{0} does not respect limit=start,count format", input));
                 }
             }
         }

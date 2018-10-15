@@ -6,13 +6,13 @@ namespace Rdd.Infra.Web.Models
 {
     public class WebFilter<TEntity>
     {
-        public IExpressionChain Selector { get; private set; }
+        public IExpressionChain ExpressionChain { get; private set; }
         public WebFilterOperand Operand { get; private set; }
         public IList Values { get; private set; }
 
-        public WebFilter(IExpressionChain selector, WebFilterOperand operand, IList values)
+        public WebFilter(IExpressionChain expressionChain, WebFilterOperand operand, IList values)
         {
-            Selector = selector;
+            ExpressionChain = expressionChain;
             Operand = operand;
             Values = values;
         }
@@ -20,7 +20,7 @@ namespace Rdd.Infra.Web.Models
 
     public class WebFilter<TEntity, TProp> : WebFilter<TEntity>
     {
-        public WebFilter(IExpressionChain selector, WebFilterOperand operand, TProp value)
-            : base(selector, operand, new List<TProp> { value }) { }
+        public WebFilter(IExpressionChain expressionChain, WebFilterOperand operand, TProp value)
+            : base(expressionChain, operand, new List<TProp> { value }) { }
     }
 }

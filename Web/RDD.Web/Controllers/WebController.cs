@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
-using Rdd.Web.Helpers;
+using Rdd.Web.Querying;
 using Rdd.Web.Serialization;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Rdd.Web.Controllers
@@ -18,21 +19,23 @@ namespace Rdd.Web.Controllers
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        protected WebController(IAppController<TEntity, TKey> appController, ApiHelper<TEntity, TKey> helper)
-            : base(appController, helper)
+        protected WebController(IAppController<TEntity, TKey> appController, ICandidateParser candidateParser, IQueryParser<TEntity> queryParser)
+            : base(appController, candidateParser, queryParser)
         {
         }
     }
 
     public abstract class WebController<TAppController, TEntity, TKey> : ReadOnlyWebController<TAppController, TEntity, TKey>
-        where TAppController : IAppController<TEntity, TKey>
+        where TAppController : class, IAppController<TEntity, TKey>
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
+        protected ICandidateParser CandidateParser { get; }
 
-        protected WebController(TAppController appController, ApiHelper<TEntity, TKey> helper)
-            : base(appController, helper)
+        protected WebController(TAppController appController, ICandidateParser candidateParser, IQueryParser<TEntity> queryParser)
+            : base(appController, queryParser)
         {
+            CandidateParser = candidateParser;
         }
 
         [HttpPost]
@@ -43,8 +46,8 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Post, false);
-            ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
+            Query<TEntity> query = QueryParser.Parse(HttpContext, false);
+            var candidate = CandidateParser.Parse<TEntity, TKey>(await GetContentAsync());
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
@@ -59,8 +62,8 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
-            ICandidate<TEntity, TKey> candidate = Helper.CreateCandidate();
+            Query<TEntity> query = QueryParser.Parse(HttpContext, false);
+            var candidate = CandidateParser.Parse<TEntity, TKey>(await GetContentAsync());
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
 
@@ -80,8 +83,8 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = Helper.CreateQuery(HttpVerbs.Put, false);
-            IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
+            Query<TEntity> query = QueryParser.Parse(HttpContext, true);
+            var candidates = CandidateParser.ParseMany<TEntity, TKey>(await GetContentAsync());
 
             if (candidates.Any(c => !c.HasId()))
             {
@@ -116,7 +119,7 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            IEnumerable<ICandidate<TEntity, TKey>> candidates = Helper.CreateCandidates();
+            var candidates = CandidateParser.ParseMany<TEntity, TKey>(await GetContentAsync());
 
             if (candidates.Any(c => !c.HasId()))
             {
@@ -126,6 +129,14 @@ namespace Rdd.Web.Controllers
             await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id));
 
             return Ok();
+        }
+
+        protected virtual Task<string> GetContentAsync()
+        {
+            using (var reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
+            {
+                return reader.ReadToEndAsync();
+            }
         }
     }
 }

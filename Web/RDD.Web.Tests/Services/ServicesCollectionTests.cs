@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Rdd.Application;
 using Rdd.Domain;
-using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
+using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
@@ -15,7 +16,6 @@ using Rdd.Web.Tests.ServerMock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Rdd.Web.Tests.Services
@@ -98,14 +98,18 @@ namespace Rdd.Web.Tests.Services
             var services = new ServiceCollection();
 
             services.AddRddCore<ExchangeRateDbContext>();
+            services.AddSingleton<IReflectionHelper, ReflectionHelper>(); ;
+
             services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(OpenRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<IUnitOfWork>());
             Assert.NotNull(provider.GetRequiredService<IStorageService>());
             Assert.NotNull(provider.GetRequiredService<IPatcherProvider>());
-            Assert.NotNull(provider.GetRequiredService<IHttpContextAccessor>());
-            Assert.NotNull(provider.GetRequiredService<IHttpContextHelper>());
+            Assert.NotNull(provider.GetRequiredService<IJsonParser>());
+            Assert.NotNull(provider.GetRequiredService<IStringConverter>());
+            Assert.NotNull(provider.GetRequiredService<IExpressionParser>());
+            Assert.NotNull(provider.GetRequiredService<ICandidateParser>());
 
             Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate>>());
             Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate>>());
@@ -115,7 +119,6 @@ namespace Rdd.Web.Tests.Services
             Assert.NotNull(provider.GetRequiredService<IRestCollection<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IReadOnlyAppController<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IAppController<ExchangeRate, int>>());
-            Assert.NotNull(provider.GetRequiredService<ApiHelper<ExchangeRate, int>>());
         }
     }
 }

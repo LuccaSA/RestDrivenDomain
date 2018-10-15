@@ -81,8 +81,13 @@ namespace Rdd.Infra.Storage
         }
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {
+            if (query?.Filter?.Expression == null)
+            {
+                return entities;
+            }
             return entities.Where(query.Filter.Expression);
         }
+
         protected virtual IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
         {
             foreach (var orderBy in query.OrderBys)

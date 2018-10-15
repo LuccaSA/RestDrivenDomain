@@ -1,39 +1,35 @@
 ﻿using Rdd.Domain.Helpers.Expressions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rdd.Web.Querying
 {
-    public class FieldsParser
+    public class FieldsParser : IFieldsParser
     {
-        public IExpressionTree<TClass> ParseFields<TClass>(Dictionary<string, string> parameters, bool isCollectionCall)
+        protected IExpressionParser ExpressionParser { get; private set; }
+
+        public FieldsParser(IExpressionParser expressionParser)
         {
-            if (parameters.ContainsKey(Reserved.fields.ToString()))
+            ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
+        }
+
+        public virtual IExpressionTree<TEntity> GetDeFaultFields<TEntity>(bool isCollectionCall)
+        {
+            if (!isCollectionCall)
             {
-                return ParseFields<TClass>(parameters[Reserved.fields.ToString()]);
+                return Parse<TEntity>(string.Join(",", typeof(TEntity).GetProperties().Select(p => p.Name)));
             }
-            else if (!isCollectionCall)
+            else
             {
-                return ParseAllProperties<TClass>();
+                return new ExpressionTree<TEntity>();
             }
-
-            return new ExpressionTree<TClass>();
         }
 
-        public IExpressionTree ParseAllProperties(Type classType)
+        public virtual IExpressionTree ParseDefaultFields(Type type)
         {
-            var fields = string.Join(",", classType.GetProperties().Select(p => p.Name));
-            return ParseFields(classType, fields);
+            return ExpressionParser.ParseTree(type, string.Join(",", type.GetProperties().Select(p => p.Name)));
         }
 
-        public IExpressionTree<TClass> ParseAllProperties<TClass>()
-        {
-            var fields = string.Join(",", typeof(TClass).GetProperties().Select(p => p.Name));
-            return ParseFields<TClass>(fields);
-        }
-
-        public IExpressionTree<TClass> ParseFields<TClass>(string fields) => new ExpressionParser().ParseTree<TClass>(fields);
-        public IExpressionTree ParseFields(Type classType, string fields) => new ExpressionParser().ParseTree(classType, fields);
+        public virtual IExpressionTree<TEntity> Parse<TEntity>(string fields) => ExpressionParser.ParseTree<TEntity>(fields);
     }
 }

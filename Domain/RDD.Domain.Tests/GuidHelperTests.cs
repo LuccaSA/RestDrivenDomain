@@ -1,15 +1,16 @@
-﻿using Rdd.Domain.Helpers;
+using Rdd.Domain.Models.Querying;
+using System;
 using Xunit;
 
 namespace Rdd.Domain.Tests
 {
     public class GuidHelperTests
     {
-        private readonly GuidHelper _helper;
+        private readonly StringConverter _helper;
 
         public GuidHelperTests()
         {
-            _helper = new GuidHelper();
+            _helper = new StringConverter();
         }
 
         [Theory]
@@ -18,7 +19,7 @@ namespace Rdd.Domain.Tests
         [InlineData("aabbccddeeff")]
         public void InterpreteStringAsGuid_WHEN_WellFormedStringGuid(string input)
         {
-            _helper.Complete(input);
+            _helper.ConvertTo<Guid>(input);
         }
     }
 }

@@ -1,18 +1,27 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
+using Rdd.Domain;
+using Rdd.Domain.Json;
 using Rdd.Web.Models;
-using Rdd.Web.Tests.Models;
+using Rdd.Web.Querying;
 using System.Collections.Generic;
 using System.Linq;
+using Rdd.Domain.Tests.Models;
 using Xunit;
+using Department = Rdd.Web.Tests.Models.Department;
+using User = Rdd.Web.Tests.Models.User;
 
 namespace Rdd.Web.Tests
 {
     public class CandidateTests
     {
+        ICandidate<TEntity, TKey> Parse<TEntity, TKey>(string content)
+            where TEntity : class, IPrimaryKey<TKey>
+            => new CandidateParser(new JsonParser()).Parse<TEntity, TKey>(content);
+
         [Fact]
         public void Candidate_should_exposeProperties()
         {
-            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 1, ""name"": ""User1"", ""salary"": 2000 }");
+            var candidate = Parse<User, int>(@"{ ""id"": 1, ""name"": ""User1"", ""salary"": 2000 }");
 
             Assert.True(candidate.HasProperty(u => u.Id));
             Assert.True(candidate.HasProperty(u => u.Name));
@@ -24,7 +33,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_exposeNeastedProperties()
         {
-            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 1, ""name"": ""User1"", ""department"": { ""id"": 2 } }");
+            var candidate = Parse<User, int>(@"{ ""id"": 1, ""name"": ""User1"", ""department"": { ""id"": 2 } }");
 
             Assert.True(candidate.HasProperty(u => u.Id));
             Assert.True(candidate.HasProperty(u => u.Name));
@@ -38,7 +47,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_exposeMultipleNeastedProperties()
         {
-            var candidate = Candidate<User, int>.Parse(@"{ ""id"": 1, ""department"": { ""id"": 2, ""name"": ""Dep2"" } }");
+            var candidate = Parse<User, int>(@"{ ""id"": 1, ""department"": { ""id"": 2, ""name"": ""Dep2"" } }");
 
             Assert.True(candidate.HasProperty(u => u.Id));
             Assert.True(candidate.HasProperty(u => u.Department));
@@ -51,7 +60,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_exposeArrayProperties()
         {
-            var candidate = Candidate<Department, int>.Parse(@"{ ""id"": 1, ""users"": [ { ""id"": 2 }, { ""id"": 3 } ] }");
+            var candidate = Parse<Department, int>(@"{ ""id"": 1, ""users"": [ { ""id"": 2 }, { ""id"": 3 } ] }");
 
             Assert.True(candidate.HasProperty(d => d.Id));
             Assert.True(candidate.HasProperty(d => d.Users));
@@ -87,6 +96,7 @@ namespace Rdd.Web.Tests
             Assert.True(candidate.HasProperty(d => d.Id));
         }
 
-        private static Candidate<Domain.Tests.Models.Hierarchy, int> GetCandidate() => Candidate<Domain.Tests.Models.Hierarchy, int>.Parse(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
+        private static ICandidate<Hierarchy, int> GetCandidate()
+            => new CandidateParser(new JsonParser()).Parse<Hierarchy, int>(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
     }
 }

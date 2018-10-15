@@ -1,6 +1,6 @@
 ﻿using Rdd.Domain.Models.Querying;
-using Rdd.Domain.Tests.Models;
 using System.Collections.Generic;
+using System.Net.Mail;
 using Xunit;
 
 namespace Rdd.Domain.Tests
@@ -10,8 +10,10 @@ namespace Rdd.Domain.Tests
         [Fact]
         public void SerializeStringAsMailAddress_WHEN_GoodMailInQueryFilters()
         {
-            var service = new SerializationService();
-            var values = service.ConvertWhereValues(new HashSet<string>() { "mail@domain.com" }, typeof(User).GetProperty("Mail"));
+            var service = new StringConverter();
+            var values = service.ConvertValues<MailAddress>(new HashSet<string> { "mail@domain.com" });
+
+            Assert.Equal(new MailAddress("mail@domain.com"), values[0]);
         }
     }
 }

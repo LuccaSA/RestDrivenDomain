@@ -1,54 +1,54 @@
 ﻿using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models.Querying;
+using System;
 using System.Collections.Generic;
 
 namespace Rdd.Web.Querying
 {
-    public class OrderByParser<TEntity>
-        where TEntity : class
+    public class OrderByParser : IOrderByParser
     {
-        public List<OrderBy<TEntity>> Parse(Dictionary<string, string> parameters)
+        protected static readonly IReadOnlyDictionary<string, SortDirection> DirectionsByKeyword = new Dictionary<string, SortDirection>(StringComparer.OrdinalIgnoreCase)
         {
-            if (parameters.ContainsKey(Reserved.orderby.ToString()))
-            {
-                return Parse(parameters[Reserved.orderby.ToString()]);
-            }
+            { "asc", SortDirection.Ascending },
+            { "desc", SortDirection.Descending }
+        };
 
-            return new List<OrderBy<TEntity>>();
+        protected IExpressionParser ExpressionParser { get; private set; }
+
+        public OrderByParser(IExpressionParser expressionParser)
+        {
+            ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
         }
 
-        protected List<OrderBy<TEntity>> Parse(string value)
+        public virtual List<OrderBy<TEntity>> Parse<TEntity>(string value)
+            where TEntity : class
         {
-            var parser = new ExpressionParser();
-            var orders = value.Split(',');
-            var length = orders.Length;
-            var queue = new List<OrderBy<TEntity>>();
-
-            //Il faut forcément un nb pair d'orders
-            if (length % 2 == 0)
+            var orders = (value ?? "").Split(',');
+            if (orders.Length % 2 != 0)
             {
-                for (var i = 0; i < length; i += 2)
+                throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
+            }
+
+            var result = new List<OrderBy<TEntity>>();
+            for (var i = 0; i < orders.Length; i += 2)
+            {
+                if (!DirectionsByKeyword.ContainsKey(orders[i + 1]))
                 {
-                    var orderProperty = parser.Parse<TEntity>(orders[i].ToLower());
-                    var orderDirection = orders[i + 1].ToLower();
-
-                    if (orderDirection == "asc" || orderDirection == "desc")
-                    {
-                        queue.Add(new OrderBy<TEntity>(orderProperty.ToLambdaExpression(), orderDirection == "desc" ? SortDirection.Descending : SortDirection.Ascending));
-                    }
-                    else
-                    {
-                        throw new BadRequestException("Order direction must match asc or desc");
-                    }
+                    throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
                 }
-            }
-            else
-            {
-                throw new BadRequestException("Orders must contains order direction (asc or desc) for each field");
+
+                var expression = ExpressionParser.Parse<TEntity>(orders[i]);
+
+                if (!expression.ResultType.IsValueType && expression.ResultType.GetInterface(nameof(IComparable)) == null)
+                {
+                    throw new BadRequestException("Order by query parameter is invalid", new FormatException("Selected property is not comparable and Order By cannot be applied."));
+                }
+
+                result.Add(new OrderBy<TEntity>(expression.ToLambdaExpression(), DirectionsByKeyword[orders[i + 1]]));
             }
 
-            return queue;
+            return result;
         }
     }
 }

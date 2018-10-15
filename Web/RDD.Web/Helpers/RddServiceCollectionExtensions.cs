@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,17 +11,19 @@ using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
 using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
+using Rdd.Infra.Helpers;
 using Rdd.Infra.Storage;
+using Rdd.Web.Models;
+using Rdd.Web.Querying;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
-using Rdd.Web.Models;
-using Rdd.Web.Querying;
 
 namespace Rdd.Web.Helpers
 {
@@ -39,22 +40,29 @@ namespace Rdd.Web.Helpers
             services.AddOptions<RddOptions>();
             services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
 
-            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
-
             services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
+            services.TryAddSingleton(typeof(IPatcher<>), typeof(ObjectPatcher<>));
             services.TryAddSingleton<EnumerablePatcher>();
             services.TryAddSingleton<DictionaryPatcher>();
             services.TryAddSingleton<ValuePatcher>();
             services.TryAddSingleton<DynamicPatcher>();
-            services.TryAddSingleton<ObjectPatcher>();
-            services.TryAddSingleton(typeof(IPatcher<>), typeof(ObjectPatcher<>));
+            services.TryAddSingleton<ObjectPatcher>(); 
 
-            // register base services
+            services.TryAddSingleton<IJsonParser, JsonParser>();
+            services.TryAddSingleton<ICandidateParser, CandidateParser>();
+            services.TryAddSingleton<IStringConverter, StringConverter>();
+            services.TryAddSingleton<IExpressionParser, ExpressionParser>();
+            services.TryAddSingleton(typeof(IWebFilterConverter<>), typeof(WebFilterConverter<>));
+            services.TryAddSingleton<IPagingParser, PagingParser>();
+            services.TryAddSingleton<IFilterParser, FilterParser>();
+            services.TryAddSingleton<IFieldsParser, FieldsParser>();
+            services.TryAddSingleton<IOrderByParser, OrderByParser>();
+            services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
+
             services.TryAddScoped<EFStorageService>();
             services.TryAddScoped<IStorageService>(s => s.GetService<EFStorageService>());
             services.TryAddScoped<IUnitOfWork>(s => s.GetService<EFStorageService>());
-            services.TryAddScoped(typeof(WebQueryFactory<,>));
 
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -62,10 +70,9 @@ namespace Rdd.Web.Helpers
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
-            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
-            services.TryAddScoped<IHttpContextHelper, HttpContextHelper>();
-            services.TryAddScoped(typeof(ApiHelper<,>));
 
+            services.AddHttpContextAccessor();
+            
             // closed by default, overridable with AddRddDefaultRights
             services.TryAddSingleton(typeof(IRightExpressionsHelper<>), typeof(ClosedRightExpressionsHelper<>));
 
@@ -178,13 +185,15 @@ namespace Rdd.Web.Helpers
         }
 
         /// <summary>
-        /// Register Rdd middleware in the pipeline request
+        /// Register Rdd middleware in the pipeline request BEFORE UseMVC
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
         public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
+            return app
+                .UseMiddleware<EnableRequestRewindMiddleware>()
+                .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
         }
     }
 }

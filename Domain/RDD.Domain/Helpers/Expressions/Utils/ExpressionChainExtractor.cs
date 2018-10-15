@@ -68,11 +68,11 @@ namespace Rdd.Domain.Helpers.Expressions.Utils
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            var parameter = Expression.Parameter(node.Member.DeclaringType);
+            var parameter = Expression.Parameter(node.Expression.Type);
             var propertyExpression = Expression.PropertyOrField(parameter, node.Member.Name);
             var lambda = Expression.Lambda(propertyExpression, parameter);
 
-            if (typeof(IEnumerable).IsAssignableFrom(node.Member.DeclaringType) && node.Member.DeclaringType != typeof(string))
+            if (typeof(IEnumerable).IsAssignableFrom(node.Expression.Type) && node.Expression.Type != typeof(string))
             {
                 Expressions.Push(new EnumerablePropertyExpression(lambda));
             }

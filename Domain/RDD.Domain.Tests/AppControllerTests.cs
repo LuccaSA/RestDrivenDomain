@@ -1,6 +1,7 @@
-﻿using Rdd.Domain.Models.Querying;
+﻿using Rdd.Domain.Json;
+using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests.Models;
-using Rdd.Web.Models;
+using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,12 @@ namespace Rdd.Domain.Tests
     public class AppControllerTests : IClassFixture<DefaultFixture>
     {
         private DefaultFixture _fixture;
+        private readonly ICandidateParser _parser;
 
         public AppControllerTests(DefaultFixture fixture)
         {
             _fixture = fixture;
+            _parser = new CandidateParser(new JsonParser());
         }
 
         [Fact]
@@ -26,7 +29,7 @@ namespace Rdd.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
             var id = Guid.NewGuid();
-            var candidate = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id}"" }}");
+            var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
             var user = await controller.CreateAsync(candidate, query);
 
@@ -42,10 +45,10 @@ namespace Rdd.Domain.Tests
             query.Options.CheckRights = false;
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            var candidate1 = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id1}"" }}");
-            var candidate2 = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id2}"" }}");
+            var candidate1 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id1}"" }}");
+            var candidate2 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id2}"" }}");
 
-            var result = (await controller.CreateAsync(new List<Candidate<User, Guid>> { candidate1, candidate2 }, query)).ToList();
+            var result = (await controller.CreateAsync(new List<ICandidate<User, Guid>> { candidate1, candidate2 }, query)).ToList();
 
             Assert.Equal(id1, result[0].Id);
             Assert.Equal(id2, result[1].Id);
@@ -59,11 +62,11 @@ namespace Rdd.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
             var id = Guid.NewGuid();
-            var candidate = Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id}"" }}");
+            var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
             await controller.CreateAsync(candidate, query);
 
-            candidate = Candidate<User, Guid>.Parse($@"{{ ""name"": ""newName"" }}");
+            candidate = _parser.Parse<User, Guid>(@"{ ""name"": ""newName"" }");
 
             var user = await controller.UpdateByIdAsync(id, candidate, query);
 

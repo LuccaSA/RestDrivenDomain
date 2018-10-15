@@ -21,20 +21,38 @@
  - **Modification**: ``AppController`` now depends on a `IUnitOfWork`.
  - **Modification**: `IStorageService` cannot directly save changes, use code in application layer.
  - **Removed**: `IStorageService.AddAfterSaveChangesAction`. Use code in application layer instead.
+ - **Removed**: Unused ``Query.Stopwatch``
+ - **Removed**: `GuidHelper` Logic included in `StringConverter`
+ - **Modification**: `Candidate` constructor nows takes a `JToken` and a `JsonObject`
+ - **Removed**: `Candidate.New`. You should use now a `ICandidateParser`
+ - **Removed**: `Headers.Headers`, `HeadersParser` and `Headers` class as they were unused.
+ - **Removed**: `Reserved.operations`, `Reserved.principal` and `Reserved.nowarning` enum members. Unused and/or poorly implemented.
+ - **Removed**: `Options.WithWarnings`, `Options.Accept`, `Options.FilterOperations`, `Options.ImpersonatedPrincipal`. Unused and/or poorly implemented.
+ - **Modification**: `QueryBuilder<TEntity, TKey>` -> ` WebFilterConverter<TEntity>`. This object changed in many ways.
+ - **Modification**: `WebFilter.Selector` ->`WebFilter.ExpressionChain`
+ - **Removed**: `Expression<Func<T, bool>> WebFilterConverter<T>.Equals(TKey key)` has been removed as it was unused.
+ - **Removed**: `PredicateService` and `WebFiltersContainer` were removed as well.
+ - **Removed**: `ApiHelper`, `FieldsParser`, `OptionsParser`, `OrderByParser`, `PageParser`, `WebFiltersParser`, `QueryFactory` `HttpContextHelper`, `IHttpContextHelper`. Replaced by `IQueryParser` and `ICandidateParser`
+ - **Modification**: `ReadOnlyWebController` constructor now takes an `IQueryParser` instead of an `ApiHelper`.
+ - **Modification**: `WebController` constructor now takes an `IQueryParser` and a `ICandidateParser` instead of an `ApiHelper`.
+ - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable, for consistency. Has potential impact on the front end.
+ - **Removed**: Unused metadata.paging in returned json
+ - **Removed**: `IClonable<>` interface & Clone() method
+ - **Removed**: `Query<TEntity> query` parameter removed from prototype of ReadOnlyRepository Set() method 
+ - **Modification**: ValidateEntity on RestCollection is now ValidateEntityAsync
  - **Modification**: RDD namespace renamed to Rdd
  - **Modification**: UseRDD() and AddRDD() extension methods renamed to UseRdd() and AddRdd()
  - **Modification**: Multiple Put now returns a `ISelection` instead of enumerable
  - **Removed**: unused metadata.paging in returned json
- - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`. `FuncSerializer` is also dropped, `DateTimeSerializer` is replaced by native `JsonTextWriter` option.
- - **Modification**: ``ISerializer`` nows feeds a `JsonTextWriter` instead of returning an object
+ - **Removed**: `IRddSerializer`. replaced by a `RddJsonResult`.
+ - **Modification**: ``ISerializer`` nows feeds a `JsonTextWriter` instead of returning an object. This allows fot greater peformances.
  - **Removed**: All protected methods (`ProtectedGetAsync` / `ProtectedPostAsync` / `ProtectedPutAsync` / `DeleteByIdAsync`) are removed. To allow a verb on a controller, manipulate the `AllowedHttpVerbs` and `AllowedByIdHttpVerbs` properties accordingly. To change default routing, override the methods (`public override async Task<IActionResult> GetAsync()`) and decorate with routing attribute (ex `[HttpGet("my-route")]`). This changes allows swagger to properly discover the Rdd apis if you opt-in.
  - **Removed**: Implicit routing is no longer available. Each route need to be routed by attribute **only**
  - **Removed**: `CulturedDescriptionAttribute`, `CultureContext`, `IWebServicesCollection`, `WebService`, `Application`, `Enum`, `IIncludable`, `IDownloadableEntity`
- - **Removed**: `IJsonElement.Map`, `IJsonElement.RemovePath`, most `Period` members
- - **Modification**: `BusinessException` and `TechnicalException` ar now `ApplicationException`. Some exceptions constructors have been removed.
+ - **Removed**: `IJsonElement.Map`, `IJsonElement.RemovePath`, most `Period` members. Those objects are now readonly.
+ - **Modification**: `BusinessException` and `TechnicalException` are now `ApplicationException` and correctly implement `ISerializable` interface
  - **Modification**: `RDD.Domain.ICombinationsHolder` -> `RDD.Domain.Rights.ICombinationsHolder`
  - **Removed**: `OutOfRangeException`. Prefer `BadRequestException` with an innerException of type `ArgumentOutOfRange`.
- - **Modification**: `FieldsParser<T>` -> `FieldsParser`. Methods now carry the generic argument. Thi allows for manipulation where the type is not known at design time.
  - **Modification**: `SerializerProvider._reflectionProvider` ->`SerializerProvider.ReflectionProvider`
  - **Modification**: `SerializerProvider._urlProvider_` ->`SerializerProvider.UrlProvider`
  - **Removed**: `PropertySelector`, `CollectionPropertySelector` and `DictionaryPropertySelector`. Replaced by `IExpression`, `IExpressionChain`, `IExpressionTree` and their implementations. `
@@ -42,13 +60,12 @@
  - **Modification**: `ICandidate.HasProperty(Expression<Func<TEntity, object>> expression)` -> `ICandidate.HasProperty<TProp>(Expression<Func<TEntity, TProp>> expression)`. Allows for better expression (no conversion required to type object). Other changed member include `WebFiltersContainer.RemoveFilter`, `WebFiltersContainer.GetFilter`, `WebFiltersContainer.HasFilter`
  - **Removed**: `IEnumerable<Field> Query<T>.CollectionFields`, `ISelection.Sum`, `ISelection.Min`,`ISelection.Max`, `DecimalRounding`. This functionality was considered problematic and almost unused.
  - **Removed**: `OrderBysConverter`. Replaced by method `ApplyOrderBy` on the `OrderBy` class directly
- - **Removed**: `Field`. Replaced by a `IExpressionTree`
+ - **Removed**: `Field`. Replaced by `IExpressionTree`
  - **Modification**: `IEnumerable<Field> Query<T>.Fields` -> `IExpressionTree Query<T>.Fields`
  - **Modification**: `Queue<OrderBy<TEntity>> Query<T>.OrderBys ` -> `List<OrderBy<TEntity>> Query<T>.OrderBys`
- - **Removed**: Unused methods on `QueryBuilder`
  - **Removed**: `SerializationOption` Replaced by an `IExpressionTree`. Some signatures have been changed accordingly.
  - **Modification**: `RestCollection.PatcherProvider` has been replaced by `IPatcher<TEntity> Patcher`. This modification aims at helping the override of tha patching behavior via dependence injection instead of defining a concrete `RestCollection`, and is overall easier to use. This modifies the constructor
- - **Removed**: `RestCollection.GetPatcher`. The patcher should be injected via the constructore. The patcher should be registered in the dependency injection framework.
+ - **Removed**: `RestCollection.GetPatcher`. The patcher should be injected via the constructor. The patcher should be registered in the dependency injection framework.
  - **Modification**: `internal interface IPatcher<T> where T : IJsonElement` -> `public interface IPatcher<T> where T : class`. The generic argument of the `IPatcher` interface references the class the patcher aims to apply to.
  - **Removed**: `IReadOnlyRestCollection.GetAllAsync()`. This method used to apply default paging (10) and was misleading. Developers are encouraged to define their own methods on their Collections concrete implementation.
  - **Modification**: Queries initiated with an expression now do not apply the paging instead of the paging by default (10). To return to the previous behavior, the `Page` property needs to be explicitely set to the desired value.
@@ -59,23 +76,32 @@
  - **Removed**: `RestCollection.CreateAsync(TEntity entity, Query<TEntity> query)`. Consider using `RestCollection.CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)`.
  - **Modification**: `IAppController.DeleteByIdsAsync(IEnumerable<TKey> ids) -> IAppController.DeleteByIdsAsync(IList<TKey> ids)`. This breaking change might require you to change your override signatures.
  - **Modification**: `IRestCollection.DeleteByIdsAsync(IEnumerable<TKey> ids) -> IAppController.DeleteByIdsAsync(IList<TKey> ids)`. This breaking change might require you to change your override signatures.
+ - **Modification**: Some error messages have been modified.
+ - **Modification**: IStorageService is now located inside the Application layer, namespace `RDD.Application`.
  - **Modification**: Error messages have been modified.
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: `ICandidateParser`, `IStringConverter`. New query conversion engine
+ - **Added**: `JsonParser.Parse(JToken input)`
+ - **Added**: `IJsonParser`. Missing interfaces for correct dependency injection logic.
+ - **Modification**: Using RDD now forces the httpReques to enable Rewind, cf ``EnableRequestRewindMiddleware``.
  - **Added**: `IReflectionHelper.IsPseudoValue(Type type)` for types serialized and deserialized as JSON value.
  - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
- - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of th rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
- - **Added**: `FieldsParser` exposes methods `ParseAllProperties` and `ParseFields` that can be used as generic or with type as argument.
+ - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of the rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `BaseClassInstanciator`, `BaseClassPatcher` and `BaseClassJsonConverter` to properly manage inheritance schemes during edition.
  - **Added**: `SerializerProvider.InheritanceConfigurations` and `BaseClassSerializer` to properly manage inheritance schemes during exposition.
  - **Added**: `ReadOnlyRepository<T>.IncludeWhiteList`. This allows an automatic white-list approach on the include on a Get query.
- - **Added**: New logic for property and member selection via expression coming from the web. The main interface to manipulate is `IExpression`, that replaces `PropertySelector`. The main implementation to use now are `PropertyExpression`, `EnumerablePropertyExpression`, `ItemExpression`, `ExpressionChain`, or `ExpressionTree`. The parsing and manipulation is ensured by `ExpressionParser` and the visitors `ExpressionChainExtractor`, `ExpressionChainer`.
+ - **Added**: New logic for property and member selection via expression coming from the web. The main interface to manipulate is `IExpression`, that replaces `PropertySelector`. The main implementation to use now are `PropertyExpression`, `EnumerablePropertyExpression`, `ItemExpression`, `ExpressionChain`, or `ExpressionTree`. The parsing and manipulation is ensured by `ExpressionParser (IExpressionParser)` and the visitors `ExpressionChainExtractor`, `ExpressionChainer`.
  - **Added**: `ExpressionEqualityComparer` to compare `Expression` and another one to compare `IExpression`.
  - **Added**: readable static method to construct `OrderBy`
  - **Added**: implicit conversion from a `Filter<T>` to `Expression<T, bool>`.
  - **Added**: `IAppController.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from the controller.
  - **Added**: `IRestCollection.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)`. This method allows creations in batch from a collection.
+ - **Modification**: `Candidate<TEntity, TKey>` constraint has been relaxed from `TEntity : IEntityBase<TKey>` to `IPrimaryKey<TKey>`
+
+## Bug fixs
+ - `ExpressionChainExtractor` failed in certain complex cases because `node.Member.DeclaringType` was used instead of `node.Expression.Type`.
 
 # 2.2.3
 ## Bug fixs

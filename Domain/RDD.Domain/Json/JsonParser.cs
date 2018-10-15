@@ -5,24 +5,15 @@ using System;
 
 namespace Rdd.Domain.Json
 {
-    public class JsonParser
+    public class JsonParser : IJsonParser
     {
         public IJsonElement ParseFromAnonymous(object input)
-        {
-            return Parse(JObject.FromObject(input));
-        }
+            => Parse(JObject.FromObject(input));
 
         public IJsonElement Parse(string input)
-        {
-            return Parse((JToken)JsonConvert.DeserializeObject(input));
-        }
+            => Parse((JToken)JsonConvert.DeserializeObject(input));
 
-        public string ToRawString(IJsonElement element)
-        {
-            return JsonConvert.SerializeObject(element.GetContent());
-        }
-
-        IJsonElement Parse(JToken input)
+        public IJsonElement Parse(JToken input)
         {
             if (input == null)
                 return null;
@@ -71,14 +62,8 @@ namespace Rdd.Domain.Json
             return result;
         }
 
-        protected IJsonElement ParseValue(JToken value)
-        {
-            return new JsonValue { Content = value.Value<string>() };
-        }
+        protected IJsonElement ParseValue(JToken value) => new JsonValue { Content = value.Value<string>() };
 
-        protected IJsonElement ParseDate(DateTime date)
-        {
-            return new JsonValue { Content = date.ToISOz() };
-        }
+        protected IJsonElement ParseDate(DateTime date) => new JsonValue { Content = date.ToISOz() };
     }
 }

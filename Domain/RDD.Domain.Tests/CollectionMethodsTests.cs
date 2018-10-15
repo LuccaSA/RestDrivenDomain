@@ -10,6 +10,7 @@ using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using Rdd.Web.Models;
+using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -47,10 +48,11 @@ namespace Rdd.Domain.Tests
             var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object);
             var users = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var app = new UsersAppController(_fixture.InMemoryStorage, users);
+            var candidate1 = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
+            var candidate2 = new CandidateParser(new JsonParser()).Parse<User, Guid>(@"{ ""name"": ""new name"" }");
 
-            await app.CreateAsync(Candidate<User, Guid>.Parse($@"{{ ""id"": ""{id}"" }}"), new Query<User>());
-
-            await app.UpdateByIdAsync(Guid.NewGuid(), Candidate<User, Guid>.Parse(@"{ ""name"": ""new name"" }"), new Query<User>());
+            await app.CreateAsync(candidate1, new Query<User>());
+            await app.UpdateByIdAsync(Guid.NewGuid(), candidate2, new Query<User>());
         }
 
         [Fact]
@@ -60,7 +62,8 @@ namespace Rdd.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
 
-            await users.CreateAsync(Candidate<User, Guid>.Parse($@"{{ ""id"": ""{Guid.NewGuid()}"" }}"), query);
+            var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{Guid.NewGuid()}"" }}");
+            await users.CreateAsync(candidate, query);
         }
 
         class InstanciatorImplementation : IInstanciator<UserWithParameters>
@@ -82,8 +85,8 @@ namespace Rdd.Domain.Tests
             var query = new Query<UserWithParameters>();
             query.Options.CheckRights = false;
 
-            var result = await users.CreateAsync(Candidate<UserWithParameters, int>.Parse($@"{{ ""id"": 3, ""name"": ""John"" }}"), query);
-
+            var candidate = new CandidateParser(new JsonParser()).Parse<UserWithParameters, int>(@"{ ""id"": 3, ""name"": ""John"" }");
+            var result = await users.CreateAsync(candidate, query);
             Assert.Equal(3, result.Id);
             Assert.Equal("John", result.Name);
         }
@@ -117,8 +120,8 @@ namespace Rdd.Domain.Tests
             _fixture.InMemoryStorage.Add(user);
             await _fixture.InMemoryStorage.SaveChangesAsync();
 
-            await users.UpdateByIdAsync(id, Candidate<User, Guid>.Parse(JsonConvert.SerializeObject(user)), query);
-
+            var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>(JsonConvert.SerializeObject(user));
+            await users.UpdateByIdAsync(id, candidate, query);
             Assert.True(true);
         }
 
@@ -147,7 +150,7 @@ namespace Rdd.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
 
-            var updated = await users.UpdateByIdAsync(id, Candidate<User, Guid>.Parse(JsonConvert.SerializeObject(user)), query);
+            var updated = await users.UpdateByIdAsync(id, new CandidateParser(new JsonParser()).Parse<User, Guid>(JsonConvert.SerializeObject(user)), query);
 
             Assert.Equal(new Guid(), updated.Id);
         }
@@ -187,7 +190,7 @@ namespace Rdd.Domain.Tests
                         new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
                     }
                 };
-                var candidate = Candidate<Hierarchy, int>.Parse(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
+                var candidate = new CandidateParser(new JsonParser()).Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
                 await collection.CreateAsync(candidate);
             });
         }
@@ -206,7 +209,7 @@ namespace Rdd.Domain.Tests
                         new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
                     }
             };
-            var candidate = Candidate<Hierarchy, int>.Parse(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
+            var candidate = new CandidateParser(new JsonParser()).Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
             await collection.CreateAsync(candidate);
         }
     }
