@@ -1,26 +1,46 @@
-﻿using Newtonsoft.Json.Serialization;
-using Rdd.Domain.Helpers;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Models;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
-using System.Linq;
+using System;
 
 namespace Rdd.Web.Serialization.Serializers
 {
-    public class MetadataSerializer : ObjectSerializer
+    public class MetadataSerializer : ISerializer
     {
-        public MetadataSerializer(ISerializerProvider serializerProvider, IReflectionProvider reflectionProvider, NamingStrategy namingStrategy)
-            : base(serializerProvider, reflectionProvider, namingStrategy, typeof(Culture)) { }
+        protected ISerializerProvider SerializerProvider { get; private set; }
+        protected NamingStrategy NamingStrategy { get; private set; }
 
-        protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
+        public MetadataSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
         {
-            var result = new ExpressionParser().ParseTree<Metadata>("header[generated,principal],data");
-
-            var dataNode = result.Children.First(c => c.Node.Name == "Data") as ExpressionTree;
-            dataNode.Children = fields.Children.ToList();
-
-            return result;
+            SerializerProvider = serializerProvider ?? throw new ArgumentNullException(nameof(serializerProvider));
+            NamingStrategy = namingStrategy ?? throw new ArgumentNullException(nameof(namingStrategy));
         }
+
+        public void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        {
+            var content = entity as Metadata;
+
+            writer.WriteStartObject();
+            {
+                writer.WritePropertyName(GetKey(nameof(Metadata.Header)), true);
+                writer.WriteStartObject();
+                {
+                    writer.WritePropertyName(GetKey(nameof(MetadataHeader.Generated)), true);
+                    writer.WriteValue(DateTime.SpecifyKind(content.Header.Generated, DateTimeKind.Unspecified));
+
+                    writer.WritePropertyName(GetKey(nameof(MetadataHeader.Principal)), true);
+                    writer.WriteValue(content.Header.Principal);
+                }
+                writer.WriteEndObject();
+
+                writer.WritePropertyName(GetKey(nameof(Metadata.Data)), true);
+                SerializerProvider.ResolveSerializer(content.Data).WriteJson(writer, content.Data, fields);
+            }
+            writer.WriteEndObject();
+        }
+
+        protected string GetKey(string key) => NamingStrategy.GetPropertyName(key, false);
     }
 }

@@ -8,6 +8,7 @@ using Rdd.Application;
 using Rdd.Application.Controllers;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
@@ -18,7 +19,6 @@ using Rdd.Infra.Storage;
 using Rdd.Web.Models;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
 using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
@@ -42,6 +42,11 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
             services.TryAddSingleton(typeof(IPatcher<>), typeof(ObjectPatcher<>));
+            services.TryAddSingleton<EnumerablePatcher>();
+            services.TryAddSingleton<DictionaryPatcher>();
+            services.TryAddSingleton<ValuePatcher>();
+            services.TryAddSingleton<DynamicPatcher>();
+            services.TryAddSingleton<ObjectPatcher>(); 
 
             services.TryAddSingleton<IJsonParser, JsonParser>();
             services.TryAddSingleton<ICandidateParser, CandidateParser>();
@@ -54,7 +59,10 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IOrderByParser, OrderByParser>();
             services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 
-            services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped<EFStorageService>();
+            services.TryAddScoped<IStorageService>(s => s.GetService<EFStorageService>());
+            services.TryAddScoped<IUnitOfWork>(s => s.GetService<EFStorageService>());
+
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
@@ -67,11 +75,11 @@ namespace Rdd.Web.Helpers
 
         public static IServiceCollection AddRddInheritanceConfiguration<TConfig, TEntity, TKey>(this IServiceCollection services, TConfig config)
             where TConfig : class, IInheritanceConfiguration<TEntity>
-            where TEntity : class, IEntityBase<TEntity, TKey>
+            where TEntity : class, IEntityBase<TKey>
             where TKey : IEquatable<TKey>
         {
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IInheritanceConfiguration), config));
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IInheritanceConfiguration<TEntity>), config));
+            services.AddSingleton<IInheritanceConfiguration>(s => config);
+            services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
             services.TryAddSingleton<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
             services.TryAddSingleton<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
 
@@ -114,17 +122,17 @@ namespace Rdd.Web.Helpers
             services.AddHttpContextAccessor();
             services.TryAddSingleton<IUrlProvider, UrlProvider>();
 
-            services.AddMemoryCache();
-            services.TryAddSingleton<IReflectionProvider, ReflectionProvider>();
-
             services.TryAddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
+            services.TryAddSingleton<IReflectionHelper, ReflectionHelper>();
             services.TryAddSingleton<ISerializerProvider, SerializerProvider>();
 
             services.TryAddSingleton<ArraySerializer>();
+            services.TryAddSingleton<BaseClassSerializer>();
             services.TryAddSingleton<CultureInfoSerializer>();
-            services.TryAddSingleton<DateTimeSerializer>();
             services.TryAddSingleton<DictionarySerializer>();
+            services.TryAddSingleton<EntitySerializer>();
             services.TryAddSingleton<MetadataSerializer>();
+            services.TryAddSingleton<ObjectSerializer>();
             services.TryAddSingleton<SelectionSerializer>();
             services.TryAddSingleton<ToStringSerializer>();
             services.TryAddSingleton<ValueSerializer>();

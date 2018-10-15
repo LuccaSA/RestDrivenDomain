@@ -7,7 +7,7 @@ namespace Rdd.Domain.Helpers.Expressions
     public interface IExpressionTree : IEnumerable<IExpressionChain>, IEquatable<IExpressionTree>
     {
         IExpression Node { get; }
-        IEnumerable<IExpressionTree> Children { get; }
+        IReadOnlyCollection<IExpressionTree> Children { get; }
 
         bool Contains<TClass, TProp>(Expression<Func<TClass, TProp>> property);
         bool Contains(IExpressionChain chain);

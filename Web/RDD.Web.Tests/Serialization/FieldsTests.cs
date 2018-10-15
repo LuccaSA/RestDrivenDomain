@@ -3,10 +3,14 @@ using Moq;
 using Newtonsoft.Json.Serialization;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Helpers.Reflection;
+using Rdd.Domain.Mocks;
 using Rdd.Domain.Models;
+using Rdd.Infra.Helpers;
+using Rdd.Web.Querying;
 using Rdd.Web.Serialization;
 using Rdd.Web.Serialization.Providers;
-using Rdd.Web.Serialization.Reflection;
+using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
 using System.Buffers;
@@ -36,11 +40,30 @@ namespace Rdd.Web.Tests.Serialization
         protected IServiceProvider GetServices()
         {
             var services = new ServiceCollection();
-            services.AddMemoryCache();
-            services.AddSingleton<IReflectionProvider, ReflectionProvider>();
+            services.AddSingleton<IInheritanceConfiguration, InheritanceConfiguration>();
+            services.AddSingleton<IReflectionHelper, ReflectionHelper>();
             services.AddSingleton<ISerializerProvider, SerializerProvider>();
             services.AddSingleton<NamingStrategy>(new CamelCaseNamingStrategy());
             services.AddSingleton(ArrayPool<char>.Shared);
+
+            services.AddSingleton<ArraySerializer>();
+            services.AddSingleton<BaseClassSerializer>();
+            services.AddSingleton<CultureInfoSerializer>();
+            services.AddSingleton<DictionarySerializer>();
+            services.AddSingleton<EntitySerializer>();
+            services.AddSingleton<MetadataSerializer>();
+            services.AddSingleton<ObjectSerializer>();
+            services.AddSingleton<SelectionSerializer>();
+            services.AddSingleton<ToStringSerializer>();
+            services.AddSingleton<ValueSerializer>();
+
+            services.AddSingleton<IExpressionParser, ExpressionParser>();
+            services.AddSingleton(typeof(IWebFilterConverter<>), typeof(WebFilterConverter<>));
+            services.AddSingleton<IPagingParser, PagingParser>();
+            services.AddSingleton<IFilterParser, FilterParser>();
+            services.AddSingleton<IFieldsParser, FieldsParser>();
+            services.AddSingleton<IOrderByParser, OrderByParser>();
+            services.AddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 
             var urlProvider = new Mock<IUrlProvider>();
             urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));

@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
 {
-    public class InMemoryStorageService : IStorageService
+    public class InMemoryStorageService : IStorageService, IUnitOfWork
     {
-        protected Queue<Task> AfterSaveChangesActions { get; }
         public Dictionary<Type, IList> Cache { get; }
         public Dictionary<Type, int> Indexes { get; }
 
         public InMemoryStorageService()
         {
-            AfterSaveChangesActions = new Queue<Task>();
             Cache = new Dictionary<Type, IList>();
             Indexes = new Dictionary<Type, int>();
         }
@@ -90,36 +88,11 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public void AddAfterSaveChangesAction(Task action)
+        public Task SaveChangesAsync()
         {
-            AfterSaveChangesActions.Enqueue(action);
+            return Task.CompletedTask;
         }
 
-        public async Task SaveChangesAsync()
-        {
-            foreach(var type in Cache.Keys)
-            {
-                var index = Indexes[type];
-
-                foreach(var element in Cache[type])
-                {
-                    var entity = (IPrimaryKey)element;
-                    var id = entity.GetId().ToString();
-
-                    if (id == 0.ToString())
-                    {
-                        entity.SetId(++index);
-                    }
-                }
-
-                Indexes[type] = index;
-            }
-
-            while(AfterSaveChangesActions.Any())
-            {
-                await AfterSaveChangesActions.Dequeue();
-            }
-        }
         public void Dispose()
         {
             //Nothing to dispose here
