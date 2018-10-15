@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
@@ -45,19 +44,16 @@ namespace Rdd.Web.Querying
             }
         }
 
-        public virtual Query<TEntity> Parse(HttpContext context, bool isCollectionCall)
-            => Parse(GetVerb(context), context.Request.Query, isCollectionCall);
-
-        public virtual Query<TEntity> Parse(HttpVerbs verb, IEnumerable<KeyValuePair<string, StringValues>> parameters, bool isCollectionCall)
-        {
+        public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
+        { 
             var filters = new List<WebFilter<TEntity>>();
             var query = new Query<TEntity>
             {
                 Fields = null,
-                Verb = verb
+                Verb = GetVerb(request)
             };
 
-            foreach (var parameter in parameters.Where(v => !string.IsNullOrEmpty(v.Key) && !IgnoredFilters.Contains(v.Key)))
+            foreach (var parameter in request.Query.Where(v => !string.IsNullOrEmpty(v.Key) && !IgnoredFilters.Contains(v.Key)))
             {
                 ParseParameter(parameter.Key, parameter.Value, query, filters);
             }
@@ -82,12 +78,12 @@ namespace Rdd.Web.Querying
             return query;
         }
 
-        protected virtual HttpVerbs GetVerb(HttpContext context)
+        protected virtual HttpVerbs GetVerb(HttpRequest request)
         {
-            if (HttpMethods.IsGet(context.Request.Method)) return HttpVerbs.Get;
-            if (HttpMethods.IsPost(context.Request.Method)) return HttpVerbs.Post;
-            if (HttpMethods.IsPut(context.Request.Method)) return HttpVerbs.Put;
-            if (HttpMethods.IsDelete(context.Request.Method)) return HttpVerbs.Delete;
+            if (HttpMethods.IsGet(request.Method)) return HttpVerbs.Get;
+            if (HttpMethods.IsPost(request.Method)) return HttpVerbs.Post;
+            if (HttpMethods.IsPut(request.Method)) return HttpVerbs.Put;
+            if (HttpMethods.IsDelete(request.Method)) return HttpVerbs.Delete;
             return HttpVerbs.None;
         }
 
