@@ -19,3 +19,9 @@ Vous êtes certainement aussi concerné par ce changement de logique : chaque en
 **Historique des modifs**
 
 La version 3.0 introduit un gros breaking change sur la structure des projets, du coup toute navigation dans l'historique via GitHub semble vaine. C'est sans compter sur une extension miracle, cf https://github.com/LuccaSA/RestDrivenDomain/issues/235
+
+**IPrincipal**
+
+Le principal est désormais injectable directement, moyennant de gérer ça dans le startup notamment en utilisant Lucca.Core.Rights et de créer une interface IPrincipal dans votre Domain.
+
+Ceci remplace le `IExecutionContext` et tout ce qui a trait au user connecté en général.
