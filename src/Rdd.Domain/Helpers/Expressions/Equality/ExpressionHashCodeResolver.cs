@@ -15,7 +15,7 @@ namespace Rdd.Domain.Helpers.Expressions.Equality
 
         public override Expression Visit(Expression node)
         {
-            if (null == node)
+            if (node == null)
             {
                 return null;
             }
