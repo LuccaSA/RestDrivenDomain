@@ -64,7 +64,7 @@ namespace Rdd.Web.Serialization
             }
 
             var services = context.HttpContext.RequestServices;
-            using (var writer = services.GetService<IHttpResponseStreamWriterFactory>().CreateWriter(response.Body, resolvedContentTypeEncoding))
+            using (var writer = services.GetRequiredService<IHttpResponseStreamWriterFactory>().CreateWriter(response.Body, resolvedContentTypeEncoding))
             {
                 return WriteResult(services, writer, DateTime.Now);
             }
@@ -92,11 +92,11 @@ namespace Rdd.Web.Serialization
 
             using (var jsonWriter = new JsonTextWriter(writer) { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified })
             {
-                jsonWriter.ArrayPool = new JsonArrayPool<char>(services.GetService<ArrayPool<char>>());
+                jsonWriter.ArrayPool = new JsonArrayPool<char>(services.GetRequiredService<ArrayPool<char>>());
                 jsonWriter.CloseOutput = false;
                 jsonWriter.AutoCompleteOnClose = false;
 
-                services.GetService<ISerializerProvider>().WriteJson(jsonWriter, Value, Fields);
+                services.GetRequiredService<ISerializerProvider>().WriteJson(jsonWriter, Value, Fields);
             }
 
             // Perf: call FlushAsync to call WriteAsync on the stream with any content left in the TextWriter's

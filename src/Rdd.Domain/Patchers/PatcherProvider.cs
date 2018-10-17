@@ -23,7 +23,7 @@ namespace Rdd.Domain.Patchers
         {
             if (json is JsonArray)
             {
-                return Services.GetService<EnumerablePatcher>();
+                return Services.GetRequiredService<EnumerablePatcher>();
             }
 
             if (typeof(IEntityBase).IsAssignableFrom(expectedType))
@@ -33,21 +33,21 @@ namespace Rdd.Domain.Patchers
 
             if (expectedType.IsSubclassOfInterface(typeof(IDictionary)))
             {
-                return Services.GetService<DictionaryPatcher>();
+                return Services.GetRequiredService<DictionaryPatcher>();
             }
 
             if (ReflectionHelper.IsPseudoValue(expectedType) || expectedType.GetNullableType().IsValueType)
             {
-                return Services.GetService<ValuePatcher>();
+                return Services.GetRequiredService<ValuePatcher>();
             }
 
             if (expectedType == typeof(object))
             {
-                if (json is JsonValue) { return Services.GetService<ValuePatcher>(); }
-                if (json is JsonObject) { return Services.GetService<DynamicPatcher>(); }
+                if (json is JsonValue) { return Services.GetRequiredService<ValuePatcher>(); }
+                if (json is JsonObject) { return Services.GetRequiredService<DynamicPatcher>(); }
             }
 
-            return Services.GetService<ObjectPatcher>();
+            return Services.GetRequiredService<ObjectPatcher>();
         }
     }
 }
