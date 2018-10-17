@@ -29,3 +29,5 @@ Ceci remplace le `IExecutionContext` et tout ce qui a trait au user connecté en
 **IStorageService => IUnitOfWork**
 
 Dans la couche Application, les AppControllers dépendent désormais d'un `IUnitOfWork` plutôt que d'un `IStorageService` pour commiter les modifs en base. Dans la pratique cela revient au même car le `EFStorageService` implémente les 2 interfaces. Mais si vous avez besoin de faire la différence dans votre projet c'est désormais possible.
+
+Sachez également que le `SaveChangesAsync()` est désormais porté par l'AppController, afin de garantir que OnBefore/OnAfterSaveChanges seront bien appelés à chaque Commit en base.
