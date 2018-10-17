@@ -117,7 +117,7 @@ namespace Rdd.Infra.Storage
                                 throw se;
                         }
                     default:
-                        throw ex.InnerException  ?? ex;
+                        throw ex.InnerException ?? ex;
                 }
             }
         }
