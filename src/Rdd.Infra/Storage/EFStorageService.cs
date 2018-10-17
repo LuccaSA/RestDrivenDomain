@@ -104,34 +104,27 @@ namespace Rdd.Infra.Storage
             }
             catch (DbUpdateException ex)
             {
-                var updateException = ex.InnerException;
-
-                if (updateException.InnerException is ArgumentException)
+                switch (ex.InnerException?.InnerException)
                 {
-                    throw updateException.InnerException;
-                }
-                else if (updateException.InnerException is SqlException)
-                {
-                    var sqlException = (SqlException)updateException.InnerException;
-
-                    switch (sqlException.Number)
-                    {
-                        case 2627:
-                            throw new SqlUniqConstraintException(sqlException.Message);
-                        default:
-                            throw sqlException;
-                    }
-                }
-                else
-                {
-                    throw updateException;
+                    case ArgumentException ae:
+                        throw ae;
+                    case SqlException se:
+                        switch (se.Number)
+                        {
+                            case 2627:
+                                throw new SqlUniqConstraintException(se.Message);
+                            default:
+                                throw se;
+                        }
+                    default:
+                        throw ex.InnerException ?? ex;
                 }
             }
         }
 
-        public async Task<string> ExecuteScriptAsync(string script)
+        public virtual Task<int> ExecuteScriptAsync(string script)
         {
-            return (await DbContext.Database.ExecuteSqlCommandAsync(script)).ToString();
+            return DbContext.Database.ExecuteSqlCommandAsync(script);
         }
 
         public void Dispose()
