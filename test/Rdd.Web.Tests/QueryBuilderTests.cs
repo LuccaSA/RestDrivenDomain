@@ -88,11 +88,13 @@ namespace Rdd.Web.Tests
             Assert.Equal(users[1], nullUser);
         }
 
-        [Fact]
-        public void EqualsFilter()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(1, 2)]
+        public void EqualsFilter(params int[] values)
         {
             var builder = new WebFilterConverter<User>();
-            var expression = builder.Equals(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
+            var expression = builder.Equals(PropertyExpression<User>.New(u => u.Id), new List<int>(values));
 
             var goodUser = new User { Id = 1 };
             var badUser = new User { Id = 3 };
@@ -102,11 +104,13 @@ namespace Rdd.Web.Tests
             Assert.Equal(users[0], goodUser);
         }
 
-        [Fact]
-        public void NotEqualsFilter()
+        [Theory]
+        [InlineData(2)]
+        [InlineData(1, 2)]
+        public void NotEqualsFilter(params int[] values)
         {
             var builder = new WebFilterConverter<User>();
-            var expression = builder.NotEqual(PropertyExpression<User>.New(u => u.Id), new List<int> { 1, 2 });
+            var expression = builder.NotEqual(PropertyExpression<User>.New(u => u.Id), new List<int>(values));
 
             var goodUser = new User { Id = 3 };
             var badUser = new User { Id = 2 };
