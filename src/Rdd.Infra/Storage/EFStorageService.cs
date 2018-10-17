@@ -35,11 +35,15 @@ namespace Rdd.Infra.Storage
             where TEntity : class
         {
             if (entities == null)
+            {
                 throw new ArgumentNullException(nameof(entities));
+            }
 
             //IQueryable is not coming from an EF DbSet !
             if (!(entities is IAsyncEnumerable<TEntity>))
+            {
                 return entities.ToList();
+            }
 
             return await entities.ToListAsync();
         }

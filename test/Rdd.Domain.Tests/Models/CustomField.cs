@@ -6,8 +6,8 @@
 
         public CustomField(string code, string name)
         {
-            this.Code = code;
-            this.Name = name;
+            Code = code;
+            Name = name;
         }
 
         public CustomField(string code) : this(code, code)

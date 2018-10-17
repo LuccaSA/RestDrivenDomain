@@ -65,8 +65,8 @@ namespace Rdd.Web.Tests.Services
 
             Assert.Equal(2, configs.ToList().Count);
 
-            var config1 = provider.GetRequiredService<IInheritanceConfiguration<Hierarchy>>();
-            var config2 = provider.GetRequiredService<IInheritanceConfiguration<Hierarchy2>>();
+            provider.GetRequiredService<IInheritanceConfiguration<Hierarchy>>();
+            provider.GetRequiredService<IInheritanceConfiguration<Hierarchy2>>();
         }
 
         [Fact]

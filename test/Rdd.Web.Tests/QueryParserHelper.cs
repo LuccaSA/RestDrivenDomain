@@ -3,7 +3,6 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
-using Rdd.Web.Tests.Models;
 using Options = Microsoft.Extensions.Options.Options;
 
 namespace Rdd.Web.Tests

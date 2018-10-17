@@ -30,7 +30,9 @@ namespace Rdd.Domain.Patchers
         public virtual object PatchValue(object patchedObject, Type expectedType, JsonObject json)
         {
             if (json == null)
+            {
                 return null;
+            }
 
             if (patchedObject == null)
             {
@@ -59,7 +61,9 @@ namespace Rdd.Domain.Patchers
         protected virtual void PatchKey(Dictionary<string, PropertyInfo> properties, object patchedObject, Type entityType, string key, IJsonElement element)
         {
             if (!properties.ContainsKey(key))
+            {
                 throw new BadRequestException($"Property {key} does not exist on type {entityType.Name}");
+            }
 
             PatchProperty(patchedObject, properties[key], element);
         }

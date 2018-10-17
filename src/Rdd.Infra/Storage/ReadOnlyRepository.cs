@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models.Querying;

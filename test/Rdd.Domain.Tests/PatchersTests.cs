@@ -14,9 +14,9 @@ namespace Rdd.Domain.Tests
 {
     public class PatchersTests
     {
-        enum TestEnum { Mon, Tue, Wed };
+        private enum TestEnum { Mon, Tue, Wed };
 
-        class ToPatch
+        private class ToPatch
         {
             public CustomFields CustomFields { get; set; }
             public Dictionary<int, int> IntDico { get; set; }
@@ -36,9 +36,9 @@ namespace Rdd.Domain.Tests
             public int[] ArrayOfInt { get; set; }
         }
 
-        IServiceProvider ServiceProvider;
-        IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
-        IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
+        private IServiceProvider ServiceProvider;
+        private IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
+        private IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
 
         public PatchersTests()
         {

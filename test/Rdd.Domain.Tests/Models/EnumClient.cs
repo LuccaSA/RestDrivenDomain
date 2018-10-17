@@ -12,7 +12,7 @@ namespace Rdd.Domain.Tests.Models
     }
 
     public class EnumClient<TEnum> : EnumClient
-        where TEnum : System.Enum
+        where TEnum : Enum
     {
         public EnumClient()
         { }
@@ -28,8 +28,8 @@ namespace Rdd.Domain.Tests.Models
                 throw new ArgumentException("TEnum must be an enumerated type");
             }
 
-            this.Value = value;
-            this.CultureName = label;
+            Value = value;
+            CultureName = label;
         }
 
         /// <summary>
@@ -64,10 +64,10 @@ namespace Rdd.Domain.Tests.Models
             //
             // Unfortunately cannot detect if both value are specified and different when deserialising
 
-            if (!newValue.Equals(this.Value))
+            if (!newValue.Equals(Value))
             {
-                this.Value = newValue;
-                this.CultureName = () => GetNameFromEnumValue(newValue);
+                Value = newValue;
+                CultureName = () => GetNameFromEnumValue(newValue);
             }
         }
 

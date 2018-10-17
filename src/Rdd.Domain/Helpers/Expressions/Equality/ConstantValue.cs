@@ -12,7 +12,7 @@ namespace Rdd.Domain.Helpers.Expressions.Equality
         {
             switch (e)
             {
-                case ConstantExpression constant: return true;
+                case ConstantExpression _: return true;
                 case MemberExpression me: return me.Expression == null || IsConstantValue(me.Expression);
                 case NewArrayExpression ae: return ae.Expressions.All(IsConstantValue);
                 case ConditionalExpression ce:

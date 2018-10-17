@@ -14,7 +14,7 @@ namespace Rdd.Web.Tests
 {
     public class CandidateTests
     {
-        ICandidate<TEntity, TKey> Parse<TEntity, TKey>(string content)
+        private ICandidate<TEntity, TKey> Parse<TEntity, TKey>(string content)
             where TEntity : class, IPrimaryKey<TKey>
             => new CandidateParser(new JsonParser()).Parse<TEntity, TKey>(content);
 
@@ -88,7 +88,7 @@ namespace Rdd.Web.Tests
             {
                 Converters = new List<JsonConverter>
                 {
-                    new BaseClassJsonConverter<Domain.Tests.Models.Hierarchy>(new Domain.Tests.Models.InheritanceConfiguration())
+                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
                 }
             };
 

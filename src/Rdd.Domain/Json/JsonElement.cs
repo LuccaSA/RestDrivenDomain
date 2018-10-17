@@ -31,7 +31,7 @@ namespace Rdd.Domain.Json
 
         public abstract bool HasKey(Queue<string> path);
 
-        Queue<string> ParsePath(string path)
+        private Queue<string> ParsePath(string path)
         {
             return new Queue<string>((path ?? "").Replace("]", "").Split(new[] { '.', '[' }, StringSplitOptions.RemoveEmptyEntries));
         }
