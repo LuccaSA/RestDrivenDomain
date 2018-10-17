@@ -1,9 +1,7 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Models.Querying;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rdd.Domain.Helpers;
 
 namespace Rdd.Application.Controllers
 {

@@ -4,11 +4,8 @@ using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models.Querying;
-using Rdd.Infra.Helpers;
-using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Rdd.Web.Tests
