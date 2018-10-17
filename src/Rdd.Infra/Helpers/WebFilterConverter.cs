@@ -60,13 +60,27 @@ namespace Rdd.Infra.Helpers
         public Expression<Func<TEntity, bool>> Equals(IExpression field, IList values) => BuildLambda(Contains, field, values);
         protected virtual Expression Contains(Expression leftExpression, IList values)
         {
-            return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, Expression.Constant(values), leftExpression);
+            if (values.Count == 1)
+            {
+                return Expression.Equal(leftExpression, Expression.Constant(values[0]));
+            }
+            else
+            {
+                return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, Expression.Constant(values), leftExpression);
+            }
         }
 
         public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values) => BuildLambda(NotEqual, field, values);
         protected virtual Expression NotEqual(Expression leftExpression, IList values)
         {
-            return Expression.Not(Contains(leftExpression, values));
+            if (values.Count == 1)
+            {
+                return Expression.NotEqual(leftExpression, Expression.Constant(values[0]));
+            }
+            else
+            {
+                return Expression.Not(Contains(leftExpression, values));
+            }
         }
 
         public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildLambda(Equal, field, value), values);
