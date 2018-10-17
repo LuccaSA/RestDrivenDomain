@@ -7,6 +7,7 @@
  - **Modification**: `AddRddRights<TCombinationsHolder, TPrincipal>()` -> `AddRddDefaultRights(RightDefaultMode mode)`
  - **Modification**: `AddRddSerialization<TPrincipal>()` -> `AddRddSerialization()`
  - **Modification**: `AddRdd<TDbContext, TCombinationsHolder, TPrincipal>` -> `AddRdd<TDbContext>`
+ - **Removed**: `AddRddCore`. Use `AddRdd`
  - **Modification**: ``PropertyExpression`` now requires a Lambda in its constructor, and drops some unused members, but gains `IValueProvider ValueProvider`
  - **Modification**: ``IExpressionTree.Children`` type changed ``IEnumerable<IExpressionTree>``-> ``IReadOnlyCollection<IExpressionTree>``
  - **Modification**: ``IReflectionProvider``-> ``IReflectionHelper``
