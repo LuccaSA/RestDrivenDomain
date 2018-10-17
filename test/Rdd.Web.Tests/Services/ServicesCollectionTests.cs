@@ -93,12 +93,12 @@ namespace Rdd.Web.Tests.Services
         }
 
         [Fact]
-        public void TestRddCoreRegister()
+        public void TestRddRegister()
         {
             var services = new ServiceCollection();
 
-            services.AddRddCore<ExchangeRateDbContext>();
-            services.AddSingleton<IReflectionHelper, ReflectionHelper>(); ;
+            services.AddDbContext<ExchangeRateDbContext>();//necessary or .AddRdd fails
+            services.AddRdd<ExchangeRateDbContext>();
 
             services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(OpenRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
