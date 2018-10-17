@@ -8,6 +8,16 @@ using System.Threading.Tasks;
 
 namespace Rdd.Web.Tests.ServerMock
 {
+    [ApiExplorerSettings(IgnoreApi = false)]
+    public class ExchangeRate3Controller : ReadOnlyWebController<ExchangeRate, int>
+    {
+        public ExchangeRate3Controller(IAppController<ExchangeRate, int> appController, IQueryParser<ExchangeRate> queryParser)
+            : base(appController, queryParser)
+        {
+        }
+        protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
+    }
+
     [Route(RouteName)]
     [ApiExplorerSettings(IgnoreApi = false)]
     public class ExchangeRate2Controller : WebController<ExchangeRate, int>
