@@ -8,9 +8,7 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization;
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Rdd.Web.Controllers
@@ -47,7 +45,7 @@ namespace Rdd.Web.Controllers
             }
 
             Query<TEntity> query = QueryParser.Parse(HttpContext, false);
-            var candidate = CandidateParser.Parse<TEntity, TKey>(await GetContentAsync());
+            var candidate = await CandidateParser.ParseAsync<TEntity, TKey>(HttpContext.Request);
 
             TEntity entity = await AppController.CreateAsync(candidate, query);
 
@@ -63,7 +61,7 @@ namespace Rdd.Web.Controllers
             }
 
             Query<TEntity> query = QueryParser.Parse(HttpContext, false);
-            var candidate = CandidateParser.Parse<TEntity, TKey>(await GetContentAsync());
+            var candidate = await CandidateParser.ParseAsync<TEntity, TKey>(HttpContext.Request);
 
             TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
 
@@ -84,7 +82,7 @@ namespace Rdd.Web.Controllers
             }
 
             Query<TEntity> query = QueryParser.Parse(HttpContext, true);
-            var candidates = CandidateParser.ParseMany<TEntity, TKey>(await GetContentAsync());
+            var candidates = await CandidateParser.ParseManyAsync<TEntity, TKey>(HttpContext.Request);
 
             if (candidates.Any(c => !c.HasId()))
             {
@@ -119,7 +117,7 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            var candidates = CandidateParser.ParseMany<TEntity, TKey>(await GetContentAsync());
+            var candidates = await CandidateParser.ParseManyAsync<TEntity, TKey>(HttpContext.Request);
 
             if (candidates.Any(c => !c.HasId()))
             {
@@ -129,14 +127,6 @@ namespace Rdd.Web.Controllers
             await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id));
 
             return Ok();
-        }
-
-        protected virtual async Task<string> GetContentAsync()
-        {
-            using (var reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
-            {
-                return await reader.ReadToEndAsync();
-            }
         }
     }
 }
