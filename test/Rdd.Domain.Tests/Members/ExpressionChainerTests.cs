@@ -10,20 +10,22 @@ namespace Rdd.Domain.Tests.Members
 {
     public class ExpressionChainerTests
     {
-        class User
+        private class User
         {
             public int Id { get; set; }
             public User Manager { get; set; }
             public List<User> Collaborators { get; set; }
             public List<Role> HabilitedRoles { get; set; }
         }
-        class Department
+
+        private class Department
         {
             public User Head { get; set; }
 
             public Dictionary<int, User> EmployeeOfTheMonth { get; set; }
         }
-        class Role
+
+        private class Role
         {
             public int Id { get; set; }
             public bool HasContextualLegalEntityAssociation { get; set; }

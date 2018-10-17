@@ -14,7 +14,7 @@ namespace Rdd.Web.Tests
 {
     public class CandidateTests
     {
-        ICandidate<TEntity, TKey> Parse<TEntity, TKey>(string content)
+        private ICandidate<TEntity, TKey> Parse<TEntity, TKey>(string content)
             where TEntity : class, IPrimaryKey<TKey>
             => new CandidateParser(new JsonParser()).Parse<TEntity, TKey>(content);
 

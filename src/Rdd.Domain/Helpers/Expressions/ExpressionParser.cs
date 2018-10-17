@@ -88,13 +88,13 @@ namespace Rdd.Domain.Helpers.Expressions
             return result;
         }
 
-        IExpressionTree Parse(Type classType, Tree<string> tree)
+        private IExpressionTree Parse(Type classType, Tree<string> tree)
         {
             var expression = GetExpression(classType, tree.Node);
             return new ExpressionTree { Node = expression, Children = tree.Children.Select(c => Parse(expression.ResultType, c)).ToList() };
         }
 
-        IExpression GetExpression(Type classType, string member)
+        private IExpression GetExpression(Type classType, string member)
         {
             var parameter = Expression.Parameter(classType);
             if (typeof(IDictionary).IsAssignableFrom(classType))
@@ -126,7 +126,7 @@ namespace Rdd.Domain.Helpers.Expressions
             }
         }
 
-        PropertyInfo GetPropertyInfo(Type type, string name)
+        private PropertyInfo GetPropertyInfo(Type type, string name)
         {
             if (type.IsInterface)
             {

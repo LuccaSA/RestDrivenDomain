@@ -65,7 +65,7 @@ namespace Rdd.Domain.Tests
             await users.CreateAsync(candidate, query);
         }
 
-        class InstanciatorImplementation : IInstanciator<UserWithParameters>
+        private class InstanciatorImplementation : IInstanciator<UserWithParameters>
         {
             public UserWithParameters InstanciateNew(ICandidate<UserWithParameters> candidate)
             {
@@ -124,7 +124,7 @@ namespace Rdd.Domain.Tests
             Assert.True(true);
         }
 
-        class OverrideObjectPatcher<T> : ObjectPatcher<T>
+        private class OverrideObjectPatcher<T> : ObjectPatcher<T>
             where T : class, new()
         {
             public OverrideObjectPatcher(IPatcherProvider provider) : base(provider, new ReflectionHelper())

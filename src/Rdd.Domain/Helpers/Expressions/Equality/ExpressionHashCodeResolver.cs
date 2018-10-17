@@ -2,7 +2,7 @@
 
 namespace Rdd.Domain.Helpers.Expressions.Equality
 {
-    class ExpressionHashCodeResolver : ExpressionVisitor
+    internal class ExpressionHashCodeResolver : ExpressionVisitor
     {
         private int _runningTotal;
 
