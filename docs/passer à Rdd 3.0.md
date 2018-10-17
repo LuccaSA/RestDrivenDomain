@@ -25,3 +25,7 @@ La version 3.0 introduit un gros breaking change sur la structure des projets, d
 Le principal est désormais injectable directement, moyennant de gérer ça dans le startup notamment en utilisant Lucca.Core.Rights et de créer une interface IPrincipal dans votre Domain.
 
 Ceci remplace le `IExecutionContext` et tout ce qui a trait au user connecté en général.
+
+**IStorageService => IUnitOfWork**
+
+Dans la couche Application, les AppControllers dépendent désormais d'un `IUnitOfWork` plutôt que d'un `IStorageService` pour commiter les modifs en base. Dans la pratique cela revient au même car le `EFStorageService` implémente les 2 interfaces. Mais si vous avez besoin de faire la différence dans votre projet c'est désormais possible.
