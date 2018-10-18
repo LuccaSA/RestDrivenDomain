@@ -26,11 +26,11 @@ namespace Rdd.Web.Tests
         public async Task GetOkAsync()
         {
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
-            var response = await _client.GetAsync("/ExchangeRate/");
+            var response = await _client.GetAsync("/ExchangeRates/");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.GetAsync("/ExchangeRate/");
+            response = await _client.GetAsync("/ExchangeRates/");
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
@@ -41,11 +41,11 @@ namespace Rdd.Web.Tests
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;
-            var response = await _client.PutAsync("/ExchangeRate/", content);
+            var response = await _client.PutAsync("/ExchangeRates/", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.PutAsync("/ExchangeRate/", content);
+            response = await _client.PutAsync("/ExchangeRates/", content);
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
@@ -56,14 +56,14 @@ namespace Rdd.Web.Tests
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Post;
-            var response = await _client.PostAsync("/ExchangeRate/", content);
+            var response = await _client.PostAsync("/ExchangeRates/", content);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); //basic route not found
 
-            response = await _client.PostAsync("/ExchangeRate/creation", content);
+            response = await _client.PostAsync("/ExchangeRates/creation", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode); //overriden route found
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.PostAsync("/ExchangeRate/creation", content);
+            response = await _client.PostAsync("/ExchangeRates/creation", content);
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
@@ -74,11 +74,11 @@ namespace Rdd.Web.Tests
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRate/") { Content = content });
+            var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRates/") { Content = content });
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
-            response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRate/") { Content = content });
+            response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRates/") { Content = content });
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -86,11 +86,11 @@ namespace Rdd.Web.Tests
         public async Task GetByIdOkAsync()
         {
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
-            var response = await _client.GetAsync("/ExchangeRate/23");
+            var response = await _client.GetAsync("/ExchangeRates/23");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.GetAsync("/ExchangeRate/23");
+            response = await _client.GetAsync("/ExchangeRates/23");
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
@@ -101,11 +101,11 @@ namespace Rdd.Web.Tests
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;
-            var response = await _client.PutAsync("/ExchangeRate/5", content);
+            var response = await _client.PutAsync("/ExchangeRates/5", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.PutAsync("/ExchangeRate/5", content);
+            response = await _client.PutAsync("/ExchangeRates/5", content);
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
@@ -113,11 +113,11 @@ namespace Rdd.Web.Tests
         public async Task DeleteByIdOkAsync()
         {
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            var response = await _client.DeleteAsync("/ExchangeRate/7");
+            var response = await _client.DeleteAsync("/ExchangeRates/7");
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
-            response = await _client.DeleteAsync("/ExchangeRate/7");
+            response = await _client.DeleteAsync("/ExchangeRates/7");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }

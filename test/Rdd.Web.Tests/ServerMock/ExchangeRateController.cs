@@ -10,18 +10,18 @@ namespace Rdd.Web.Tests.ServerMock
 {
     [Route(RouteName)]
     [ApiExplorerSettings(IgnoreApi = false)]
-    public class ExchangeRate2Controller : WebController<ExchangeRate, int>
+    public class ExchangeRate2Controller : WebController<ExchangeRate2, int>
     {
-        public const string RouteName = "OpenExchangeRate";
+        public const string RouteName = "OpenExchangeRates";
 
-        public ExchangeRate2Controller(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser)
+        public ExchangeRate2Controller(IAppController<ExchangeRate2, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate2> queryParser)
             : base(appController, candidateParser, queryParser)
         {
         }
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
     }
 
-    [Route("ExchangeRate")]
+    [Route("ExchangeRates")]
     public class ExchangeRateController : WebController<ExchangeRate, int>
     {
         public ExchangeRateController(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser)

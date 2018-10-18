@@ -1,37 +1,125 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Rdd.Domain;
+using Rdd.Web.Controllers;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rdd.Web.Serialization.UrlProviders
 {
     public class UrlProvider : IUrlProvider
     {
-        protected virtual string ApiPrefix => "api";
+        private const string ActionName = nameof(ReadOnlyWebController<IEntityBase<int>, int>.GetByIdAsync);
 
-        private readonly IPluralizationService _pluralizationService;
+        private readonly object _lock = new object();
+
+        private IReadOnlyDictionary<Type, string> _templates;
+        private string _urlBase;
+
+        private readonly IActionDescriptorCollectionProvider _provider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UrlProvider(IPluralizationService pluralizationService, IHttpContextAccessor httpContextAccessor)
+        public UrlProvider(IActionDescriptorCollectionProvider provider, IHttpContextAccessor httpContextAccessor)
         {
-            _pluralizationService = pluralizationService ?? throw new ArgumentNullException(nameof(pluralizationService));
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
-        public virtual Uri GetEntityApiUri(IPrimaryKey entity) => GetEntityApiUri(entity.GetType(), entity);
-        public virtual Uri GetEntityApiUri(Type workingType, IPrimaryKey entity)
+        public Uri GetEntityApiUri(IPrimaryKey entity)
         {
-            if (entity != null)
+            if (_templates == null)
             {
-                var id = entity.GetId();
-                var request = _httpContextAccessor.HttpContext.Request;
-                return new UriBuilder($"{request.Scheme}://{request.Host.Value}/")
+                lock (_lock)
                 {
-                    Path = string.Format("{0}/{1}{2}", ApiPrefix, GetApiControllerName(workingType).ToLower(), id == null ? null : ("/" + id))
-                }.Uri;
+                    if (_templates == null)
+                    {
+                        _templates = CompileUrls();
+                    }
+                }
             }
-            return null;
+
+            var testedType = GetMatchingType(entity.GetType());
+            if (testedType == null)
+            {
+                return null;
+            }
+
+            return new UriBuilder(GetUrlBase()) { Path = GetPath(testedType, entity) }.Uri;
         }
 
-        public virtual string GetApiControllerName(Type workingType) => _pluralizationService.GetPlural(workingType.Name).ToLower();
+        protected virtual Dictionary<Type, string> CompileUrls()
+        {
+            var result = new Dictionary<Type, string>();
+
+            var urlProviderActions = _provider.ActionDescriptors.Items
+                .OfType<ControllerActionDescriptor>()
+                .Where(a => a.ActionName == ActionName);
+
+            foreach (var action in urlProviderActions)
+            {
+                var entityType = GetEntityType(action.ControllerTypeInfo);
+                if (entityType != null)
+                {
+                    result[entityType] = action.AttributeRouteInfo.Template.Replace("{id}", "{0}");
+                }
+            }
+
+            return result;
+        }
+
+        protected Type GetEntityType(Type controllerType)
+        {
+            if (controllerType == null)
+            {
+                return null;
+            }
+
+            if (controllerType.IsConstructedGenericType)
+            {
+                var definition = controllerType.GetGenericTypeDefinition();
+
+                if (typeof(WebController<,>) == definition || typeof(ReadOnlyWebController<,>) == definition)
+                {
+                    return controllerType.GenericTypeArguments[0];
+                }
+
+                if (typeof(WebController<,,>) == definition || typeof(ReadOnlyWebController<,>) == definition)
+                {
+                    return controllerType.GenericTypeArguments[1];
+                }
+            }
+
+            return GetEntityType(controllerType.BaseType);
+        }
+
+        protected virtual Type GetMatchingType(Type initialType)
+        {
+            if (initialType == null)
+            {
+                return null;
+            }
+
+            if (_templates.ContainsKey(initialType))
+            {
+                return initialType;
+            }
+
+            return GetMatchingType(initialType.BaseType);
+        }
+
+        protected virtual string GetUrlBase()
+        {
+            if (_urlBase == null)
+            {
+                _urlBase = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/";
+            }
+
+            return _urlBase;
+        }
+
+        protected virtual string GetPath(Type type, IPrimaryKey entity)
+            => string.Format(_templates[type], entity.GetId());
     }
 }
