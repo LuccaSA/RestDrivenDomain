@@ -57,7 +57,10 @@ namespace Rdd.Web.Tests.Serialization
 
         private class UserTest : User
         {
-            public override int Id { get => 10; }
+            public UserTest()
+            {
+                Id = 10;
+            }
         }
 
         private class UserTestUrlProvider : UrlProvider

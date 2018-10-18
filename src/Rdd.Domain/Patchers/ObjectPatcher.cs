@@ -65,6 +65,11 @@ namespace Rdd.Domain.Patchers
                 throw new BadRequestException($"Property {key} does not exist on type {entityType.Name}");
             }
 
+            if (!properties[key].CanWrite)
+            {
+                throw new BadRequestException($"Property {key} cannot be written to.");
+            }
+
             PatchProperty(patchedObject, properties[key], element);
         }
 

@@ -106,8 +106,7 @@ namespace Rdd.Web.Tests.Serialization
                 Department = new Department
                 {
                     Id = 2,
-                    Name = "Foo",
-                    Url = "/api/departements/2"
+                    Name = "Foo"
                 }
             };
             var fields = ExpressionTree<User>.New(u => u.Department);

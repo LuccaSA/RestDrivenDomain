@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
+using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Tests.Models;
 using System;
@@ -53,6 +54,15 @@ namespace Rdd.Domain.Tests
             services.TryAddSingleton<ObjectPatcher>();
 
             ServiceProvider = services.BuildServiceProvider();
+        }
+
+        [Fact]
+        public void PatchWrongProperty()
+        {
+            var patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
+            var json = new JsonParser().Parse(@"{ ""url"": ""http://www.example.org"" }");
+
+            Assert.Throws<BadRequestException>(() => patcher.Patch(new EntityBase<int>(), json));
         }
 
         [Fact]

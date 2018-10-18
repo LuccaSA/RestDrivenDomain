@@ -1,12 +1,15 @@
-﻿using Rdd.Domain.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
 namespace Rdd.Domain.Tests.Models
 {
-    public class User : EntityBase<Guid>
+    public class User : IEntityBase<Guid>
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+
         public MailAddress Mail { get; set; }
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
@@ -25,5 +28,7 @@ namespace Rdd.Domain.Tests.Models
 
             return result;
         }
+
+        public object GetId() => Id;
     }
 }
