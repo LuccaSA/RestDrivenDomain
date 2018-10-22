@@ -36,5 +36,11 @@ namespace Rdd.Web.Tests.ServerMock
         [HttpPost("creation")]//testing route override
         public override Task<IActionResult> PostAsync()
             => base.PostAsync();
+
+        [HttpGet("pipo")]
+        public void GetWithParams([FromQuery]int pipo, int pipo2)
+        {
+            QueryParser.Parse(HttpContext.Request, ControllerContext.ActionDescriptor, true);
+        }
     }
 }

@@ -66,8 +66,12 @@ namespace Rdd.Web.Querying
 
             if (action != null)
             {
-                var queryActionParameters = action.Parameters.Where(p => p.BindingInfo?.BindingSource == BindingSource.Query).Select(p => p.Name).ToHashSet();
-                keyValuePairs = keyValuePairs.Where(kvp => queryActionParameters.Contains(kvp.Key));
+                var queryActionParameters = action.Parameters
+                    .Where(p => p.BindingInfo == null || p.BindingInfo.BindingSource == BindingSource.Query)
+                    .Select(p => p.Name)
+                    .ToHashSet();
+
+                keyValuePairs = keyValuePairs.Where(kvp => !queryActionParameters.Contains(kvp.Key));
             }
 
             var filters = keyValuePairs.Select(kv => Parse<TEntity>(kv.Key, kv.Value));
