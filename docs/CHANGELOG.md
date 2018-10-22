@@ -83,6 +83,7 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Modification**: Ignored filters from action parameters may be automatically found.
  - **Added**: `ICandidateParser`, `IStringConverter`. New query conversion engine
  - **Added**: `JsonParser.Parse(JToken input)`
  - **Added**: `IJsonParser`. Missing interfaces for correct dependency injection logic.

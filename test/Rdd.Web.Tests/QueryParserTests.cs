@@ -30,11 +30,9 @@ namespace Rdd.Web.Tests
         [Fact]
         public void IgnoredAndBadFilters()
         {
-            var request = HttpVerbs.Get.NewRequest(  ("pipo", "nope") , ("", "oulala") );
+            var request = HttpVerbs.Get.NewRequest(   ("", "oulala") );
 
             var options = new RddOptions();
-            options.IgnoreFilters("pipo");
-
             var parser = QueryParserHelper.GetQueryParser<User>(options);
 
             var query = parser.Parse(request, true);
