@@ -22,7 +22,7 @@ namespace Rdd.Web.Querying
                 throw new BadRequestException(nameof(input));
             }
 
-            if (input == "1") //...&paging=1 <=> &paging=0,100
+            if (input == "1") //...&paging=1 <=> &paging=0,10
             {
                 return _rddOptions.Value.DefaultPage;
             }
