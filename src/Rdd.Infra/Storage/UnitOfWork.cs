@@ -29,7 +29,10 @@ namespace Rdd.Infra.Storage
                 foreach (var processor in _saveEventProcessors)
                 {
                     var toSave = await processor.InternalBeforeSaveChangesAsync(_dbContext.ChangeTracker);
-                    processed.Add((processor, toSave));
+                    if (toSave.PendingChangesCount != 0)
+                    {
+                        processed.Add((processor, toSave));
+                    }
                 }
 
                 await _dbContext.SaveChangesAsync();

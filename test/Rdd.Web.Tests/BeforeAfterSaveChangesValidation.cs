@@ -52,7 +52,7 @@ namespace Rdd.Web.Tests
             Assert.Equal(0, onAnotherSave.AddCount);
             Assert.Equal(0, onAnotherSave.UpdateCount);
             Assert.Equal(0, onAnotherSave.DeleteCount);
-            Assert.Equal(2, onAnotherSave.CallsCount);
+            Assert.Equal(0, onAnotherSave.CallsCount);
 
             var update = new CandidateParser(new JsonParser()).Parse<ExchangeRate, int>(@"{ ""name"": ""other name"" }");
             var updated = await app.UpdateByIdAsync(created.Id, update, new Query<ExchangeRate>());
@@ -69,7 +69,7 @@ namespace Rdd.Web.Tests
             Assert.Equal(2, onSave.DeleteCount);
             Assert.Equal(6, onSave.CallsCount);
 
-            Assert.Equal(6, onAnotherSave.CallsCount);
+            Assert.Equal(0, onAnotherSave.CallsCount);
         }
     }
 

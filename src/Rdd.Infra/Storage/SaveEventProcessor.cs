@@ -18,6 +18,12 @@ namespace Rdd.Infra.Storage
 
             var payload = new SavedEntries<T>(added, modified, deleted);
 
+            if (payload.PendingChangesCount == 0)
+            {
+                // early return : if no pending changed, we don't call OnBeforeSaveAsync / OnAfterSaveAsync
+                return payload;
+            }
+
             await OnBeforeSaveAsync(payload);
 
             return payload;
