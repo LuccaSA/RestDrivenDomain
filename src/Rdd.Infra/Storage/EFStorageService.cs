@@ -1,16 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rdd.Application;
-using Rdd.Infra.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Rdd.Infra.Storage
 {
-    public class EFStorageService : IStorageService, IUnitOfWork
+    public class EFStorageService : IStorageService
     {
         protected DbContext DbContext { get; }
 
@@ -100,40 +97,9 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public virtual async Task SaveChangesAsync()
-        {
-            try
-            {
-                await DbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                switch (ex.InnerException?.InnerException)
-                {
-                    case ArgumentException ae:
-                        throw ae;
-                    case SqlException se:
-                        switch (se.Number)
-                        {
-                            case 2627:
-                                throw new SqlUniqConstraintException(se.Message);
-                            default:
-                                throw se;
-                        }
-                    default:
-                        throw ex.InnerException ?? ex;
-                }
-            }
-        }
-
         public virtual Task<int> ExecuteScriptAsync(string script)
         {
             return DbContext.Database.ExecuteSqlCommandAsync(script);
-        }
-
-        public void Dispose()
-        {
-            DbContext.Dispose();
         }
     }
 }
