@@ -1,5 +1,4 @@
-﻿using Rdd.Application;
-using Rdd.Domain;
+﻿using Rdd.Domain;
 using Rdd.Domain.Rights;
 using System.Collections.Generic;
 

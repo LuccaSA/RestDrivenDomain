@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
-using Rdd.Domain.Helpers.Reflection;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Serialization.UrlProviders;
-using System;
-using System.Linq;
 
 namespace Rdd.Web.Serialization.Serializers
 {

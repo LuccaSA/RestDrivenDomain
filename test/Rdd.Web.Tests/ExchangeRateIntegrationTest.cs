@@ -37,7 +37,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public async Task PutOkAsync()
         {
-            var serialized = JsonConvert.SerializeObject(new ExchangeRate { Id = 3, Name = "putted" });
+            var serialized = JsonConvert.SerializeObject(new { Id = 3, Name = "putted" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;
@@ -52,7 +52,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public async Task PostOkAsync()
         {
-            var serialized = JsonConvert.SerializeObject(new ExchangeRate { Name = "posted" });
+            var serialized = JsonConvert.SerializeObject(new { Name = "posted" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Post;
@@ -97,7 +97,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public async Task PutByIdOkAsync()
         {
-            var serialized = JsonConvert.SerializeObject(new ExchangeRate { Id = 5, Name = "putted2" });
+            var serialized = JsonConvert.SerializeObject(new  { Id = 5, Name = "putted2" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;

@@ -29,16 +29,11 @@ namespace Rdd.Web.Helpers
 {
     public static class RddServiceCollectionExtensions
     {
-        /// <summary>
-        /// Register minimum Rdd dependecies. Set up Rdd services via Microsoft.Extensions.DependencyInjection.IServiceCollection.
-        /// DbContext, IRightsService and IRddSerialization are missing for this setup to be functional
-        /// </summary>
-        /// <param name="services"></param>
-        public static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services)
+        private static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
             services.AddOptions<RddOptions>();
-            services.TryAddScoped<DbContext>(p => p.GetService<TDbContext>());
+            services.TryAddScoped<DbContext>(p => p.GetRequiredService<TDbContext>());
 
             services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
@@ -47,7 +42,7 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<DictionaryPatcher>();
             services.TryAddSingleton<ValuePatcher>();
             services.TryAddSingleton<DynamicPatcher>();
-            services.TryAddSingleton<ObjectPatcher>(); 
+            services.TryAddSingleton<ObjectPatcher>();
 
             services.TryAddSingleton<IJsonParser, JsonParser>();
             services.TryAddSingleton<ICandidateParser, CandidateParser>();
@@ -72,7 +67,7 @@ namespace Rdd.Web.Helpers
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
 
             services.AddHttpContextAccessor();
-            
+
             // closed by default, overridable with AddRddDefaultRights
             services.TryAddSingleton(typeof(IRightExpressionsHelper<>), typeof(ClosedRightExpressionsHelper<>));
 
@@ -80,7 +75,7 @@ namespace Rdd.Web.Helpers
                 .ApplyRddSetupOptions();
         }
 
-        public static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services, Action<RddOptions> onConfigure)
+        private static RddBuilder AddRddCore<TDbContext>(this IServiceCollection services, Action<RddOptions> onConfigure)
             where TDbContext : DbContext
         {
             var builder = services.AddRddCore<TDbContext>();
@@ -167,7 +162,7 @@ namespace Rdd.Web.Helpers
 
             return rddBuilder;
         }
-        
+
         public static RddBuilder AddRdd<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {

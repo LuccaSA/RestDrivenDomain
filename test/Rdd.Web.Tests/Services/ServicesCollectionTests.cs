@@ -65,8 +65,8 @@ namespace Rdd.Web.Tests.Services
 
             Assert.Equal(2, configs.ToList().Count);
 
-            var config1 = provider.GetRequiredService<IInheritanceConfiguration<Hierarchy>>();
-            var config2 = provider.GetRequiredService<IInheritanceConfiguration<Hierarchy2>>();
+            provider.GetRequiredService<IInheritanceConfiguration<Hierarchy>>();
+            provider.GetRequiredService<IInheritanceConfiguration<Hierarchy2>>();
         }
 
         [Fact]
@@ -93,12 +93,12 @@ namespace Rdd.Web.Tests.Services
         }
 
         [Fact]
-        public void TestRddCoreRegister()
+        public void TestRddRegister()
         {
             var services = new ServiceCollection();
 
-            services.AddRddCore<ExchangeRateDbContext>();
-            services.AddSingleton<IReflectionHelper, ReflectionHelper>(); ;
+            services.AddDbContext<ExchangeRateDbContext>();//necessary or .AddRdd fails
+            services.AddRdd<ExchangeRateDbContext>();
 
             services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(OpenRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();

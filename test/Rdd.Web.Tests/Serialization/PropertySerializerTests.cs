@@ -91,7 +91,7 @@ namespace Rdd.Web.Tests.Serialization
                 }
             };
 
-            var fields = ExpressionTree<User>.New(u => u.Department.Id, (User u) => u.Department.Name);
+            var fields = ExpressionTree<User>.New(u => u.Department.Id, u => u.Department.Name);
             var json = await SerializeAsync(entity, fields);
 
             Assert.Equal(ExpectedInput(@"{""department"":{""id"":1,""name"":""Department""}}"), json);
@@ -106,8 +106,7 @@ namespace Rdd.Web.Tests.Serialization
                 Department = new Department
                 {
                     Id = 2,
-                    Name = "Foo",
-                    Url = "/api/departements/2"
+                    Name = "Foo"
                 }
             };
             var fields = ExpressionTree<User>.New(u => u.Department);

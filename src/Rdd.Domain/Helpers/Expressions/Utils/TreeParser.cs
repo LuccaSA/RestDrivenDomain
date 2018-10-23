@@ -75,7 +75,7 @@ namespace Rdd.Domain.Helpers.Expressions.Utils
             return result;
         }
 
-        void PushNewSegment(string input, ref int offset, int currentIndex, Stack<Tree<string>> currentTrees, bool allowEmpty)
+        private void PushNewSegment(string input, ref int offset, int currentIndex, Stack<Tree<string>> currentTrees, bool allowEmpty)
         {
             if (currentIndex - offset > 0)
             {
@@ -98,7 +98,7 @@ namespace Rdd.Domain.Helpers.Expressions.Utils
             offset = currentIndex + 1;
         }
 
-        void SetCurrentTree(Stack<Tree<string>> currentTrees, int targetCount)
+        private void SetCurrentTree(Stack<Tree<string>> currentTrees, int targetCount)
         {
             while (currentTrees.Count != targetCount)
             {

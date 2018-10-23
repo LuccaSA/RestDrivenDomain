@@ -41,11 +41,15 @@ namespace Rdd.Domain.Json
         public override JsonArray GetJsonArray(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 throw new ArgumentException("The suggested empty json path does not exist on this json object");
+            }
 
             var currentPath = path.Dequeue();
             if (!Content.ContainsKey(currentPath))
+            {
                 throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
+            }
 
             return Content[currentPath].GetJsonArray(path);
         }
@@ -53,11 +57,15 @@ namespace Rdd.Domain.Json
         public override JsonObject GetJsonObject(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return this;
+            }
 
             var currentPath = path.Dequeue();
             if (!Content.ContainsKey(currentPath))
+            {
                 throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
+            }
 
             return Content[currentPath].GetJsonObject(path);
         }
@@ -65,11 +73,15 @@ namespace Rdd.Domain.Json
         public override string GetJsonValue(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 throw new ArgumentException("The suggested empty json path does not exist on this json object");
+            }
 
             var currentPath = path.Dequeue();
             if (!Content.ContainsKey(currentPath))
+            {
                 throw new ArgumentException($"The json path '{currentPath}' does not exist on this json object");
+            }
 
             return Content[currentPath].GetJsonValue(path);
         }
@@ -77,11 +89,15 @@ namespace Rdd.Domain.Json
         public override bool HasJsonArray(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return false;
+            }
 
             var currentPath = path.Dequeue();
             if (!Content.ContainsKey(currentPath))
+            {
                 return false;
+            }
 
             return Content[currentPath].HasJsonArray(path);
         }
@@ -89,11 +105,15 @@ namespace Rdd.Domain.Json
         public override bool HasJsonObject(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return true;
+            }
 
             var currentPath = path.Dequeue();
             if (!Content.ContainsKey(currentPath))
+            {
                 return false;
+            }
 
             return Content[currentPath].HasJsonObject(path);
         }
@@ -101,11 +121,15 @@ namespace Rdd.Domain.Json
         public override bool HasJsonValue(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return false;
+            }
 
             var currentPath = path.Dequeue();
             if (!Content.ContainsKey(currentPath))
+            {
                 return false;
+            }
 
             return Content[currentPath].HasJsonValue(path);
         }

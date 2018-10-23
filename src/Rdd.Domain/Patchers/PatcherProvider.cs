@@ -11,19 +11,19 @@ namespace Rdd.Domain.Patchers
     public class PatcherProvider : IPatcherProvider
     {
         protected IServiceProvider Services { get; set; }
-        protected IReflectionHelper IReflectionHelper { get; set; }
+        protected IReflectionHelper ReflectionHelper { get; set; }
 
         public PatcherProvider(IServiceProvider services, IReflectionHelper reflectionHelper)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
-            IReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
+            ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
         }
 
         public virtual IPatcher GetPatcher(Type expectedType, IJsonElement json)
         {
             if (json is JsonArray)
             {
-                return Services.GetService<EnumerablePatcher>();
+                return Services.GetRequiredService<EnumerablePatcher>();
             }
 
             if (typeof(IEntityBase).IsAssignableFrom(expectedType))
@@ -33,21 +33,21 @@ namespace Rdd.Domain.Patchers
 
             if (expectedType.IsSubclassOfInterface(typeof(IDictionary)))
             {
-                return Services.GetService<DictionaryPatcher>();
+                return Services.GetRequiredService<DictionaryPatcher>();
             }
 
-            if (IReflectionHelper.IsPseudoValue(expectedType) || expectedType.GetNullableType().IsValueType)
+            if (ReflectionHelper.IsPseudoValue(expectedType) || expectedType.GetNullableType().IsValueType)
             {
-                return Services.GetService<ValuePatcher>();
+                return Services.GetRequiredService<ValuePatcher>();
             }
 
             if (expectedType == typeof(object))
             {
-                if (json is JsonValue) { return Services.GetService<ValuePatcher>(); }
-                if (json is JsonObject) { return Services.GetService<DynamicPatcher>(); }
+                if (json is JsonValue) { return Services.GetRequiredService<ValuePatcher>(); }
+                if (json is JsonObject) { return Services.GetRequiredService<DynamicPatcher>(); }
             }
 
-            return Services.GetService<ObjectPatcher>();
+            return Services.GetRequiredService<ObjectPatcher>();
         }
     }
 }

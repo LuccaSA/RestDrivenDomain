@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
+using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Tests.Models;
 using System;
@@ -14,9 +15,9 @@ namespace Rdd.Domain.Tests
 {
     public class PatchersTests
     {
-        enum TestEnum { Mon, Tue, Wed };
+        private enum TestEnum { Mon, Tue, Wed };
 
-        class ToPatch
+        private class ToPatch
         {
             public CustomFields CustomFields { get; set; }
             public Dictionary<int, int> IntDico { get; set; }
@@ -36,9 +37,9 @@ namespace Rdd.Domain.Tests
             public int[] ArrayOfInt { get; set; }
         }
 
-        IServiceProvider ServiceProvider;
-        IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
-        IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
+        private IServiceProvider ServiceProvider;
+        private IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
+        private IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
 
         public PatchersTests()
         {
@@ -53,6 +54,15 @@ namespace Rdd.Domain.Tests
             services.TryAddSingleton<ObjectPatcher>();
 
             ServiceProvider = services.BuildServiceProvider();
+        }
+
+        [Fact]
+        public void PatchWrongProperty()
+        {
+            var patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
+            var json = new JsonParser().Parse(@"{ ""url"": ""http://www.example.org"" }");
+
+            Assert.Throws<BadRequestException>(() => patcher.Patch(new EntityBase<int>(), json));
         }
 
         [Fact]

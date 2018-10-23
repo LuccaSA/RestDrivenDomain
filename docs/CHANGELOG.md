@@ -1,12 +1,14 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: ``ExecuteScriptAsync()`` on EfStorageService now is returns ``int`` directly
  - **Modification**: ``ValidateEntity`` on RestCollection now is ``ValidateEntityAsync`` and returns a bool
-  - **Modification**: RestCollection now return null or empty collection if entity is not validated
+ - **Modification**: RestCollection now return null or empty collection if entity is not validated
  - **Removed**: `IPrincipal`. Rdd now uses current `ClaimsPrincipal`
  - **Removed**: Unused `UnreachableEntityException`, `RightExpressionsHelper`, `ICombinationsHolder`. Replaced by `Closed/OpenRightExpressionsHelper`. To correctly handle rights, please implement your version, or use external librairy (`Lucca.Core.Rights`).
  - **Modification**: `AddRddRights<TCombinationsHolder, TPrincipal>()` -> `AddRddDefaultRights(RightDefaultMode mode)`
  - **Modification**: `AddRddSerialization<TPrincipal>()` -> `AddRddSerialization()`
  - **Modification**: `AddRdd<TDbContext, TCombinationsHolder, TPrincipal>` -> `AddRdd<TDbContext>`
+ - **Removed**: `AddRddCore`. Use `AddRdd`
  - **Modification**: ``PropertyExpression`` now requires a Lambda in its constructor, and drops some unused members, but gains `IValueProvider ValueProvider`
  - **Modification**: ``IExpressionTree.Children`` type changed ``IEnumerable<IExpressionTree>``-> ``IReadOnlyCollection<IExpressionTree>``
  - **Modification**: ``IReflectionProvider``-> ``IReflectionHelper``

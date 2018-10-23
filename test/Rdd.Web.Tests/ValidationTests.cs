@@ -9,7 +9,6 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Web.Helpers;
-using Rdd.Web.Models;
 using Rdd.Web.Querying;
 using Rdd.Web.Tests.ServerMock;
 using Xunit;

@@ -131,11 +131,11 @@ namespace Rdd.Web.Controllers
             return Ok();
         }
 
-        protected virtual Task<string> GetContentAsync()
+        protected virtual async Task<string> GetContentAsync()
         {
             using (var reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
             {
-                return reader.ReadToEndAsync();
+                return await reader.ReadToEndAsync();
             }
         }
     }

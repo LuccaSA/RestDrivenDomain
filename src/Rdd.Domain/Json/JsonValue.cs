@@ -36,7 +36,9 @@ namespace Rdd.Domain.Json
         public override string GetJsonValue(Queue<string> path)
         {
             if (path == null || path.Count == 0)
+            {
                 return Content == null ? null : Content.ToString();
+            }
 
             throw new ArgumentException($"The json path '{string.Join(".", path)}' does not exist on this json value");
         }

@@ -16,7 +16,9 @@ namespace Rdd.Domain.Json
         public IJsonElement Parse(JToken input)
         {
             if (input == null)
+            {
                 return null;
+            }
 
             switch (input.Type)
             {
@@ -57,7 +59,7 @@ namespace Rdd.Domain.Json
             var result = new JsonObject();
             foreach (var kvp in obj)
             {
-                result.Content.Add(kvp.Key.ToString(), Parse(kvp.Value));
+                result.Content.Add(kvp.Key, Parse(kvp.Value));
             }
             return result;
         }

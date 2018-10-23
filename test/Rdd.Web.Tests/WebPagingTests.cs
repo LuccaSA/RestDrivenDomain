@@ -4,7 +4,6 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
-using Rdd.Web.Querying;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,7 +53,7 @@ namespace Rdd.Web.Tests
                 await _storage.SaveChangesAsync();
 
                 var query = new Query<User> { Page = new Page(0, 1001, 1000) };
-                ISelection<User> result = await _collection.GetAsync(query);
+                await _collection.GetAsync(query);
             });
         }
 

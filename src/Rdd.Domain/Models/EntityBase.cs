@@ -1,17 +1,15 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rdd.Domain.Models
 {
-    public abstract class EntityBase<TKey> : IEntityBase<TKey>
+    public class EntityBase<TKey> : IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public virtual TKey Id { get; set; }
-        public virtual string Name { get; set; }
+        public TKey Id { get; set; }
+        public string Name { get; set; }
 
-        [NotMapped]
-        public virtual string Url { get; set; }
+        public string Url { get; }
 
-        public virtual object GetId() => Id;
+        object IPrimaryKey.GetId() => Id;
     }
 }

@@ -16,19 +16,19 @@ namespace Rdd.Domain.Tests
         [Fact]
         public void PropertySelector_ShouldNotFailWhenParsingStringDictionaries()
         {
-            var ps = new ExpressionParser().Parse<EntityWithDictionaries>("stringToString.aProperty");
+            new ExpressionParser().Parse<EntityWithDictionaries>("stringToString.aProperty");
         }
 
         [Fact]
         public void PropertySelector_ShouldNotFailWhenParsingIntDictionaries()
         {
-            var ps = new ExpressionParser().Parse<EntityWithDictionaries>("stringToInt.aProperty");
+            new ExpressionParser().Parse<EntityWithDictionaries>("stringToInt.aProperty");
         }
 
         [Fact]
         public void PropertySelector_ShouldNotFailWhenParsingObjectDictionaries()
         {
-            var ps = new ExpressionParser().Parse<EntityWithDictionaries>("stringToObject.aProperty");
+            new ExpressionParser().Parse<EntityWithDictionaries>("stringToObject.aProperty");
         }
 
         [Fact]

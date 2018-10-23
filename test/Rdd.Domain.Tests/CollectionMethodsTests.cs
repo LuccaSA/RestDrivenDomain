@@ -43,8 +43,7 @@ namespace Rdd.Domain.Tests
             var rightService = new Mock<IRightExpressionsHelper<User>>();
             rightService.Setup(s => s.GetFilter(It.IsAny<Query<User>>())).Returns(trueFilter);
 
-            var id = Guid.NewGuid();
-            var user = new User { Id = id };
+            var id = Guid.NewGuid(); 
             var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object);
             var users = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var app = new UsersAppController(_fixture.InMemoryStorage, users);
@@ -66,7 +65,7 @@ namespace Rdd.Domain.Tests
             await users.CreateAsync(candidate, query);
         }
 
-        class InstanciatorImplementation : IInstanciator<UserWithParameters>
+        private class InstanciatorImplementation : IInstanciator<UserWithParameters>
         {
             public UserWithParameters InstanciateNew(ICandidate<UserWithParameters> candidate)
             {
@@ -125,7 +124,7 @@ namespace Rdd.Domain.Tests
             Assert.True(true);
         }
 
-        class OverrideObjectPatcher<T> : ObjectPatcher<T>
+        private class OverrideObjectPatcher<T> : ObjectPatcher<T>
             where T : class, new()
         {
             public OverrideObjectPatcher(IPatcherProvider provider) : base(provider, new ReflectionHelper())

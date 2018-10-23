@@ -59,7 +59,7 @@ namespace Rdd.Domain.Tests
         }
 
         [Fact]
-        public void RegexReplace02houldWork()
+        public void RegexReplace02ShouldWork()
         {
             var exp = "p => p.Users.Select(pp => Convert(pp.Id))";
 
@@ -69,7 +69,7 @@ namespace Rdd.Domain.Tests
         }
 
         [Fact]
-        public void RegexReplace03houldWork()
+        public void RegexReplace03ShouldWork()
         {
             var exp = "p => p.Select(pp => Convert(pp.Users.Select(ppp => ppp.LegalEntity.Country)))";
 

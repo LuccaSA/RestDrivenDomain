@@ -2,7 +2,7 @@
 
 namespace Rdd.Domain.Helpers.Expressions.Equality
 {
-    class ExpressionHashCodeResolver : ExpressionVisitor
+    internal class ExpressionHashCodeResolver : ExpressionVisitor
     {
         private int _runningTotal;
 
@@ -15,7 +15,11 @@ namespace Rdd.Domain.Helpers.Expressions.Equality
 
         public override Expression Visit(Expression node)
         {
-            if (null == node) return null;
+            if (node == null)
+            {
+                return null;
+            }
+
             var constantValue = ConstantValue.New(node);
             if (constantValue != null)
             {

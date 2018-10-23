@@ -1,6 +1,6 @@
 ﻿namespace Rdd.Domain.Tests.Models
 {
-    interface ICodable
+    internal interface ICodable
     {
         string Code { get; }
     }
