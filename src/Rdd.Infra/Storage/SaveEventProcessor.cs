@@ -12,9 +12,9 @@ namespace Rdd.Infra.Storage
         {
             IEnumerable<EntityEntry<T>> entityEntries = changeTracker.Entries<T>().ToList();
 
-            var added = entityEntries.Where(e => e.State == EntityState.Added).Select(e => e.Entity);
-            var modified = entityEntries.Where(e => e.State == EntityState.Modified).Select(e => e.Entity);
-            var deleted = entityEntries.Where(e => e.State == EntityState.Deleted).Select(e => e.Entity);
+            var added = entityEntries.Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
+            var modified = entityEntries.Where(e => e.State == EntityState.Modified).Select(e => e.Entity).ToList();
+            var deleted = entityEntries.Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
 
             var payload = new SavedEntries<T>(added, modified, deleted);
 
