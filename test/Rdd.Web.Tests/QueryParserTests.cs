@@ -95,6 +95,21 @@ namespace Rdd.Web.Tests
         }
 
         [Theory]
+        [InlineData(HttpVerbs.Get, 0, 10)]
+        [InlineData(HttpVerbs.Post, 0, 0)]
+        [InlineData(HttpVerbs.Put, 0, 0)]
+        [InlineData(HttpVerbs.Delete, 0, 0)]
+        public void DefaultPaging(HttpVerbs verb, int offset, int limit)
+        {
+            var dico = new Dictionary<string, StringValues>();
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(verb, dico, true);
+
+            Assert.Equal(offset, query.Page.Offset);
+            Assert.Equal(limit, query.Page.Limit);
+        }
+
+        [Theory]
+        [InlineData("1", 0, 10)]
         [InlineData("0,10", 0, 10)]
         [InlineData("-0,10", 0, 10)]
         [InlineData("10,20", 10, 20)]
