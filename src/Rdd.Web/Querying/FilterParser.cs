@@ -1,18 +1,20 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using NExtends.Primitives.DateTimes;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Helpers;
 using Rdd.Infra.Web.Models;
+using Rdd.Web.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Rdd.Infra.Helpers;
-using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Querying
 {
@@ -35,13 +37,11 @@ namespace Rdd.Web.Querying
 
         private readonly IStringConverter _stringConverter;
         private readonly IExpressionParser _expressionParser;
-        private readonly IOptions<RddOptions> _rddOptions;
 
-        public FilterParser(IStringConverter stringConverter, IExpressionParser expressionParser, IOptions<RddOptions> rddOptions)
+        public FilterParser(IStringConverter stringConverter, IExpressionParser expressionParser)
         {
             _stringConverter = stringConverter ?? throw new ArgumentNullException(nameof(stringConverter));
             _expressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
-            _rddOptions = rddOptions;
         }
 
         public virtual WebFilter<TEntity> Parse<TEntity>(string key, string value)
@@ -55,14 +55,26 @@ namespace Rdd.Web.Querying
             return new WebFilter<TEntity>(chain, operand, values);
         }
 
-        public Filter<TEntity> Parse<TEntity>(HttpRequest request, IWebFilterConverter<TEntity> webFilterConverter) where TEntity : class
-        {
-            var filters = request.Query
-                .Where(kv => !String.IsNullOrWhiteSpace(kv.Key)
-                    && !Reserved.IsKeyword(kv.Key) 
-                    && !_rddOptions.Value.IgnoredFilters.Contains(kv.Key))
-                .Select(kv => Parse<TEntity>(kv.Key, kv.Value));
+        public Filter<TEntity> Parse<TEntity>(HttpRequest request, IWebFilterConverter<TEntity> webFilterConverter)
+            where TEntity : class
+            => Parse(request, null, webFilterConverter);
 
+        public Filter<TEntity> Parse<TEntity>(HttpRequest request, ActionDescriptor action, IWebFilterConverter<TEntity> webFilterConverter)
+            where TEntity : class
+        {
+            var keyValuePairs = request.Query.Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && !Reserved.IsKeyword(kv.Key));
+
+            if (action != null)
+            {
+                var queryActionParameters = action.Parameters
+                    .Where(p => p.BindingInfo == null || p.BindingInfo.BindingSource == BindingSource.Query)
+                    .Select(p => p.Name)
+                    .ToHashSet();
+
+                keyValuePairs = keyValuePairs.Where(kvp => !queryActionParameters.Contains(kvp.Key));
+            }
+
+            var filters = keyValuePairs.Select(kv => Parse<TEntity>(kv.Key, kv.Value));
             return webFilterConverter.ToExpression(filters);
         }
 

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
 using System;
-using System.Collections.Generic;
 
 namespace Rdd.Web.Querying
 {
@@ -27,13 +27,16 @@ namespace Rdd.Web.Querying
         }
 
         public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
+            => Parse(request, null, isCollectionCall);
+
+        public virtual Query<TEntity> Parse(HttpRequest request, ActionDescriptor action, bool isCollectionCall)
         {
             var query = new Query<TEntity>
             (
                  _fieldsParser.Parse<TEntity>(request, isCollectionCall),
                  _orderByParser.Parse<TEntity>(request),
                  _pagingParser.Parse(request),
-                 _filterParser.Parse(request, _webFilterConverter),
+                 _filterParser.Parse(request, action, _webFilterConverter),
                 GetVerb(request)
             );
 
