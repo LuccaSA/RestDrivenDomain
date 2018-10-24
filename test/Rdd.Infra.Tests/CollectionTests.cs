@@ -22,12 +22,13 @@ namespace Rdd.Infra.Tests
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
+                var unitOfWork = new UnitOfWork(context, null);
                 var storage = new EFStorageService(context);
                 var repo = new UsersRepository(storage, _fixture.RightsService);
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.Id).ToList();
                 repo.AddRange(users);
-                await storage.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
 
                 var sequence = users.Select(i => i.Id).ToList();
 
@@ -42,13 +43,14 @@ namespace Rdd.Infra.Tests
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
+                var unitOfWork = new UnitOfWork(context, null);
                 var storage = new EFStorageService(context);
                 var repo = new UsersRepository(storage, _fixture.RightsService);
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.FriendId).ThenBy(u => u.Id).ToList();
                 repo.AddRange(users);
-                await storage.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
 
                 var sequence = users.Select(i => i.Id).ToList();
 
