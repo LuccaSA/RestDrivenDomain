@@ -138,9 +138,6 @@ namespace Rdd.Web.Helpers
         {
             var services = rddBuilder.Services;
 
-            services.TryAddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.TryAddSingleton<IPluralizationService, PluralizationService>();
-
             services.AddHttpContextAccessor();
             services.TryAddSingleton<IUrlProvider, UrlProvider>();
 

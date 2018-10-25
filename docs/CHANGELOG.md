@@ -1,5 +1,7 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: ``UrlProvider`` implementation has been completely changed to gain both accuracy and performances.
+ - **Removed**: `IPluralizationService`, `Inflector.NetStandard` dependency and `IUrlProvider.GetApiControllerName(Type workingType)`, `IUrlProvider.GetEntityApiUri(Type workingType, IPrimaryKey entity)`.
  - **Modification**: `IStorageService` and `IUnitOfWork` are now decoupled
  - **Modification**: ``ExecuteScriptAsync()`` on EfStorageService now is returns ``int`` directly
  - **Modification**: ``ValidateEntity`` on RestCollection now is ``ValidateEntityAsync`` and returns a bool

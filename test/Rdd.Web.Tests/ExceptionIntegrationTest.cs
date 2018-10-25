@@ -45,8 +45,8 @@ namespace Rdd.Web.Tests
         [MemberData(nameof(ExceptionCases))]
         public async Task HttpCodeExceptionOption(Exception exception, HttpStatusCode expected)
         {
-            var repo = new Mock<IRepository<ExchangeRate>>();
-            repo.Setup(r => r.GetAsync(It.IsAny<Query<ExchangeRate>>()))
+            var repo = new Mock<IRepository<ExchangeRate2>>();
+            repo.Setup(r => r.GetAsync(It.IsAny<Query<ExchangeRate2>>()))
                 .Throws(exception);
 
             SetupServer(service =>
@@ -66,7 +66,7 @@ namespace Rdd.Web.Tests
                     };
                 });
             });
-            var response = await _client.GetAsync("/OpenExchangeRate/");
+            var response = await _client.GetAsync("/OpenExchangeRates/");
             Assert.Equal(expected, response.StatusCode);
         }
 

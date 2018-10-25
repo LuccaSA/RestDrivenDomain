@@ -33,8 +33,6 @@ namespace Rdd.Web.Tests.ServerMock
                 })
                 .WithDefaultRights(RightDefaultMode.Open);
 
-            services.AddScoped<ExchangeRateController>();
-
             services.AddMvc();
 
             services.AddLogging();
