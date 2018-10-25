@@ -85,7 +85,7 @@ namespace Rdd.Web.Serialization.UrlProviders
                     return controllerType.GenericTypeArguments[0];
                 }
 
-                if (typeof(WebController<,,>) == definition || typeof(ReadOnlyWebController<,>) == definition)
+                if (typeof(WebController<,,,>) == definition || typeof(ReadOnlyWebController<,,>) == definition)
                 {
                     return controllerType.GenericTypeArguments[1];
                 }

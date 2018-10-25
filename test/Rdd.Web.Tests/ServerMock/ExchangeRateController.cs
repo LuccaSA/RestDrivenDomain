@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
+using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Controllers;
 using Rdd.Web.Querying;
 using System.Threading.Tasks;
@@ -11,8 +13,8 @@ namespace Rdd.Web.Tests.ServerMock
     [ApiExplorerSettings(IgnoreApi = false)]
     public class ExchangeRate3Controller : ReadOnlyWebController<ExchangeRate, int>
     {
-        public ExchangeRate3Controller(IAppController<ExchangeRate, int> appController, IQueryParser<ExchangeRate> queryParser)
-            : base(appController, queryParser)
+        public ExchangeRate3Controller(IReadOnlyRepository<ExchangeRate, int> repository, IQueryParser<ExchangeRate, int> queryParser, HttpQuery<ExchangeRate, int> httpQuery)
+            : base(repository, queryParser, httpQuery)
         {
         }
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
@@ -24,8 +26,8 @@ namespace Rdd.Web.Tests.ServerMock
     {
         public const string RouteName = "OpenExchangeRates";
 
-        public ExchangeRate2Controller(IAppController<ExchangeRate2, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate2> queryParser)
-            : base(appController, candidateParser, queryParser)
+        public ExchangeRate2Controller(IAppController<ExchangeRate2, int> appController, IRepository<ExchangeRate2, int> repository, ICandidateParser candidateParser, IQueryParser<ExchangeRate2, int> queryParser, HttpQuery<ExchangeRate2, int> query)
+            : base(appController, repository, candidateParser, queryParser, query)
         {
         }
         protected override HttpVerbs AllowedHttpVerbs => HttpVerbs.All;
@@ -34,8 +36,8 @@ namespace Rdd.Web.Tests.ServerMock
     [Route("ExchangeRates")]
     public class ExchangeRateController : WebController<ExchangeRate, int>
     {
-        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser)
-            : base(appController, candidateParser, queryParser)
+        public ExchangeRateController(IAppController<ExchangeRate, int> appController, IRepository<ExchangeRate, int> repository, ICandidateParser candidateParser, IQueryParser<ExchangeRate, int> queryParser, HttpQuery<ExchangeRate, int> query)
+            : base(appController, repository, candidateParser, queryParser, query)
         {
         }
 

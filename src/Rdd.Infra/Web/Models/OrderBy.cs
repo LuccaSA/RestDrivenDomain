@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Rdd.Domain.Models.Querying
+namespace Rdd.Infra.Web.Models
 {
     public enum SortDirection { Ascending, Descending };
 

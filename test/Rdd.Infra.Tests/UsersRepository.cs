@@ -1,15 +1,16 @@
-﻿using Rdd.Domain.Models.Querying;
-using Rdd.Domain.Rights;
-using Rdd.Domain.Tests.Models;
+﻿using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Rights;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
+using System;
 using System.Linq;
 
 namespace Rdd.Infra.Tests
 {
-    public class UsersRepository : OpenRepository<User>
+    public class UsersRepository : OpenRepository<User, Guid>
     {
-        public UsersRepository(IStorageService storageService, IRightExpressionsHelper<User> rightsService)
-        : base(storageService, rightsService) { }
+        public UsersRepository(IStorageService storageService, IRightExpressionsHelper<User> rightsService, HttpQuery<User, Guid> httpQuery)
+        : base(storageService, rightsService, httpQuery) { }
 
         protected override IQueryable<User> ApplyOrderBys(IQueryable<User> entities, Query<User> query)
         {

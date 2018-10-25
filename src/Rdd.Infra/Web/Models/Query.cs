@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Rdd.Domain.Models.Querying
+namespace Rdd.Infra.Web.Models
 {
     public class Query<TEntity>
         where TEntity : class

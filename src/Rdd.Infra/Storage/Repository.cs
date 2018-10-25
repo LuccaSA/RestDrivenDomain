@@ -1,14 +1,17 @@
 ﻿using Rdd.Domain;
-using Rdd.Domain.Rights;
+using Rdd.Infra.Rights;
+using Rdd.Infra.Web.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Rdd.Infra.Storage
 {
-    public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
-        where TEntity : class
+    public class Repository<TEntity, TKey> : ReadOnlyRepository<TEntity, TKey>, IRepository<TEntity, TKey>
+        where TEntity : class, IPrimaryKey<TKey>
+        where TKey : IEquatable<TKey>
     {
-        public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
-            : base(storageService, rightExpressionsHelper) { }
+        public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper, HttpQuery<TEntity, TKey> httpQuery)
+            : base(storageService, rightExpressionsHelper, httpQuery) { }
 
         public virtual void Add(TEntity entity)
         {

@@ -1,10 +1,10 @@
-﻿using Rdd.Domain.Exceptions;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Expressions;
-using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace Rdd.Web.Querying
 {

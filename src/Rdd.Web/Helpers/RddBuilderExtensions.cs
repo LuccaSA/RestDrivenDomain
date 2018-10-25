@@ -5,7 +5,7 @@ using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
-using Rdd.Domain.Rights;
+using Rdd.Infra.Rights;
 using Rdd.Web.Models;
 using System;
 
@@ -37,37 +37,27 @@ namespace Rdd.Web.Helpers
             return rddBuilder;
         }
 
-        public static RddBuilder AddReadOnlyRepository<TRepository, TEntity>(this RddBuilder rddBuilder)
-            where TRepository : class, IReadOnlyRepository<TEntity>
-            where TEntity : class
-        {
-            rddBuilder.Services
-                .AddScoped<IReadOnlyRepository<TEntity>, TRepository>(s => s.GetRequiredService<TRepository>())
-                .AddScoped<TRepository>();
-
-            return rddBuilder;
-        }
-
-        public static RddBuilder AddRepository<TRepository, TEntity>(this RddBuilder rddBuilder)
-            where TRepository : class, IRepository<TEntity>
-            where TEntity : class
-        {
-            rddBuilder.Services
-                .AddScoped<IRepository<TEntity>, TRepository>(s => s.GetRequiredService<TRepository>())
-                .AddScoped<IReadOnlyRepository<TEntity>, TRepository>(s => s.GetRequiredService<TRepository>())
-                .AddScoped<TRepository>();
-
-            return rddBuilder;
-        }
-
-        public static RddBuilder AddReadOnlyRestCollection<TCollection, TEntity, TKey>(this RddBuilder rddBuilder)
-            where TCollection : class, IReadOnlyRestCollection<TEntity, TKey>
-            where TEntity : class, IEntityBase<TKey>
+        public static RddBuilder AddReadOnlyRepository<TRepository, TEntity, TKey>(this RddBuilder rddBuilder)
+            where TRepository : class, IReadOnlyRepository<TEntity, TKey>
+            where TEntity : class, IPrimaryKey<TKey>
             where TKey : IEquatable<TKey>
         {
             rddBuilder.Services
-                .AddScoped<IReadOnlyRestCollection<TEntity, TKey>, TCollection>(s => s.GetRequiredService<TCollection>())
-                .AddScoped<TCollection>();
+                .AddScoped<IReadOnlyRepository<TEntity, TKey>, TRepository>(s => s.GetRequiredService<TRepository>())
+                .AddScoped<TRepository>();
+
+            return rddBuilder;
+        }
+
+        public static RddBuilder AddRepository<TRepository, TEntity, TKey>(this RddBuilder rddBuilder)
+            where TRepository : class, IRepository<TEntity, TKey>
+            where TEntity : class, IPrimaryKey<TKey>
+            where TKey : IEquatable<TKey>
+        {
+            rddBuilder.Services
+                .AddScoped<IRepository<TEntity, TKey>, TRepository>(s => s.GetRequiredService<TRepository>())
+                .AddScoped<IReadOnlyRepository<TEntity, TKey>, TRepository>(s => s.GetRequiredService<TRepository>())
+                .AddScoped<TRepository>();
 
             return rddBuilder;
         }
@@ -79,20 +69,7 @@ namespace Rdd.Web.Helpers
         {
             rddBuilder.Services
                 .AddScoped<IRestCollection<TEntity, TKey>, TCollection>(s => s.GetRequiredService<TCollection>())
-                .AddScoped<IReadOnlyRestCollection<TEntity, TKey>, TCollection>(s => s.GetRequiredService<TCollection>())
                 .AddScoped<TCollection>();
-
-            return rddBuilder;
-        }
-
-        public static RddBuilder AddReadOnlyAppController<TController, TEntity, TKey>(this RddBuilder rddBuilder)
-            where TController : class, IReadOnlyAppController<TEntity, TKey>
-            where TEntity : class, IEntityBase<TKey>
-            where TKey : IEquatable<TKey>
-        {
-            rddBuilder.Services
-                .AddScoped<IReadOnlyAppController<TEntity, TKey>, TController>(s => s.GetRequiredService<TController>())
-                .AddScoped<TController>();
 
             return rddBuilder;
         }
@@ -104,7 +81,6 @@ namespace Rdd.Web.Helpers
         {
             rddBuilder.Services
                 .AddScoped<IAppController<TEntity, TKey>, TController>(s => s.GetRequiredService<TController>())
-                .AddScoped<IReadOnlyAppController<TEntity, TKey>, TController>(s => s.GetRequiredService<TController>())
                 .AddScoped<TController>();
 
             return rddBuilder;

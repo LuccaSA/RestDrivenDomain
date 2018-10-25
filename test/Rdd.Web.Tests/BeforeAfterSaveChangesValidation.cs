@@ -1,4 +1,3 @@
-﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -6,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Rdd.Application;
 using Rdd.Domain.Json;
-using Rdd.Domain.Models.Querying;
-using Rdd.Domain.Rights;
+using Rdd.Infra.Rights;
 using Rdd.Infra.Storage;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using Rdd.Web.Tests.ServerMock;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -47,7 +46,7 @@ namespace Rdd.Web.Tests
             var app = provider.GetRequiredService<IAppController<ExchangeRate, int>>();
             var create = new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<ExchangeRate, int>(@"{ ""name"": ""new name"" }");
 
-            ExchangeRate created = await app.CreateAsync(create, new Query<ExchangeRate>());
+            ExchangeRate created = await app.CreateAsync(create);
 
             var onSave = provider.GetRequiredService<OnExchangeRateSave>();
             var onAnotherSave = provider.GetRequiredService<OnAnotherUserSave>();
@@ -63,7 +62,7 @@ namespace Rdd.Web.Tests
             Assert.Equal(0, onAnotherSave.CallsCount);
 
             var update = new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<ExchangeRate, int>(@"{ ""name"": ""other name"" }");
-            var updated = await app.UpdateByIdAsync(created.Id, update, new Query<ExchangeRate>());
+            var updated = await app.UpdateByIdAsync(created.Id, update);
              
             Assert.Equal(2, onSave.AddCount);
             Assert.Equal(2, onSave.UpdateCount);

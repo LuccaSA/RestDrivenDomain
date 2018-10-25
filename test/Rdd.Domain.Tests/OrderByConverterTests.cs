@@ -1,5 +1,6 @@
 ﻿using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

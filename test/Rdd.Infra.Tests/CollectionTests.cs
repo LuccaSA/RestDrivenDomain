@@ -2,6 +2,8 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -24,7 +26,7 @@ namespace Rdd.Infra.Tests
             {
                 var unitOfWork = new UnitOfWork(context, null);
                 var storage = new EFStorageService(context);
-                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var repo = new UsersRepository(storage, _fixture.RightsService, new HttpQuery<User, Guid>());
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.Id).ToList();
                 repo.AddRange(users);
@@ -32,7 +34,7 @@ namespace Rdd.Infra.Tests
 
                 var sequence = users.Select(i => i.Id).ToList();
 
-                var result = (await collection.GetAsync(new Query<User>())).Items.ToList();
+                var result = (await repo.GetAsync()).Items.ToList();
 
                 Assert.Equal(sequence, result.Select(i => i.Id).ToList());
             });
@@ -45,7 +47,8 @@ namespace Rdd.Infra.Tests
             {
                 var unitOfWork = new UnitOfWork(context, null);
                 var storage = new EFStorageService(context);
-                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var query = new HttpQuery<User, Guid> { OrderBys = new List<OrderBy<User>> { OrderBy<User>.Ascending(u => u.FriendId), OrderBy<User>.Ascending(u => u.Id) } };
+                var repo = new UsersRepository(storage, _fixture.RightsService, query);
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.FriendId).ThenBy(u => u.Id).ToList();
@@ -54,8 +57,7 @@ namespace Rdd.Infra.Tests
 
                 var sequence = users.Select(i => i.Id).ToList();
 
-                var query = new Query<User> { OrderBys = new List<OrderBy<User>> { OrderBy<User>.Ascending(u => u.FriendId), OrderBy<User>.Ascending(u => u.Id) } };
-                var result = (await collection.GetAsync(query)).Items.ToList();
+                var result = (await repo.GetAsync()).Items.ToList();
 
                 Assert.Equal(sequence, result.Select(i => i.Id).ToList());
             });

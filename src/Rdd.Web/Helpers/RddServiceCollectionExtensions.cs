@@ -14,15 +14,15 @@ using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
-using Rdd.Domain.Rights;
 using Rdd.Infra.Helpers;
+using Rdd.Infra.Rights;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Serialization.Serializers;
 using Rdd.Web.Serialization.UrlProviders;
 using System;
-using System.Globalization;
 
 namespace Rdd.Web.Helpers
 {
@@ -70,18 +70,17 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IFilterParser, FilterParser>();
             services.TryAddSingleton<IFieldsParser, FieldsParser>();
             services.TryAddSingleton<IOrderByParser, OrderByParser>();
-            services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
+            services.TryAddSingleton(typeof(IQueryParser<,>), typeof(QueryParser<,>));
+            services.TryAddScoped(typeof(HttpQuery<,>));
 
             //scoped services
             services.TryAddScoped<DbContext>(p => p.GetRequiredService<TDbContext>());
             services.TryAddScoped<IStorageService, EFStorageService>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
-            services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
+            services.TryAddScoped(typeof(IReadOnlyRepository<,>), typeof(ReadOnlyRepository<,>));
+            services.TryAddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
-            services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));
             services.TryAddScoped(typeof(IAppController<,>), typeof(AppController<,>));
             
             // closed by default, overridable with AddRddDefaultRights

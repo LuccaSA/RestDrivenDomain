@@ -1,4 +1,4 @@
-﻿namespace Rdd.Domain.Rights
+﻿namespace Rdd.Infra.Rights
 {
     public enum RightDefaultMode
     {

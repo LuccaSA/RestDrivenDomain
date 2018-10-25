@@ -1,5 +1,7 @@
-﻿using Rdd.Domain.Rights;
-using Rdd.Domain.Tests.Models;
+﻿using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Rights;
+using Rdd.Infra.Web.Models;
+using System;
 using Xunit;
 
 namespace Rdd.Domain.Tests
@@ -9,10 +11,10 @@ namespace Rdd.Domain.Tests
         [Fact]
         public void RightExpressionsHelper()
         {
-            var filter = new OpenRightExpressionsHelper<User>().GetFilter(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
+            var filter = new OpenRightExpressionsHelper<User>().GetFilter(new HttpQuery<User, Guid> { Verb = Helpers.HttpVerbs.Get });
             Assert.True(filter.Compile()(null));
 
-            filter = new ClosedRightExpressionsHelper<User>().GetFilter(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
+            filter = new ClosedRightExpressionsHelper<User>().GetFilter(new HttpQuery<User, Guid> { Verb = Helpers.HttpVerbs.Get });
             Assert.False(filter.Compile()(null));
         }
     }

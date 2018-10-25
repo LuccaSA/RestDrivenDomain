@@ -63,7 +63,7 @@ namespace Rdd.Web.Tests.Serialization
             services.AddSingleton<IFilterParser, FilterParser>();
             services.AddSingleton<IFieldsParser, FieldsParser>();
             services.AddSingleton<IOrderByParser, OrderByParser>();
-            services.AddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
+            services.AddSingleton(typeof(IQueryParser<,>), typeof(QueryParser<,>));
 
             var urlProvider = new Mock<IUrlProvider>();
             urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));

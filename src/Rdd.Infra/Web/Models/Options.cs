@@ -1,11 +1,9 @@
-﻿namespace Rdd.Domain.Models.Querying
+﻿namespace Rdd.Infra.Web.Models
 {
     public class Options
     {
         public bool NeedCount { get; set; }
-
         public bool NeedEnumeration { get; set; }
-
         public bool CheckRights { get; set; }
 
         public Options()

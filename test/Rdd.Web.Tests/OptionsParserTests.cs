@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Rdd.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 using Rdd.Web.Tests.Models;
 using Xunit;
 
@@ -12,7 +11,7 @@ namespace Rdd.Web.Tests
         {
             var request = HttpVerbs.Get.NewRequest(("fields", "collection.count"));
 
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User, int>().Parse(request, true);
 
             Assert.True(query.Options.NeedCount);
             Assert.False(query.Options.NeedEnumeration);

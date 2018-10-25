@@ -1,14 +1,17 @@
-﻿using Rdd.Domain.Models.Querying;
+﻿using Rdd.Domain.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Rdd.Domain
 {
-    public interface IReadOnlyRepository<TEntity>
-        where TEntity : class
+    public interface IReadOnlyRepository<TEntity, TKey>
+        where TEntity : class, IPrimaryKey<TKey>
+        where TKey : IEquatable<TKey>
     {
-        Task<int> CountAsync(Query<TEntity> query);
-        Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query);
-        Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query);
+        Task<int> CountAsync();
+        Task<ISelection<TEntity>> GetAsync();
+        Task<TEntity> GetAsync(TKey id);
+        Task<IEnumerable<TEntity>> GetAsync(IEnumerable<TKey> ids);
     }
 }

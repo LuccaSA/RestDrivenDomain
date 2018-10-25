@@ -3,9 +3,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
-using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Rights;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
 using System;
 
 namespace Rdd.Domain.Tests
@@ -18,7 +19,7 @@ namespace Rdd.Domain.Tests
         public IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
         public IInstanciator<User> Instanciator { get; private set; }
         public InMemoryStorageService InMemoryStorage { get; private set; }
-        public IRepository<User> UsersRepo { get; private set; }
+        public IRepository<User, Guid> UsersRepo { get; private set; }
 
         public DefaultFixture()
         {
@@ -37,7 +38,7 @@ namespace Rdd.Domain.Tests
             RightsService = new OpenRightExpressionsHelper<User>();
             Instanciator = new DefaultInstanciator<User>();
             InMemoryStorage = new InMemoryStorageService();
-            UsersRepo = new Repository<User>(InMemoryStorage, RightsService);
+            UsersRepo = new Repository<User, Guid>(InMemoryStorage, RightsService, new HttpQuery<User, Guid>());
         }
 
         public void Dispose() { }

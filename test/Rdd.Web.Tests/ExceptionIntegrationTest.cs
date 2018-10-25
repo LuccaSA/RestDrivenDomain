@@ -9,6 +9,7 @@ using Moq;
 using Rdd.Domain;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Helpers;
 using Rdd.Web.Tests.ServerMock;
 using Xunit;
@@ -45,8 +46,8 @@ namespace Rdd.Web.Tests
         [MemberData(nameof(ExceptionCases))]
         public async Task HttpCodeExceptionOption(Exception exception, HttpStatusCode expected)
         {
-            var repo = new Mock<IRepository<ExchangeRate2>>();
-            repo.Setup(r => r.GetAsync(It.IsAny<Query<ExchangeRate2>>()))
+            var repo = new Mock<IRepository<ExchangeRate2, int>>();
+            repo.Setup(r => r.GetAsync())
                 .Throws(exception);
 
             SetupServer(service =>

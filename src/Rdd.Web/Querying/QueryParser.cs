@@ -2,14 +2,15 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
-using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
+using Rdd.Infra.Web.Models;
 using System;
 
 namespace Rdd.Web.Querying
 {
-    public class QueryParser<TEntity> : IQueryParser<TEntity>
-        where TEntity : class
+    public class QueryParser<TEntity, TKey> : IQueryParser<TEntity, TKey>
+        where TEntity : class, IPrimaryKey<TKey>
+        where TKey : IEquatable<TKey>
     {
         private readonly IWebFilterConverter<TEntity> _webFilterConverter;
         private readonly IPagingParser _pagingParser;
@@ -26,12 +27,12 @@ namespace Rdd.Web.Querying
             _orderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
         }
 
-        public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
+        public virtual HttpQuery<TEntity, TKey> Parse(HttpRequest request, bool isCollectionCall)
             => Parse(request, null, isCollectionCall);
 
-        public virtual Query<TEntity> Parse(HttpRequest request, ActionDescriptor action, bool isCollectionCall)
+        public virtual HttpQuery<TEntity, TKey> Parse(HttpRequest request, ActionDescriptor action, bool isCollectionCall)
         {
-            var query = new Query<TEntity>
+            var query = new HttpQuery<TEntity, TKey>
             (
                  _fieldsParser.Parse<TEntity>(request, isCollectionCall),
                  _orderByParser.Parse<TEntity>(request),

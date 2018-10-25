@@ -1,16 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rdd.Domain;
 using Rdd.Domain.Json;
 using Rdd.Domain.Models;
-using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
-using Rdd.Domain.Rights;
+using Rdd.Infra.Rights;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Tests.ServerMock;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -40,6 +40,7 @@ namespace Rdd.Web.Tests
             await dbContext.SaveChangesAsync();
 
             // act
+            var repository = provider.GetRequiredService<IRepository<ExchangeRate, int>>();
             var collection = provider.GetRequiredService<IRestCollection<ExchangeRate, int>>();
 
             var candidate = provider.GetRequiredService<ICandidateParser>().Parse<ExchangeRate, int>(@"{ ""name"": ""something""}");
@@ -47,11 +48,11 @@ namespace Rdd.Web.Tests
             ExchangeRate ok;
             try
             {
-                ok = await collection.UpdateByIdAsync(42, candidate, new Query<ExchangeRate>());
+                ok = await collection.UpdateByIdAsync(42, candidate);
             }
             catch (Exception)
             {
-                ok = await collection.GetByIdAsync(42, new Query<ExchangeRate>());
+                ok = await repository.GetAsync(42);
             }
 
             // assert
@@ -67,7 +68,7 @@ namespace Rdd.Web.Tests
 
         public class ValidationFailCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationFailCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
+            public ValidationFailCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
 
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(false);
@@ -75,7 +76,7 @@ namespace Rdd.Web.Tests
 
         public class ValidationOkCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationOkCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
+            public ValidationOkCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
 
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(true);
@@ -83,7 +84,7 @@ namespace Rdd.Web.Tests
 
         public class ValidationThrowCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationThrowCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
+            public ValidationThrowCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
 
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => throw new NotImplementedException();
@@ -91,7 +92,7 @@ namespace Rdd.Web.Tests
 
         public class ValidationThrowAsyncCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationThrowAsyncCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
+            public ValidationThrowAsyncCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
                 : base(repository, patcher, instanciator) { }
 
             protected override async Task<bool> ValidateEntityAsync(TEntity entity)

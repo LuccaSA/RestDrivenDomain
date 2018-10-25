@@ -6,8 +6,8 @@ using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
-using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Rights;
 using Rdd.Infra.Storage;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
@@ -40,16 +40,12 @@ namespace Rdd.Web.Tests.Services
             Assert.NotNull(provider.GetRequiredService<IStringConverter>());
             Assert.NotNull(provider.GetRequiredService<IExpressionParser>());
             Assert.NotNull(provider.GetRequiredService<ICandidateParser>());
-
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
-
-            Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate>>());
-            Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate, int>>());
+            Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IPatcher<ExchangeRate>>());
             Assert.NotNull(provider.GetRequiredService<IInstanciator<ExchangeRate>>());
-            Assert.NotNull(provider.GetRequiredService<IReadOnlyRestCollection<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IRestCollection<ExchangeRate, int>>());
-            Assert.NotNull(provider.GetRequiredService<IReadOnlyAppController<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IAppController<ExchangeRate, int>>());
         }
     }

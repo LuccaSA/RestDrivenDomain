@@ -1,7 +1,7 @@
 ﻿using Rdd.Domain.Exceptions;
 using System;
 
-namespace Rdd.Domain.Models.Querying
+namespace Rdd.Infra.Web.Models
 {
     public class Page
     { 

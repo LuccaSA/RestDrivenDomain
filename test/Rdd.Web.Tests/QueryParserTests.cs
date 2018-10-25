@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Rdd.Web.Helpers;
 using Xunit;
+using Rdd.Infra.Web.Models;
+using System;
 
 namespace Rdd.Web.Tests
 {
@@ -19,7 +21,7 @@ namespace Rdd.Web.Tests
         public void CountParseHasOptionImplications()
         {
             var request = HttpVerbs.Get.NewRequest(("fields", "collection.count")); 
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User, int>().Parse(request, true);
 
             Assert.True(query.Options.NeedCount);
             Assert.False(query.Options.NeedEnumeration);
@@ -31,7 +33,7 @@ namespace Rdd.Web.Tests
             var request = HttpVerbs.Get.NewRequest(   ("", "oulala") );
 
             var options = new RddOptions();
-            var parser = QueryParserHelper.GetQueryParser<User>(options);
+            var parser = QueryParserHelper.GetQueryParser<User, int>(options);
 
             var query = parser.Parse(request, true);
         }
@@ -44,7 +46,7 @@ namespace Rdd.Web.Tests
         [InlineData(HttpVerbs.None)]
         public void CorrectVerb(HttpVerbs input)
         {
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(input.NewRequest(), true);
+            var query = QueryParserHelper.GetQueryParser<User, int>().Parse(input.NewRequest(), true);
 
             Assert.Equal(query.Verb, input);
         }
@@ -61,7 +63,7 @@ namespace Rdd.Web.Tests
         public void CorrectOrderBys(string input, SortDirection direction, string output)
         {
             var request = HttpVerbs.Get.NewRequest(("orderby", input));
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User, int>().Parse(request, true);
 
             Assert.Single(query.OrderBys);
             Assert.Equal(direction, query.OrderBys[0].Direction);
@@ -87,7 +89,7 @@ namespace Rdd.Web.Tests
         public void IncorrectOrderBys(string input)
         {
             var request = HttpVerbs.Get.NewRequest(("orderby", input));
-            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User, int>().Parse(request, true));
         }
 
         [Theory]
@@ -98,7 +100,7 @@ namespace Rdd.Web.Tests
         public void DefaultPaging(HttpVerbs verb, int offset, int limit)
         {
             var request = HttpRequestHelper.NewRequest(verb);
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User, int>().Parse(request, true);
 
             Assert.Equal(offset, query.Page.Offset);
             Assert.Equal(limit, query.Page.Limit);
@@ -114,7 +116,7 @@ namespace Rdd.Web.Tests
         {
             var request = HttpVerbs.Get.NewRequest(("paging", input)); 
 
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User, int>().Parse(request, true);
 
             Assert.Equal(offset, query.Page.Offset);
             Assert.Equal(limit, query.Page.Limit);
@@ -130,7 +132,7 @@ namespace Rdd.Web.Tests
         {
             var request = HttpVerbs.Get.NewRequest(("paging", input));
 
-            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User, int>().Parse(request, true));
         }
 
         [Theory]
@@ -141,7 +143,7 @@ namespace Rdd.Web.Tests
         {
             var request = HttpVerbs.Get.NewRequest((key, value)); 
 
-            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User, int>().Parse(request, true));
         }
     }
 }

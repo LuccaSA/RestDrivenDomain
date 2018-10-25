@@ -1,15 +1,17 @@
-﻿using Rdd.Domain.Models.Querying;
-using Rdd.Domain.Rights;
+﻿using Rdd.Infra.Rights;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
+using System;
 using System.Linq;
 
 namespace Rdd.Domain.Tests.Models
 {
-    public class OpenRepository<TEntity> : Repository<TEntity>
-        where TEntity : class
+    public class OpenRepository<TEntity, TKey> : Repository<TEntity, TKey>
+        where TEntity : class, IPrimaryKey<TKey>
+        where TKey : IEquatable<TKey>
     {
-        public OpenRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightsService)
-        : base(storageService, rightsService) { }
+        public OpenRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightsService, HttpQuery<TEntity, TKey> httpQuery)
+        : base(storageService, rightsService, httpQuery) { }
 
         protected override IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {

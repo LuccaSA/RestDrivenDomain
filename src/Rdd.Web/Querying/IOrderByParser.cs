@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Rdd.Domain.Models.Querying;
+﻿using Microsoft.AspNetCore.Http;
+using Rdd.Infra.Web.Models;
+using System.Collections.Generic;
 
 namespace Rdd.Web.Querying
 {
