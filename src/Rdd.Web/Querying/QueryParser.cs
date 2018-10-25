@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
-using Rdd.Infra.Web.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Options;
-using Rdd.Web.Helpers;
 
 namespace Rdd.Web.Querying
 {
@@ -21,124 +16,62 @@ namespace Rdd.Web.Querying
         private readonly IFilterParser _filterParser;
         private readonly IFieldsParser _fieldsParser;
         private readonly IOrderByParser _orderByParser;
-        private readonly IOptions<RddOptions> _rddOptions;
 
-        protected HashSet<string> IgnoredFilters { get; set; }
-
-        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser, IOptions<RddOptions> rddOptions)
+        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
         {
             _webFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
             _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
             _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
             _fieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
             _orderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
-            _rddOptions = rddOptions;
-
-            IgnoredFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public void IgnoreFilters(params string[] filters)
-        {
-            foreach (var filter in filters)
-            {
-                IgnoredFilters.Add(filter);
-            }
-        }
+        public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
+            => Parse(request, null, isCollectionCall);
 
-        public virtual Query<TEntity> Parse(HttpContext context, bool isCollectionCall)
-            => Parse(GetVerb(context), context.Request.Query, isCollectionCall);
-
-        public virtual Query<TEntity> Parse(HttpVerbs verb, IEnumerable<KeyValuePair<string, StringValues>> parameters, bool isCollectionCall)
+        public virtual Query<TEntity> Parse(HttpRequest request, ActionDescriptor action, bool isCollectionCall)
         {
-            var filters = new List<WebFilter<TEntity>>();
             var query = new Query<TEntity>
-            {
-                Fields = null,
-                Verb = verb
-            };
+            (
+                 _fieldsParser.Parse<TEntity>(request, isCollectionCall),
+                 _orderByParser.Parse<TEntity>(request),
+                 _pagingParser.Parse(request),
+                 _filterParser.Parse(request, action, _webFilterConverter),
+                GetVerb(request)
+            );
 
-            foreach (var parameter in parameters.Where(v => !string.IsNullOrEmpty(v.Key) && !IgnoredFilters.Contains(v.Key)))
-            {
-                ParseParameter(parameter.Key, parameter.Value, query, filters);
-            }
-
-            if (query.Fields == null)
-            {
-                query.Fields = _fieldsParser.GetDeFaultFields<TEntity>(isCollectionCall);
-            }
-            else if (query.Fields.Contains((ISelection c) => c.Count))
+            if (query.Fields.Contains((ISelection c) => c.Count))
             {
                 query.Options.NeedCount = true;
                 query.Options.NeedEnumeration = query.Fields.Children.Count != 1;
             }
 
-            switch (verb)
-            {
-                case HttpVerbs.Get:
-                    if (query.Page == Page.Unlimited)
-                    {
-                        query.Page = _rddOptions.Value.DefaultPage;
-                    }
-                    break;
-
-                default:
-                    query.Page = Page.Unlimited;
-                    break;
-            }
-
-            query.Filter = _webFilterConverter.ToExpression(filters);
-
             return query;
         }
 
-        protected virtual HttpVerbs GetVerb(HttpContext context)
+        protected virtual HttpVerbs GetVerb(HttpRequest request)
         {
-            if (HttpMethods.IsGet(context.Request.Method))
+            if (HttpMethods.IsGet(request.Method))
             {
                 return HttpVerbs.Get;
             }
 
-            if (HttpMethods.IsPost(context.Request.Method))
+            if (HttpMethods.IsPost(request.Method))
             {
                 return HttpVerbs.Post;
             }
 
-            if (HttpMethods.IsPut(context.Request.Method))
+            if (HttpMethods.IsPut(request.Method))
             {
                 return HttpVerbs.Put;
             }
 
-            if (HttpMethods.IsDelete(context.Request.Method))
+            if (HttpMethods.IsDelete(request.Method))
             {
                 return HttpVerbs.Delete;
             }
 
             return HttpVerbs.None;
-        }
-
-        protected virtual void ParseParameter(string key, string value, Query<TEntity> query, List<WebFilter<TEntity>> filters)
-        {
-            if (Enum.TryParse<Reserved>(key, true, out var reserved))
-            {
-                switch (reserved)
-                {
-                    case Reserved.fields:
-                        query.Fields = _fieldsParser.Parse<TEntity>(value);
-                        break;
-
-                    case Reserved.orderby:
-                        query.OrderBys = _orderByParser.Parse<TEntity>(value);
-                        break;
-
-                    case Reserved.paging:
-                        query.Page = _pagingParser.Parse(value);
-                        break;
-                }
-            }
-            else
-            {
-                filters.Add(_filterParser.Parse<TEntity>(key, value));
-            }
         }
     }
 }

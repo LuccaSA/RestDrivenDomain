@@ -95,6 +95,14 @@ namespace Rdd.Web.Tests
         }
 
         [Fact]
+        public async Task IgnoredAndBadFilters()
+        {
+            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
+            var response = await _client.GetAsync("/ExchangeRates/customRoute?pipo=12&pipo2=23");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
         public async Task PutByIdOkAsync()
         {
             var serialized = JsonConvert.SerializeObject(new  { Id = 5, Name = "putted2" });

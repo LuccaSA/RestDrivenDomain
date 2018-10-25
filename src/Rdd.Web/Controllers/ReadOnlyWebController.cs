@@ -46,7 +46,7 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = QueryParser.Parse(HttpContext, true);
+            Query<TEntity> query = QueryParser.Parse(HttpContext.Request, true);
 
             ISelection<TEntity> selection = await AppController.GetAsync(query);
 
@@ -61,7 +61,7 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = QueryParser.Parse(HttpContext, true);
+            Query<TEntity> query = QueryParser.Parse(HttpContext.Request, true);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 

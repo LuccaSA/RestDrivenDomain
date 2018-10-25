@@ -1,10 +1,16 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using NExtends.Primitives.DateTimes;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Helpers;
 using Rdd.Infra.Web.Models;
+using Rdd.Web.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,13 +35,13 @@ namespace Rdd.Web.Querying
             {"lessthanorequal", WebFilterOperand.LessThanOrEqual}
         };
 
-        protected IStringConverter StringConverter { get; private set; }
-        protected IExpressionParser ExpressionParser { get; private set; }
+        private readonly IStringConverter _stringConverter;
+        private readonly IExpressionParser _expressionParser;
 
         public FilterParser(IStringConverter stringConverter, IExpressionParser expressionParser)
         {
-            StringConverter = stringConverter ?? throw new ArgumentNullException(nameof(stringConverter));
-            ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
+            _stringConverter = stringConverter ?? throw new ArgumentNullException(nameof(stringConverter));
+            _expressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
         }
 
         public virtual WebFilter<TEntity> Parse<TEntity>(string key, string value)
@@ -43,10 +49,33 @@ namespace Rdd.Web.Querying
             var parts = (value ?? "").Split(',').ToList();
             var operand = ExtractFilterOperand(parts);
 
-            var chain = ExpressionParser.ParseChain<TEntity>(key);
+            var chain = _expressionParser.ParseChain<TEntity>(key);
             var values = ConvertFilterValues(operand, chain, parts);
 
             return new WebFilter<TEntity>(chain, operand, values);
+        }
+
+        public Filter<TEntity> Parse<TEntity>(HttpRequest request, IWebFilterConverter<TEntity> webFilterConverter)
+            where TEntity : class
+            => Parse(request, null, webFilterConverter);
+
+        public Filter<TEntity> Parse<TEntity>(HttpRequest request, ActionDescriptor action, IWebFilterConverter<TEntity> webFilterConverter)
+            where TEntity : class
+        {
+            var keyValuePairs = request.Query.Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && !Reserved.IsKeyword(kv.Key));
+
+            if (action != null)
+            {
+                var queryActionParameters = action.Parameters
+                    .Where(p => p.BindingInfo == null || p.BindingInfo.BindingSource == BindingSource.Query)
+                    .Select(p => p.Name)
+                    .ToHashSet();
+
+                keyValuePairs = keyValuePairs.Where(kvp => !queryActionParameters.Contains(kvp.Key));
+            }
+
+            var filters = keyValuePairs.Select(kv => Parse<TEntity>(kv.Key, kv.Value));
+            return webFilterConverter.ToExpression(filters);
         }
 
         protected virtual WebFilterOperand ExtractFilterOperand(List<string> parts)
@@ -65,7 +94,7 @@ namespace Rdd.Web.Querying
         {
             try
             {
-                var values = StringConverter.ConvertValues(expression.ResultType, parts);
+                var values = _stringConverter.ConvertValues(expression.ResultType, parts);
 
                 if (operand is WebFilterOperand.Between)
                 {
