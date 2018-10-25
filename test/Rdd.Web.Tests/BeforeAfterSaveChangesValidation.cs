@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Rdd.Application;
 using Rdd.Domain.Json;
 using Rdd.Domain.Models.Querying;
@@ -17,6 +19,12 @@ namespace Rdd.Web.Tests
 {
     public class BeforeAfterSaveChangesValidation
     {
+        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        {
+            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
+            public MvcJsonOptions Value => JsonOptions;
+        }
+
         [Fact]
         public async Task MultipleImplementations()
         {
@@ -37,7 +45,7 @@ namespace Rdd.Web.Tests
             var provider = services.BuildServiceProvider();
 
             var app = provider.GetRequiredService<IAppController<ExchangeRate, int>>();
-            var create = new CandidateParser(new JsonParser()).Parse<ExchangeRate, int>(@"{ ""name"": ""new name"" }");
+            var create = new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<ExchangeRate, int>(@"{ ""name"": ""new name"" }");
 
             ExchangeRate created = await app.CreateAsync(create, new Query<ExchangeRate>());
 
@@ -54,7 +62,7 @@ namespace Rdd.Web.Tests
             Assert.Equal(0, onAnotherSave.DeleteCount);
             Assert.Equal(0, onAnotherSave.CallsCount);
 
-            var update = new CandidateParser(new JsonParser()).Parse<ExchangeRate, int>(@"{ ""name"": ""other name"" }");
+            var update = new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<ExchangeRate, int>(@"{ ""name"": ""other name"" }");
             var updated = await app.UpdateByIdAsync(created.Id, update, new Query<ExchangeRate>());
              
             Assert.Equal(2, onSave.AddCount);

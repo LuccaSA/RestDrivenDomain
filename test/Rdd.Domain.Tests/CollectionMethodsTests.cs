@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Moq;
 using Newtonsoft.Json;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Reflection;
@@ -19,13 +21,29 @@ using Xunit;
 
 namespace Rdd.Domain.Tests
 {
-    public class CollectionMethodsTests 
+    public class CollectionMethodsTests
     {
         private readonly DefaultFixture _fixture;
+        private readonly ICandidateParser _parser;
+
+        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        {
+            public MvcJsonOptions Value { get; }
+
+            public OptionsAccessor()
+            {
+                Value = new MvcJsonOptions();
+                Value.SerializerSettings.Converters = new List<JsonConverter>
+                {
+                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
+                };
+            }
+        }
 
         public CollectionMethodsTests()
         {
             _fixture = new DefaultFixture();
+            _parser = new CandidateParser(new JsonParser(), new OptionsAccessor());
         }
 
         [Fact]
@@ -43,12 +61,12 @@ namespace Rdd.Domain.Tests
             var rightService = new Mock<IRightExpressionsHelper<User>>();
             rightService.Setup(s => s.GetFilter(It.IsAny<Query<User>>())).Returns(trueFilter);
 
-            var id = Guid.NewGuid(); 
+            var id = Guid.NewGuid();
             var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object);
             var users = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var app = new UsersAppController(_fixture.InMemoryStorage, users);
-            var candidate1 = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
-            var candidate2 = new CandidateParser(new JsonParser()).Parse<User, Guid>(@"{ ""name"": ""new name"" }");
+            var candidate1 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
+            var candidate2 = _parser.Parse<User, Guid>(@"{ ""name"": ""new name"" }");
 
             await app.CreateAsync(candidate1, new Query<User>());
             await app.UpdateByIdAsync(Guid.NewGuid(), candidate2, new Query<User>());
@@ -61,7 +79,7 @@ namespace Rdd.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
 
-            var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>($@"{{ ""id"": ""{Guid.NewGuid()}"" }}");
+            var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{Guid.NewGuid()}"" }}");
             await users.CreateAsync(candidate, query);
         }
 
@@ -84,7 +102,7 @@ namespace Rdd.Domain.Tests
             var query = new Query<UserWithParameters>();
             query.Options.CheckRights = false;
 
-            var candidate = new CandidateParser(new JsonParser()).Parse<UserWithParameters, int>(@"{ ""id"": 3, ""name"": ""John"" }");
+            var candidate = _parser.Parse<UserWithParameters, int>(@"{ ""id"": 3, ""name"": ""John"" }");
             var result = await users.CreateAsync(candidate, query);
             Assert.Equal(3, result.Id);
             Assert.Equal("John", result.Name);
@@ -119,7 +137,7 @@ namespace Rdd.Domain.Tests
             _fixture.InMemoryStorage.Add(user);
             await _fixture.InMemoryStorage.SaveChangesAsync();
 
-            var candidate = new CandidateParser(new JsonParser()).Parse<User, Guid>(JsonConvert.SerializeObject(user));
+            var candidate = _parser.Parse<User, Guid>(JsonConvert.SerializeObject(user));
             await users.UpdateByIdAsync(id, candidate, query);
             Assert.True(true);
         }
@@ -149,7 +167,7 @@ namespace Rdd.Domain.Tests
             var query = new Query<User>();
             query.Options.CheckRights = false;
 
-            var updated = await users.UpdateByIdAsync(id, new CandidateParser(new JsonParser()).Parse<User, Guid>(JsonConvert.SerializeObject(user)), query);
+            var updated = await users.UpdateByIdAsync(id, _parser.Parse<User, Guid>(JsonConvert.SerializeObject(user)), query);
 
             Assert.Equal(new Guid(), updated.Id);
         }
@@ -182,14 +200,7 @@ namespace Rdd.Domain.Tests
                 var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
                 var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper), instanciator);
 
-                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-                {
-                    Converters = new List<JsonConverter>
-                    {
-                        new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
-                    }
-                };
-                var candidate = new CandidateParser(new JsonParser()).Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
+                var candidate = _parser.Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
                 await collection.CreateAsync(candidate);
             });
         }
@@ -201,14 +212,7 @@ namespace Rdd.Domain.Tests
             var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
             var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper, new InheritanceConfiguration()), instanciator);
 
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter>
-                    {
-                        new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
-                    }
-            };
-            var candidate = new CandidateParser(new JsonParser()).Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
+            var candidate = _parser.Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
             await collection.CreateAsync(candidate);
         }
     }

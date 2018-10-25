@@ -1,6 +1,7 @@
-﻿using System;
-using Rdd.Domain.Helpers.Reflection;
+﻿using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Json;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Rdd.Domain.Patchers
@@ -16,13 +17,13 @@ namespace Rdd.Domain.Patchers
             _configuration = configuration;
         }
 
-        protected override void PatchProperty(object patchedObject, PropertyInfo property, IJsonElement element)
+        protected override void PatchKey(Dictionary<string, PropertyInfo> properties, object patchedObject, Type entityType, string key, IJsonElement element)
         {
-            if (String.Equals(property.Name, _configuration.Discriminator, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(key, _configuration.Discriminator, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
-            base.PatchProperty(patchedObject, property, element);
+            base.PatchKey(properties, patchedObject, entityType, key, element);
         }
     }
 }

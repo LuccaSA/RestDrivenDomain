@@ -1,27 +1,36 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Rdd.Domain;
 using Rdd.Domain.Json;
+using Rdd.Domain.Tests.Models;
 using Rdd.Web.Models;
 using Rdd.Web.Querying;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Rdd.Domain.Tests.Models;
+using System.Threading.Tasks;
 using Xunit;
 using Department = Rdd.Web.Tests.Models.Department;
 using User = Rdd.Web.Tests.Models.User;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Rdd.Web.Tests
 {
     public class CandidateTests
     {
-        private readonly ICandidateParser _parser = new CandidateParser(new JsonParser());
+        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        {
+            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
+            public MvcJsonOptions Value => JsonOptions;
+        }
+
+        private readonly ICandidateParser _parser = new CandidateParser(new JsonParser(), new OptionsAccessor());
 
         private ICandidate<TEntity, TKey> Parse<TEntity, TKey>(string content)
             where TEntity : class, IPrimaryKey<TKey>
-            => new CandidateParser(new JsonParser()).Parse<TEntity, TKey>(content);
+            => new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<TEntity, TKey>(content);
 
         public static Stream ToStream(string s)
         {
@@ -31,6 +40,24 @@ namespace Rdd.Web.Tests
             writer.Flush();
             stream.Position = 0;
             return stream;
+        }
+
+        [Fact]
+        public void CandidateParserConstructor()
+        {
+            Assert.Throws<ArgumentNullException>("jsonParser", () => new CandidateParser(null, new OptionsAccessor()));
+            Assert.Throws<ArgumentNullException>("jsonOptions", () => new CandidateParser(new JsonParser(), null));
+        }
+
+        [Fact]
+        public void ApiHelperShouldDeserializeJson()
+        {
+            var json = @"{ ""id"": 123, ""name"": ""Foo"" }";
+
+            var candidate = _parser.Parse<User, int>(json);
+
+            Assert.Equal(123, candidate.Value.Id);
+            Assert.Equal("Foo", candidate.Value.Name);
         }
 
         [Fact]
@@ -136,10 +163,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_fail_without_config()
         {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter>()
-            };
+            OptionsAccessor.JsonOptions.SerializerSettings.Converters = new List<JsonConverter>();
 
             Assert.Throws<JsonSerializationException>(GetCandidate);
         }
@@ -147,12 +171,9 @@ namespace Rdd.Web.Tests
         [Fact]
         public void Candidate_should_work_with_config()
         {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            OptionsAccessor.JsonOptions.SerializerSettings.Converters = new List<JsonConverter>
             {
-                Converters = new List<JsonConverter>
-                {
-                    new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
-                }
+                new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())
             };
 
             var candidate = GetCandidate();
@@ -160,6 +181,6 @@ namespace Rdd.Web.Tests
         }
 
         private static ICandidate<Hierarchy, int> GetCandidate()
-            => new CandidateParser(new JsonParser()).Parse<Hierarchy, int>(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
+            => new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<Hierarchy, int>(@"{ ""id"": 1, ""type"":""super"", ""superProperty"": ""lol"" }");
     }
 }
