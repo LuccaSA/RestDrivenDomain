@@ -21,14 +21,23 @@ namespace Rdd.Domain.Patchers
 
         public virtual IPatcher GetPatcher(Type expectedType, IJsonElement json)
         {
-            if (json is JsonArray)
-            {
-                return Services.GetRequiredService<EnumerablePatcher>();
-            }
-
             if (typeof(IEntityBase).IsAssignableFrom(expectedType))
             {
                 throw new ForbiddenException("It is not permitted to patch a property of type derived from IEntityBase");
+            }
+
+            if (expectedType.IsClass)
+            {
+                var foundPatcher = Services.GetService(typeof(IPatcher<>).MakeGenericType(new[] { expectedType })) as IPatcher;
+                if (foundPatcher != null && foundPatcher.GetType() != typeof(ObjectPatcher<>).MakeGenericType(new[] { expectedType }))
+                {
+                    return foundPatcher;
+                }
+            }
+
+            if (json is JsonArray)
+            {
+                return Services.GetRequiredService<EnumerablePatcher>();
             }
 
             if (expectedType.IsSubclassOfInterface(typeof(IDictionary)))
