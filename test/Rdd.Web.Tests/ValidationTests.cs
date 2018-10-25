@@ -42,7 +42,7 @@ namespace Rdd.Web.Tests
             // act
             var collection = provider.GetRequiredService<IRestCollection<ExchangeRate, int>>();
 
-            var candidate = new CandidateParser(new JsonParser()).Parse<ExchangeRate, int>(@"{ ""name"": ""something""}");
+            var candidate = provider.GetRequiredService<ICandidateParser>().Parse<ExchangeRate, int>(@"{ ""name"": ""something""}");
 
             ExchangeRate ok;
             try

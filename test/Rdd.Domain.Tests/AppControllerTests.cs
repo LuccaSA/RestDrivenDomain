@@ -1,4 +1,6 @@
-﻿using Rdd.Domain.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Rdd.Domain.Json;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests.Models;
 using Rdd.Web.Querying;
@@ -15,10 +17,16 @@ namespace Rdd.Domain.Tests
         private DefaultFixture _fixture;
         private readonly ICandidateParser _parser;
 
+        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        {
+            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
+            public MvcJsonOptions Value => JsonOptions;
+        }
+
         public AppControllerTests(DefaultFixture fixture)
         {
             _fixture = fixture;
-            _parser = new CandidateParser(new JsonParser());
+            _parser = new CandidateParser(new JsonParser(), new OptionsAccessor());
         }
 
         [Fact]

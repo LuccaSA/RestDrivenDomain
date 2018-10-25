@@ -17,10 +17,10 @@ namespace Rdd.Web.Querying
 
         public JsonObject JsonValue { get; private set; }
 
-        public Candidate(JToken structure, JsonObject jsonObject)
+        public Candidate(JToken structure, JsonObject jsonObject, TEntity value)
         {
             _structure = structure;
-            Value = _structure.ToObject<TEntity>();
+            Value = value;
             JsonValue = jsonObject;
         }
 

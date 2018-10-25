@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rdd.Domain;
 using Rdd.Domain.Json;
@@ -14,10 +17,12 @@ namespace Rdd.Web.Querying
     public class CandidateParser : ICandidateParser
     {
         private readonly IJsonParser _jsonParser;
+        private readonly JsonSerializer _serializer;
 
-        public CandidateParser(IJsonParser jsonParser)
+        public CandidateParser(IJsonParser jsonParser, IOptions<MvcJsonOptions> jsonOptions)
         {
             _jsonParser = jsonParser ?? throw new ArgumentNullException(nameof(jsonParser));
+            _serializer = JsonSerializer.Create(jsonOptions?.Value.SerializerSettings ?? throw new ArgumentNullException(nameof(jsonOptions)));
         }
 
         public virtual async Task<ICandidate<TEntity, TKey>> ParseAsync<TEntity, TKey>(HttpRequest request)
@@ -39,9 +44,9 @@ namespace Rdd.Web.Querying
             switch (token)
             {
                 case JArray array:
-                    return array.Select(e => new Candidate<TEntity, TKey>(e, _jsonParser.Parse(e) as JsonObject));
+                    return array.Select(e => new Candidate<TEntity, TKey>(e, _jsonParser.Parse(e) as JsonObject, e.ToObject<TEntity>(_serializer)));
                 default:
-                    return new List<ICandidate<TEntity, TKey>> { new Candidate<TEntity, TKey>(token, _jsonParser.Parse(token) as JsonObject) };
+                    return new List<ICandidate<TEntity, TKey>> { new Candidate<TEntity, TKey>(token, _jsonParser.Parse(token) as JsonObject, token.ToObject<TEntity>(_serializer)) };
             }
         }
 
