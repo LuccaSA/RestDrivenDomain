@@ -67,7 +67,6 @@ namespace Rdd.Web.Tests.Serialization
 
             var urlProvider = new Mock<IUrlProvider>();
             urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));
-            urlProvider.Setup(u => u.GetEntityApiUri(It.IsAny<Type>(), It.IsAny<IPrimaryKey>())).Returns(new Uri("http://www.example.org/"));
             services.AddSingleton(urlProvider.Object);
 
 

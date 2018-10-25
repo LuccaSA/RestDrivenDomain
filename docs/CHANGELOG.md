@@ -1,5 +1,8 @@
 # Futur release
 ## Breaking changes
+ - **Modification**: ``UrlProvider`` implementation has been completely changed to gain both accuracy and performances.
+ - **Removed**: `IPluralizationService`, `Inflector.NetStandard` dependency and `IUrlProvider.GetApiControllerName(Type workingType)`, `IUrlProvider.GetEntityApiUri(Type workingType, IPrimaryKey entity)`.
+ - **Modification**: `IStorageService` and `IUnitOfWork` are now decoupled
  - **Modification**: ``ExecuteScriptAsync()`` on EfStorageService now is returns ``int`` directly
  - **Modification**: ``ValidateEntity`` on RestCollection now is ``ValidateEntityAsync`` and returns a bool
  - **Modification**: RestCollection now return null or empty collection if entity is not validated
@@ -13,7 +16,6 @@
  - **Modification**: ``IExpressionTree.Children`` type changed ``IEnumerable<IExpressionTree>``-> ``IReadOnlyCollection<IExpressionTree>``
  - **Modification**: ``IReflectionProvider``-> ``IReflectionHelper``
  - **Modification**: Patchers now use ``IReflectionHelper``, are public and registered for performances boost.
- - **Modification**: AppController now exposes ``SaveChangesAsync(IEnumerable<TEntity> entities)`` to save pending changes. The ``entities`` must be feeded with modified entities
  - **Removed**: unused classes `ExpressionHelper` and `NameValueCollectionHelper`
  - **Removed**: `IClonable<>` interface & ``Clone()`` method
  - **Removed**: `IEntityBase<TEntity, TKey>`, `EntityBase<TEntity, TKey>` and usages. This can be directly replaced by `IEntityBase<TKey>` or `EntityBase<TKey>`.
@@ -91,7 +93,7 @@
  - **Added**: `IJsonParser`. Missing interfaces for correct dependency injection logic.
  - **Modification**: Using RDD now forces the httpReques to enable Rewind, cf ``EnableRequestRewindMiddleware``.
  - **Added**: `IReflectionHelper.IsPseudoValue(Type type)` for types serialized and deserialized as JSON value.
- - **Added**: new OnBeforeSaveEntitiesAsync and OnAfterSaveEntitiesAsync methods on AppController
+ - **Added**: UnitOfWork provides hooks which can be called before and after `SaveChangesAsync()`. To do so, you need to inherit `SaveEventProcessor<T>` and register via `services.AddScoped<ISaveEventProcessor,MySaveEventProcessor>()`. Your implementation will be called only when there's `T` instances in current pending changes
  - **Added**: Opt-in support of Swagger for RDD controllers. Use `[ApiExplorerSettings(IgnoreApi = false)]` on your actions/controllers to display them.
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of the rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `BaseClassInstanciator`, `BaseClassPatcher` and `BaseClassJsonConverter` to properly manage inheritance schemes during edition.

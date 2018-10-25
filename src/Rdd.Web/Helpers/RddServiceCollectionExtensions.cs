@@ -55,9 +55,8 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IOrderByParser, OrderByParser>();
             services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 
-            services.TryAddScoped<EFStorageService>();
-            services.TryAddScoped<IStorageService>(s => s.GetService<EFStorageService>());
-            services.TryAddScoped<IUnitOfWork>(s => s.GetService<EFStorageService>());
+            services.TryAddScoped<IStorageService, EFStorageService>();
+            services.TryAddScoped<IUnitOfWork, UnitOfWork>();
 
             services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
             services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -138,9 +137,6 @@ namespace Rdd.Web.Helpers
         public static RddBuilder AddRddSerialization(this RddBuilder rddBuilder)
         {
             var services = rddBuilder.Services;
-
-            services.TryAddSingleton(typeof(Inflector.Inflector), p => new Inflector.Inflector(new CultureInfo("en-US")));
-            services.TryAddSingleton<IPluralizationService, PluralizationService>();
 
             services.AddHttpContextAccessor();
             services.TryAddSingleton<IUrlProvider, UrlProvider>();

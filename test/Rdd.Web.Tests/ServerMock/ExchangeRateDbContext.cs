@@ -10,6 +10,7 @@ namespace Rdd.Web.Tests.ServerMock
         }
 
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
+        public DbSet<ExchangeRate2> ExchangeRate2s { get; set; }
 
     }
 }
