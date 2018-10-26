@@ -16,82 +16,13 @@ using Rdd.Web.Tests.ServerMock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests.Services
 {
     public class ServicesCollectionTests
     {
-        public abstract class Hierarchy2 : IEntityBase<int>
-        {
-            public string Name { get; set; }
-            public string Url { get; set; }
-            public string Type { get; set; }
-            public int Id { get; set; }
-
-            public Hierarchy2 Clone() => this;
-            public object GetId() => Id;
-            public void SetId(object id) => Id = (int)id;
-        }
-
-        public class Super : Hierarchy2
-        {
-        }
-
-        public class InheritanceConfiguration2 : IInheritanceConfiguration<Hierarchy2>
-        {
-            public Type BaseType => typeof(Hierarchy2);
-
-            public string Discriminator => "type";
-
-            public IReadOnlyDictionary<string, Type> Mappings => new Dictionary<string, Type>
-            {
-                { "super", typeof(Super) }
-            };
-        }
-
-        [Fact]
-        public void TestInheritanceRegister()
-        {
-            var services = new ServiceCollection();
-            var setup = new RddBuilder(services);
-
-            setup.AddRddInheritanceConfiguration<InheritanceConfiguration, Hierarchy, int>(new InheritanceConfiguration());
-            setup.AddRddInheritanceConfiguration<InheritanceConfiguration2, Hierarchy2, int>(new InheritanceConfiguration2());
-
-            var provider = services.BuildServiceProvider();
-
-            var configs = provider.GetRequiredService<IEnumerable<IInheritanceConfiguration>>();
-
-            Assert.Equal(2, configs.ToList().Count);
-
-            provider.GetRequiredService<IInheritanceConfiguration<Hierarchy>>();
-            provider.GetRequiredService<IInheritanceConfiguration<Hierarchy2>>();
-        }
-
-        [Fact]
-        public void TestEmptyInheritanceRegister()
-        {
-            var services = new ServiceCollection();
-            var provider = services.BuildServiceProvider();
-
-            var configs = provider.GetRequiredService<IEnumerable<IInheritanceConfiguration>>();
-
-            Assert.Empty(configs);
-        }
-
-        [Fact]
-        public void TestRddSerializationRegister()
-        {
-            var services = new ServiceCollection();
-            var setup = new RddBuilder(services);
-            setup.AddRddSerialization();
-
-            var provider = services.BuildServiceProvider();
-
-            Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
-        }
-
         [Fact]
         public void TestRddRegister()
         {
@@ -100,7 +31,6 @@ namespace Rdd.Web.Tests.Services
             services.AddDbContext<ExchangeRateDbContext>();//necessary or .AddRdd fails
             services.AddRdd<ExchangeRateDbContext>();
 
-            services.AddScoped(typeof(IRightExpressionsHelper<>),typeof(OpenRightExpressionsHelper<>));
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<IUnitOfWork>());
@@ -110,6 +40,8 @@ namespace Rdd.Web.Tests.Services
             Assert.NotNull(provider.GetRequiredService<IStringConverter>());
             Assert.NotNull(provider.GetRequiredService<IExpressionParser>());
             Assert.NotNull(provider.GetRequiredService<ICandidateParser>());
+
+            Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
 
             Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate>>());
             Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate>>());
