@@ -9,7 +9,6 @@ namespace Rdd.Domain
         where TEntity : class, IPrimaryKey<TKey>
         where TKey : IEquatable<TKey>
     {
-        Task<int> CountAsync();
         Task<ISelection<TEntity>> GetAsync();
         Task<TEntity> GetAsync(TKey id);
         Task<IEnumerable<TEntity>> GetAsync(IEnumerable<TKey> ids);

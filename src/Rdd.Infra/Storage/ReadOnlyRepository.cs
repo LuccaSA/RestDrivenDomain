@@ -29,11 +29,6 @@ namespace Rdd.Infra.Storage
             HttpQuery = httpQuery;
         }
 
-        public Task<int> CountAsync()
-        {
-            return CountAsync(HttpQuery);
-        }
-
         public Task<ISelection<TEntity>> GetAsync()
         {
             return GetAsync(HttpQuery);
