@@ -72,7 +72,7 @@ deploy:
 - provider: NuGet
   name: nuget_release
   api_key:
-    secure: TlRoD6z10XUVN/5ykpwvZ0P0Cc/tb/CnvU2n09WWuUgvHAOv+wxCwXyH3NSN1y4q
+    secure: Vw6Z9hk7/HfD/q5sbvrck4cQvIJkEUgtj0xpOAzk0I+LixpqN0J6j8cf6hp0/tDj
   skip_symbols: true
   artifact: /.*\.nupkg/
   on:
