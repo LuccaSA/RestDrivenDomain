@@ -16,13 +16,11 @@ namespace Rdd.Web.Tests
             var host = Startup.BuildWebHost(null).Build();
             var apiExplorer = host.Services.GetRequiredService<IApiDescriptionGroupCollectionProvider>();
 
-            //les items contient tous 3 les controllers (userweb, exchangerate, et openexchangerate)
-            //SEUL openexchangerate affiche un attribut  [ApiExplorerSettings(IgnoreApi = false)]
-            //qui le dévoile à l'api explorer
-
+            //les items contient toutes les routes de tous les controllers (userweb, exchangerate, openexchangerate, ExchangeRate3Controller)
+            //mais dans un seul groupe
             Assert.Single(apiExplorer.ApiDescriptionGroups.Items);
 
-            var elementsTests = new List<Predicate<ApiDescription>>
+            var routeTests = new List<Predicate<ApiDescription>>
             {
                 d => d.RelativePath == ExchangeRate2Controller.RouteName && d.HttpMethod == "GET" && d.ParameterDescriptions.Count == 0,
                 d => d.RelativePath == ExchangeRate2Controller.RouteName && d.HttpMethod == "POST" && d.ParameterDescriptions.Count == 0,
@@ -31,14 +29,20 @@ namespace Rdd.Web.Tests
                 d => d.RelativePath == ExchangeRate2Controller.RouteName + "/{id}" && d.HttpMethod == "GET" && d.ParameterDescriptions.All(p => p.Name == "id" && p.Type == typeof(int)),
                 d => d.RelativePath == ExchangeRate2Controller.RouteName + "/{id}" && d.HttpMethod == "PUT" && d.ParameterDescriptions.All(p => p.Name == "id" && p.Type == typeof(int)),
                 d => d.RelativePath == ExchangeRate2Controller.RouteName + "/{id}" && d.HttpMethod == "DELETE" && d.ParameterDescriptions.All(p => p.Name == "id" && p.Type == typeof(int)),
+
+                d => d.RelativePath == "api/ExchangeRate3" && d.HttpMethod == "GET" && d.ParameterDescriptions.Count == 0,
+                d => d.RelativePath == "api/ExchangeRate3/{id}" && d.HttpMethod == "GET" && d.ParameterDescriptions.All(p => p.Name == "id" && p.Type == typeof(int)),
             };
 
-            //les 7 routes: get, getbyId, post, put, putbyid, delete, deletebyid
-            Assert.Equal(elementsTests.Count, apiExplorer.ApiDescriptionGroups.Items[0].Items.Count);
+            var routes = apiExplorer.ApiDescriptionGroups.Items.First().Items;
 
-            foreach (var elementTest in elementsTests)
+            //les 7 routes: get, getbyId, post, put, putbyid, delete, deletebyid open
+            //les 2 routes sans override de route
+            Assert.Equal(routeTests.Count, routes.Count);
+
+            foreach (var elementTest in routeTests)
             {
-                Assert.Contains(apiExplorer.ApiDescriptionGroups.Items[0].Items, elementTest);
+                Assert.Contains(routes, elementTest);
             }
         }
     }

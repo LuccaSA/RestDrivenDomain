@@ -21,6 +21,7 @@ namespace Rdd.Web.Controllers
         }
     }
 
+    [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public abstract class ReadOnlyWebController<TAppController, TEntity, TKey> : ControllerBase
         where TAppController : class, IReadOnlyAppController<TEntity, TKey>
