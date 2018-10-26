@@ -8,9 +8,9 @@ namespace Rdd.Infra.Storage
 {
     public sealed class SaveEventProcessor<T> : ISaveEventProcessor where T : class
     {
-        private readonly IOnSaveChangesAsync<T> _onSaveChangesHook;
+        private readonly IOnSaveChangesHookAsync<T> _onSaveChangesHook;
 
-        public SaveEventProcessor(IOnSaveChangesAsync<T> onSaveChangesHook)
+        public SaveEventProcessor(IOnSaveChangesHookAsync<T> onSaveChangesHook)
         {
             _onSaveChangesHook = onSaveChangesHook;
         }

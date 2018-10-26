@@ -122,13 +122,13 @@ namespace Rdd.Web.Helpers
             return rddBuilder;
         }
 
-        public static RddBuilder AddOnSaveChangesEvent<TOnSaveChanges, T>(this RddBuilder rddBuilder)
-            where TOnSaveChanges : class, IOnSaveChangesAsync<T>
+        public static RddBuilder AddOnSaveChangesHook<TOnSaveChanges, T>(this RddBuilder rddBuilder)
+            where TOnSaveChanges : class, IOnSaveChangesHookAsync<T>
             where T : class
         {
-            rddBuilder.Services.AddScoped<IUnitOfWork, HookedUnitOfWork>();
+            rddBuilder.Services.AddScoped<IUnitOfWork, EventProcessableUnitOfWork>();
             rddBuilder.Services.AddScoped<ISaveEventProcessor, SaveEventProcessor<T>>();
-            rddBuilder.Services.AddScoped<IOnSaveChangesAsync<T>, TOnSaveChanges>();
+            rddBuilder.Services.AddScoped<IOnSaveChangesHookAsync<T>, TOnSaveChanges>();
             return rddBuilder;
         }
 

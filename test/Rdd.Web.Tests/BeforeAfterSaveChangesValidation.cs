@@ -37,8 +37,8 @@ namespace Rdd.Web.Tests
                     rdd.PagingMaximumLimit = 4242;
                 })
                 .WithDefaultRights(RightDefaultMode.Open)
-                .AddOnSaveChangesEvent<OnExchangeRateSave, ExchangeRate>()
-                .AddOnSaveChangesEvent<OnAnotherUserSave, AnotherUser>();
+                .AddOnSaveChangesHook<OnExchangeRateSave, ExchangeRate>()
+                .AddOnSaveChangesHook<OnAnotherUserSave, AnotherUser>();
 
             var provider = services.BuildServiceProvider();
 
@@ -47,8 +47,8 @@ namespace Rdd.Web.Tests
 
             ExchangeRate created = await app.CreateAsync(create, new Query<ExchangeRate>());
 
-            var onSave = provider.GetRequiredService<IOnSaveChangesAsync<ExchangeRate>>() as IOnSaveCount;
-            var onAnotherSave = provider.GetRequiredService<IOnSaveChangesAsync<AnotherUser>>() as IOnSaveCount;
+            var onSave = provider.GetRequiredService<IOnSaveChangesHookAsync<ExchangeRate>>() as IOnSaveCount;
+            var onAnotherSave = provider.GetRequiredService<IOnSaveChangesHookAsync<AnotherUser>>() as IOnSaveCount;
 
             Assert.Equal(2, onSave.AddCount);
             Assert.Equal(0, onSave.UpdateCount);
@@ -94,7 +94,7 @@ namespace Rdd.Web.Tests
         int CallsCount { get; }
     }
 
-    public class SaveEventProcessorMock<T> : IOnSaveChangesAsync<T>, IOnSaveCount where T : class
+    public class SaveEventProcessorMock<T> : IOnSaveChangesHookAsync<T>, IOnSaveCount where T : class
     {
         public int AddCount { get; private set; } = 0;
         public int UpdateCount { get; private set; } = 0;

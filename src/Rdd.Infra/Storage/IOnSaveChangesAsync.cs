@@ -6,7 +6,7 @@ namespace Rdd.Infra.Storage
     /// Interface to implement in order to plug hooks around Before/After SaveChangesAsync()
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IOnSaveChangesAsync<T> where T : class
+    public interface IOnSaveChangesHookAsync<T> where T : class
     {
         /// <summary>
         /// Called before SaveChangesAsync(), last opportunity to modify entities

@@ -9,12 +9,12 @@ using Rdd.Infra.Exceptions;
 
 namespace Rdd.Infra.Storage
 {
-    public class HookedUnitOfWork : IUnitOfWork
+    public class EventProcessableUnitOfWork : IUnitOfWork
     {
         private readonly DbContext _dbContext;
         private readonly List<ISaveEventProcessor> _saveEventProcessors;
 
-        public HookedUnitOfWork(DbContext dbContext, IEnumerable<ISaveEventProcessor> saveEventProcessors)
+        public EventProcessableUnitOfWork(DbContext dbContext, IEnumerable<ISaveEventProcessor> saveEventProcessors)
         {
             _dbContext = dbContext;
             _saveEventProcessors = (saveEventProcessors ?? Enumerable.Empty<ISaveEventProcessor>()).ToList();
