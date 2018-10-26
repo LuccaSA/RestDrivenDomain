@@ -72,7 +72,7 @@ namespace Rdd.Web.Serialization
 
         private string GetPrincipalName(IServiceProvider services)
         {
-            var principal = services.GetService<ClaimsPrincipal>();
+            var principal = services.GetRequiredService<ClaimsPrincipal>();
             if (principal == null)
             {
                 return null;

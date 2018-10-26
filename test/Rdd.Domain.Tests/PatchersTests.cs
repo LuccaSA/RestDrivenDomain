@@ -38,8 +38,8 @@ namespace Rdd.Domain.Tests
         }
 
         private IServiceProvider ServiceProvider;
-        private IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
-        private IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
+        private IPatcherProvider PatcherProvider => ServiceProvider.GetRequiredService<IPatcherProvider>();
+        private IReflectionHelper ReflectionHelper => ServiceProvider.GetRequiredService<IReflectionHelper>();
 
         public PatchersTests()
         {

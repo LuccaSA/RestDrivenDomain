@@ -28,7 +28,7 @@ namespace Rdd.Domain.Patchers
 
             if (expectedType.IsClass)
             {
-                var foundPatcher = Services.GetService(typeof(IPatcher<>).MakeGenericType(new[] { expectedType })) as IPatcher;
+                var foundPatcher = Services.GetRequiredService(typeof(IPatcher<>).MakeGenericType(new[] { expectedType })) as IPatcher;
                 if (foundPatcher != null && foundPatcher.GetType() != typeof(ObjectPatcher<>).MakeGenericType(new[] { expectedType }))
                 {
                     return foundPatcher;

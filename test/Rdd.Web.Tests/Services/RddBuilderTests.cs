@@ -105,7 +105,7 @@ namespace Rdd.Web.Tests.Services
             new RddBuilder(services).AddReadOnlyRepository<RepoPipo, Hierarchy>();
             var provider = services.BuildServiceProvider();
 
-            Assert.Null(provider.GetService<IRepository<Hierarchy>>());
+            Assert.Null(provider.GetRequiredService<IRepository<Hierarchy>>());
 
             var repo2 = provider.GetRequiredService<IReadOnlyRepository<Hierarchy>>();
             var repo3 = provider.GetRequiredService<RepoPipo>();
