@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
-using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization;
 using System;

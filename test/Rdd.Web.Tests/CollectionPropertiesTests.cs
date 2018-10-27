@@ -4,6 +4,8 @@ using Rdd.Infra.Storage;
 using System.Linq;
 using Rdd.Domain.Models.Querying;
 using Xunit;
+using System;
+using Rdd.Infra.Web.Models;
 
 namespace Rdd.Web.Tests
 {
@@ -11,14 +13,14 @@ namespace Rdd.Web.Tests
     {
         private DefaultFixture _fixture;
         private InMemoryStorageService _storage;
-        private OpenRepository<User> _repo;
+        private OpenRepository<User, Guid> _repo;
         private UsersCollection _collection;
 
         public CollectionPropertiesTests(DefaultFixture fixture)
         {
             _fixture = fixture;
             _storage = new InMemoryStorageService();
-            _repo = new OpenRepository<User>(_storage, _fixture.RightsService);
+            _repo = new OpenRepository<User, Guid>(_storage, _fixture.RightsService);
             _collection = new UsersCollection(_repo, _fixture.PatcherProvider, _fixture.Instanciator);
         }
 

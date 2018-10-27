@@ -12,6 +12,7 @@ using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization.Providers;
@@ -87,13 +88,15 @@ namespace Rdd.Web.Tests.Services
             Assert.Empty(configs);
         }
 
-        class RepoPipo : IRepository<Hierarchy>
+        class RepoPipo : IRepository<Hierarchy, int>
         {
             public void Add(Hierarchy entity) => throw new NotImplementedException();
             public void AddRange(IEnumerable<Hierarchy> entities) => throw new NotImplementedException();
-            public Task<int> CountAsync(Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<int> CountAsync(IQuery<Hierarchy> query) => throw new NotImplementedException();
             public void DiscardChanges(Hierarchy entity) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<ISelection<Hierarchy>> GetAsync(IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<Hierarchy> GetByIdAsync(int id, IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> GetByIdsAsync(IEnumerable<int> ids, IQuery<Hierarchy> query) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> PrepareAsync(IEnumerable<Hierarchy> entities, Query<Hierarchy> query) => throw new NotImplementedException();
             public void Remove(Hierarchy entity) => throw new NotImplementedException();
         }
@@ -102,12 +105,12 @@ namespace Rdd.Web.Tests.Services
         public void TestReadOnlyRepoRegister()
         {
             var services = new ServiceCollection();
-            new RddBuilder(services).AddReadOnlyRepository<RepoPipo, Hierarchy>();
+            new RddBuilder(services).AddReadOnlyRepository<RepoPipo, Hierarchy, int>();
             var provider = services.BuildServiceProvider();
 
-            Assert.Null(provider.GetService<IRepository<Hierarchy>>());
+            Assert.Null(provider.GetService<IRepository<Hierarchy, int>>());
 
-            var repo2 = provider.GetRequiredService<IReadOnlyRepository<Hierarchy>>();
+            var repo2 = provider.GetRequiredService<IReadOnlyRepository<Hierarchy, int>>();
             var repo3 = provider.GetRequiredService<RepoPipo>();
 
             Assert.Equal(repo2, repo3);
@@ -117,11 +120,11 @@ namespace Rdd.Web.Tests.Services
         public void TestRepoRegister()
         {
             var services = new ServiceCollection();
-            new RddBuilder(services).AddRepository<RepoPipo, Hierarchy>();
+            new RddBuilder(services).AddRepository<RepoPipo, Hierarchy, int>();
             var provider = services.BuildServiceProvider();
 
-            var repo = provider.GetRequiredService<IRepository<Hierarchy>>();
-            var repo2 = provider.GetRequiredService<IReadOnlyRepository<Hierarchy>>();
+            var repo = provider.GetRequiredService<IRepository<Hierarchy, int>>();
+            var repo2 = provider.GetRequiredService<IReadOnlyRepository<Hierarchy, int>>();
             var repo3 = provider.GetRequiredService<RepoPipo>();
 
             Assert.Equal(repo, repo2);
@@ -131,19 +134,17 @@ namespace Rdd.Web.Tests.Services
 
         class CollectionPipo : IRestCollection<Hierarchy, int>
         {
-            public Task<bool> AnyAsync(Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
 
-            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query = null) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task DeleteByIdAsync(int id, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task DeleteByIdsAsync(IEnumerable<int> ids, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
 
-            public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
-            public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();
+            public Task<ISelection<Hierarchy>> GetAsync(IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<Hierarchy> GetByIdAsync(int id, IQuery<Hierarchy> query) => throw new NotImplementedException();
 
-            public Task<ISelection<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<Hierarchy> GetByIdAsync(int id, Query<Hierarchy> query) => throw new NotImplementedException();
-
-            public Task<Hierarchy> UpdateByIdAsync(int id, ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query = null) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> UpdateByIdsAsync(IDictionary<int, ICandidate<Hierarchy, int>> candidatesByIds, Query<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task<Hierarchy> UpdateByIdAsync(int id, ICandidate<Hierarchy, int> candidate, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> UpdateByIdsAsync(IDictionary<int, ICandidate<Hierarchy, int>> candidatesByIds, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
         }
 
         [Fact]
@@ -179,14 +180,14 @@ namespace Rdd.Web.Tests.Services
 
         class ControllerPipo : IAppController<Hierarchy, int>
         {
-            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
-            public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();
-            public Task<ISelection<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<Hierarchy> GetByIdAsync(int id, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<Hierarchy> UpdateByIdAsync(int id, ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> UpdateByIdsAsync(IDictionary<int, ICandidate<Hierarchy, int>> candidatesByIds, Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task DeleteByIdAsync(int id, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task DeleteByIdsAsync(IEnumerable<int> ids, IQuery<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task<ISelection<Hierarchy>> GetAsync(IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<Hierarchy> GetByIdAsync(int id, IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<Hierarchy> UpdateByIdAsync(int id, ICandidate<Hierarchy, int> candidate, IQuery<Hierarchy> query) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> UpdateByIdsAsync(IDictionary<int, ICandidate<Hierarchy, int>> candidatesByIds, IQuery<Hierarchy> query) => throw new NotImplementedException();
         }
 
         [Fact]

@@ -6,17 +6,11 @@ using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
-using Rdd.Domain.Rights;
-using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization.Providers;
 using Rdd.Web.Tests.ServerMock;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests.Services
@@ -43,8 +37,8 @@ namespace Rdd.Web.Tests.Services
 
             Assert.NotNull(provider.GetRequiredService<ISerializerProvider>());
 
-            Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate>>());
-            Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate, int>>());
+            Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IPatcher<ExchangeRate>>());
             Assert.NotNull(provider.GetRequiredService<IInstanciator<ExchangeRate>>());
             Assert.NotNull(provider.GetRequiredService<IReadOnlyRestCollection<ExchangeRate, int>>());

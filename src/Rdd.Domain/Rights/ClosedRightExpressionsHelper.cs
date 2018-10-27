@@ -7,6 +7,6 @@ namespace Rdd.Domain.Rights
     public class ClosedRightExpressionsHelper<T> : IRightExpressionsHelper<T>
          where T : class
     {
-        public Expression<Func<T, bool>> GetFilter(Query<T> query) => t => false;
+        public Expression<Func<T, bool>> GetFilter(IQuery<T> query) => t => false;
     }
 }

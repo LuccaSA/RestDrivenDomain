@@ -10,14 +10,14 @@ namespace Rdd.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity> repository)
+        public ReadOnlyRestCollection(IReadOnlyRepository<TEntity, TKey> repository)
         {
             Repository = repository;
         }
 
-        protected IReadOnlyRepository<TEntity> Repository { get; set; }
+        protected IReadOnlyRepository<TEntity, TKey> Repository { get; set; }
 
-        public async Task<bool> AnyAsync(Query<TEntity> query)
+        public async Task<bool> AnyAsync(IQuery<TEntity> query)
         {
             query.Options.NeedEnumeration = false;
             query.Options.NeedCount = true;
@@ -25,41 +25,14 @@ namespace Rdd.Domain.Models
             return (await GetAsync(query)).Count > 0;
         }
 
-        public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
+        public virtual Task<ISelection<TEntity>> GetAsync(IQuery<TEntity> query)
         {
-            var count = 0;
-            IEnumerable<TEntity> items = new HashSet<TEntity>();
-
-            //Dans de rares cas on veut seulement le count des entités
-            if (query.Options.NeedCount && !query.Options.NeedEnumeration)
-            {
-                count = await Repository.CountAsync(query);
-            }
-
-            //En général on veut une énumération des entités
-            if (query.Options.NeedEnumeration)
-            {
-                items = await Repository.GetAsync(query);
-
-                count = items.Count();
-
-                //Si y'a plus d'items que le paging max ou que l'offset du paging n'est pas à 0, il faut compter la totalité des entités
-                if (query.Page.Offset > 0 || query.Page.Limit <= count)
-                {
-                    count = await Repository.CountAsync(query);
-                }
-
-                items = await Repository.PrepareAsync(items, query);
-            }
-
-            return new Selection<TEntity>(items, count);
+            return Repository.GetAsync(query);
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query)
+        public virtual Task<TEntity> GetByIdAsync(TKey id, IQuery<TEntity> query)
         {
-            return (await GetAsync(new Query<TEntity>(query, e => e.Id.Equals(id)))).Items.FirstOrDefault();
+            return Repository.GetByIdAsync(id, query);
         }
-
-        protected Task<bool> AnyAsync() => AnyAsync(new Query<TEntity>());
     }
 }

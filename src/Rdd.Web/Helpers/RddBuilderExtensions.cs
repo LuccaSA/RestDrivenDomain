@@ -37,24 +37,26 @@ namespace Rdd.Web.Helpers
             return rddBuilder;
         }
 
-        public static RddBuilder AddReadOnlyRepository<TRepository, TEntity>(this RddBuilder rddBuilder)
-            where TRepository : class, IReadOnlyRepository<TEntity>
-            where TEntity : class
+        public static RddBuilder AddReadOnlyRepository<TRepository, TEntity, TKey>(this RddBuilder rddBuilder)
+            where TRepository : class, IReadOnlyRepository<TEntity, TKey>
+            where TEntity : class, IPrimaryKey<TKey>
+            where TKey : IEquatable<TKey>
         {
             rddBuilder.Services
-                .AddScoped<IReadOnlyRepository<TEntity>, TRepository>(s => s.GetRequiredService<TRepository>())
+                .AddScoped<IReadOnlyRepository<TEntity, TKey>, TRepository>(s => s.GetRequiredService<TRepository>())
                 .AddScoped<TRepository>();
 
             return rddBuilder;
         }
 
-        public static RddBuilder AddRepository<TRepository, TEntity>(this RddBuilder rddBuilder)
-            where TRepository : class, IRepository<TEntity>
-            where TEntity : class
+        public static RddBuilder AddRepository<TRepository, TEntity, TKey>(this RddBuilder rddBuilder)
+            where TRepository : class, IRepository<TEntity, TKey>
+            where TEntity : class, IPrimaryKey<TKey>
+            where TKey : IEquatable<TKey>
         {
             rddBuilder.Services
-                .AddScoped<IRepository<TEntity>, TRepository>(s => s.GetRequiredService<TRepository>())
-                .AddScoped<IReadOnlyRepository<TEntity>, TRepository>(s => s.GetRequiredService<TRepository>())
+                .AddScoped<IRepository<TEntity, TKey>, TRepository>(s => s.GetRequiredService<TRepository>())
+                .AddScoped<IReadOnlyRepository<TEntity, TKey>, TRepository>(s => s.GetRequiredService<TRepository>())
                 .AddScoped<TRepository>();
 
             return rddBuilder;

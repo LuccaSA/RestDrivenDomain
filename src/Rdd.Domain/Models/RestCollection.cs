@@ -12,12 +12,12 @@ namespace Rdd.Domain.Models
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        protected new IRepository<TEntity> Repository { get; set; }
+        protected new IRepository<TEntity, TKey> Repository { get; set; }
         protected IPatcher<TEntity> Patcher { get; set; }
 
         protected IInstanciator<TEntity> Instanciator { get; set; }
 
-        public RestCollection(IRepository<TEntity> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
+        public RestCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
             : base(repository)
         {
             Patcher = patcher;
@@ -25,7 +25,7 @@ namespace Rdd.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, IQuery<TEntity> query = null)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
@@ -42,7 +42,7 @@ namespace Rdd.Domain.Models
             return null;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, IQuery<TEntity> query = null)
         {
             var result = new List<TEntity>();
 
@@ -65,12 +65,9 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, IQuery<TEntity> query = null)
         {
-            query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerbs.Put;
-
-            TEntity entity = await GetByIdAsync(id, query);
+            TEntity entity = await Repository.GetByIdAsync(id, query);
             if (entity == null)
             {
                 return null;
@@ -78,16 +75,11 @@ namespace Rdd.Domain.Models
             return await UpdateAsync(entity, candidate, query);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, IQuery<TEntity> query = null)
         {
-            query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerbs.Put;
-
             var result = new HashSet<TEntity>();
-
             var ids = candidatesByIds.Select(d => d.Key).ToList();
-            var expQuery = new Query<TEntity>(query, e => ids.Contains(e.Id));
-            var entities = (await GetAsync(expQuery)).Items.ToDictionary(el => el.Id);
+            var entities = (await Repository.GetByIdsAsync(ids, query)).ToDictionary(el => el.Id);
 
             foreach (KeyValuePair<TKey, ICandidate<TEntity, TKey>> kvp in candidatesByIds)
             {
@@ -100,20 +92,18 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task DeleteByIdAsync(TKey id)
+        public virtual async Task DeleteByIdAsync(TKey id, IQuery<TEntity> query)
         {
-            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
+            var entity = await Repository.GetByIdAsync(id, query);
             if (entity != null)
             {
                 Repository.Remove(entity);
             }
         }
 
-        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
+        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids, IQuery<TEntity> query)
         {
-            var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
-
-            foreach (var entity in (await GetAsync(expQuery)).Items)
+            foreach (var entity in (await Repository.GetByIdsAsync(ids, query)))
             {
                 Repository.Remove(entity);
             }
@@ -152,9 +142,9 @@ namespace Rdd.Domain.Models
         /// As "oldEntity" is a MemberWiseClone of "entity" before its update, it's a one level deep copy. If you want to go deeper
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
-        protected virtual Task OnAfterUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
+        protected virtual Task OnAfterUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate, IQuery<TEntity> query) => Task.CompletedTask;
 
-        private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
+        private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, IQuery<TEntity> query)
         {
             await OnBeforeUpdateEntity(entity, candidate);
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Rdd.Domain.Json;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests.Models;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Querying;
 using System;
 using System.Collections.Generic;

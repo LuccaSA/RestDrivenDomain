@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 
 namespace Rdd.Web.Querying
 {

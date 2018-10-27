@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Controllers;
 using Rdd.Web.Querying;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rdd.Domain.Models.Querying;
 
 namespace Rdd.Web.Tests.Models
 {

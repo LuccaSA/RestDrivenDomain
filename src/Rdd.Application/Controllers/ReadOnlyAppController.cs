@@ -27,9 +27,9 @@ namespace Rdd.Application.Controllers
             Collection = collection;
         }
 
-        public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
+        public virtual Task<ISelection<TEntity>> GetAsync(IQuery<TEntity> query) => Collection.GetAsync(query);
 
-        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
+        public virtual Task<TEntity> GetByIdAsync(TKey id, IQuery<TEntity> query) => Collection.GetByIdAsync(id, query);
 
 
     }

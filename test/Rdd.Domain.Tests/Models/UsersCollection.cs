@@ -7,7 +7,7 @@ namespace Rdd.Domain.Tests.Models
 {
     public class UsersCollection : RestCollection<User, Guid>
     {
-        public UsersCollection(IRepository<User> repository, IPatcherProvider patcherProvider, IInstanciator<User> instanciator)
+        public UsersCollection(IRepository<User, Guid> repository, IPatcherProvider patcherProvider, IInstanciator<User> instanciator)
             : base(repository, new ObjectPatcher<User>(patcherProvider, new ReflectionHelper()), instanciator) { }
     }
 }

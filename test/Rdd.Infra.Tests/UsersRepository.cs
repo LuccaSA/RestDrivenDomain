@@ -2,16 +2,18 @@
 using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
+using System;
 using System.Linq;
 
 namespace Rdd.Infra.Tests
 {
-    public class UsersRepository : OpenRepository<User>
+    public class UsersRepository : OpenRepository<User, Guid>
     {
         public UsersRepository(IStorageService storageService, IRightExpressionsHelper<User> rightsService)
         : base(storageService, rightsService) { }
 
-        protected override IQueryable<User> ApplyOrderBys(IQueryable<User> entities, Query<User> query)
+        protected override IQueryable<User> ApplyOrderBys(IQueryable<User> entities, IQuery<User> query)
         {
             if (!query.OrderBys.Any())
             {

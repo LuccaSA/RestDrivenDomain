@@ -1,11 +1,13 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Rights;
+using System;
 using System.Collections.Generic;
 
 namespace Rdd.Infra.Storage
 {
-    public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
-        where TEntity : class
+    public class Repository<TEntity, TKey> : ReadOnlyRepository<TEntity, TKey>, IRepository<TEntity, TKey>
+        where TEntity : class, IPrimaryKey<TKey>
+        where TKey : IEquatable<TKey>
     {
         public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
             : base(storageService, rightExpressionsHelper) { }

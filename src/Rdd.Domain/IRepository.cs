@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Rdd.Domain
 {
-    public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
-        where TEntity : class
+    public interface IRepository<TEntity, TKey> : IReadOnlyRepository<TEntity, TKey>
+        where TEntity : class, IPrimaryKey<TKey>
+        where TKey : IEquatable<TKey>
     {
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);
