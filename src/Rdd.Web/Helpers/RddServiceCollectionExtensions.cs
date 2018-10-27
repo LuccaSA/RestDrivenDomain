@@ -33,7 +33,7 @@ namespace Rdd.Web.Helpers
         {
             services.AddOptions<RddOptions>();
 
-            services.TryAddSingleton(typeof(IInstanciator<>), typeof(DefaultInstanciator<>));
+            services.TryAddSingleton(typeof(IInstantiator<>), typeof(DefaultInstanciator<>));
             services.TryAddSingleton<IPatcherProvider, PatcherProvider>();
             services.TryAddSingleton(typeof(IPatcher<>), typeof(ObjectPatcher<>));
             services.TryAddSingleton<EnumerablePatcher>();

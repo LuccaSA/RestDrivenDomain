@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Rdd.Application;
+using Rdd.Domain;
 using Rdd.Domain.Json;
 using Rdd.Domain.Rights;
 using Rdd.Infra.Storage;
@@ -39,6 +40,7 @@ namespace Rdd.Web.Tests
 
             services.AddScoped<OnExchangeRateSave>();
             services.AddScoped<OnAnotherUserSave>();
+            services.AddScoped<IRestCollection<ExchangeRate, int>, ExchangeRatesCollection>();
             services.AddScoped<ISaveEventProcessor>(s => s.GetRequiredService<OnExchangeRateSave>());
             services.AddScoped<ISaveEventProcessor>(s => s.GetRequiredService<OnAnotherUserSave>());
 

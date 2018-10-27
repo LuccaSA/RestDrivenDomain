@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Rdd.Domain.Models
 {
-    public class BaseClassInstanciator<TEntity> : IInstanciator<TEntity>
+    public class BaseClassInstanciator<TEntity> : IInstantiator<TEntity>
         where TEntity : class
     {
         private readonly IInheritanceConfiguration<TEntity> _configuration;
@@ -12,14 +13,14 @@ namespace Rdd.Domain.Models
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public TEntity InstanciateNew(ICandidate<TEntity> candidate)
+        public Task<TEntity> InstantiateAsync(ICandidate<TEntity> candidate)
         {
             if (candidate.JsonValue.HasJsonValue(_configuration.Discriminator))
             {
                 var value = candidate.JsonValue.GetJsonValue(_configuration.Discriminator);
                 if (_configuration.Mappings.ContainsKey(value))
                 {
-                    return Activator.CreateInstance(_configuration.Mappings[value]) as TEntity;
+                    return Task.FromResult(Activator.CreateInstance(_configuration.Mappings[value]) as TEntity);
                 }
             }
 

@@ -30,7 +30,7 @@ namespace Rdd.Web.Helpers
             services.AddSingleton<IInheritanceConfiguration<TEntity>>(s => config);
 
             services.TryAddSingleton<IPatcher<TEntity>, BaseClassPatcher<TEntity>>();
-            services.TryAddSingleton<IInstanciator<TEntity>, BaseClassInstanciator<TEntity>>();
+            services.TryAddSingleton<IInstantiator<TEntity>, BaseClassInstanciator<TEntity>>();
 
             rddBuilder.AddJsonConverter(new BaseClassJsonConverter<TEntity>(config));
 

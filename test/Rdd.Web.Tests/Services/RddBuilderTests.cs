@@ -77,7 +77,7 @@ namespace Rdd.Web.Tests.Services
             provider.GetRequiredService<IInheritanceConfiguration<Hierarchy2>>();
 
             Assert.IsType<BaseClassPatcher<Hierarchy>>(provider.GetRequiredService<IPatcher<Hierarchy>>());
-            Assert.IsType<BaseClassInstanciator<Hierarchy>>(provider.GetRequiredService<IInstanciator<Hierarchy>>());
+            Assert.IsType<BaseClassInstanciator<Hierarchy>>(provider.GetRequiredService<IInstantiator<Hierarchy>>());
         }
 
         [Fact]

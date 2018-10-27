@@ -83,14 +83,14 @@ namespace Rdd.Domain.Tests
             await users.CreateAsync(candidate, query);
         }
 
-        private class InstanciatorImplementation : IInstanciator<UserWithParameters>
+        private class InstanciatorImplementation : IInstantiator<UserWithParameters>
         {
-            public UserWithParameters InstanciateNew(ICandidate<UserWithParameters> candidate)
+            public Task<UserWithParameters> InstantiateAsync(ICandidate<UserWithParameters> candidate)
             {
                 var id = candidate.Value.Id;
                 var name = candidate.Value.Name;
 
-                return new UserWithParameters(id, name);
+                return Task.FromResult(new UserWithParameters(id, name));
             }
         }
 
@@ -163,7 +163,7 @@ namespace Rdd.Domain.Tests
             _fixture.InMemoryStorage.Add(user);
             await _fixture.InMemoryStorage.SaveChangesAsync();
 
-            var users = new RestCollection<User, Guid>(_fixture.UsersRepo, new OverrideObjectPatcher<User>(_fixture.PatcherProvider), _fixture.Instanciator);
+            var users = new UsersCollection(_fixture.UsersRepo, new OverrideObjectPatcher<User>(_fixture.PatcherProvider), _fixture.Instanciator);
             var query = new Query<User>();
             query.Options.CheckRights = false;
 
@@ -198,7 +198,7 @@ namespace Rdd.Domain.Tests
             {
                 var repo = new Repository<Hierarchy, int>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
                 var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
-                var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper), instanciator);
+                var collection = new HierarchiesCollection(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper), instanciator);
 
                 var candidate = _parser.Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
                 await collection.CreateAsync(candidate);
@@ -210,7 +210,7 @@ namespace Rdd.Domain.Tests
         {
             var repo = new Repository<Hierarchy, int>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
             var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
-            var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper, new InheritanceConfiguration()), instanciator);
+            var collection = new HierarchiesCollection(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper, new InheritanceConfiguration()), instanciator);
 
             var candidate = _parser.Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
             await collection.CreateAsync(candidate);

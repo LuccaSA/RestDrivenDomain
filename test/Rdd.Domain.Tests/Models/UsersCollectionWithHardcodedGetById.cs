@@ -9,7 +9,7 @@ namespace Rdd.Domain.Tests.Models
 {
     public class UsersCollectionWithHardcodedGetById : UsersCollection
     {
-        public UsersCollectionWithHardcodedGetById(IRepository<User, Guid> repository, IPatcherProvider patcherProvider, IInstanciator<User> instanciator)
+        public UsersCollectionWithHardcodedGetById(IRepository<User, Guid> repository, IPatcherProvider patcherProvider, IInstantiator<User> instanciator)
             : base(repository, patcherProvider, instanciator) { }
 
         public override Task<User> GetByIdAsync(Guid id, IQuery<User> query)

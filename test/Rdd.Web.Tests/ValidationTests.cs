@@ -66,32 +66,32 @@ namespace Rdd.Web.Tests
 
         public class ValidationFailCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationFailCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
-                : base(repository, patcher, instanciator) { }
+            public ValidationFailCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher) 
+                : base(repository, patcher) { }
 
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(false);
         }
 
         public class ValidationOkCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationOkCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
-                : base(repository, patcher, instanciator) { }
+            public ValidationOkCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher) 
+                : base(repository, patcher) { }
 
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => Task.FromResult(true);
         }
 
         public class ValidationThrowCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationThrowCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
-                : base(repository, patcher, instanciator) { }
+            public ValidationThrowCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher) 
+                : base(repository, patcher) { }
 
             protected override Task<bool> ValidateEntityAsync(TEntity entity) => throw new NotImplementedException();
         }
 
         public class ValidationThrowAsyncCollection<TEntity, TKey> : RestCollection<TEntity, TKey> where TEntity : class, IEntityBase<TKey> where TKey : IEquatable<TKey>
         {
-            public ValidationThrowAsyncCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator) 
-                : base(repository, patcher, instanciator) { }
+            public ValidationThrowAsyncCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher) 
+                : base(repository, patcher) { }
 
             protected override async Task<bool> ValidateEntityAsync(TEntity entity)
             {

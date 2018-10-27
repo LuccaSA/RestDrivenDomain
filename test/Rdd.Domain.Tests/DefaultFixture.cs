@@ -16,7 +16,7 @@ namespace Rdd.Domain.Tests
         public IRightExpressionsHelper<User> RightsService { get; private set; }
         public IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
         public IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
-        public IInstanciator<User> Instanciator { get; private set; }
+        public IInstantiator<User> Instanciator { get; private set; }
         public InMemoryStorageService InMemoryStorage { get; private set; }
         public IRepository<User, Guid> UsersRepo { get; private set; }
 

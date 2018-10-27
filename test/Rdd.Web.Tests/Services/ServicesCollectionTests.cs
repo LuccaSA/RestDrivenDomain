@@ -40,7 +40,7 @@ namespace Rdd.Web.Tests.Services
             Assert.NotNull(provider.GetRequiredService<IReadOnlyRepository<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IRepository<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IPatcher<ExchangeRate>>());
-            Assert.NotNull(provider.GetRequiredService<IInstanciator<ExchangeRate>>());
+            Assert.NotNull(provider.GetRequiredService<IInstantiator<ExchangeRate>>());
             Assert.NotNull(provider.GetRequiredService<IReadOnlyRestCollection<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IRestCollection<ExchangeRate, int>>());
             Assert.NotNull(provider.GetRequiredService<IReadOnlyAppController<ExchangeRate, int>>());

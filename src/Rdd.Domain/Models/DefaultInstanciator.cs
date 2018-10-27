@@ -1,8 +1,10 @@
-﻿namespace Rdd.Domain.Models
+﻿using System.Threading.Tasks;
+
+namespace Rdd.Domain.Models
 {
-    public class DefaultInstanciator<TEntity> : IInstanciator<TEntity>
+    public class DefaultInstanciator<TEntity> : IInstantiator<TEntity>
         where TEntity : class, new()
     {
-        public TEntity InstanciateNew(ICandidate<TEntity> candidate) => new TEntity();
+        public Task<TEntity> InstantiateAsync(ICandidate<TEntity> candidate) => Task.FromResult(new TEntity());
     }
 }

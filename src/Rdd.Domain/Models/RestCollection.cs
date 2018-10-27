@@ -15,19 +15,21 @@ namespace Rdd.Domain.Models
         protected new IRepository<TEntity, TKey> Repository { get; set; }
         protected IPatcher<TEntity> Patcher { get; set; }
 
-        protected IInstanciator<TEntity> Instanciator { get; set; }
-
-        public RestCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher, IInstanciator<TEntity> instanciator)
+        public RestCollection(IRepository<TEntity, TKey> repository, IPatcher<TEntity> patcher)
             : base(repository)
         {
             Patcher = patcher;
             Repository = repository;
-            Instanciator = instanciator;
+        }
+
+        public virtual Task<TEntity> InstantiateEntityAsync(ICandidate<TEntity, TKey> candidate)
+        {
+            throw new NotImplementedException(@"You have to override InstanciateEntity. You could implement a ""return new TEntity();"" or inject an IInstantiator<TEntity> into your Collection");
         }
 
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, IQuery<TEntity> query = null)
         {
-            TEntity entity = Instanciator.InstanciateNew(candidate);
+            TEntity entity = await InstantiateEntityAsync(candidate);
 
             entity = Patcher.Patch(entity, candidate.JsonValue);
 
@@ -48,7 +50,7 @@ namespace Rdd.Domain.Models
 
             foreach (var candidate in candidates)
             {
-                TEntity entity = Instanciator.InstanciateNew(candidate);
+                TEntity entity = await InstantiateEntityAsync(candidate);
 
                 entity = Patcher.Patch(entity, candidate.JsonValue);
 

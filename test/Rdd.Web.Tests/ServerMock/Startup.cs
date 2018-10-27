@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rdd.Domain;
 using Rdd.Domain.Rights;
 using Rdd.Web.Helpers;
 
@@ -31,6 +32,7 @@ namespace Rdd.Web.Tests.ServerMock
                     rdd.PagingLimit = 10;
                     rdd.PagingMaximumLimit = 4242;
                 })
+                .AddRestCollection<ExchangeRatesCollection, ExchangeRate, int>()
                 .WithDefaultRights(RightDefaultMode.Open);
 
             services.AddMvc();
