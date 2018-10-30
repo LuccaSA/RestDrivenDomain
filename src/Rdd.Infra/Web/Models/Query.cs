@@ -1,12 +1,13 @@
 ﻿using Rdd.Domain.Helpers;
 using Rdd.Domain.Helpers.Expressions;
+using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Rdd.Domain.Models.Querying
+namespace Rdd.Infra.Web.Models
 {
-    public class Query<TEntity>
+    public class Query<TEntity> : IQuery<TEntity>
         where TEntity : class
     {
         public HttpVerbs Verb { get; set; }
@@ -42,7 +43,7 @@ namespace Rdd.Domain.Models.Querying
             Filter = filter;
         }
 
-        public Query(Query<TEntity> source)
+        public Query(IQuery<TEntity> source)
             : this()
         {
             Verb = source.Verb;
@@ -53,7 +54,7 @@ namespace Rdd.Domain.Models.Querying
             Options = source.Options;
         }
 
-        public Query(Query<TEntity> source, Expression<Func<TEntity, bool>> filter)
+        public Query(IQuery<TEntity> source, Expression<Func<TEntity, bool>> filter)
             : this(source)
         {
             Filter = new Filter<TEntity>(filter);

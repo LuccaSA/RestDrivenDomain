@@ -77,8 +77,8 @@ namespace Rdd.Web.Helpers
             services.TryAddScoped<IStorageService, EFStorageService>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.TryAddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
-            services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.TryAddScoped(typeof(IReadOnlyRepository<,>), typeof(ReadOnlyRepository<,>));
+            services.TryAddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.TryAddScoped(typeof(IReadOnlyRestCollection<,>), typeof(ReadOnlyRestCollection<,>));
             services.TryAddScoped(typeof(IRestCollection<,>), typeof(RestCollection<,>));
             services.TryAddScoped(typeof(IReadOnlyAppController<,>), typeof(ReadOnlyAppController<,>));

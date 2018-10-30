@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
-using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
+using Rdd.Infra.Web.Models;
 using System;
 
 namespace Rdd.Web.Querying

@@ -1,18 +1,18 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Rdd.Application;
 using Rdd.Domain.Json;
-using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Rights;
 using Rdd.Infra.Storage;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using Rdd.Web.Tests.ServerMock;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -70,7 +70,7 @@ namespace Rdd.Web.Tests
             Assert.Equal(0, onSave.DeleteCount);
             Assert.Equal(4, onSave.CallsCount);
 
-            await app.DeleteByIdAsync(updated.Id); 
+            await app.DeleteByIdAsync(updated.Id, new Query<ExchangeRate>()); 
 
             Assert.Equal(2, onSave.AddCount);
             Assert.Equal(2, onSave.UpdateCount);

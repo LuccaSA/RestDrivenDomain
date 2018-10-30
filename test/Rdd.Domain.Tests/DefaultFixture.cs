@@ -18,7 +18,7 @@ namespace Rdd.Domain.Tests
         public IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
         public IInstanciator<User> Instanciator { get; private set; }
         public InMemoryStorageService InMemoryStorage { get; private set; }
-        public IRepository<User> UsersRepo { get; private set; }
+        public IRepository<User, Guid> UsersRepo { get; private set; }
 
         public DefaultFixture()
         {
@@ -37,7 +37,7 @@ namespace Rdd.Domain.Tests
             RightsService = new OpenRightExpressionsHelper<User>();
             Instanciator = new DefaultInstanciator<User>();
             InMemoryStorage = new InMemoryStorageService();
-            UsersRepo = new Repository<User>(InMemoryStorage, RightsService);
+            UsersRepo = new Repository<User, Guid>(InMemoryStorage, RightsService);
         }
 
         public void Dispose() { }

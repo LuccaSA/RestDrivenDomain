@@ -5,6 +5,7 @@ using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
+using Rdd.Infra.Web.Models;
 using Rdd.Web.Querying;
 using Rdd.Web.Serialization;
 using System;
@@ -104,7 +105,8 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            await AppController.DeleteByIdAsync(id);
+            Query<TEntity> query = QueryParser.Parse(HttpContext.Request, false);
+            await AppController.DeleteByIdAsync(id, query);
 
             return Ok();
         }
@@ -124,7 +126,8 @@ namespace Rdd.Web.Controllers
                 return BadRequest("To delete a collection of entities, provide an array of objets with an 'id' property");
             }
 
-            await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id));
+            Query<TEntity> query = QueryParser.Parse(HttpContext.Request, true);
+            await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id), query);
 
             return Ok();
         }
