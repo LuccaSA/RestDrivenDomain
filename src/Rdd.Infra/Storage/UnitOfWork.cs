@@ -41,10 +41,5 @@ namespace Rdd.Infra.Storage
                 }
             }
         }
-
-        public void Dispose()
-        {
-            _dbContext.Dispose();
-        }
     }
 }
