@@ -11,7 +11,7 @@ namespace Rdd.Domain.Tests.Models
         public string Url { get; set; }
 
         public string MailString { get; set; }
-        public MailAddress Mail { get => new MailAddress(MailString); set => MailString = value?.ToString(); }
+        public MailAddress Mail { get => string.IsNullOrEmpty(MailString) ? null : new MailAddress(MailString); set => MailString = value?.ToString(); }
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
         public Department Department { get; set; }
