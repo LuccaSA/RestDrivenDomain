@@ -12,13 +12,18 @@ using System.Net.Mail;
 
 namespace Rdd.Infra.Helpers
 {
-    public class WebFilterConverter<TEntity> : IWebFilterConverter<TEntity>
+    public class WebFilterConverter
     {
-        private const int EF_EXPRESSION_TREE_MAX_DEPTH = 1000;
+        protected const int EF_EXPRESSION_TREE_MAX_DEPTH = 1000;
 
-        private static readonly HashSet<Type> KnownTypesEvaluatedClientSideWithHashCode
+        protected static readonly HashSet<Type> KnownTypesEvaluatedClientSideWithHashCode
             = new HashSet<Type> { typeof(MailAddress) };
 
+        protected WebFilterConverter() { }
+    }
+
+    public class WebFilterConverter<TEntity> : WebFilterConverter, IWebFilterConverter<TEntity>
+    {
         public Expression<Func<TEntity, bool>> ToExpression(IEnumerable<WebFilter<TEntity>> filters) => filters.Select(ToExpression).AndAggregation();
 
         public Expression<Func<TEntity, bool>> ToExpression(WebFilter<TEntity> filter)
