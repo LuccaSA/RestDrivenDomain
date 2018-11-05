@@ -8,12 +8,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Mail;
 
 namespace Rdd.Infra.Helpers
 {
     public class WebFilterConverter<TEntity> : IWebFilterConverter<TEntity>
     {
         private const int EF_EXPRESSION_TREE_MAX_DEPTH = 1000;
+
+        private static readonly HashSet<Type> KnownTypesEvaluatedClientSideWithHashCode
+            = new HashSet<Type> { typeof(MailAddress) };
 
         public Expression<Func<TEntity, bool>> ToExpression(IEnumerable<WebFilter<TEntity>> filters) => filters.Select(ToExpression).AndAggregation();
 
@@ -60,7 +64,7 @@ namespace Rdd.Infra.Helpers
         public Expression<Func<TEntity, bool>> Equals(IExpression field, IList values) => BuildLambda(Contains, field, values);
         protected virtual Expression Contains(Expression leftExpression, IList values)
         {
-            if (values.Count == 1)
+            if (values.Count == 1 && !KnownTypesEvaluatedClientSideWithHashCode.Contains(leftExpression.Type))
             {
                 return Expression.Equal(leftExpression, Expression.Constant(values[0]));
             }
@@ -73,7 +77,7 @@ namespace Rdd.Infra.Helpers
         public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values) => BuildLambda(NotEqual, field, values);
         protected virtual Expression NotEqual(Expression leftExpression, IList values)
         {
-            if (values.Count == 1)
+            if (values.Count == 1 && !KnownTypesEvaluatedClientSideWithHashCode.Contains(leftExpression.Type))
             {
                 return Expression.NotEqual(leftExpression, Expression.Constant(values[0]));
             }

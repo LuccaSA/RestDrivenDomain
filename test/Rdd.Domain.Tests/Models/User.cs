@@ -10,7 +10,8 @@ namespace Rdd.Domain.Tests.Models
         public string Name { get; set; }
         public string Url { get; set; }
 
-        public MailAddress Mail { get; set; }
+        public string MailString { get; set; }
+        public MailAddress Mail { get => new MailAddress(MailString); set => MailString = value?.ToString(); }
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
         public Department Department { get; set; }
@@ -23,7 +24,13 @@ namespace Rdd.Domain.Tests.Models
 
             for (var i = 1; i <= count; i++)
             {
-                result.Add(new User { Id = Guid.NewGuid(), Name = $"John Doe {i}", FriendId = (i % 2 == 0 ? (Guid?)null : Guid.NewGuid()) });
+                result.Add(new User
+                {
+                    Id = Guid.NewGuid(),
+                    Name = $"John Doe {i}",
+                    FriendId = i % 2 == 0 ? (Guid?)null : Guid.NewGuid(),
+                    MailString = $"aaa{i}@example.com"
+                });
             }
 
             return result;
