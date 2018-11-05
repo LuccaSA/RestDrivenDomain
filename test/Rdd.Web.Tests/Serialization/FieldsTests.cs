@@ -153,12 +153,13 @@ namespace Rdd.Web.Tests.Serialization
         }
 
         [Fact]
-        public async Task DicoFail()
+        public async Task DicoDoesNotFail()
         {
             var obj1 = new Dictionary<string, int> { { "lol", 1 }, { "lil", 2 } };
             var fields = new ExpressionParser().ParseTree<Dictionary<string, int>>("lul");
 
-            await Assert.ThrowsAsync<BadRequestException>(async () => await SerializeAsync(obj1, fields));
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""lul"":null}"), json);
         }
 
         [Fact]
