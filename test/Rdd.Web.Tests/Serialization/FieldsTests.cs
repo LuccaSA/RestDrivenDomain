@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Rdd.Domain.Exceptions;
 
 namespace Rdd.Web.Tests.Serialization
 {
@@ -132,13 +133,32 @@ namespace Rdd.Web.Tests.Serialization
         }
 
         [Fact]
-        public async Task Dico()
+        public async Task DicoScenario1()
         {
             var obj1 = new Dictionary<string, int> { { "lol", 1 } };
             var fields = new ExpressionTree();
 
             var json = await SerializeAsync(obj1, fields);
             Assert.Equal(ExpectedInput(@"{""lol"":1}"), json);
+        }
+
+        [Fact]
+        public async Task DicoScenario2()
+        {
+            var obj1 = new Dictionary<string, int> { { "lol", 1 }, { "lil", 2 } };
+            var fields = new ExpressionParser().ParseTree<Dictionary<string, int>>("lol");
+
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""lol"":1}"), json);
+        }
+
+        [Fact]
+        public async Task DicoFail()
+        {
+            var obj1 = new Dictionary<string, int> { { "lol", 1 }, { "lil", 2 } };
+            var fields = new ExpressionParser().ParseTree<Dictionary<string, int>>("lul");
+
+            await Assert.ThrowsAsync<BadRequestException>(async () => await SerializeAsync(obj1, fields));
         }
 
         [Fact]
