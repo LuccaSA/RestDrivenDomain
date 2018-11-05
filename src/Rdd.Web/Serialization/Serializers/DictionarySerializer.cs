@@ -26,7 +26,7 @@ namespace Rdd.Web.Serialization.Serializers
         {
             writer.WriteStartObject();
 
-            if (fields.Children.Count == 0)
+            if (fields.Children.Count != 0)
             {
                 foreach (var child in fields.Children)
                 {

@@ -132,6 +132,16 @@ namespace Rdd.Web.Tests.Serialization
         }
 
         [Fact]
+        public async Task Dico()
+        {
+            var obj1 = new Dictionary<string, int> { { "lol", 1 } };
+            var fields = new ExpressionTree();
+
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""lol"":1}"), json);
+        }
+
+        [Fact]
         public async Task TwoLevelSelection()
         {
             var obj1 = new Obj1
