@@ -26,19 +26,12 @@ namespace Rdd.Web.Serialization.Serializers
         {
             writer.WriteStartObject();
 
-            if (fields.Children.Count == 0)
+            if (fields.Children.Count != 0)
             {
                 foreach (var child in fields.Children)
                 {
                     var concreteChild = child.Node as ItemExpression;
-                    try
-                    {
-                        WriteKvp(writer, NamingStrategy.GetDictionaryKey(concreteChild.Name), dico[concreteChild.Name], child);
-                    }
-                    catch
-                    {
-                        throw new BadRequestException($"Unknown key {concreteChild.Name }");
-                    }
+                    WriteKvp(writer, NamingStrategy.GetDictionaryKey(concreteChild.Name), dico[concreteChild.Name], child);
                 }
             }
             else
