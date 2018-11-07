@@ -32,7 +32,7 @@ namespace Rdd.Infra.Storage
                         switch (se.Number)
                         {
                             case 2627:
-                                throw new SqlUniqConstraintException(se.Message);
+                                throw new TechnicalException(se.Message);
                             default:
                                 throw se;
                         }
