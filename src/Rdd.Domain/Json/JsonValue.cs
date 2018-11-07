@@ -13,15 +13,9 @@ namespace Rdd.Domain.Json
             Content = value;
         }
 
-        public override object GetContent()
-        {
-            return Content;
-        }
+        public override object GetContent() => Content;
 
-        public override HashSet<string> GetPaths()
-        {
-            return new HashSet<string> { "" };
-        }
+        public override HashSet<string> GetPaths() => new HashSet<string> { "" };
 
         public override JsonArray GetJsonArray(Queue<string> path)
         {
@@ -35,28 +29,17 @@ namespace Rdd.Domain.Json
 
         public override string GetJsonValue(Queue<string> path)
         {
-            if (path == null || path.Count == 0)
+            if (HasJsonValue(path))
             {
-                return Content == null ? null : Content.ToString();
+                return Content?.ToString();
             }
 
             throw new ArgumentException($"The json path '{string.Join(".", path)}' does not exist on this json value");
         }
 
-        public override bool HasJsonArray(Queue<string> path)
-        {
-            return false;
-        }
-
-        public override bool HasJsonObject(Queue<string> path)
-        {
-            return false;
-        }
-
-        public override bool HasJsonValue(Queue<string> path)
-        {
-            return path == null || path.Count == 0;
-        }
+        public override bool HasJsonArray(Queue<string> path) => false;
+        public override bool HasJsonObject(Queue<string> path) => false;
+        public override bool HasJsonValue(Queue<string> path) => path == null || path.Count == 0;
 
         public override bool HasKey(Queue<string> path) => HasJsonValue(path);
     }
