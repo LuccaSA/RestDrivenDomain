@@ -58,13 +58,11 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
+            if (int.TryParse(currentPath, out var index) && 0 <= index && index < Content.Count)
             {
-                throw new ArgumentException("Path on a json array must be a valid integer");
+                return Content[index].GetJsonArray(path);
             }
-
-            return Content[index].GetJsonArray(path);
+            throw new ArgumentException("Path on a json array must be a valid integer");
         }
 
         public override JsonObject GetJsonObject(Queue<string> path)
@@ -75,13 +73,11 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
+            if (int.TryParse(currentPath, out var index) && 0 <= index && index < Content.Count)
             {
-                throw new ArgumentException("Path on a json array must be a valid integer");
+                return Content[index].GetJsonObject(path);
             }
-
-            return Content[index].GetJsonObject(path);
+            throw new ArgumentException("Path on a json array must be a valid integer");
         }
 
         public override string GetJsonValue(Queue<string> path)
@@ -92,80 +88,39 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
+            if (int.TryParse(currentPath, out var index) && 0 <= index && index < Content.Count)
             {
-                throw new ArgumentException("Path on a json array must be a valid integer");
+                return Content[index].GetJsonValue(path);
             }
-
-            return Content[index].GetJsonValue(path);
+            throw new ArgumentException("Path on a json array must be a valid integer");
         }
 
-        public override bool HasJsonArray(Queue<string> path)
-        {
-            if (path == null || path.Count == 0)
-            {
-                return true;
-            }
+        public override bool HasJsonArray(Queue<string> path) => path == null || path.Count == 0 ||
+        (
+            int.TryParse(path.Dequeue(), out var index)
+            && 0 <= index && index < Content.Count
+            && Content[index].HasJsonArray(path)
+        );
 
-            var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
-            {
-                throw new ArgumentException("Path on a json array must be a valid integer");
-            }
+        public override bool HasJsonObject(Queue<string> path) =>
+            path != null
+            && path.Count != 0
+            && int.TryParse(path.Dequeue(), out var index)
+            && 0 <= index && index < Content.Count
+            && Content[index].HasJsonObject(path);
 
-            return Content[index].HasJsonArray(path);
-        }
+        public override bool HasJsonValue(Queue<string> path) =>
+            path != null
+            && path.Count != 0
+            && int.TryParse(path.Dequeue(), out var index)
+            && 0 <= index && index<Content.Count
+            && Content[index].HasJsonValue(path);
 
-        public override bool HasJsonObject(Queue<string> path)
-        {
-            if (path == null || path.Count == 0)
-            {
-                return false;
-            }
-
-            var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
-            {
-                return false;
-            }
-
-            return Content[index].HasJsonObject(path);
-        }
-
-        public override bool HasJsonValue(Queue<string> path)
-        {
-            if (path == null || path.Count == 0)
-            {
-                return false;
-            }
-
-            var currentPath = path.Dequeue();
-            int index;
-            if (!int.TryParse(currentPath, out index))
-            {
-                return false;
-            }
-
-            return Content[index].HasJsonValue(path);
-        }
-
-        public override bool HasKey(Queue<string> path)
-        {
-            if (path == null || path.Count == 0)
-            {
-                return true;
-            }
-
-            var currentPath = path.Dequeue();
-            if (!int.TryParse(currentPath, out var index))
-            {
-                return false;
-            }
-
-            return Content[index].HasKey(path);
-        }
+        public override bool HasKey(Queue<string> path) => path == null || path.Count == 0 ||
+        (
+            int.TryParse(path.Dequeue(), out var index)
+            && 0 <= index && index < Content.Count
+            && Content[index].HasKey(path)
+        );
     }
 }
