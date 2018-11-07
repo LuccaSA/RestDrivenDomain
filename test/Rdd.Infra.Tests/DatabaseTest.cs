@@ -8,14 +8,15 @@ namespace Rdd.Infra.Tests
 {
     public class DatabaseTest
     {
-        protected virtual DbContext GetContext(string dbName, bool allowClientEvaluation)
+        protected string DbName { get; private set; }
+        protected virtual DbContext GetContext(bool allowClientEvaluation)
         {
-            return new DataContext(GetOptions(dbName, allowClientEvaluation));
+            return new DataContext(GetOptions(allowClientEvaluation));
         }
-        protected virtual DbContextOptions<DataContext> GetOptions(string dbName, bool allowClientEvaluation)
+        protected virtual DbContextOptions<DataContext> GetOptions(bool allowClientEvaluation)
         {
             var builder = new DbContextOptionsBuilder<DataContext>()
-                .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0");
+                .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={DbName};Trusted_Connection=True;ConnectRetryCount=0");
 
             if (!allowClientEvaluation)
             {
@@ -27,7 +28,9 @@ namespace Rdd.Infra.Tests
 
         public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code, bool allowClientEvaluation = false)
         {
-            using (var context = GetContext(Guid.NewGuid().ToString(), allowClientEvaluation))
+            DbName = Guid.NewGuid().ToString();
+
+            using (var context = GetContext(allowClientEvaluation))
             {
                 try
                 {

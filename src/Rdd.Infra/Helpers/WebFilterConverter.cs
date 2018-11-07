@@ -30,19 +30,19 @@ namespace Rdd.Infra.Helpers
         {
             switch (filter.Operand)
             {
-                case WebFilterOperand.Equals: return Equals(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.NotEqual: return NotEqual(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.Starts: return Starts(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.Like: return Like(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.Between: return Between(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.Since: return Since(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.Until: return Until(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.Anniversary: return Anniversary(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.GreaterThan: return GreaterThan(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.GreaterThanOrEqual: return GreaterThanOrEqual(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.LessThan: return LessThan(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.LessThanOrEqual: return LessThanOrEqual(filter.ExpressionChain, filter.Values);
-                case WebFilterOperand.ContainsAll: return ContainsAll(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Equals: return Equals(filter.Expression, filter.Values);
+                case WebFilterOperand.NotEqual: return NotEqual(filter.Expression, filter.Values);
+                case WebFilterOperand.Starts: return Starts(filter.Expression, filter.Values);
+                case WebFilterOperand.Like: return Like(filter.Expression, filter.Values);
+                case WebFilterOperand.Between: return Between(filter.Expression, filter.Values);
+                case WebFilterOperand.Since: return Since(filter.Expression, filter.Values);
+                case WebFilterOperand.Until: return Until(filter.Expression, filter.Values);
+                case WebFilterOperand.Anniversary: return Anniversary(filter.Expression, filter.Values);
+                case WebFilterOperand.GreaterThan: return GreaterThan(filter.Expression, filter.Values);
+                case WebFilterOperand.GreaterThanOrEqual: return GreaterThanOrEqual(filter.Expression, filter.Values);
+                case WebFilterOperand.LessThan: return LessThan(filter.Expression, filter.Values);
+                case WebFilterOperand.LessThanOrEqual: return LessThanOrEqual(filter.Expression, filter.Values);
+                case WebFilterOperand.ContainsAll: return ContainsAll(filter.Expression, filter.Values);
                 default: throw new NotImplementedException($"Unhandled operand : {filter.Operand}");
             }
         }

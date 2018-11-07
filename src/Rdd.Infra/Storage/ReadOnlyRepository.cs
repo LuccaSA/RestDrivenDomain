@@ -23,11 +23,9 @@ namespace Rdd.Infra.Storage
             RightExpressionsHelper = rightExpressionsHelper;
         }
 
-        public virtual Task<int> CountAsync() => CountAsync(new Query<TEntity>());
         public virtual Task<int> CountAsync(Query<TEntity> query)
         {
             var entities = Set();
-
             if (query.Options.CheckRights)
             {
                 entities = ApplyRights(entities, query);
@@ -35,12 +33,11 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyFilters(entities, query);
 
-            return CountEntities(entities);
+            return CountEntitiesAsync(entities);
         }
-        protected virtual Task<int> CountEntities(IQueryable<TEntity> entities)
-        {
-            return Task.FromResult(entities.Count());
-        }
+
+        protected virtual Task<int> CountEntitiesAsync(IQueryable<TEntity> entities)
+            => StorageService.CountAsync(entities);
 
         public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
@@ -69,18 +66,16 @@ namespace Rdd.Infra.Storage
             return Task.FromResult(entities);
         }
 
-        protected virtual IQueryable<TEntity> Set()
-        {
-            return StorageService.Set<TEntity>();
-        }
+        protected virtual IQueryable<TEntity> Set() => StorageService.Set<TEntity>();
 
         protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {
             return entities.Where(RightExpressionsHelper.GetFilter(query));
         }
+
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            if (query?.Filter?.Expression == null)
+            if (query.Filter == null)
             {
                 return entities;
             }
@@ -96,6 +91,7 @@ namespace Rdd.Infra.Storage
 
             return entities;
         }
+
         protected virtual IQueryable<TEntity> ApplyPage(IQueryable<TEntity> entities, Query<TEntity> query)
         {
             return entities.Skip(query.Page.Offset).Take(query.Page.Limit);
@@ -114,7 +110,6 @@ namespace Rdd.Infra.Storage
             }
 
             return entities;
-
         }
     }
 }

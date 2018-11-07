@@ -13,7 +13,7 @@ namespace Rdd.Infra.Storage
 
         public EFStorageService(DbContext dbContext)
         {
-            DbContext = dbContext;
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public virtual IQueryable<TEntity> Set<TEntity>()
@@ -22,12 +22,7 @@ namespace Rdd.Infra.Storage
             return DbContext.Set<TEntity>();
         }
 
-        /// <summary>
-        /// source : https://expertcodeblog.wordpress.com/2018/02/19/net-core-2-0-resolve-error-the-source-iqueryable-doesnt-implement-iasyncenumerable/
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="entities"></param>
-        /// <returns></returns>
+        //https://expertcodeblog.wordpress.com/2018/02/19/net-core-2-0-resolve-error-the-source-iqueryable-doesnt-implement-iasyncenumerable/
         public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
             where TEntity : class
         {
@@ -36,13 +31,28 @@ namespace Rdd.Infra.Storage
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            //IQueryable is not coming from an EF DbSet !
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
                 return entities.ToList();
             }
 
             return await entities.ToListAsync();
+        }
+
+        public virtual async Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities)
+             where TEntity : class
+        {
+            if (entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
+            if (!(entities is IAsyncEnumerable<TEntity>))
+            {
+                return entities.Count();
+            }
+
+            return await entities.CountAsync();
         }
 
         public virtual void Add<TEntity>(TEntity entity)
@@ -72,11 +82,12 @@ namespace Rdd.Infra.Storage
         public void DiscardChanges<TEntity>(TEntity entity)
             where TEntity : class
         {
-            EntityEntry<TEntity> entry = DbContext.Entry(entity);
-            if (entry == null)
+            if (entity == null)
             {
                 return;
             }
+
+            EntityEntry<TEntity> entry = DbContext.Entry(entity);
             switch (entry.State)
             {
                 case EntityState.Modified:
@@ -89,11 +100,6 @@ namespace Rdd.Infra.Storage
                 case EntityState.Added:
                     entry.State = EntityState.Detached;
                     break;
-                case EntityState.Detached:
-                case EntityState.Unchanged:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(entry.State), "Unknown EntityState");
             }
         }
 
