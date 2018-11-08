@@ -2,39 +2,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Mail;
 
 namespace Rdd.Domain.Models.Querying
 {
     public class StringConverter : IStringConverter
     {
-        public List<T> ConvertValues<T>(IEnumerable<string> values)
-            => (List<T>)ConvertValues(typeof(T), values);
-
-        public IList ConvertValues(Type type, IEnumerable<string> values)
+        public IFilterValue ConvertValues(Type type, params string[] values)
         {
-            var listConstructorParamType = typeof(List<>).MakeGenericType(type);
-
-            var result = (IList)Activator.CreateInstance(listConstructorParamType);
-            foreach (var value in values)
-            {
-                result.Add(ConvertTo(type, value));
-            }
-            return result;
+            return values.Parse(type);
         }
 
-        public T ConvertTo<T>(string input) => (T)ConvertTo(typeof(T), input);
+        public IFilterValue ConvertValues<T>(params string[] values)
+        {
+            return values.Parse(typeof(T));
+        }
 
-        public object ConvertTo(Type type, string input)
+        public FilterValue<T> ConvertTo<T>(string input) => (FilterValue<T>)ConvertTo(typeof(T), input);
+
+        public IFilterValue ConvertTo(Type type, string input)
         {
             var nullableType = Nullable.GetUnderlyingType(type);
             if ((nullableType != null || !type.IsValueType) && (string.IsNullOrEmpty(input) || input == "null"))
             {
                 if (input == string.Empty)
                 {
-                    return string.Empty;
+                    return string.Empty.AsFilterValue();
                 }
-                return null;
+                return ((string)null).AsFilterValue();
             }
 
             var correctedType = nullableType ?? type;
@@ -67,48 +63,49 @@ namespace Rdd.Domain.Models.Querying
             {
                 return CultureInfo.InvariantCulture;
             }
-
             return CultureInfo.CurrentCulture;
         }
 
-        private object InterpretString(string input, CultureInfo culture, Type type)
+        private IFilterValue InterpretString(string input, CultureInfo culture, Type type)
         {
             if (type == typeof(MailAddress))
             {
-                return new MailAddress(input);
+                return new MailAddress(input).AsFilterValue();
             }
             else if (type.IsEnum)
             {
-                return Enum.Parse(type, input, true);
+                return ((int)Enum.Parse(type, input, true)).AsFilterValue();
             }
             else if (type == typeof(TimeSpan))
             {
-                return TimeSpan.Parse(input, culture);
+                return TimeSpan.Parse(input, culture).AsFilterValue();
             }
             else if (type == typeof(Guid))
             {
-                return Guid.Parse(input);
+                return Guid.Parse(input).AsFilterValue();
             }
             else if (type == typeof(decimal))
             {
-                return decimal.Parse(input, NumberStyles.AllowExponent | NumberStyles.Number, culture);
+                return decimal.Parse(input, NumberStyles.AllowExponent | NumberStyles.Number, culture).AsFilterValue();
             }
             else if (type == typeof(Uri))
             {
-                return new Uri(input);
+                return new Uri(input).AsFilterValue();
             }
             else if (type == typeof(DateTime))
             {
                 switch (input)
                 {
-                    case "today": return DateTime.Today;
-                    case "now": return DateTime.Now;
-                    case "tomorrow": return DateTime.Today.AddDays(1);
-                    case "yesterday": return DateTime.Today.AddDays(-1);
+                    case "today": return DateTime.Today.AsFilterValue();
+                    case "now": return DateTime.Now.AsFilterValue();
+                    case "tomorrow": return DateTime.Today.AddDays(1).AsFilterValue();
+                    case "yesterday": return DateTime.Today.AddDays(-1).AsFilterValue();
                 }
             }
 
-            return Convert.ChangeType(input, type, culture);
+            var filterType = typeof(FilterValue<>).MakeGenericType(type);
+            var filter = (IFilterValue)Activator.CreateInstance(filterType, new object[] {Convert.ChangeType(input, type, culture)});
+            return filter;
         }
     }
 }

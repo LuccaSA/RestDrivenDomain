@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Rdd.Domain.Models.Querying;
 
 namespace Rdd.Infra.Helpers
 {
@@ -21,7 +22,7 @@ namespace Rdd.Infra.Helpers
         {
             switch (filter.Operand)
             {
-                case WebFilterOperand.Equals: return Equals(filter.ExpressionChain, filter.Values);
+                case WebFilterOperand.Equals: return Equal(filter.ExpressionChain, filter.Values);
                 case WebFilterOperand.NotEqual: return NotEqual(filter.ExpressionChain, filter.Values);
                 case WebFilterOperand.Starts: return Starts(filter.ExpressionChain, filter.Values);
                 case WebFilterOperand.Like: return Like(filter.ExpressionChain, filter.Values);
@@ -38,110 +39,125 @@ namespace Rdd.Infra.Helpers
             }
         }
 
-        protected Expression<Func<TEntity, bool>> OrFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
+        protected Expression<Func<TEntity, bool>> OrFactory(Func<IFilterValue, Expression<Func<TEntity, bool>>> filter, IFilterValue value)
         {
-            if (values.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
+            if (value.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
             {
-                throw new QueryBuilderException(string.Empty, new ArgumentOutOfRangeException(nameof(values), $"OrFactory method invoked with {values.Count} values. Must be less than {EF_EXPRESSION_TREE_MAX_DEPTH} to be allowed."));
+                throw new QueryBuilderException(string.Empty, new ArgumentOutOfRangeException(nameof(value), $"OrFactory method invoked with {value.Count} values. Must be less than {EF_EXPRESSION_TREE_MAX_DEPTH} to be allowed."));
             }
-
-            return values.Cast<TProp>().Select(filter).OrAggregation();
+            if (value is IFilterValueArray values)
+            {
+                return values.EnumerateFilterValues.Select(filter).OrAggregation();
+            }
+            return filter(value);
         }
 
-        protected Expression<Func<TEntity, bool>> AndFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
+        protected Expression<Func<TEntity, bool>> AndFactory(Func<IFilterValue, Expression<Func<TEntity, bool>>> filter, IFilterValue value)
         {
-            if (values.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
+            if (value.Count > EF_EXPRESSION_TREE_MAX_DEPTH)
             {
-                throw new QueryBuilderException(string.Empty, new ArgumentOutOfRangeException(nameof(values), $"AndFactory method invoked with {values.Count} values. Must be less than {EF_EXPRESSION_TREE_MAX_DEPTH} to be allowed."));
+                throw new QueryBuilderException(string.Empty, new ArgumentOutOfRangeException(nameof(value), $"AndFactory method invoked with {value.Count} values. Must be less than {EF_EXPRESSION_TREE_MAX_DEPTH} to be allowed."));
             }
-            return values.Cast<TProp>().Select(filter).AndAggregation();
+            if (value is IFilterValueArray values)
+            {
+                return values.EnumerateFilterValues.Select(filter).AndAggregation();
+            }
+            return filter(value);
         }
 
-        public Expression<Func<TEntity, bool>> Equals(IExpression field, IList values) => BuildLambda(Contains, field, values);
-        protected virtual Expression Contains(Expression leftExpression, IList values)
+        public Expression<Func<TEntity, bool>> Equal(IExpression field, IFilterValue values) => BuildLambda(Contains, field, values);
+        protected virtual Expression Contains(Expression leftExpression, IFilterValue values, Type propertyType)
         {
             if (values.Count == 1)
             {
-                return Expression.Equal(leftExpression, Expression.Constant(values[0]));
+                var v = values.Quote();
+                return Expression.Equal(leftExpression, values.Quote());
             }
             else
             {
-                return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, Expression.Constant(values), leftExpression);
+                return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, values.Quote(), leftExpression);
             }
         }
 
-        public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IList values) => BuildLambda(NotEqual, field, values);
-        protected virtual Expression NotEqual(Expression leftExpression, IList values)
+        public Expression<Func<TEntity, bool>> NotEqual(IExpression field, IFilterValue values) => BuildLambda(NotEqual, field, values);
+        protected virtual Expression NotEqual(Expression leftExpression, IFilterValue values, Type propertyType)
         {
             if (values.Count == 1)
             {
-                return Expression.NotEqual(leftExpression, Expression.Constant(values[0]));
+                return Expression.NotEqual(leftExpression, values.Quote());
             }
             else
             {
-                return Expression.Not(Contains(leftExpression, values));
+                return Expression.Not(Contains(leftExpression, values, propertyType));
             }
         }
 
-        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IList values) => AndFactory<object>(value => BuildLambda(Equal, field, value), values);
-        protected virtual Expression Equal(Expression leftExpression, object value)
+        public Expression<Func<TEntity, bool>> ContainsAll(IExpression field, IFilterValue values) => AndFactory(value => BuildLambda(Equal, field, value), values);
+        protected virtual Expression Equal(Expression leftExpression, IFilterValue value, Type propertyType)
         {
-            return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
+            return Expression.Equal(leftExpression, value.Quote());
         }
 
-        public Expression<Func<TEntity, bool>> Since(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(GreaterThanOrEqual, field, value), values);
-        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(GreaterThanOrEqual, field, value), values);
-        protected virtual Expression GreaterThanOrEqual(Expression leftExpression, object value)
+        public Expression<Func<TEntity, bool>> Since(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(GreaterThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> GreaterThanOrEqual(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(GreaterThanOrEqual, field, value), values);
+        protected virtual Expression GreaterThanOrEqual(Expression leftExpression, IFilterValue value, Type propertyType)
         {
-            if (value == null)
+            if (value.IsNull)
             {
                 return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
             }
             else
             {
-                return Expression.GreaterThanOrEqual(leftExpression, Expression.Constant(value, leftExpression.Type));
+                return Expression.GreaterThanOrEqual(leftExpression, value.Quote());
             }
         }
 
-        public Expression<Func<TEntity, bool>> Until(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(LessThanOrEqual, field, value), values);
-        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(LessThanOrEqual, field, value), values);
-        protected virtual Expression LessThanOrEqual(Expression leftExpression, object value)
+        public Expression<Func<TEntity, bool>> Until(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(LessThanOrEqual, field, value), values);
+        public Expression<Func<TEntity, bool>> LessThanOrEqual(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(LessThanOrEqual, field, value), values);
+        protected virtual Expression LessThanOrEqual(Expression leftExpression, IFilterValue value, Type propertyType)
         {
-            if (value == null)
+            if (value.IsNull)
             {
                 return Expression.Equal(leftExpression, Expression.Constant(value, leftExpression.Type));
             }
             else
             {
-                return Expression.LessThanOrEqual(leftExpression, Expression.Constant(value, leftExpression.Type));
+                return Expression.LessThanOrEqual(leftExpression, value.Quote());
             }
         }
 
-        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(GreaterThan, field, value), values);
-        protected virtual Expression GreaterThan(Expression leftExpression, object value)
+        public Expression<Func<TEntity, bool>> GreaterThan(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(GreaterThan, field, value), values);
+        protected virtual Expression GreaterThan(Expression leftExpression, IFilterValue value, Type propertyType)
         {
-            return Expression.GreaterThan(leftExpression, Expression.Constant(value, leftExpression.Type));
+            return Expression.GreaterThan(leftExpression, value.Quote());
         }
 
-        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(LessThan, field, value), values);
-        protected virtual Expression LessThan(Expression leftExpression, object value)
+        public Expression<Func<TEntity, bool>> LessThan(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(LessThan, field, value), values);
+        protected virtual Expression LessThan(Expression leftExpression, IFilterValue value, Type propertyType)
         {
-            return Expression.LessThan(leftExpression, Expression.Constant(value, leftExpression.Type));
+            return Expression.LessThan(leftExpression, value.Quote());
         }
 
-        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IList values) => OrFactory<DateTime?>(value => BuildLambda(Anniversary, field, value), values);
-        protected virtual Expression Anniversary(Expression leftExpression, DateTime? value)
+        public Expression<Func<TEntity, bool>> Anniversary(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(Anniversary, field, value), values);
+
+        protected virtual Expression Anniversary(Expression leftExpression, IFilterValue value, Type propertyType)
         {
             if (leftExpression.Type == typeof(DateTime?))
             {
-                if (!value.HasValue)
+                var dateValue = value as FilterValue<DateTime?>;
+                if (dateValue == null)
+                {
+                    throw new NotImplementedException();
+                }
+                DateTime? date = dateValue.Value;
+                if (!date.HasValue)
                 {
                     return Expression.Equal(leftExpression, Expression.Constant(null));
                 }
                 else
                 {
-                    var day = Expression.Constant(value.Value.Day, typeof(int));
-                    var month = Expression.Constant(value.Value.Month, typeof(int));
+                    var day = date.Value.Day.ExtractExpression();
+                    var month = date.Value.Month.ExtractExpression();
                     var valueExpression = Expression.Property(leftExpression, "Value");
                     var dayExpression = Expression.Equal(day, Expression.Property(valueExpression, "Day"));
                     var monthExpression = Expression.Equal(month, Expression.Property(valueExpression, "Month"));
@@ -153,48 +169,74 @@ namespace Rdd.Infra.Helpers
             }
             else
             {
-                var date = (DateTime)value;
-                var day = Expression.Constant(date.Day, typeof(int));
-                var month = Expression.Constant(date.Month, typeof(int));
+                var dateValue = value as FilterValue<DateTime>;
+                if (dateValue == null)
+                {
+                    throw new NotImplementedException();
+                }
+                DateTime date = dateValue.Value;
+                var day = date.Day.ExtractExpression();
+                var month = date.Month.ExtractExpression();
                 var dayExpression = Expression.Equal(day, Expression.Property(leftExpression, "Day"));
                 var monthExpression = Expression.Equal(month, Expression.Property(leftExpression, "Month"));
                 return Expression.AndAlso(dayExpression, monthExpression);
             }
         }
 
-        public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<Period>(value => BuildLambda(Between, field, value), values);
-        protected virtual Expression Between(Expression leftExpression, Period value)
+        public Expression<Func<TEntity, bool>> Between(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(Between, field, value), values);
+        protected virtual Expression Between(Expression leftExpression, IFilterValue value, Type propertyType)
         {
-            var expressionRightSince = Expression.Constant(value.Start, leftExpression.Type);
-            var expressionRightUntil = Expression.Constant(value.End, leftExpression.Type);
+            var periodValue = value as FilterValue<Period>;
+            if (periodValue == null)
+            {
+                throw new NotImplementedException();
+            }
+
+            var expressionRightSince = periodValue.Value.Start.ExtractExpression();
+            var expressionRightUntil = periodValue.Value.End.ExtractExpression();
+
             var sinceExpression = Expression.GreaterThanOrEqual(leftExpression, expressionRightSince);
             var untilExpression = Expression.LessThanOrEqual(leftExpression, expressionRightUntil);
             return Expression.AndAlso(sinceExpression, untilExpression);
         }
 
-        public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => BuildLambda(Starts, field, value), values);
-        protected virtual Expression Starts(Expression leftExpression, string value)
+        public Expression<Func<TEntity, bool>> Starts(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(Starts, field, value), values);
+        protected virtual Expression Starts(Expression leftExpression, IFilterValue value, Type propertyType)
         {
+            var stringValue = value as FilterValue<string>;
+            if (stringValue == null)
+            {
+                throw new NotImplementedException();
+            }
+
             var startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
             var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
 
-            return Expression.Call(Expression.Call(leftExpression, toLower), startsWith, Expression.Constant(value.ToLower(), typeof(string)));
+
+
+            return Expression.Call(Expression.Call(leftExpression, toLower), startsWith, stringValue.Value.ToLower().ExtractExpression());
         }
 
-        public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(Like, field, value.ToString()), values);
-        protected virtual Expression Like(Expression leftExpression, string value)
+        public Expression<Func<TEntity, bool>> Like(IExpression field, IFilterValue values) => OrFactory(value => BuildLambda(Like, field, value), values);
+        protected virtual Expression Like(Expression leftExpression, IFilterValue value, Type propertyType)
         {
+            var stringValue = value as FilterValue<string>;
+            if (stringValue == null)
+            {
+                throw new NotImplementedException();
+            }
+
             var contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
             var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
             var toString = typeof(object).GetMethod("ToString", new Type[] { });
 
-            return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, Expression.Constant(value.ToLower(), typeof(string)));
+            return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, stringValue.Value.ToLower().ExtractExpression());
         }
 
-        protected Expression<Func<TEntity, bool>> BuildLambda<TValue>(Func<Expression, TValue, Expression> builder, IExpression field, TValue value)
+        protected Expression<Func<TEntity, bool>> BuildLambda<TValue>(Func<Expression, TValue, Type, Expression> builder, IExpression field, TValue value)
         {
             var fieldLambda = field.ToLambdaExpression();
-            var expression = builder(fieldLambda.Body, value);
+            var expression = builder(fieldLambda.Body, value, field.ResultType);
             var parameter = fieldLambda.Parameters[0];
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }

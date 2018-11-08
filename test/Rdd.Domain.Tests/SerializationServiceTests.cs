@@ -11,9 +11,10 @@ namespace Rdd.Domain.Tests
         public void SerializeStringAsMailAddress_WHEN_GoodMailInQueryFilters()
         {
             var service = new StringConverter();
-            var values = service.ConvertValues<MailAddress>(new HashSet<string> { "mail@domain.com" });
+            var values = service.ConvertValues<MailAddress>("mail@domain.com");
+            var converted = values as FilterValue<MailAddress>;
 
-            Assert.Equal(new MailAddress("mail@domain.com"), values[0]);
+            Assert.Equal(new MailAddress("mail@domain.com"), converted.Value);
         }
     }
 }

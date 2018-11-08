@@ -50,7 +50,7 @@ namespace Rdd.Web.Querying
             var operand = ExtractFilterOperand(parts);
 
             var chain = _expressionParser.ParseChain<TEntity>(key);
-            var values = ConvertFilterValues(operand, chain, parts);
+            var values = ConvertFilterValues(operand, chain, parts.ToArray());
 
             return new WebFilter<TEntity>(chain, operand, values);
         }
@@ -90,7 +90,7 @@ namespace Rdd.Web.Querying
             return WebFilterOperand.Equals;
         }
 
-        protected virtual IList ConvertFilterValues(WebFilterOperand operand, IExpression expression, List<string> parts)
+        protected virtual IFilterValue ConvertFilterValues(WebFilterOperand operand, IExpression expression, string[] parts)
         {
             try
             {
@@ -98,9 +98,9 @@ namespace Rdd.Web.Querying
 
                 if (operand is WebFilterOperand.Between)
                 {
-                    if (values.Count == 2 && values[0] is DateTime start && values[1] is DateTime end)
+                    if (values is FilterValue<DateTime[]> dates && dates.Value.Length == 2)
                     {
-                        values = new List<Period> { new Period(start, end.ToMidnightTimeIfEmpty()) };
+                        values = new FilterValue<Period>(new Period(dates.Value[0], dates.Value[1].ToMidnightTimeIfEmpty()));
                     }
                     else
                     {
