@@ -30,9 +30,9 @@ namespace Rdd.Domain.Models.Querying
             var nullableType = Nullable.GetUnderlyingType(type);
             if ((nullableType != null || !type.IsValueType) && (string.IsNullOrEmpty(input) || input == "null"))
             {
-                if (input == string.Empty)
+                if (type == typeof(string) && input == string.Empty)
                 {
-                    return string.Empty;
+                    return input;
                 }
                 return null;
             }
@@ -46,6 +46,11 @@ namespace Rdd.Domain.Models.Querying
 
         private string GetConvertableValue(string input, Type type)
         {
+            if (input == "null")
+            {
+                return null;
+            }
+
             if (type == typeof(double) || type == typeof(decimal))
             {
                 return input.Replace(",", ".");
