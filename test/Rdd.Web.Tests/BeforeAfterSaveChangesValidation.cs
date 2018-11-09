@@ -29,18 +29,16 @@ namespace Rdd.Web.Tests
         public async Task MultipleImplementations()
         {
             var services = new ServiceCollection();
+
             services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase("BeforeAfterSave"); });
             services.AddRdd<ExchangeRateDbContext>(rdd =>
                 {
                     rdd.PagingLimit = 10;
                     rdd.PagingMaximumLimit = 4242;
                 })
-                .WithDefaultRights(RightDefaultMode.Open);
-
-            services.AddScoped<OnExchangeRateSave>();
-            services.AddScoped<OnAnotherUserSave>();
-            services.AddScoped<ISaveEventProcessor>(s => s.GetRequiredService<OnExchangeRateSave>());
-            services.AddScoped<ISaveEventProcessor>(s => s.GetRequiredService<OnAnotherUserSave>());
+                .WithDefaultRights(RightDefaultMode.Open)
+                .AddOnSaveChangesHook<OnExchangeRateSave, ExchangeRate>()
+                .AddOnSaveChangesHook<OnAnotherUserSave, AnotherUser>();
 
             var provider = services.BuildServiceProvider();
 
@@ -49,14 +47,14 @@ namespace Rdd.Web.Tests
 
             ExchangeRate created = await app.CreateAsync(create, new Query<ExchangeRate>());
 
-            var onSave = provider.GetRequiredService<OnExchangeRateSave>();
-            var onAnotherSave = provider.GetRequiredService<OnAnotherUserSave>();
+            var onSave = provider.GetRequiredService<IOnSaveChangesHookAsync<ExchangeRate>>() as IOnSaveCount;
+            var onAnotherSave = provider.GetRequiredService<IOnSaveChangesHookAsync<AnotherUser>>() as IOnSaveCount;
 
             Assert.Equal(2, onSave.AddCount);
             Assert.Equal(0, onSave.UpdateCount);
             Assert.Equal(0, onSave.DeleteCount);
             Assert.Equal(2, onSave.CallsCount);
-            
+
             Assert.Equal(0, onAnotherSave.AddCount);
             Assert.Equal(0, onAnotherSave.UpdateCount);
             Assert.Equal(0, onAnotherSave.DeleteCount);
@@ -64,13 +62,13 @@ namespace Rdd.Web.Tests
 
             var update = new CandidateParser(new JsonParser(), new OptionsAccessor()).Parse<ExchangeRate, int>(@"{ ""name"": ""other name"" }");
             var updated = await app.UpdateByIdAsync(created.Id, update, new Query<ExchangeRate>());
-             
+
             Assert.Equal(2, onSave.AddCount);
             Assert.Equal(2, onSave.UpdateCount);
             Assert.Equal(0, onSave.DeleteCount);
             Assert.Equal(4, onSave.CallsCount);
 
-            await app.DeleteByIdAsync(updated.Id); 
+            await app.DeleteByIdAsync(updated.Id);
 
             Assert.Equal(2, onSave.AddCount);
             Assert.Equal(2, onSave.UpdateCount);
@@ -88,21 +86,28 @@ namespace Rdd.Web.Tests
     public class OnAnotherUserSave : SaveEventProcessorMock<AnotherUser>
     {
     }
-    
-    public class SaveEventProcessorMock<T> : SaveEventProcessor<T> where T : class
+
+    public interface IOnSaveCount {
+        int AddCount { get; }
+        int UpdateCount { get; }
+        int DeleteCount { get; }
+        int CallsCount { get; }
+    }
+
+    public class SaveEventProcessorMock<T> : IOnSaveChangesHookAsync<T>, IOnSaveCount where T : class
     {
         public int AddCount { get; private set; } = 0;
         public int UpdateCount { get; private set; } = 0;
         public int DeleteCount { get; private set; } = 0;
         public int CallsCount { get; private set; } = 0;
 
-        protected override Task OnBeforeSaveAsync(SavedEntries<T> savedEntries)
+        public Task OnBeforeSaveAsync(SavedEntries<T> savedEntries)
         {
             UpdateStats(savedEntries);
             return Task.CompletedTask;
         }
 
-        protected override Task OnAfterSaveAsync(SavedEntries<T> savedEntries)
+        public Task OnAfterSaveAsync(SavedEntries<T> savedEntries)
         {
             UpdateStats(savedEntries);
             return Task.CompletedTask;

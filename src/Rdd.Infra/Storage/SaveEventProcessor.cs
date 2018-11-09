@@ -6,8 +6,15 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Rdd.Infra.Storage
 {
-    public abstract class SaveEventProcessor<T> : ISaveEventProcessor where T : class
+    public sealed class SaveEventProcessor<T> : ISaveEventProcessor where T : class
     {
+        private readonly IOnSaveChangesHookAsync<T> _onSaveChangesHook;
+
+        public SaveEventProcessor(IOnSaveChangesHookAsync<T> onSaveChangesHook)
+        {
+            _onSaveChangesHook = onSaveChangesHook;
+        }
+
         public async Task<ISavedEntries> InternalBeforeSaveChangesAsync(ChangeTracker changeTracker)
         {
             IEnumerable<EntityEntry<T>> entityEntries = changeTracker.Entries<T>().ToList();
@@ -24,21 +31,14 @@ namespace Rdd.Infra.Storage
                 return payload;
             }
 
-            await OnBeforeSaveAsync(payload);
-
+            await _onSaveChangesHook.OnBeforeSaveAsync(payload);
+            
             return payload;
         }
 
-        public Task InternalAfterSaveChangesAsync(ISavedEntries savedEntries) => OnAfterSaveAsync(savedEntries as SavedEntries<T>);
-
-        /// <summary>
-        /// Called before SaveChangesAsync(), last opportunity to modify entities
-        /// </summary>
-        protected abstract Task OnBeforeSaveAsync(SavedEntries<T> savedEntries);
-
-        /// <summary>
-        /// Called after SaveChangesAsync(), should be used to apply custom modifications before items are returned via API
-        /// </summary>
-        protected abstract Task OnAfterSaveAsync(SavedEntries<T> savedEntries);
+        public async Task InternalAfterSaveChangesAsync(ISavedEntries savedEntries)
+        {
+            await _onSaveChangesHook.OnAfterSaveAsync(savedEntries as SavedEntries<T>);
+        }
     }
 }
