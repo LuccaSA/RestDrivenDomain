@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\src\Rdd.Domain\Rdd.Domain.csproj" />
     <ProjectReference Include="..\..\src\Rdd.Web\Rdd.Web.csproj" />
     <ProjectReference Include="..\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" />
+    <ProjectReference Include="..\Rdd.Infra.Tests\Rdd.Infra.Tests.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,21 +8,26 @@ namespace Rdd.Infra.Tests
 {
     public class DatabaseTest
     {
-        protected virtual DbContext GetContext(string dbName)
+        protected virtual DbContext GetContext(string dbName, bool allowClientEvaluation)
         {
-            return new DataContext(GetOptions(dbName));
+            return new DataContext(GetOptions(dbName, allowClientEvaluation));
         }
-        protected virtual DbContextOptions<DataContext> GetOptions(string dbName)
+        protected virtual DbContextOptions<DataContext> GetOptions(string dbName, bool allowClientEvaluation)
         {
-            return new DbContextOptionsBuilder<DataContext>()
-                .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0")
-                .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
-                .Options;
+            var builder = new DbContextOptionsBuilder<DataContext>()
+                .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0");
+
+            if (!allowClientEvaluation)
+            {
+                builder.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
+            }
+
+            return builder.Options;
         }
 
-        public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code)
+        public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code, bool allowClientEvaluation = false)
         {
-            using (var context = GetContext(Guid.NewGuid().ToString()))
+            using (var context = GetContext(Guid.NewGuid().ToString(), allowClientEvaluation))
             {
                 try
                 {

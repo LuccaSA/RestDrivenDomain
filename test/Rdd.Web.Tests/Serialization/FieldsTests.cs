@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Rdd.Domain.Exceptions;
 
 namespace Rdd.Web.Tests.Serialization
 {
@@ -129,6 +130,36 @@ namespace Rdd.Web.Tests.Serialization
 
             var json = await SerializeAsync(obj1, fields);
             Assert.Equal(ExpectedInput(@"{""id"":1,""name"":""1"",""url"":""http://www.example.org/""}"), json);
+        }
+
+        [Fact]
+        public async Task DicoScenario1()
+        {
+            var obj1 = new Dictionary<string, int> { { "lol", 1 } };
+            var fields = new ExpressionTree();
+
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""lol"":1}"), json);
+        }
+
+        [Fact]
+        public async Task DicoScenario2()
+        {
+            var obj1 = new Dictionary<string, int> { { "lol", 1 }, { "lil", 2 } };
+            var fields = new ExpressionParser().ParseTree<Dictionary<string, int>>("lol");
+
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""lol"":1}"), json);
+        }
+
+        [Fact]
+        public async Task DicoDoesNotFail()
+        {
+            var obj1 = new Dictionary<string, int> { { "lol", 1 }, { "lil", 2 } };
+            var fields = new ExpressionParser().ParseTree<Dictionary<string, int>>("lul");
+
+            var json = await SerializeAsync(obj1, fields);
+            Assert.Equal(ExpectedInput(@"{""lul"":null}"), json);
         }
 
         [Fact]

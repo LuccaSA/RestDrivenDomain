@@ -8,6 +8,7 @@ using Rdd.Domain.Patchers;
 using Rdd.Domain.Rights;
 using Rdd.Web.Models;
 using System;
+using Rdd.Infra.Storage;
 
 namespace Rdd.Web.Helpers
 {
@@ -118,6 +119,16 @@ namespace Rdd.Web.Helpers
                 .AddSingleton<IPatcher<T>, TPatcher>(s => s.GetRequiredService<TPatcher>())
                 .AddSingleton<TPatcher>();
 
+            return rddBuilder;
+        }
+
+        public static RddBuilder AddOnSaveChangesHook<TOnSaveChanges, T>(this RddBuilder rddBuilder)
+            where TOnSaveChanges : class, IOnSaveChangesHookAsync<T>
+            where T : class
+        {
+            rddBuilder.Services.AddScoped<IUnitOfWork, EventProcessableUnitOfWork>();
+            rddBuilder.Services.AddScoped<ISaveEventProcessor, SaveEventProcessor<T>>();
+            rddBuilder.Services.AddScoped<IOnSaveChangesHookAsync<T>, TOnSaveChanges>();
             return rddBuilder;
         }
 
