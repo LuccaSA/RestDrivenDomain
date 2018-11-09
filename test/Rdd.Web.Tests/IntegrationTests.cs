@@ -23,7 +23,7 @@ namespace Rdd.Web.Tests
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
-                var unitOfWork = new UnitOfWork(context, null);
+                var unitOfWork = new UnitOfWork(context);
                 var storage = new EFStorageService(context);
                 var repo = new UsersRepository(storage, _fixture.RightsService);
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
