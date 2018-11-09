@@ -23,7 +23,7 @@ namespace Rdd.Infra.Storage
         }
 
         //https://expertcodeblog.wordpress.com/2018/02/19/net-core-2-0-resolve-error-the-source-iqueryable-doesnt-implement-iasyncenumerable/
-        public virtual async Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
             where TEntity : class
         {
             if (entities == null)
@@ -31,6 +31,11 @@ namespace Rdd.Infra.Storage
                 throw new ArgumentNullException(nameof(entities));
             }
 
+            return EnumerateInternalAsync(entities);
+        }
+
+        protected async Task<IEnumerable<TEntity>> EnumerateInternalAsync<TEntity>(IQueryable<TEntity> entities)
+        {
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
                 return entities.ToList();
@@ -39,7 +44,7 @@ namespace Rdd.Infra.Storage
             return await entities.ToListAsync();
         }
 
-        public virtual async Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities)
              where TEntity : class
         {
             if (entities == null)
@@ -47,6 +52,11 @@ namespace Rdd.Infra.Storage
                 throw new ArgumentNullException(nameof(entities));
             }
 
+            return CountInternalAsync(entities);
+        }
+
+        protected async Task<int> CountInternalAsync<TEntity>(IQueryable<TEntity> entities)
+        {
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
                 return entities.Count();

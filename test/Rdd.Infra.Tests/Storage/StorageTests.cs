@@ -28,6 +28,12 @@ namespace Rdd.Infra.Tests.Storage
         }
 
         [Fact]
+        public async Task CountThrowsWhenNull()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _efStorage.CountAsync<User>(null));
+        }
+
+        [Fact]
         public async Task EnumerateDoesNotFailWhenQueryableIsNotFromEF()
         {
             var queryable = new List<User>().AsQueryable();

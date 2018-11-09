@@ -75,10 +75,13 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public void DiscardChanges<TEntity>(TEntity entity) where TEntity : class { }
+        public void DiscardChanges<TEntity>(TEntity entity) where TEntity : class
+        {
+            //not applicable
+        }
 
         public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class
+        where TEntity : class
         {
             foreach (var entity in entities)
             {
@@ -97,6 +100,9 @@ namespace Rdd.Infra.Storage
 
         public Task SaveChangesAsync() => Task.CompletedTask;
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            //not applicable
+        }
     }
 }
