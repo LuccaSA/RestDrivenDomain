@@ -81,7 +81,7 @@ namespace Rdd.Infra.Storage
         }
 
         public void AddRange<TEntity>(IEnumerable<TEntity> entities)
-        where TEntity : class
+            where TEntity : class
         {
             foreach (var entity in entities)
             {
