@@ -2,13 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <ProjectGuid>{CB42A78B-6DC8-4A20-B7EB-228FA1324C70}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.*" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.6.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.*" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.9.0" />
     <PackageReference Include="Moq" Version="4.8.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
@@ -16,10 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Rdd.Application\Rdd.Application.csproj" />
-    <ProjectReference Include="..\..\src\Rdd.Domain\Rdd.Domain.csproj" />
-    <ProjectReference Include="..\..\src\Rdd.Infra\Rdd.Infra.csproj" />
-    <ProjectReference Include="..\..\src\Rdd.Web\Rdd.Web.csproj" />
+    <ProjectReference Include="..\..\Rdd.Domain\Rdd.Domain.csproj" />
+    <ProjectReference Include="..\Rdd.Analyzer\Rdd.Analyzer.csproj" />
   </ItemGroup>
 
 </Project>

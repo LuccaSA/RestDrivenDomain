@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Rdd.Analyzer</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Lucca</Authors>
+    <PackageProjectUrl>https://github.com/LuccaSA/RestDrivenDomain</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/LuccaSA/RestDrivenDomain</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Rdd.Analyzer</Description>
+    <PackageReleaseNotes>First release</PackageReleaseNotes>
+    <Copyright>Copyright</Copyright>
+    <PackageTags>RddAnalyzer, analyzers</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.6.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.9.0" PrivateAssets="all" />
+    <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+</Project>
