@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Data.Sqlite;
 using Rdd.Domain.Tests.Models;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Rdd.Infra.Tests
@@ -14,10 +16,27 @@ namespace Rdd.Infra.Tests
         }
         protected virtual DbContextOptions<DataContext> GetOptions(string dbName)
         {
-            return new DbContextOptionsBuilder<DataContext>()
-                .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0")
-                .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
-                .Options;
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return new DbContextOptionsBuilder<DataContext>()
+                    .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0")
+                    .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
+                    .Options;
+            }
+            else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                var connection = new SqliteConnection("DataSource=:memory:");
+                connection.Open();
+
+                return new DbContextOptionsBuilder<DataContext>()
+                    .UseSqlite(connection)
+                    // .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
+                    .Options;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code)
