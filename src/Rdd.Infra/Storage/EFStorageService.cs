@@ -34,7 +34,7 @@ namespace Rdd.Infra.Storage
             return EnumerateInternalAsync(entities);
         }
 
-        protected async Task<IEnumerable<TEntity>> EnumerateInternalAsync<TEntity>(IQueryable<TEntity> entities)
+        private async Task<IEnumerable<TEntity>> EnumerateInternalAsync<TEntity>(IQueryable<TEntity> entities)
         {
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
@@ -55,7 +55,7 @@ namespace Rdd.Infra.Storage
             return CountInternalAsync(entities);
         }
 
-        protected async Task<int> CountInternalAsync<TEntity>(IQueryable<TEntity> entities)
+        private async Task<int> CountInternalAsync<TEntity>(IQueryable<TEntity> entities)
         {
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
