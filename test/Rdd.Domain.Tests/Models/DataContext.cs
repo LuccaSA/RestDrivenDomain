@@ -12,6 +12,7 @@ namespace Rdd.Domain.Tests.Models
         public DbSet<ConcreteClassThree> ConcreteClassThree { get; }
         public DbSet<AbstractClass> AbstractClass { get; }
         public DbSet<User> User { get; }
+        public DbSet<Department> Departments { get; }
         public DbSet<UserWithParameters> UserWithParameters { get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,9 +1,11 @@
+using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Infra.Tests
@@ -18,7 +20,7 @@ namespace Rdd.Infra.Tests
         }
 
         [Fact]
-        public async void Guids_ordering_in_sql_should_work_properly()
+        public async Task Guids_ordering_in_sql_should_work_properly()
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
@@ -39,7 +41,7 @@ namespace Rdd.Infra.Tests
         }
 
         [Fact]
-        public async void NullableGuids_ordering_in_sql_should_work_properly()
+        public async Task NullableGuids_ordering_in_sql_should_work_properly()
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
@@ -58,6 +60,108 @@ namespace Rdd.Infra.Tests
                 var result = (await collection.GetAsync(query)).Items.ToList();
 
                 Assert.Equal(sequence, result.Select(i => i.Id).ToList());
+            });
+        }
+
+        [Fact]
+        public async Task DeleteRangeWorks()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                var unitOfWork = new UnitOfWork(context);
+                var storage = new EFStorageService(context);
+                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+
+                var users = User.GetManyRandomUsers(20).ToList();
+                repo.AddRange(users);
+                await unitOfWork.SaveChangesAsync();
+
+                storage.RemoveRange(users);
+                await unitOfWork.SaveChangesAsync();
+
+                var result = (await collection.GetAsync(new Query<User>())).Items.ToList();
+
+                Assert.Empty(result);
+            });
+        }
+
+        [Fact]
+        public async Task ExecuteScriptDoesNotThrow()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                var result = await new EFStorageService(context).ExecuteScriptAsync($"Use [{DbName}] SELECT * FROM dbo.[User]");
+                Assert.Equal(-1, result);
+            });
+        }
+
+        [Fact]
+        public async Task DiscardChangesWork()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                var unitOfWork = new UnitOfWork(context);
+                var storage = new EFStorageService(context);
+                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+
+                var users = User.GetManyRandomUsers(3).ToList();
+                repo.AddRange(users);
+                await unitOfWork.SaveChangesAsync();
+
+                users[0].Name = "new value";
+                repo.Remove(users[2]);
+
+                var newUser = new User();
+                repo.Add(newUser);
+
+                storage.DiscardChanges<User>(null);//does not fail
+                storage.DiscardChanges(users[0]);//modified
+                storage.DiscardChanges(users[1]);//unmodified
+                storage.DiscardChanges(users[2]);//removed
+                storage.DiscardChanges(new User());//unattached
+                storage.DiscardChanges(newUser);//added
+                await unitOfWork.SaveChangesAsync();
+
+                var result = (await collection.GetAsync(new Query<User>())).Items.ToList();
+
+                Assert.Equal(3, result.Count);
+                Assert.NotEqual("new value", result[0].Name);
+            });
+        }
+
+        [Fact]
+        public async Task IncludeIntersectionWork()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                var unitOfWork = new UnitOfWork(context);
+                var storage = new EFStorageService(context);
+                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+
+                var dpts = new List<Department> { new Department(), new Department() };
+                storage.AddRange(dpts);
+                await unitOfWork.SaveChangesAsync();
+
+                var users = User.GetManyRandomUsers(1, dpts).ToList();
+                repo.AddRange(users);
+                await unitOfWork.SaveChangesAsync();
+
+                using (var newContext = GetContext(false))
+                {
+                    var newStorage = new EFStorageService(newContext);
+                    var newRepo = new UsersRepository(newStorage, _fixture.RightsService);
+
+                    var query = new Query<User>();
+                    var noDpts = (await newRepo.GetAsync(query)).ToList();
+                    Assert.Null(noDpts[0].Department);
+
+                    query = new Query<User> { Fields = new ExpressionParser().ParseTree<User>("department[id,name],id,name") };
+                    var withDpts = (await newRepo.GetAsync(query)).ToList();
+                    Assert.NotNull(noDpts[0].Department);
+                }
             });
         }
     }

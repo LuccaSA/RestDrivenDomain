@@ -1,5 +1,8 @@
 # Futur release
 ## Breaking changes
+ - **Removed**: `ReadOnlyRepository.CountAsync()` -> Use `ReadOnlyRepository.CountAsync(Query<T>)` instead
+ - **Modification**: Rename protected method `ReadOnlyRepository.CountEntities()` ->`ReadOnlyRepository.CountEntitiesAsync()`.
+ - **Removed**: unused `WebFilter<TEntity,TProp>`. Use `WebFilter<TEntity>`
  - **Modification**: ``UrlProvider`` implementation has been completely changed to gain both accuracy and performances.
  - **Removed**: `IPluralizationService`, `Inflector.NetStandard` dependency and `IUrlProvider.GetApiControllerName(Type workingType)`, `IUrlProvider.GetEntityApiUri(Type workingType, IPrimaryKey entity)`.
  - **Modification**: `IStorageService` and `IUnitOfWork` are now decoupled
@@ -87,6 +90,7 @@
 
 ## New features
  - **Added**: CHANGELOG.md
+ - **Added**: `IStorageService.CountAsync`
  - **Modification**: Ignored filters from action parameters may be automatically found.
  - **Added**: `ICandidateParser`, `IStringConverter`. New query conversion engine
  - **Added**: `JsonParser.Parse(JToken input)`

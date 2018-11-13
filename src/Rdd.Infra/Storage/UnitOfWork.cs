@@ -1,9 +1,10 @@
-﻿using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rdd.Application;
-using Rdd.Infra.Exceptions;
+using Rdd.Domain.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
 {
@@ -26,18 +27,14 @@ namespace Rdd.Infra.Storage
             {
                 switch (ex.InnerException?.InnerException)
                 {
-                    case ArgumentException ae:
-                        throw ae;
+                    case ArgumentException ae: throw ae;
                     case SqlException se:
                         switch (se.Number)
                         {
-                            case 2627:
-                                throw new SqlUniqConstraintException(se.Message);
-                            default:
-                                throw se;
+                            case 2627: throw new TechnicalException(se.Message);
+                            default: throw se;
                         }
-                    default:
-                        throw ex.InnerException ?? ex;
+                    default: throw ex.InnerException ?? ex;
                 }
             }
         }

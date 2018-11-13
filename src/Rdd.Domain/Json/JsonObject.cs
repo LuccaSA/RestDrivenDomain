@@ -94,12 +94,7 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            if (!Content.ContainsKey(currentPath))
-            {
-                return false;
-            }
-
-            return Content[currentPath].HasJsonArray(path);
+            return Content.ContainsKey(currentPath) && Content[currentPath].HasJsonArray(path);
         }
 
         public override bool HasJsonObject(Queue<string> path)
@@ -110,12 +105,7 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            if (!Content.ContainsKey(currentPath))
-            {
-                return false;
-            }
-
-            return Content[currentPath].HasJsonObject(path);
+            return Content.ContainsKey(currentPath) && Content[currentPath].HasJsonObject(path);
         }
 
         public override bool HasJsonValue(Queue<string> path)
@@ -126,12 +116,7 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            if (!Content.ContainsKey(currentPath))
-            {
-                return false;
-            }
-
-            return Content[currentPath].HasJsonValue(path);
+            return Content.ContainsKey(currentPath) && Content[currentPath].HasJsonValue(path);
         }
 
         public override bool HasKey(Queue<string> path)
@@ -142,12 +127,7 @@ namespace Rdd.Domain.Json
             }
 
             var currentPath = path.Dequeue();
-            if (!Content.ContainsKey(currentPath))
-            {
-                return false;
-            }
-
-            return Content[currentPath].HasKey(path);
+            return Content.ContainsKey(currentPath) && Content[currentPath].HasKey(path);
         }
     }
 }
