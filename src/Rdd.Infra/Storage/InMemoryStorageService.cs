@@ -21,7 +21,6 @@ namespace Rdd.Infra.Storage
         private void CreateIfNotExist<TEntity>()
         {
             var type = typeof(TEntity);
-
             if (!Cache.ContainsKey(type))
             {
                 Cache.Add(type, new List<TEntity>());
@@ -54,24 +53,31 @@ namespace Rdd.Infra.Storage
             return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
         }
 
+        public virtual Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities)
+             where TEntity : class
+        {
+            return Task.FromResult(entities.Count());
+        }
+
         public void Add<TEntity>(TEntity entity)
             where TEntity : class
         {
             CreateIfNotExist<TEntity>();
-
             Cache[typeof(TEntity)].Add(entity);
         }
 
         public void Remove<TEntity>(TEntity entity)
             where TEntity : class
         {
-            CreateIfNotExist<TEntity>();
-            Cache[typeof(TEntity)].Remove(entity);
+            if (Cache.ContainsKey(typeof(TEntity)))
+            {
+                Cache[typeof(TEntity)].Remove(entity);
+            }
         }
 
         public void DiscardChanges<TEntity>(TEntity entity) where TEntity : class
         {
-            throw new NotImplementedException();
+            //not applicable
         }
 
         public void AddRange<TEntity>(IEnumerable<TEntity> entities)
@@ -92,14 +98,11 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public Task SaveChangesAsync()
-        {
-            return Task.CompletedTask;
-        }
+        public Task SaveChangesAsync() => Task.CompletedTask;
 
         public void Dispose()
         {
-            //Nothing to dispose here
+            //not applicable
         }
     }
 }

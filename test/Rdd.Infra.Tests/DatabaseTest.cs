@@ -10,38 +10,44 @@ namespace Rdd.Infra.Tests
 {
     public class DatabaseTest
     {
-        protected virtual DbContext GetContext(string dbName)
+        protected string DbName { get; private set; }
+        protected virtual DbContext GetContext(bool allowClientEvaluation)
         {
-            return new DataContext(GetOptions(dbName));
+            return new DataContext(GetOptions(allowClientEvaluation));
         }
-        protected virtual DbContextOptions<DataContext> GetOptions(string dbName)
+        protected virtual DbContextOptions<DataContext> GetOptions(bool allowClientEvaluation)
         {
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            DbContextOptionsBuilder<DataContext> builder;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return new DbContextOptionsBuilder<DataContext>()
-                    .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={dbName};Trusted_Connection=True;ConnectRetryCount=0")
-                    .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
-                    .Options;
+                builder = new DbContextOptionsBuilder<DataContext>()
+                    .UseSqlServer($@"Server=(localdb)\mssqllocaldb;Database={DbName};Trusted_Connection=True;ConnectRetryCount=0");
             }
             else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 var connection = new SqliteConnection("DataSource=:memory:");
                 connection.Open();
 
-                return new DbContextOptionsBuilder<DataContext>()
-                    .UseSqlite(connection)
-                    // .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning))
-                    .Options;
+                builder = new DbContextOptionsBuilder<DataContext>()
+                    .UseSqlite(connection);
             }
             else
             {
                 throw new NotImplementedException();
             }
+
+            if (!allowClientEvaluation)
+            {
+                builder.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
+            }
+            return builder.Options;
         }
 
-        public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code)
+        public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code, bool allowClientEvaluation = false)
         {
-            using (var context = GetContext(Guid.NewGuid().ToString()))
+            DbName = Guid.NewGuid().ToString();
+
+            using (var context = GetContext(allowClientEvaluation))
             {
                 try
                 {
