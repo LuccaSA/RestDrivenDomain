@@ -15,6 +15,9 @@ namespace Rdd.Domain.Tests.Models
         public DbSet<Department> Departments { get; }
         public DbSet<UserWithParameters> UserWithParameters { get; }
 
+        public DbSet<Parent> Parents { get; }
+        public DbSet<OptionalChild> OptionalChildren { get; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConcreteClassThree>();
