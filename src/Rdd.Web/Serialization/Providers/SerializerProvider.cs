@@ -6,6 +6,7 @@ using Rdd.Web.Models;
 using Rdd.Web.Serialization.Serializers;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Rdd.Web.Serialization.Providers
 {
     public class SerializerProvider : ISerializerProvider
     {
-        protected Dictionary<Type, ISerializer> Serializers { get; set; }
+        protected ConcurrentDictionary<Type, ISerializer> Serializers { get; }
         protected IServiceProvider Services { get; set; }
         protected IReflectionHelper ReflectionHelper { get; set; }
 
@@ -25,7 +26,7 @@ namespace Rdd.Web.Serialization.Providers
             Services = services ?? throw new ArgumentNullException(nameof(services));
             ReflectionHelper = reflectionHelper ?? throw new ArgumentNullException(nameof(reflectionHelper));
 
-            Serializers = new Dictionary<Type, ISerializer>();
+            Serializers = new ConcurrentDictionary<Type, ISerializer>();
             InheritanceConfigurations = inheritanceConfigurations;
         }
 
@@ -34,12 +35,17 @@ namespace Rdd.Web.Serialization.Providers
             if (entity == null) { return Services.GetRequiredService<ValueSerializer>(); }
 
             var type = entity.GetType();
-            if (!Serializers.ContainsKey(type))
+
+            if(Serializers.TryGetValue(type, out var serializer))
             {
-                Serializers[type] = GetSerializer(type);
+                return serializer;
             }
 
-            return Serializers[type];
+            var newSerializerInstance =  GetSerializer(type);
+
+            Serializers.TryAdd(type, newSerializerInstance);
+            
+            return newSerializerInstance;
         }
 
         public virtual ISerializer GetSerializer(Type type)
