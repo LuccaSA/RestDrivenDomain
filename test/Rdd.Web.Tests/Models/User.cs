@@ -1,5 +1,6 @@
 ﻿using Rdd.Domain.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Rdd.Web.Tests.Models
 {
@@ -12,5 +13,7 @@ namespace Rdd.Web.Tests.Models
         public Guid PictureId { get; set; }
         public DateTime? BirthDay { get; set; }
         public DateTime ContractStart { get; set; }
+
+        public List<Department> Departments { get; set; }
     }
 }

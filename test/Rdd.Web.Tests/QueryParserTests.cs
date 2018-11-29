@@ -13,8 +13,7 @@ using Xunit;
 namespace Rdd.Web.Tests
 {
     public class QueryParserTests
-    {
- 
+    { 
         [Fact]
         public void CountParseHasOptionImplications()
         {
@@ -142,6 +141,16 @@ namespace Rdd.Web.Tests
             var request = HttpVerbs.Get.NewRequest((key, value)); 
 
             Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));
+        }
+
+        [Theory]
+        [InlineData("departments.id")]
+        [InlineData("departments.users.id")]
+        public void CorrectFilter(string key)
+        {
+            var request = HttpVerbs.Get.NewRequest((key, "23"));
+
+            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
         }
     }
 }

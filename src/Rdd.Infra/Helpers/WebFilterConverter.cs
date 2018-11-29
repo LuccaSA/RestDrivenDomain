@@ -1,4 +1,5 @@
 ﻿using NExtends.Expressions;
+using NExtends.Primitives.Types;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models;
 using Rdd.Infra.Exceptions;
@@ -71,11 +72,10 @@ namespace Rdd.Infra.Helpers
         {
             if (values.Count == 1 && !KnownTypesEvaluatedClientSideWithHashCode.Contains(leftExpression.Type))
             {
-                
                 return Expression.Equal(leftExpression, values[0].ExtractTypedExpression(leftExpression.Type));
             }
             else
-            { 
+            {
                 return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, values.ExtractTypedExpression(typeof(IEnumerable<>).MakeGenericType(leftExpression.Type)), leftExpression);
             }
         }
@@ -186,7 +186,7 @@ namespace Rdd.Infra.Helpers
         {
             var startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
             var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-            
+
             return Expression.Call(Expression.Call(leftExpression, toLower), startsWith, value.ToLower().ExtractExpression());
         }
 
@@ -203,7 +203,17 @@ namespace Rdd.Infra.Helpers
         protected Expression<Func<TEntity, bool>> BuildLambda<TValue>(Func<Expression, TValue, Expression> builder, IExpression field, TValue value)
         {
             var fieldLambda = field.ToLambdaExpression();
-            var expression = builder(fieldLambda.Body, value);
+            var isEnumerable = fieldLambda.Body.Type.IsEnumerableOrArray();
+
+            var leftExpression = isEnumerable ? Expression.Parameter(field.ResultType) : fieldLambda.Body;            
+
+            var expression = builder(leftExpression, value);
+            if (isEnumerable)
+            {
+                var lambda = Expression.Lambda(expression, leftExpression as ParameterExpression);
+                expression = Expression.Call(typeof(Enumerable), "Any", new[] { field.ResultType }, fieldLambda.Body, lambda);
+            }
+
             var parameter = fieldLambda.Parameters[0];
             return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
         }

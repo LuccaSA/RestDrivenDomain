@@ -32,9 +32,15 @@ namespace Rdd.Domain.Helpers.Expressions.Utils
 
             if (typeof(IEnumerable<>).MakeGenericType(outExpression.Parameters[0].Type).IsAssignableFrom(entryPoint.Body.Type))
             {
-                var type = entryPoint.Body.Type.GetGenericArguments().First();
-                var select = Expression.Call(typeof(Enumerable), "Select", new[] { type, outExpression.ReturnType }, entryPoint.Body, outExpression);
-                return Expression.Lambda(select, entryPoint.Parameters[0]);
+                //do not use .IsEnumerableOrArray extension method, as we need to explicitly test for IEnumerable<T> type, and nothing else, cf method signature
+                var isEnumerable = outExpression.ReturnType.IsGenericType && outExpression.ReturnType.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+
+                var sourceType = entryPoint.Body.Type.GetGenericArguments().First();
+                var resultType = isEnumerable ? outExpression.ReturnType.GetGenericArguments()[0] : outExpression.ReturnType;
+                var methodName = isEnumerable ? nameof(Enumerable.SelectMany) : nameof(Enumerable.Select);
+                var selector = Expression.Call(typeof(Enumerable), methodName, new[] { sourceType, resultType }, entryPoint.Body, outExpression);
+
+                return Expression.Lambda(selector, entryPoint.Parameters[0]);
             }
 
             return new ExpressionChainer().ChainAll(entryPoint, outExpression);

@@ -112,6 +112,36 @@ namespace Rdd.Web.Tests
             Assert.Equal(users[1], nullUser);
         }
 
+        [Fact]
+        public void ComplexProperty()
+        {
+            var builder = new WebFilterConverter<User>();
+            var goodUser = new User { Departments = new List<Department> { new Department { Id = 1 } } };
+            var badUser = new User { Departments = new List<Department> { new Department { Id = 3 } } };
+
+            var property = new ExpressionParser().ParseChain<User>("Departments.Id");
+            var filter = new WebFilter<User>(property, WebFilterOperand.Equals, new List<int> { 1, 2 });
+            var expression = builder.ToExpression(filter);
+            var users = new List<User> { goodUser, badUser }.AsQueryable().Where(expression).ToList();
+            Assert.Single(users);
+            Assert.Equal(users[0], goodUser);
+        }
+
+        [Fact]
+        public void VeryComplexProperty()
+        {
+            var builder = new WebFilterConverter<User>();
+            var goodUser = new User { Departments = new List<Department> { new Department { Users = new List<User> { new User { Id = 1 } } } } };
+            var badUser = new User { Departments = new List<Department> { new Department { Users = new List<User> { new User { Id = 3 } } } } };
+
+            var property = new ExpressionParser().ParseChain<User>("Departments.Users.Id");
+            var filter = new WebFilter<User>(property, WebFilterOperand.Equals, new List<int> { 1, 2 });
+            var expression = builder.ToExpression(filter);
+            var users = new List<User> { goodUser, badUser }.AsQueryable().Where(expression).ToList();
+            Assert.Single(users);
+            Assert.Equal(users[0], goodUser);
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(1, 2)]
