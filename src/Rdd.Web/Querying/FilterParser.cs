@@ -19,8 +19,7 @@ using System.Linq;
 
 namespace Rdd.Web.Querying
 {
-    public class FilterParser<TEntity> : IFilterParser<TEntity>
-        where TEntity : class
+    public class FilterParser
     {
         protected static readonly IReadOnlyDictionary<StringSegment, WebFilterOperand> Operands = new Dictionary<StringSegment, WebFilterOperand>(StringSegmentComparer.OrdinalIgnoreCase)
         {
@@ -37,6 +36,12 @@ namespace Rdd.Web.Querying
             {"lessthanorequal", WebFilterOperand.LessThanOrEqual}
         };
 
+        protected FilterParser() { }
+    }
+
+    public class FilterParser<TEntity> : FilterParser, IFilterParser<TEntity>
+        where TEntity : class
+    {
         private readonly IStringConverter _stringConverter;
         private readonly IExpressionParser _expressionParser;
         private readonly IWebFilterConverter<TEntity> _webFilterConverter;
