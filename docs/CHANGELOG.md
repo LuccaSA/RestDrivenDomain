@@ -102,7 +102,7 @@
  - **Added**: Inheritance support. To expose an API from a base class, use `RDDServiceCollectionExtensions.AddRddInheritanceConfiguration`. Then, Rdd will automatically take care of the rest for this API to work as expected. The interface `IInheritanceConfiguration` allows for the description of the diffetents classes to Rdd.
  - **Added**: `BaseClassInstanciator`, `BaseClassPatcher` and `BaseClassJsonConverter` to properly manage inheritance schemes during edition.
  - **Added**: `SerializerProvider.InheritanceConfigurations` and `BaseClassSerializer` to properly manage inheritance schemes during exposition.
- - **Added**: `ReadOnlyRepository<T>.IncludeWhiteList`. This allows an automatic white-list approach on the include on a Get query.
+ - **Added**: `IPropertyAuthorizer<T>`. This allows an automatic white-list approach on the include and filters on a Get query.
  - **Added**: New logic for property and member selection via expression coming from the web. The main interface to manipulate is `IExpression`, that replaces `PropertySelector`. The main implementation to use now are `PropertyExpression`, `EnumerablePropertyExpression`, `ItemExpression`, `ExpressionChain`, or `ExpressionTree`. The parsing and manipulation is ensured by `ExpressionParser (IExpressionParser)` and the visitors `ExpressionChainExtractor`, `ExpressionChainer`.
  - **Added**: `ExpressionEqualityComparer` to compare `Expression` and another one to compare `IExpression`.
  - **Added**: readable static method to construct `OrderBy`

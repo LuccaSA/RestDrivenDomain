@@ -13,11 +13,11 @@ using Xunit;
 namespace Rdd.Web.Tests
 {
     public class QueryParserTests
-    { 
+    {
         [Fact]
         public void CountParseHasOptionImplications()
         {
-            var request = HttpVerbs.Get.NewRequest(("fields", "collection.count")); 
+            var request = HttpVerbs.Get.NewRequest(("fields", "collection.count"));
             var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
 
             Assert.True(query.Options.NeedCount);
@@ -27,7 +27,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void IgnoredAndBadFilters()
         {
-            var request = HttpVerbs.Get.NewRequest(   ("", "oulala") );
+            var request = HttpVerbs.Get.NewRequest(("", "oulala"));
 
             var options = new RddOptions();
             var parser = QueryParserHelper.GetQueryParser<User>(options);
@@ -111,7 +111,7 @@ namespace Rdd.Web.Tests
         [InlineData("20,10", 20, 10)]
         public void CorrectPaging(string input, int offset, int limit)
         {
-            var request = HttpVerbs.Get.NewRequest(("paging", input)); 
+            var request = HttpVerbs.Get.NewRequest(("paging", input));
 
             var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
 
@@ -136,9 +136,10 @@ namespace Rdd.Web.Tests
         [InlineData("iddddd", "zef")]
         [InlineData("id", "zef")]
         [InlineData("id", "between,aaa,zzz")]
+        [InlineData("departments.users.id", "23")]//forbidden
         public void InCorrectFilter(string key, string value)
         {
-            var request = HttpVerbs.Get.NewRequest((key, value)); 
+            var request = HttpVerbs.Get.NewRequest((key, value));
 
             Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));
         }
@@ -150,7 +151,7 @@ namespace Rdd.Web.Tests
         {
             var request = HttpVerbs.Get.NewRequest((key, "23"));
 
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User>(whiteList: new ExpressionParser().ParseTree<User>(key)).Parse(request, true);
         }
     }
 }

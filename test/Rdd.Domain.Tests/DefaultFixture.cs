@@ -37,7 +37,7 @@ namespace Rdd.Domain.Tests
             RightsService = new OpenRightExpressionsHelper<User>();
             Instanciator = new DefaultInstanciator<User>();
             InMemoryStorage = new InMemoryStorageService();
-            UsersRepo = new Repository<User>(InMemoryStorage, RightsService);
+            UsersRepo = new Repository<User>(InMemoryStorage, RightsService, new PropertyAuthorizer<User>());
         }
 
         public void Dispose() { }

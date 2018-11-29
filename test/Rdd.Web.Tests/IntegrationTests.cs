@@ -1,4 +1,5 @@
 ﻿using Rdd.Domain.Helpers;
+using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Models;
 using Rdd.Domain.Patchers;
@@ -52,6 +53,7 @@ namespace Rdd.Web.Tests
         [InlineData(nameof(Parent.OptionalChild) + "." + nameof(OptionalChild.Name), "value")]
         public async void LeftJoinShouldWork(string key, string value)
         {
+            var whiteList = new ExpressionParser().ParseTree<Parent>(nameof(Parent.OptionalChild));
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
                 var unitOfWork = new UnitOfWork(context);
@@ -60,10 +62,10 @@ namespace Rdd.Web.Tests
                 await unitOfWork.SaveChangesAsync();
 
                 var request = HttpVerbs.Get.NewRequest((key, value));
-                var query = QueryParserHelper.GetQueryParser<Parent>().Parse(request, true);
+                var query = QueryParserHelper.GetQueryParser<Parent>(whiteList: whiteList).Parse(request, true);
 
                 var storage = new EFStorageService(context);
-                var repo = new OpenRepository<Parent>(storage, null);
+                var repo = new OpenRepository<Parent>(storage, null, new PropertyAuthorizer<Parent>());
                 var collection = new RestCollection<Parent, int>(repo, new ObjectPatcher<Parent>(_fixture.PatcherProvider, new ReflectionHelper()), new DefaultInstanciator<Parent>());
                 var result = (await collection.GetAsync(query)).Items;
 

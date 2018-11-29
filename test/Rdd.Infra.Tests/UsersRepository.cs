@@ -7,13 +7,16 @@ using System.Linq;
 
 namespace Rdd.Infra.Tests
 {
-    public class UsersRepository : OpenRepository<User>
+    public class UserPropertyAuthorizer : PropertyAuthorizer<User>
     {
         private static readonly IExpressionTree WhiteList = new ExpressionParser().ParseTree<User>(nameof(User.Department));
-        protected override IExpressionTree IncludeWhiteList => WhiteList;
+        public override IExpressionTree IncludeWhiteList => WhiteList;
+    }
 
+    public class UsersRepository : OpenRepository<User>
+    {
         public UsersRepository(IStorageService storageService, IRightExpressionsHelper<User> rightsService)
-        : base(storageService, rightsService) { }
+        : base(storageService, rightsService, new UserPropertyAuthorizer()) { }
 
         protected override IQueryable<User> ApplyOrderBys(IQueryable<User> entities, Query<User> query)
         {

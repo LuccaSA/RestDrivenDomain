@@ -61,7 +61,7 @@ namespace Rdd.Web.Tests.Serialization
             services.AddSingleton<IExpressionParser, ExpressionParser>();
             services.AddSingleton(typeof(IWebFilterConverter<>), typeof(WebFilterConverter<>));
             services.AddSingleton<IPagingParser, PagingParser>();
-            services.AddSingleton<IFilterParser, FilterParser>();
+            services.AddSingleton(typeof(IFilterParser<>), typeof(FilterParser<>));
             services.AddSingleton<IFieldsParser, FieldsParser>();
             services.AddSingleton<IOrderByParser, OrderByParser>();
             services.AddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));

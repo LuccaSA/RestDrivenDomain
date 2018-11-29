@@ -7,8 +7,8 @@ namespace Rdd.Infra.Storage
     public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
         where TEntity : class
     {
-        public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
-            : base(storageService, rightExpressionsHelper) { }
+        public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper, IPropertyAuthorizer<TEntity> propertyAuthorizer)
+            : base(storageService, rightExpressionsHelper, propertyAuthorizer) { }
 
         public virtual void Add(TEntity entity)
         {

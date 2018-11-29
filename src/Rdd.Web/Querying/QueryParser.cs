@@ -11,15 +11,13 @@ namespace Rdd.Web.Querying
     public class QueryParser<TEntity> : IQueryParser<TEntity>
         where TEntity : class
     {
-        private readonly IWebFilterConverter<TEntity> _webFilterConverter;
         private readonly IPagingParser _pagingParser;
-        private readonly IFilterParser _filterParser;
+        private readonly IFilterParser<TEntity> _filterParser;
         private readonly IFieldsParser _fieldsParser;
         private readonly IOrderByParser _orderByParser;
 
-        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
+        public QueryParser(IPagingParser pagingParser, IFilterParser<TEntity> filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
         {
-            _webFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
             _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
             _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
             _fieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
@@ -36,7 +34,7 @@ namespace Rdd.Web.Querying
                  _fieldsParser.Parse<TEntity>(request, isCollectionCall),
                  _orderByParser.Parse<TEntity>(request),
                  _pagingParser.Parse(request),
-                 _filterParser.Parse(request, action, _webFilterConverter),
+                 _filterParser.Parse(request, action),
                 GetVerb(request)
             );
 

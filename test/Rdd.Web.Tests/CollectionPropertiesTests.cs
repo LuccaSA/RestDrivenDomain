@@ -18,7 +18,7 @@ namespace Rdd.Web.Tests
         {
             _fixture = fixture;
             _storage = new InMemoryStorageService();
-            _repo = new OpenRepository<User>(_storage, _fixture.RightsService);
+            _repo = new OpenRepository<User>(_storage, _fixture.RightsService, new PropertyAuthorizer<User>());
             _collection = new UsersCollection(_repo, _fixture.PatcherProvider, _fixture.Instanciator);
         }
 

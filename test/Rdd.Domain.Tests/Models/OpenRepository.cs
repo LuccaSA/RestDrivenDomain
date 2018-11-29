@@ -8,8 +8,8 @@ namespace Rdd.Domain.Tests.Models
     public class OpenRepository<TEntity> : Repository<TEntity>
         where TEntity : class
     {
-        public OpenRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightsService)
-        : base(storageService, rightsService) { }
+        public OpenRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightsService, IPropertyAuthorizer<TEntity> propertyAuthorizer)
+        : base(storageService, rightsService, propertyAuthorizer) { }
 
         protected override IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {

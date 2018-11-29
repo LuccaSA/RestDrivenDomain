@@ -60,7 +60,7 @@ namespace Rdd.Infra.Tests.Storage
         [Fact]
         public async Task RepoOnNullFilterDoesNotFail()
         {
-            var repo = new Repository<User>(new InMemoryStorageService(), new OpenRightExpressionsHelper<User>());
+            var repo = new Repository<User>(new InMemoryStorageService(), new OpenRightExpressionsHelper<User>(), new PropertyAuthorizer<User>());
             repo.Add(new User());
 
             var count = await repo.CountAsync(new Query<User> { Filter = null });

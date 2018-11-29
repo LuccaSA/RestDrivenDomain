@@ -16,7 +16,7 @@ namespace Rdd.Web.Tests
         {
             var storage = new InMemoryStorageService();
 
-            var repository = new Repository<IUser>(storage, null);
+            var repository = new Repository<IUser>(storage, null, new PropertyAuthorizer<IUser>());
             var collection = new ReadOnlyRestCollection<IUser, int>(repository);
             var appController = new ReadOnlyAppController<IUser, int>(collection);
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rdd.Domain;
-using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Rights;
 using System.Collections.Generic;
@@ -14,13 +13,13 @@ namespace Rdd.Infra.Storage
     {
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
-
-        protected virtual IExpressionTree IncludeWhiteList { get; }
-
-        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
+        protected IPropertyAuthorizer<TEntity> PropertyAuthorizer { get; set; }
+        
+        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper, IPropertyAuthorizer<TEntity> propertyAuthorizer)
         {
             StorageService = storageService;
             RightExpressionsHelper = rightExpressionsHelper;
+            PropertyAuthorizer = propertyAuthorizer;
         }
 
         public virtual Task<int> CountAsync(Query<TEntity> query)
@@ -99,12 +98,12 @@ namespace Rdd.Infra.Storage
 
         protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            if (IncludeWhiteList == null || query.Fields == null)
+            if (PropertyAuthorizer.IncludeWhiteList == null || query.Fields == null)
             {
                 return entities;
             }
 
-            foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+            foreach (var prop in query.Fields.Intersection(PropertyAuthorizer.IncludeWhiteList))
             {
                 entities = entities.Include(prop.Name);
             }

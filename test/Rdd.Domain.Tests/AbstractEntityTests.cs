@@ -27,7 +27,7 @@ namespace Rdd.Domain.Tests
         {
             var rightsService = new OpenRightExpressionsHelper<ConcreteClassThree>();
             var storage = new InMemoryStorageService();
-            var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService);
+            var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService, new PropertyAuthorizer<ConcreteClassThree>());
 
             repo.Add(new ConcreteClassThree());
             repo.Add(new ConcreteClassThree());
@@ -44,7 +44,7 @@ namespace Rdd.Domain.Tests
         {
             var rightsService = new OpenRightExpressionsHelper<AbstractClass>();
             var storage = new InMemoryStorageService();
-            var repo = new OpenRepository<AbstractClass>(storage, rightsService);
+            var repo = new OpenRepository<AbstractClass>(storage, rightsService, new PropertyAuthorizer<AbstractClass>());
 
             repo.Add(new ConcreteClassOne());
             repo.Add(new ConcreteClassOne());
