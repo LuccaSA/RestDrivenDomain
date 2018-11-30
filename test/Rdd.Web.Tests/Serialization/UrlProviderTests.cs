@@ -9,7 +9,6 @@ using Rdd.Web.Serialization.UrlProviders;
 using Rdd.Web.Tests.Models;
 using Rdd.Web.Tests.ServerMock;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
@@ -19,7 +18,6 @@ namespace Rdd.Web.Tests.Serialization
     public class UrlProviderTests
     {
         private HttpContextAccessor httpContextAccessor;
-        private IActionDescriptorCollectionProvider actionDescriptorCollectionProvider;
 
         public UrlProviderTests()
         {
@@ -29,7 +27,10 @@ namespace Rdd.Web.Tests.Serialization
             };
             httpContextAccessor.HttpContext.Request.Scheme = "https";
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
+        }
 
+        public IActionDescriptorCollectionProvider GetProvider(string template)
+        {
             var mock = new Mock<IActionDescriptorCollectionProvider>();
             mock.Setup(a => a.ActionDescriptors).Returns(new ActionDescriptorCollection(new List<ActionDescriptor>
             {
@@ -37,14 +38,11 @@ namespace Rdd.Web.Tests.Serialization
                 {
                     ActionName = "GetByIdAsync",
                     ControllerTypeInfo = typeof(ReadOnlyWebController<User, int>).GetTypeInfo(),
-                    AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo
-                    {
-                        Template = "api/users/{id}"
-                    }
+                    AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo { Template = template }
                 }
             }, 1));
 
-            actionDescriptorCollectionProvider = mock.Object;
+            return mock.Object;
         }
 
         [Fact]
@@ -55,7 +53,21 @@ namespace Rdd.Web.Tests.Serialization
                 Id = 1
             };
 
-            var urlProvider = new UrlProvider(actionDescriptorCollectionProvider, httpContextAccessor);
+            var urlProvider = new UrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
+            var result = urlProvider.GetEntityApiUri(entity);
+
+            Assert.Equal("https://mon.domain.com/api/users/1", result.ToString());
+        }
+
+        [Fact]
+        public void GetEntityUrl_should_return_valid_url_diffeent_template()
+        {
+            var entity = new User
+            {
+                Id = 1
+            };
+
+            var urlProvider = new UrlProvider(GetProvider("api/users/{userId}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/users/1", result.ToString());
@@ -66,7 +78,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new UserTest();
 
-            var urlProvider = new UrlProvider(actionDescriptorCollectionProvider, httpContextAccessor);
+            var urlProvider = new UrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/users/10", result.ToString());
@@ -77,7 +89,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new UserTest();
 
-            var urlProvider = new UserTestUrlProvider(actionDescriptorCollectionProvider, httpContextAccessor);
+            var urlProvider = new UserTestUrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/specific/url/10", result.ToString());
@@ -88,7 +100,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new Department();
 
-            var urlProvider = new UserTestUrlProvider(actionDescriptorCollectionProvider, httpContextAccessor);
+            var urlProvider = new UserTestUrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Null(result);
