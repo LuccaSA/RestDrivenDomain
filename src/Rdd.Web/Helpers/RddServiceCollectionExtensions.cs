@@ -70,7 +70,7 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton(typeof(IPropertyAuthorizer<>), typeof(PropertyAuthorizer<>));
             services.TryAddSingleton(typeof(IFilterParser<>), typeof(FilterParser<>));
             services.TryAddSingleton<IFieldsParser, FieldsParser>();
-            services.TryAddSingleton<IOrderByParser, OrderByParser>();
+            services.TryAddSingleton(typeof(IOrderByParser<>), typeof(OrderByParser<>));
             services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 
             //scoped services

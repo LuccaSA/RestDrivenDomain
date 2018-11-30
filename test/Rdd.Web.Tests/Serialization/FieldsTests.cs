@@ -63,7 +63,7 @@ namespace Rdd.Web.Tests.Serialization
             services.AddSingleton<IPagingParser, PagingParser>();
             services.AddSingleton(typeof(IFilterParser<>), typeof(FilterParser<>));
             services.AddSingleton<IFieldsParser, FieldsParser>();
-            services.AddSingleton<IOrderByParser, OrderByParser>();
+            services.AddSingleton(typeof(IOrderByParser<>), typeof(OrderByParser<>));
             services.AddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 
             var urlProvider = new Mock<IUrlProvider>();

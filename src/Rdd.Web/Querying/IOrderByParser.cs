@@ -4,8 +4,9 @@ using Rdd.Domain.Models.Querying;
 
 namespace Rdd.Web.Querying
 {
-    public interface IOrderByParser
+    public interface IOrderByParser<TEntity>
+         where TEntity : class
     {
-        List<OrderBy<TEntity>> Parse<TEntity>(HttpRequest request) where TEntity : class;
+        List<OrderBy<TEntity>> Parse(HttpRequest request);
     }
 }

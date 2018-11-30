@@ -60,7 +60,7 @@ namespace Rdd.Web.Tests
         public void CorrectOrderBys(string input, SortDirection direction, string output)
         {
             var request = HttpVerbs.Get.NewRequest(("orderby", input));
-            var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
+            var query = QueryParserHelper.GetQueryParser<User>(whiteList: new ExpressionParser().ParseTree<User>("department")).Parse(request, true);
 
             Assert.Single(query.OrderBys);
             Assert.Equal(direction, query.OrderBys[0].Direction);
@@ -84,6 +84,14 @@ namespace Rdd.Web.Tests
         [InlineData("Department,asc")]
         [InlineData("Department.Users,asc")]
         public void IncorrectOrderBys(string input)
+        {
+            var request = HttpVerbs.Get.NewRequest(("orderby", input));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>(whiteList: new ExpressionParser().ParseTree<User>("department.users")).Parse(request, true));
+        }
+
+        [Theory]
+        [InlineData("Department.id,asc")]
+        public void UnauthorizedOrderBys(string input)
         {
             var request = HttpVerbs.Get.NewRequest(("orderby", input));
             Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));

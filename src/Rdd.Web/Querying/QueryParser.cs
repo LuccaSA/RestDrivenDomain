@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Rdd.Domain;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
-using Rdd.Infra.Helpers;
 using System;
 
 namespace Rdd.Web.Querying
@@ -14,9 +13,9 @@ namespace Rdd.Web.Querying
         private readonly IPagingParser _pagingParser;
         private readonly IFilterParser<TEntity> _filterParser;
         private readonly IFieldsParser _fieldsParser;
-        private readonly IOrderByParser _orderByParser;
+        private readonly IOrderByParser<TEntity> _orderByParser;
 
-        public QueryParser(IPagingParser pagingParser, IFilterParser<TEntity> filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
+        public QueryParser(IPagingParser pagingParser, IFilterParser<TEntity> filterParser, IFieldsParser fieldsParser, IOrderByParser<TEntity> orderByParser)
         {
             _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
             _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
@@ -32,7 +31,7 @@ namespace Rdd.Web.Querying
             var query = new Query<TEntity>
             (
                  _fieldsParser.Parse<TEntity>(request, isCollectionCall),
-                 _orderByParser.Parse<TEntity>(request),
+                 _orderByParser.Parse(request),
                  _pagingParser.Parse(request),
                  _filterParser.Parse(request, action),
                 GetVerb(request)

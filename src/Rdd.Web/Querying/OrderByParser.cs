@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Rdd.Infra.Storage;
 
 namespace Rdd.Web.Querying
 {
-    public class OrderByParser : IOrderByParser
+    public class OrderByParser<TEntity> : IOrderByParser<TEntity>
+         where TEntity : class
     {
         protected static readonly IReadOnlyDictionary<string, SortDirection> DirectionsByKeyword = new Dictionary<string, SortDirection>(StringComparer.OrdinalIgnoreCase)
         {
@@ -17,14 +19,15 @@ namespace Rdd.Web.Querying
         };
 
         protected IExpressionParser ExpressionParser { get; private set; }
+        protected IPropertyAuthorizer<TEntity> PropertyAuthorizer { get; private set; }
 
-        public OrderByParser(IExpressionParser expressionParser)
+        public OrderByParser(IExpressionParser expressionParser, IPropertyAuthorizer<TEntity> propertyAuthorizer)
         {
             ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
+            PropertyAuthorizer = propertyAuthorizer ?? throw new ArgumentNullException(nameof(propertyAuthorizer));
         }
 
-        public virtual List<OrderBy<TEntity>> Parse<TEntity>(HttpRequest request)
-            where TEntity : class
+        public virtual List<OrderBy<TEntity>> Parse(HttpRequest request)
         {
             if (!request.Query.TryGetValue(Reserved.Orderby, out var value) || StringValues.IsNullOrEmpty(value))
             {
@@ -45,7 +48,11 @@ namespace Rdd.Web.Querying
                     throw new BadRequestException("Order by query parameter is invalid", new FormatException("Correct order by format is `orderby=(property,[asc|desc])*`"));
                 }
 
-                var expression = ExpressionParser.Parse<TEntity>(orders[i]);
+                var expression = ExpressionParser.ParseChain<TEntity>(orders[i]);
+                if (!PropertyAuthorizer.IsVisible(expression))
+                {
+                    throw new BadRequestException($"OrderBy parsing failed for {orders[i]}.", new ForbiddenException("Selected property is forbidden."));
+                }
 
                 if (!expression.ResultType.IsValueType && expression.ResultType.GetInterface(nameof(IComparable)) == null)
                 {

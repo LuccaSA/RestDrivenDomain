@@ -14,7 +14,9 @@ namespace Rdd.Web.Tests
             where T : class
         {
             var opt = Options.Create(rddOptions ?? new RddOptions());
-            return new QueryParser<T>(new PagingParser(opt), new FilterParser<T>(new StringConverter(), new ExpressionParser(), new WebFilterConverter<T>(), new PropertyAuthorizer<T>(whiteList)), new FieldsParser(new ExpressionParser()), new OrderByParser(new ExpressionParser()));
+            var authorizer = new PropertyAuthorizer<T>(whiteList);
+            var parser = new ExpressionParser();
+            return new QueryParser<T>(new PagingParser(opt), new FilterParser<T>(new StringConverter(), parser, new WebFilterConverter<T>(), authorizer), new FieldsParser(parser), new OrderByParser<T>(parser, authorizer));
         }
     }
 }
