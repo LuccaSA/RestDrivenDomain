@@ -18,12 +18,9 @@
     <PackageProjectUrl>https://github.com/LuccaSA/RestDrivenDomain/</PackageProjectUrl>
     <Copyright>Copyright Lucca 2018</Copyright>
   </PropertyGroup>
+ 
 
   <PropertyGroup>
-    <SourceLinkEnabled Condition="'$(SourceLinkEnabled)' == ''">false</SourceLinkEnabled>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(SourceLinkEnabled)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -31,7 +28,7 @@
     <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(SourceLinkEnabled)' == 'true'">
+  <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
   </ItemGroup>
 

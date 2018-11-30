@@ -30,6 +30,7 @@ notifications:
   channel: '#build-opensource'
 
 install:
+  - choco install dotnetcore-sdk
   - ps: wget "https://raw.githubusercontent.com/rducom/ALM/master/build/ComputeVersion.ps1" -outfile "ComputeVersion.ps1"
   - ps: . .\ComputeVersion.ps1
   - ps: $version = Compute "src\Rdd.Web\Rdd.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
@@ -58,10 +59,10 @@ test_script:
 - Codecov.1.0.5\tools\codecov -f coverage-opencover.xml
 
 after_test:
-- ps: dotnet pack src\Rdd.Domain\Rdd.Domain.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\Rdd.Infra\Rdd.Infra.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\Rdd.Application\Rdd.Application.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\Rdd.Web\Rdd.Web.csproj --include-symbols /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:SourceLinkEnabled=true /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack src\Rdd.Domain\Rdd.Domain.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack src\Rdd.Infra\Rdd.Infra.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack src\Rdd.Application\Rdd.Application.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack src\Rdd.Web\Rdd.Web.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
 - echo Starting Myget publish
 - ps: if($env:deploy_unstable -eq "true") { foreach ($nuget in Get-ChildItem -Path .\artifacts\* -Include *.nupkg) { nuget push $nuget $env:MYGET_TOKEN -Source https://www.myget.org/F/lucca/api/v2/package -SymbolSource https://www.myget.org/F/lucca/symbols/api/v2/package -SymbolApiKey $env:MYGET_TOKEN } }
 
