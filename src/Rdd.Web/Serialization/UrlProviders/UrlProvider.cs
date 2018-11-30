@@ -13,9 +13,8 @@ namespace Rdd.Web.Serialization.UrlProviders
     public class UrlProvider : IUrlProvider
     {
         private const string ActionName = nameof(ReadOnlyWebController<IEntityBase<int>, int>.GetByIdAsync);
-#pragma warning disable CS4784
+
         private static readonly Regex Template = new Regex(@"{\w+}");
-#pragma warning restore CS4784
 
         private readonly object _lock = new object();
 
