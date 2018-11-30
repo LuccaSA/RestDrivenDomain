@@ -51,6 +51,7 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<ISerializerProvider, SerializerProvider>();
 
             services.TryAddSingleton<ArraySerializer>();
+            services.TryAddSingleton<IFieldsParser, FieldsParser>();
             services.TryAddSingleton<BaseClassSerializer>();
             services.TryAddSingleton<CultureInfoSerializer>();
             services.TryAddSingleton<DictionarySerializer>();
@@ -69,7 +70,7 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IPagingParser, PagingParser>();
             services.TryAddSingleton(typeof(IPropertyAuthorizer<>), typeof(PropertyAuthorizer<>));
             services.TryAddSingleton(typeof(IFilterParser<>), typeof(FilterParser<>));
-            services.TryAddSingleton<IFieldsParser, FieldsParser>();
+            services.TryAddSingleton(typeof(IFieldsParser<>), typeof(FieldsParser<>));
             services.TryAddSingleton(typeof(IOrderByParser<>), typeof(OrderByParser<>));
             services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
 

@@ -24,6 +24,34 @@ namespace Rdd.Web.Tests
             Assert.False(query.Options.NeedEnumeration);
         }
 
+        [Theory]
+        [InlineData("MyValueObject")]
+        [InlineData("TwitterUri")]
+        [InlineData("Salary")]
+        [InlineData("PictureId")]
+        [InlineData("BirthDay")]
+        [InlineData("ContractStart")]
+        [InlineData("Department")]
+        [InlineData("Department.id")]
+        public void CorrectFields(string input)
+        {
+            var request = HttpVerbs.Get.NewRequest(("fields", input));
+            var query = QueryParserHelper.GetQueryParser<User>(whiteList: new ExpressionParser().ParseTree<User>("department")).Parse(request, true);
+
+            Assert.True(query.Fields.Contains(new ExpressionParser().ParseChain<User>(input)));
+        }
+
+        [Theory]
+        [InlineData("bla")]
+        [InlineData("MyValueObject.bla")]
+        [InlineData("Department.enum")]//unauthorized
+        [InlineData("Departments.users")]//unauthorized
+        public void IncorrectFields(string input)
+        {
+            var request = HttpVerbs.Get.NewRequest(("fields", input));
+            Assert.Throws<BadRequestException>(() => QueryParserHelper.GetQueryParser<User>().Parse(request, true));
+        }
+
         [Fact]
         public void IgnoredAndBadFilters()
         {

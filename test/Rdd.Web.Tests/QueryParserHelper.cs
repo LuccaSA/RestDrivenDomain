@@ -16,7 +16,7 @@ namespace Rdd.Web.Tests
             var opt = Options.Create(rddOptions ?? new RddOptions());
             var authorizer = new PropertyAuthorizer<T>(whiteList);
             var parser = new ExpressionParser();
-            return new QueryParser<T>(new PagingParser(opt), new FilterParser<T>(new StringConverter(), parser, new WebFilterConverter<T>(), authorizer), new FieldsParser(parser), new OrderByParser<T>(parser, authorizer));
+            return new QueryParser<T>(new PagingParser(opt), new FilterParser<T>(new StringConverter(), parser, new WebFilterConverter<T>(), authorizer), new FieldsParser<T>(parser, authorizer), new OrderByParser<T>(parser, authorizer));
         }
     }
 }

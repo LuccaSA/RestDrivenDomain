@@ -12,10 +12,10 @@ namespace Rdd.Web.Querying
     {
         private readonly IPagingParser _pagingParser;
         private readonly IFilterParser<TEntity> _filterParser;
-        private readonly IFieldsParser _fieldsParser;
+        private readonly IFieldsParser<TEntity> _fieldsParser;
         private readonly IOrderByParser<TEntity> _orderByParser;
 
-        public QueryParser(IPagingParser pagingParser, IFilterParser<TEntity> filterParser, IFieldsParser fieldsParser, IOrderByParser<TEntity> orderByParser)
+        public QueryParser(IPagingParser pagingParser, IFilterParser<TEntity> filterParser, IFieldsParser<TEntity> fieldsParser, IOrderByParser<TEntity> orderByParser)
         {
             _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
             _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
@@ -30,7 +30,7 @@ namespace Rdd.Web.Querying
         {
             var query = new Query<TEntity>
             (
-                 _fieldsParser.Parse<TEntity>(request, isCollectionCall),
+                 _fieldsParser.Parse(request, isCollectionCall),
                  _orderByParser.Parse(request),
                  _pagingParser.Parse(request),
                  _filterParser.Parse(request, action),

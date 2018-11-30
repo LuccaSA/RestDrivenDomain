@@ -7,6 +7,10 @@ namespace Rdd.Web.Querying
     public interface IFieldsParser
     {
         IExpressionTree ParseDefaultFields(Type type);
-        IExpressionTree<TEntity> Parse<TEntity>(HttpRequest request, bool isCollectionCall);
+    }
+
+    public interface IFieldsParser<TEntity>
+    {
+        IExpressionTree<TEntity> Parse(HttpRequest request, bool isCollectionCall);
     }
 }

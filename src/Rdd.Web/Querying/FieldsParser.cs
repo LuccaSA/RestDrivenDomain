@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Rdd.Infra.Storage;
+using Rdd.Domain.Exceptions;
 
 namespace Rdd.Web.Querying
 {
@@ -15,27 +17,39 @@ namespace Rdd.Web.Querying
             ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
         }
 
-        public virtual IExpressionTree<TEntity> GetDeFaultFields<TEntity>(bool isCollectionCall)
-        {
-            if (!isCollectionCall)
-            { 
-                return ExpressionParser.ParseTree<TEntity>(string.Join(",", typeof(TEntity).GetProperties().Select(p => p.Name)));
-            }
-            return new ExpressionTree<TEntity>();
-        }
-
         public virtual IExpressionTree ParseDefaultFields(Type type)
         {
             return ExpressionParser.ParseTree(type, string.Join(",", type.GetProperties().Select(p => p.Name)));
         }
+    }
 
-        public virtual IExpressionTree<TEntity> Parse<TEntity>(HttpRequest request, bool isCollectionCall)
+    public class FieldsParser<TEntity> : FieldsParser, IFieldsParser<TEntity>
+    {
+        private IExpressionTree<TEntity> _defaultFields;
+        protected virtual IExpressionTree<TEntity> DefaultFields => _defaultFields ?? (_defaultFields = ExpressionParser.ParseTree<TEntity>(string.Join(",", typeof(TEntity).GetProperties().Select(p => p.Name))));
+
+        protected IPropertyAuthorizer<TEntity> PropertyAuthorizer { get; private set; }
+
+        public FieldsParser(IExpressionParser expressionParser, IPropertyAuthorizer<TEntity> propertyAuthorizer)
+            : base(expressionParser)
         {
-            if (request.Query.TryGetValue(Reserved.Fields, out StringValues fieldValue) && !StringValues.IsNullOrEmpty(fieldValue))
+            PropertyAuthorizer = propertyAuthorizer ?? throw new ArgumentNullException(nameof(propertyAuthorizer));
+        }
+
+        public virtual IExpressionTree<TEntity> Parse(HttpRequest request, bool isCollectionCall)
+        {
+            var result = (request.Query.TryGetValue(Reserved.Fields, out StringValues fieldValue) && !StringValues.IsNullOrEmpty(fieldValue))
+                ? ExpressionParser.ParseTree<TEntity>(fieldValue)
+                : isCollectionCall 
+                    ? new ExpressionTree<TEntity>()
+                    : DefaultFields;
+
+            if (result.Any(c => !PropertyAuthorizer.IsVisible(c)))
             {
-                return ExpressionParser.ParseTree<TEntity>(fieldValue);
+                throw new BadRequestException($"Fields parsing failed", new ForbiddenException("Selected property is forbidden."));
             }
-            return GetDeFaultFields<TEntity>(isCollectionCall);
+
+            return result;
         }
     }
 }
