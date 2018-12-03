@@ -6,12 +6,15 @@ using Rdd.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Rdd.Web.Serialization.UrlProviders
 {
     public class UrlProvider : IUrlProvider
     {
         private const string ActionName = nameof(ReadOnlyWebController<IEntityBase<int>, int>.GetByIdAsync);
+
+        private static readonly Regex Template = new Regex(@"{\w+}");
 
         private readonly object _lock = new object();
 
@@ -62,7 +65,7 @@ namespace Rdd.Web.Serialization.UrlProviders
                 var entityType = GetEntityType(action.ControllerTypeInfo);
                 if (entityType != null)
                 {
-                    result[entityType] = action.AttributeRouteInfo.Template.Replace("{id}", "{0}");
+                    result[entityType] = Template.Replace(action.AttributeRouteInfo.Template, "{0}");
                 }
             }
 
