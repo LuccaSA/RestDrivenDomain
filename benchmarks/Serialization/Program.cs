@@ -7,7 +7,7 @@ namespace Rdd.Benchmarks
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<RddVsNewtonsoft>();
+            var summary = BenchmarkRunner.Run<Instanciators>();
             Console.ReadLine();
         }
     }

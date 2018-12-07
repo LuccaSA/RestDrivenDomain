@@ -30,7 +30,6 @@ namespace Rdd.Benchmarks
             public List<Other> Properties { get; set; }
             public string Token { get; set; }
             public string Name { get; set; }
-            public Culture Culture { get; set; }
         }
 
         class Other
@@ -46,11 +45,10 @@ namespace Rdd.Benchmarks
 
             var services = new ServiceCollection();
             var builder = new RddBuilder(services);
-            builder.AddRddSerialization();
 
             _servicesProvider = services.BuildServiceProvider();
             _serializer = _servicesProvider.GetService<ISerializerProvider>();
-            _fields = new ExpressionParser().ParseTree(typeof(User), "id,birthday,properties[id,name],token,name,culture");
+            _fields = new ExpressionParser().ParseTree(typeof(User), "id,birthday,properties[id,name],token,name");
             _jsonSerializer = JsonSerializer.CreateDefault();
 
             _writer = StreamWriter.Null;
