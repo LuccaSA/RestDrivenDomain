@@ -43,6 +43,13 @@ namespace Rdd.Application.Controllers
             return entities;
         }
 
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> created)
+        {
+            var entities = await Collection.CreateAsync(created);
+            await SaveChangesAsync();
+            return entities;
+        }
+
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             var entity = await Collection.UpdateByIdAsync(id, candidate, query);

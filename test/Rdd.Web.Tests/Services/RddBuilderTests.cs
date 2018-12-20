@@ -135,6 +135,7 @@ namespace Rdd.Web.Tests.Services
 
             public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query = null) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created) => throw new NotImplementedException();
 
             public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
             public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();
@@ -181,6 +182,8 @@ namespace Rdd.Web.Tests.Services
         {
             public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created) => throw new NotImplementedException();
+
             public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
             public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();
             public Task<ISelection<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();
