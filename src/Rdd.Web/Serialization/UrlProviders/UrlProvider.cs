@@ -19,7 +19,6 @@ namespace Rdd.Web.Serialization.UrlProviders
         private readonly object _lock = new object();
 
         private IReadOnlyDictionary<Type, string> _templates;
-        private string _urlBase;
 
         private readonly IActionDescriptorCollectionProvider _provider;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -112,17 +111,8 @@ namespace Rdd.Web.Serialization.UrlProviders
             return GetMatchingType(initialType.BaseType);
         }
 
-        protected virtual string GetUrlBase()
-        {
-            if (_urlBase == null)
-            {
-                _urlBase = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/";
-            }
+        protected virtual string GetUrlBase() => $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/";
 
-            return _urlBase;
-        }
-
-        protected virtual string GetPath(Type type, IPrimaryKey entity)
-            => string.Format(_templates[type], entity.GetId());
+        protected virtual string GetPath(Type type, IPrimaryKey entity) => string.Format(_templates[type], entity.GetId());
     }
 }
