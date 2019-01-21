@@ -65,7 +65,7 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> created)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> created)
         {
             var result = new List<TEntity>();
 
