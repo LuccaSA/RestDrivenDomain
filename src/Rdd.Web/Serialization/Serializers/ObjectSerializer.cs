@@ -3,6 +3,7 @@ using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,13 +13,13 @@ namespace Rdd.Web.Serialization.Serializers
     {
         protected ISerializerProvider SerializerProvider { get; private set; }
         protected NamingStrategy NamingStrategy { get; private set; }
-        protected Dictionary<Type, IExpressionTree> DefaultFields { get; set; }
+        protected ConcurrentDictionary<Type, IExpressionTree> DefaultFields { get; set; }
 
         public ObjectSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
         {
             SerializerProvider = serializerProvider ?? throw new ArgumentNullException(nameof(serializerProvider));
             NamingStrategy = namingStrategy ?? throw new ArgumentNullException(nameof(namingStrategy));
-            DefaultFields = new Dictionary<Type, IExpressionTree>();
+            DefaultFields = new ConcurrentDictionary<Type, IExpressionTree>();
         }
 
         public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
@@ -37,13 +38,7 @@ namespace Rdd.Web.Serialization.Serializers
         {
             if (fields == null || fields.Children.Count == 0)
             {
-                var type = entity.GetType();
-                if (!DefaultFields.ContainsKey(type))
-                {
-                    DefaultFields[type] = new ExpressionParser().ParseTree(type, string.Join(",", type.GetProperties().Select(p => p.Name)));
-                }
-
-                return DefaultFields[type];
+                return DefaultFields.GetOrAdd(entity.GetType(), t => new ExpressionParser().ParseTree(t, string.Join(",", t.GetProperties().Select(p => p.Name))));
             }
 
             return fields;

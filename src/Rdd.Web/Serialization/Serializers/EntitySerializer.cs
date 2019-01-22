@@ -20,13 +20,7 @@ namespace Rdd.Web.Serialization.Serializers
         {
             if (fields == null || fields.Children.Count == 0)
             {
-                var type = entity.GetType();
-                if (!DefaultFields.ContainsKey(type))
-                {
-                    DefaultFields[type] = new ExpressionParser().ParseTree(type, "id,name,url");
-                }
-
-                return DefaultFields[type];
+                return DefaultFields.GetOrAdd(entity.GetType(), t => new ExpressionParser().ParseTree(t, "id,name,url"));
             }
 
             return base.CorrectFields(entity, fields);

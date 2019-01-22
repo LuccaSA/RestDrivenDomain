@@ -17,13 +17,6 @@ namespace Rdd.Web.Serialization.Serializers
         }
 
         protected override IExpressionTree CorrectFields(object entity, IExpressionTree fields)
-        {
-            var type = entity.GetType();
-            if (!DefaultFields.ContainsKey(type))
-            {
-                DefaultFields[type] = _fieldsParser.ParseDefaultFields(entity.GetType());
-            }
-            return DefaultFields[type];
-        }
+            => DefaultFields.GetOrAdd(entity.GetType(), t => _fieldsParser.ParseDefaultFields(t));
     }
 }
