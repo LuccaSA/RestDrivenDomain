@@ -31,37 +31,37 @@ namespace Rdd.Application.Controllers
 
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var entity = await Collection.CreateAsync(candidate, query);
+            var added = await Collection.CreateAsync(candidate, query);
             await SaveChangesAsync();
-            return entity;
+            return added;
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
-            var entities = await Collection.CreateAsync(candidates, query);
+            var added = await Collection.CreateAsync(candidates, query);
             await SaveChangesAsync();
-            return entities;
+            return added;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> created)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
         {
-            var entities = await Collection.CreateAsync(created);
+            var added = await Collection.CreateAsync(entities);
             await SaveChangesAsync();
-            return entities;
+            return added;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var entity = await Collection.UpdateByIdAsync(id, candidate, query);
+            var updated = await Collection.UpdateByIdAsync(id, candidate, query);
             await SaveChangesAsync();
-            return entity;
+            return updated;
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
-            var entities = await Collection.UpdateByIdsAsync(candidatesByIds, query);
+            var updated = await Collection.UpdateByIdsAsync(candidatesByIds, query);
             await SaveChangesAsync();
-            return entities;
+            return updated;
         }
 
         public virtual async Task DeleteByIdAsync(TKey id)

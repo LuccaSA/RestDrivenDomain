@@ -65,11 +65,11 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> created)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
         {
             var result = new List<TEntity>();
 
-            foreach (var entity in created)
+            foreach (var entity in entities)
             {
                 ForgeEntity(entity);
 
