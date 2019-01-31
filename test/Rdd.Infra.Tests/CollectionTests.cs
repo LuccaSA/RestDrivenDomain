@@ -3,6 +3,7 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Tests;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Rdd.Infra.Tests
 {
     public class CollectionTests : DatabaseTest, IClassFixture<DefaultFixture>
     {
-        private DefaultFixture _fixture;
+        private readonly DefaultFixture _fixture;
 
         public CollectionTests(DefaultFixture fixture)
         {
@@ -83,6 +84,54 @@ namespace Rdd.Infra.Tests
                 var result = (await collection.GetAsync(new Query<User>())).Items.ToList();
 
                 Assert.Empty(result);
+            });
+        }
+
+
+        [Fact]
+        public async Task Any_ShouldReturnTrue_WhenExistingUser()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                //Arrange
+                var unitOfWork = new UnitOfWork(context);
+                var storage = new EFStorageService(context);
+                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+
+                var user = User.GetManyRandomUsers(1).First();
+                repo.Add(user);
+                await unitOfWork.SaveChangesAsync();
+
+                //Act
+                var exist = (await collection.AnyAsync(new Query<User>(u => u.Id == user.Id)));
+
+                //Assert
+                Assert.True(exist);
+            });
+        }
+
+        [Fact]
+        public async Task Any_ShouldReturnFalse_WhenNoExistingUser()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                //Arrange
+                var unitOfWork = new UnitOfWork(context);
+                var storage = new EFStorageService(context);
+                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+
+                var user = User.GetManyRandomUsers(1).First();
+                repo.Add(user);
+                await unitOfWork.SaveChangesAsync();
+
+                
+                //Act
+                var exist = (await collection.AnyAsync(new Query<User>(u => Guid.NewGuid() == user.Id)));
+
+                //Assert
+                Assert.False(exist);
             });
         }
 
