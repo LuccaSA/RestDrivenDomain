@@ -17,12 +17,12 @@ namespace Rdd.Domain.Models
 
         protected IReadOnlyRepository<TEntity> Repository { get; set; }
 
-        public async Task<bool> AnyAsync(Query<TEntity> query)
+        public Task<bool> AnyAsync(Query<TEntity> query)
         {
             query.Options.NeedEnumeration = false;
             query.Options.NeedCount = true;
 
-            return (await GetAsync(query)).Count > 0;
+            return Repository.AnyAsync(query);
         }
 
         public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)

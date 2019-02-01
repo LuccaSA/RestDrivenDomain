@@ -66,6 +66,19 @@ namespace Rdd.Infra.Storage
             return Task.FromResult(entities);
         }
 
+        public Task<bool> AnyAsync(Query<TEntity> query)
+        {
+            IQueryable<TEntity> entities = Set();
+            if (query.Options.CheckRights)
+            {
+                entities = ApplyRights(entities, query);
+            }
+
+            entities = ApplyFilters(entities, query);
+
+            return StorageService.AnyAsync(entities);
+        }
+
         protected virtual IQueryable<TEntity> Set() => StorageService.Set<TEntity>();
 
         protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)

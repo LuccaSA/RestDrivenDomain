@@ -91,6 +91,7 @@ namespace Rdd.Web.Tests.Services
         {
             public void Add(Hierarchy entity) => throw new NotImplementedException();
             public void AddRange(IEnumerable<Hierarchy> entities) => throw new NotImplementedException();
+            public Task<bool> AnyAsync(Query<Hierarchy> query) => throw new NotImplementedException();
             public Task<int> CountAsync(Query<Hierarchy> query) => throw new NotImplementedException();
             public void DiscardChanges(Hierarchy entity) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();

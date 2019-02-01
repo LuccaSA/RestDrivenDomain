@@ -55,6 +55,17 @@ namespace Rdd.Infra.Storage
             return CountInternalAsync(entities);
         }
 
+        public virtual Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> entities) 
+            where TEntity : class
+        {
+            if (entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
+            return entities.AnyAsync();
+        }
+
         private async Task<int> CountInternalAsync<TEntity>(IQueryable<TEntity> entities)
         {
             if (!(entities is IAsyncEnumerable<TEntity>))

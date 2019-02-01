@@ -59,6 +59,11 @@ namespace Rdd.Infra.Storage
             return Task.FromResult(entities.Count());
         }
 
+        public Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> entities) where TEntity : class
+        {
+            return Task.FromResult(entities.Any());
+        }
+
         public void Add<TEntity>(TEntity entity)
             where TEntity : class
         {

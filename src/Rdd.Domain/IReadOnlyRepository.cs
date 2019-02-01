@@ -10,5 +10,6 @@ namespace Rdd.Domain
         Task<int> CountAsync(Query<TEntity> query);
         Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query);
         Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query);
+        Task<bool> AnyAsync(Query<TEntity> query);
     }
 }
