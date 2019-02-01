@@ -112,6 +112,31 @@ namespace Rdd.Infra.Tests
         }
 
         [Fact]
+        public async Task Any_ShouldReturnTrue_WhenExistingUser_AndRightCheckedOnOpenRepository()
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                //Arrange
+                var unitOfWork = new UnitOfWork(context);
+                var storage = new EFStorageService(context);
+                var repo = new UsersRepository(storage, _fixture.RightsService);
+                var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+
+                var user = User.GetManyRandomUsers(1).First();
+                repo.Add(user);
+                await unitOfWork.SaveChangesAsync();
+
+                //Act
+                var query = new Query<User>(u => u.Id == user.Id);
+                query.Options.CheckRights = true;
+                var exist = (await collection.AnyAsync(query));
+
+                //Assert
+                Assert.True(exist);
+            });
+        }
+
+        [Fact]
         public async Task Any_ShouldReturnFalse_WhenNoExistingUser()
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
