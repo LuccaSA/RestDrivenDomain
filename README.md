@@ -13,13 +13,12 @@ Rdd is a structural framework, for easy and fast REST implementation, with an in
 
 ### Layer segregation & Inheritance chain
 
-Rdd provide 4 distinct layers to structurally enforce Domain isolation.
+Rdd provides 4 distinct layers to structurally enforce Domain isolation.
 
 - **Web** : WebController / ReadOnlyWebController are the main entry point for instanciating the full Rdd stack. All web related operations must stay on this layer.
 - **Application** : AppController / ReadOnlyAppController are aimed at providing a global functionnal layer
-- **Domain** : RestCollection / ReadOnlyRestCollection are placeholders for Domain centric opérations
+- **Domain** : RestCollection / ReadOnlyRestCollection are placeholders for Domain centric operations
 - **Infra** : Repository / ReadOnlyRepository implements external access to data (via EF, HttpClient, Files, etc)
-
 
 
 # Get Started
@@ -55,7 +54,7 @@ Add this entity in your `DbContext`
 
 ### Create your first Controller: 
 
-The most simple controller is the `ReadOnlyWebController`
+The most simple controller is the `ReadOnlyWebController`:
 
     [Route("api/[controller]")]
     [ApiController]
@@ -65,20 +64,22 @@ The most simple controller is the `ReadOnlyWebController`
         { }
     }
 You don't need to register this controller.
+This is enough to create a functionning api route.
 
 ### Register all others layers:
 
-You need to register all others layers:
+You need to register any specific implementation in any layer:
 
      services.AddRdd<yourDbContext>()
              .AddReadOnlyRepository<Repository<MyFirstEntity>, MyFirstEntity>()
              .AddReadOnlyRestCollection<ReadOnlyRestCollection<MyFirstEntity, int>, MyFirstEntity, int>()
              .AddReadOnlyAppController<ReadOnlyAppController<MyFirstEntity, int>, MyFirstEntity, int>();
-You can override any layer to personalize behavior.
+
+You can override any layer to personalize their behavior.
 
 ### Remove Rights
 
-If you don't want to setup rights:
+By default, api are closed, meaning you'll need to setup rights yourself. If you don't want to setup rights and have your apis open:
 
             var rddBuilder = services.AddRdd<CleemyDbContext>();
             rddBuilder.WithDefaultRights(RightDefaultMode.Open);
