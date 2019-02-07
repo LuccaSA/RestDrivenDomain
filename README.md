@@ -42,10 +42,7 @@ Rdd depends on standard Microsoft.Extensions.DependencyInjection, it's up to you
 Create the entity you want to query: 
 
 ```
-public class MyFirstEntity : EntityBase<int> //int is your PK type (Id)
-{
-    public int Id { get; set; }
-}
+public class MyFirstEntity : EntityBase<int> //int is your PK type (Id) { }
 ```
 
 Add this entity in your `DbContext`
@@ -81,5 +78,5 @@ You can override any layer to personalize their behavior.
 
 By default, api are closed, meaning you'll need to setup rights yourself. If you don't want to setup rights and have your apis open:
 
-            var rddBuilder = services.AddRdd<CleemyDbContext>();
+            var rddBuilder = services.AddRdd<yourDbContext>();
             rddBuilder.WithDefaultRights(RightDefaultMode.Open);
