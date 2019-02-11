@@ -31,37 +31,37 @@ namespace Rdd.Application.Controllers
 
         public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var added = await Collection.CreateAsync(candidate, query);
+            var result = await Collection.CreateAsync(candidate, query);
             await SaveChangesAsync();
-            return added;
+            return result;
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
-            var added = await Collection.CreateAsync(candidates, query);
+            var result = await Collection.CreateAsync(candidates, query);
             await SaveChangesAsync();
-            return added;
+            return result;
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
         {
-            var added = await Collection.CreateAsync(entities);
+            var result = await Collection.CreateAsync(entities);
             await SaveChangesAsync();
-            return added;
+            return result;
         }
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var updated = await Collection.UpdateByIdAsync(id, candidate, query);
+            var result = await Collection.UpdateByIdAsync(id, candidate, query);
             await SaveChangesAsync();
-            return updated;
+            return result;
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
         {
-            var updated = await Collection.UpdateByIdsAsync(candidatesByIds, query);
+            var result = await Collection.UpdateByIdsAsync(candidatesByIds, query);
             await SaveChangesAsync();
-            return updated;
+            return result;
         }
 
         public virtual async Task DeleteByIdAsync(TKey id)
