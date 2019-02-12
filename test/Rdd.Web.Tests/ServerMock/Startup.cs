@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,8 +12,6 @@ namespace Rdd.Web.Tests.ServerMock
 {
     public class Startup
     {
-        public static IWebHostBuilder BuildWebHost(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,9 +32,14 @@ namespace Rdd.Web.Tests.ServerMock
                 })
                 .WithDefaultRights(RightDefaultMode.Open);
 
-            services.AddMvc();
+            SetupMvc(services);
 
             services.AddLogging();
+        }
+
+        protected virtual void SetupMvc(IServiceCollection services)
+        {
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +72,29 @@ namespace Rdd.Web.Tests.ServerMock
                     template: "{controller}/{action}/{id?}",
                     defaults: new { controller = "Ping", action = "Status" });
             });
+        }
+    }
+
+    public static class HostBuilder
+    {
+        public static IWebHostBuilder FromStartup<TStartup>()
+            where TStartup : Startup
+            => FromStartup<TStartup>(null);
+
+        public static IWebHostBuilder FromStartup<TStartup>(string[] args)
+            where TStartup : Startup
+            => WebHost.CreateDefaultBuilder(args).UseStartup<TStartup>();
+    }
+
+    public class StartupMvc22 : Startup
+    {
+        public StartupMvc22(IConfiguration configuration) : base(configuration) { }
+
+        protected override void SetupMvc(IServiceCollection services)
+        {
+            services
+                .AddMvc(options => options.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
     }
 }

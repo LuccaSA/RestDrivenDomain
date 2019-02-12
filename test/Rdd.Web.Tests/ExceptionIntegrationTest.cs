@@ -22,7 +22,7 @@ namespace Rdd.Web.Tests
 
         private void SetupServer(Action<IServiceCollection> configureServices = null)
         {
-            var host = Startup.BuildWebHost(null);
+            var host = HostBuilder.FromStartup<Startup>();
             if (configureServices != null)
             {
                 host.ConfigureServices(configureServices);
