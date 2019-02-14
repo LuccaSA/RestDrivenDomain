@@ -65,6 +65,25 @@ namespace Rdd.Domain.Models
             return result;
         }
 
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
+        {
+            var result = new List<TEntity>();
+
+            foreach (var entity in entities)
+            {
+                ForgeEntity(entity);
+
+                if (await ValidateOrDiscardAsync(entity))
+                {
+                    result.Add(entity);
+                }
+            }
+
+            Repository.AddRange(result);
+
+            return result;
+        }
+
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
             query = query ?? new Query<TEntity>();
