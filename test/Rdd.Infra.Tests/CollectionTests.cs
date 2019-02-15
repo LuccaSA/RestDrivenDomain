@@ -128,7 +128,7 @@ namespace Rdd.Infra.Tests
 
                 //Act
                 var query = new Query<User>(u => u.Id == user.Id);
-                query.Options.CheckRights = true;
+                query.Options.ChecksRights = true;
                 var exist = (await collection.AnyAsync(query));
 
                 //Assert

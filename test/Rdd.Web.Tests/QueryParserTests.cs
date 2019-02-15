@@ -21,8 +21,8 @@ namespace Rdd.Web.Tests
             var request = HttpVerbs.Get.NewRequest(("fields", "collection.count")); 
             var query = QueryParserHelper.GetQueryParser<User>().Parse(request, true);
 
-            Assert.True(query.Options.NeedCount);
-            Assert.False(query.Options.NeedEnumeration);
+            Assert.True(query.Options.NeedsCount);
+            Assert.False(query.Options.NeedsEnumeration);
         }
 
         [Fact]

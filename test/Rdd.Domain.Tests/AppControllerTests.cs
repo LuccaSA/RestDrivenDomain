@@ -35,7 +35,7 @@ namespace Rdd.Domain.Tests
             var users = new UsersCollectionWithHardcodedGetById(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
             var id = Guid.NewGuid();
             var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 
@@ -50,7 +50,7 @@ namespace Rdd.Domain.Tests
             var users = new UsersCollectionWithHardcodedGetById(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
             var candidate1 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id1}"" }}");
@@ -68,7 +68,7 @@ namespace Rdd.Domain.Tests
             var users = new UsersCollectionWithHardcodedGetById(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
             var id = Guid.NewGuid();
             var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
 

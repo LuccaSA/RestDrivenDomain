@@ -42,8 +42,13 @@ namespace Rdd.Web.Querying
 
             if (query.Fields.Contains((ISelection c) => c.Count))
             {
-                query.Options.NeedCount = true;
-                query.Options.NeedEnumeration = query.Fields.Children.Count != 1;
+                query.Options.NeedsCount = true;
+                query.Options.NeedsEnumeration = query.Fields.Children.Count != 1;
+            }
+
+            if (query.Verb == HttpVerbs.Get)
+            {
+                query.Options.NeedsDataTracking = false;
             }
 
             return query;

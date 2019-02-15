@@ -2,16 +2,19 @@
 {
     public class Options
     {
-        public bool NeedCount { get; set; }
+        public bool NeedsCount { get; set; }
 
-        public bool NeedEnumeration { get; set; }
+        public bool NeedsEnumeration { get; set; }
 
-        public bool CheckRights { get; set; }
+        public bool ChecksRights { get; set; }
+
+        public bool NeedsDataTracking { get; set; }
 
         public Options()
         {
-            NeedEnumeration = true;
-            CheckRights = true;
+            NeedsEnumeration = true;
+            ChecksRights = true;
+            NeedsDataTracking = true;
         }
     }
 }

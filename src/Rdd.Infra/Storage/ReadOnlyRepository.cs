@@ -25,8 +25,9 @@ namespace Rdd.Infra.Storage
 
         public virtual Task<int> CountAsync(Query<TEntity> query)
         {
-            var entities = Set();
-            if (query.Options.CheckRights)
+            IQueryable<TEntity> entities = Set();
+
+            if (query.Options.ChecksRights)
             {
                 entities = ApplyRights(entities, query);
             }
@@ -41,9 +42,11 @@ namespace Rdd.Infra.Storage
 
         public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
-            var entities = Set();
+            IQueryable<TEntity> entities = Set();
 
-            if (query.Options.CheckRights)
+            entities = ApplyDataTracking(entities, query);
+
+            if (query.Options.ChecksRights)
             {
                 entities = ApplyRights(entities, query);
             }
@@ -69,7 +72,8 @@ namespace Rdd.Infra.Storage
         public Task<bool> AnyAsync(Query<TEntity> query)
         {
             IQueryable<TEntity> entities = Set();
-            if (query.Options.CheckRights)
+
+            if (query.Options.ChecksRights)
             {
                 entities = ApplyRights(entities, query);
             }
@@ -123,6 +127,11 @@ namespace Rdd.Infra.Storage
             }
 
             return entities;
+        }
+
+        protected virtual IQueryable<TEntity> ApplyDataTracking(IQueryable<TEntity> entities, Query<TEntity> query)
+        {
+            return query.Options.NeedsDataTracking ? entities : entities.AsNoTracking();
         }
     }
 }
