@@ -77,7 +77,7 @@ namespace Rdd.Domain.Tests
         {
             var users = new UsersCollection(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
 
             var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{Guid.NewGuid()}"" }}");
             await users.CreateAsync(candidate, query);
@@ -100,7 +100,7 @@ namespace Rdd.Domain.Tests
             var repo = new Repository<UserWithParameters>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<UserWithParameters>());
             var users = new UsersCollectionWithParameters(repo, _fixture.PatcherProvider, new InstanciatorImplementation());
             var query = new Query<UserWithParameters>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
 
             var candidate = _parser.Parse<UserWithParameters, int>(@"{ ""id"": 3, ""name"": ""John"" }");
             var result = await users.CreateAsync(candidate, query);
@@ -115,7 +115,7 @@ namespace Rdd.Domain.Tests
             var user = new User { Id = id };
             var users = new UsersCollection(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
 
             _fixture.InMemoryStorage.Add(user);
             await _fixture.InMemoryStorage.SaveChangesAsync();
@@ -132,7 +132,7 @@ namespace Rdd.Domain.Tests
             var user = new User { Id = id, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
             var users = new UsersCollection(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
 
             _fixture.InMemoryStorage.Add(user);
             await _fixture.InMemoryStorage.SaveChangesAsync();
@@ -165,7 +165,7 @@ namespace Rdd.Domain.Tests
 
             var users = new RestCollection<User, Guid>(_fixture.UsersRepo, new OverrideObjectPatcher<User>(_fixture.PatcherProvider), _fixture.Instanciator);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
 
             var updated = await users.UpdateByIdAsync(id, _parser.Parse<User, Guid>(JsonConvert.SerializeObject(user)), query);
 
@@ -179,7 +179,7 @@ namespace Rdd.Domain.Tests
             var user = new User { Id = id, Name = "Name", Salary = 1, TwitterUri = new Uri("https://twitter.com") };
             var users = new UsersCollection(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
             var query = new Query<User>();
-            query.Options.CheckRights = false;
+            query.Options.ChecksRights = false;
 
             _fixture.InMemoryStorage.Add(user);
             await _fixture.InMemoryStorage.SaveChangesAsync();

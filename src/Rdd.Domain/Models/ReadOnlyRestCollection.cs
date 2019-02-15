@@ -17,13 +17,7 @@ namespace Rdd.Domain.Models
 
         protected IReadOnlyRepository<TEntity> Repository { get; set; }
 
-        public Task<bool> AnyAsync(Query<TEntity> query)
-        {
-            query.Options.NeedEnumeration = false;
-            query.Options.NeedCount = true;
-
-            return Repository.AnyAsync(query);
-        }
+        public Task<bool> AnyAsync(Query<TEntity> query) => Repository.AnyAsync(query);
 
         public virtual async Task<ISelection<TEntity>> GetAsync(Query<TEntity> query)
         {
@@ -31,13 +25,13 @@ namespace Rdd.Domain.Models
             IEnumerable<TEntity> items = new HashSet<TEntity>();
 
             //Dans de rares cas on veut seulement le count des entités
-            if (query.Options.NeedCount && !query.Options.NeedEnumeration)
+            if (query.Options.NeedsCount && !query.Options.NeedsEnumeration)
             {
                 count = await Repository.CountAsync(query);
             }
 
             //En général on veut une énumération des entités
-            if (query.Options.NeedEnumeration)
+            if (query.Options.NeedsEnumeration)
             {
                 items = await Repository.GetAsync(query);
 

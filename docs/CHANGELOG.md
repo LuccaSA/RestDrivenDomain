@@ -1,4 +1,7 @@
-# Futur release
+#Futur release
+## Breaking changes
+ - **Modification**: On GET requests, Ef tracker is desactivated.
+# 3.0.0
 ## Breaking changes
  - **Removed**: `ReadOnlyRepository.CountAsync()` -> Use `ReadOnlyRepository.CountAsync(Query<T>)` instead
  - **Modification**: Rename protected method `ReadOnlyRepository.CountEntities()` ->`ReadOnlyRepository.CountEntitiesAsync()`.
