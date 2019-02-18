@@ -109,7 +109,18 @@ namespace Rdd.Web.Tests.Serialization
         [Fact]
         public void RealUrls()
         {
-            var host = Startup.BuildWebHost(null).Build();
+            var host = HostBuilder.FromStartup<Startup>().Build(); 
+            var urlProvider = host.Services.GetRequiredService<IUrlProvider>();
+
+            var entity = new ExchangeRate { Id = 123 };
+            var result = urlProvider.GetEntityApiUri(entity);
+            Assert.Equal("https://mon.domain.com/ExchangeRates/123", result.ToString());
+        }
+
+        [Fact]
+        public void RealUrlsAspnet22()
+        {
+            var host = HostBuilder.FromStartup<StartupMvc22>().Build();
             var urlProvider = host.Services.GetRequiredService<IUrlProvider>();
 
             var entity = new ExchangeRate { Id = 123 };

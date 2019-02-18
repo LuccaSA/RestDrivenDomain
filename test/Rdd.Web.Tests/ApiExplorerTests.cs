@@ -13,7 +13,8 @@ namespace Rdd.Web.Tests
         [Fact]
         public void ApiExplorer()
         {
-            var host = Startup.BuildWebHost(null).Build();
+            var host = HostBuilder.FromStartup<Startup>().Build();
+
             var apiExplorer = host.Services.GetRequiredService<IApiDescriptionGroupCollectionProvider>();
 
             //les items contient toutes les routes de tous les controllers (userweb, exchangerate, openexchangerate, ExchangeRate3Controller)

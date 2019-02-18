@@ -16,7 +16,7 @@ namespace Rdd.Web.Tests
 
         public ExchangeRateIntegrationTest()
         {
-            var host = Startup.BuildWebHost(null);
+            var host = HostBuilder.FromStartup<Startup>();
             host.ConfigureServices(c => { });
             _server = new TestServer(host);
             _client = _server.CreateClient();
