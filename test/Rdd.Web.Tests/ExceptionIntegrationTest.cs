@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Rdd.Web.Tests
 {
+    [Collection("automapper")]
     public class ExceptionIntegrationTest
     {
         private HttpClient _client;
