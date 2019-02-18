@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Rdd.Web.Tests
 {
+    [Collection("automapper")]
     public class ApiExplorerTests
     {
         [Fact]

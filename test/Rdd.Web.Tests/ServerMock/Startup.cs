@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rdd.Domain.Rights;
+using Rdd.Web.AutoMapper;
 using Rdd.Web.Helpers;
+using Rdd.Web.Tests.Models;
+using System;
 
 namespace Rdd.Web.Tests.ServerMock
 {
@@ -30,7 +33,8 @@ namespace Rdd.Web.Tests.ServerMock
                     rdd.PagingLimit = 10;
                     rdd.PagingMaximumLimit = 4242;
                 })
-                .WithDefaultRights(RightDefaultMode.Open);
+                .WithDefaultRights(RightDefaultMode.Open)
+                .AddAutoMapper();
 
             SetupMvc(services);
 
@@ -60,6 +64,18 @@ namespace Rdd.Web.Tests.ServerMock
                         Name = i.ToString()
                     });
                 }
+
+                dbContext.Add(new Cat
+                {
+                    Name = "kitty",
+                    Age = 22
+                });
+                dbContext.Add(new Cat
+                {
+                    Name = "kitty",
+                    Age = 23
+                });
+
                 dbContext.SaveChanges();
             }
 

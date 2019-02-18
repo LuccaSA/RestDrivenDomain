@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Rdd.Web.Tests.Serialization
 {
+    [Collection("automapper")]
     public class UrlProviderTests
     {
         private HttpContextAccessor httpContextAccessor;

@@ -15,7 +15,7 @@ namespace Rdd.Web.Helpers
             JsonConverters = new List<JsonConverter>();
         }
 
-        internal IServiceCollection Services { get; }
+        public IServiceCollection Services { get; }
 
         internal List<JsonConverter> JsonConverters { get; }
     }

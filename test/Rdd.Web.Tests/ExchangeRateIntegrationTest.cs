@@ -9,6 +9,7 @@ using Xunit;
 
 namespace Rdd.Web.Tests
 {
+    [Collection("automapper")]
     public class ExchangeRateIntegrationTest
     {
         private readonly HttpClient _client;
@@ -88,6 +89,8 @@ namespace Rdd.Web.Tests
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
             var response = await _client.GetAsync("/ExchangeRates/23");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var response404 = await _client.GetAsync("/ExchangeRates/2300");
+            Assert.Equal(HttpStatusCode.NotFound, response404.StatusCode);
 
             ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
             response = await _client.GetAsync("/ExchangeRates/23");

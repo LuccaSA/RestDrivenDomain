@@ -1,6 +1,8 @@
 #Futur release
 ## Breaking changes
  - **Modification**: On GET requests, Ef tracker is desactivated.
+## New features
+ - **Added**: ``ReadOnlyMappedWebController``. Allow the use of DTO on the Web layer.
 # 3.0.0
 ## Breaking changes
  - **Removed**: `ReadOnlyRepository.CountAsync()` -> Use `ReadOnlyRepository.CountAsync(Query<T>)` instead

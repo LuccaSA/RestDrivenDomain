@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
 using Rdd.Domain.Helpers;
-using Rdd.Domain.Models.Querying;
 using Rdd.Web.Controllers;
 using Rdd.Web.Querying;
+using Rdd.Web.Tests.Models;
 using System.Threading.Tasks;
 
 namespace Rdd.Web.Tests.ServerMock
@@ -51,6 +51,19 @@ namespace Rdd.Web.Tests.ServerMock
         public void GetWithParams([FromQuery]int pipo, int pipo2)
         {
             QueryParser.Parse(HttpContext.Request, ControllerContext.ActionDescriptor, true);
+        }
+    }
+
+    [Route("Cats")]
+    public class CatsController : ReadOnlyMappedWebController<DTOCat, Cat, int>
+    {
+        protected override HttpVerbs AllowedHttpVerbs => ConfigurableAllowedHttpVerbs;
+
+        public static HttpVerbs ConfigurableAllowedHttpVerbs { get; set; }
+
+        public CatsController(IReadOnlyAppController<Cat, int> appController, IQueryParser<DTOCat> queryParser, IRddObjectsMapper<DTOCat, Cat> mapper)
+            : base(appController, queryParser, mapper)
+        {
         }
     }
 }
