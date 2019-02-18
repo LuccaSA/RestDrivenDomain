@@ -52,9 +52,7 @@ build_script:
 - ps: dotnet build Rdd.sln -c Debug -v minimal
 
 test_script:
-- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug test\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
-- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug test\Rdd.Infra.Tests\Rdd.Infra.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
-- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug test\Rdd.Web.Tests\Rdd.Web.Tests.csproj" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -mergeoutput -output:coverage-opencover.xml
+- OpenCover.4.6.519\tools\OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Rdd.sln" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
 - dotnet sonarscanner end /d:"sonar.login=%SONAR_TOKEN%"
 - Codecov.1.0.5\tools\codecov -f coverage-opencover.xml
 
