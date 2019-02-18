@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Infra.Tests", "test\Rdd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web.Tests", "test\Rdd.Web.Tests\Rdd.Web.Tests.csproj", "{D4493283-1C57-48C9-BA9D-4C7862A40424}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain.Mocks", "test\Rdd.Domain.Mocks\Rdd.Domain.Mocks.csproj", "{BD795F44-973F-4B40-863F-A75FC90A7FAE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,10 +58,6 @@ Global
 		{D4493283-1C57-48C9-BA9D-4C7862A40424}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4493283-1C57-48C9-BA9D-4C7862A40424}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4493283-1C57-48C9-BA9D-4C7862A40424}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD795F44-973F-4B40-863F-A75FC90A7FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
