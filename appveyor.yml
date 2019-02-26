@@ -43,9 +43,9 @@ before_build:
 - dotnet restore
 - cmd: >-
     IF "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" (
-    dotnet sonarscanner begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:sonar.cs.opencover.reportsPaths="coverage-opencover.xml"
+    dotnet sonarscanner begin /k:"RestDrivenDomain" /d:"sonar.analysis.mode=publish" /d:"sonar.host.url=https://sonarcloud.io" /o:luccaintegration-github /d:"sonar.login=%SONAR_TOKEN%" /d:sonar.cs.opencover.reportsPaths="coverage-opencover.xml"
     ) ELSE (
-    dotnet sonarscanner begin /k:"RestDrivenDomain" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=luccaintegration-github" /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%" /d:"sonar.pullrequest.provider=github" /d:"sonar.pullrequest.branch=%APPVEYOR_REPO_BRANCH%" /d:"sonar.pullrequest.key=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.pullrequest.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.pullrequest.github.endpoint=https://api.github.com"
+    dotnet sonarscanner begin /k:"RestDrivenDomain" /d:"sonar.host.url=https://sonarcloud.io" /o:luccaintegration-github /d:"sonar.login=%SONAR_TOKEN%" /d:"sonar.github.oauth=%GITHUB_ACCESS_TOKEN%" /d:"sonar.pullrequest.provider=github" /d:"sonar.pullrequest.branch=%APPVEYOR_REPO_BRANCH%" /d:"sonar.pullrequest.key=%APPVEYOR_PULL_REQUEST_NUMBER%" /d:"sonar.pullrequest.github.repository=LuccaSA/RestDrivenDomain" /d:"sonar.pullrequest.github.endpoint=https://api.github.com"
     )
 
 build_script:
