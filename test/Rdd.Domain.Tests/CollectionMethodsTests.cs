@@ -59,7 +59,7 @@ namespace Rdd.Domain.Tests
         {
             Expression<Func<User, bool>> trueFilter = t => true;
             var rightService = new Mock<IRightExpressionsHelper<User>>();
-            rightService.Setup(s => s.GetFilter(It.IsAny<Query<User>>())).Returns(trueFilter);
+            rightService.Setup(s => s.GetFilterAsync(It.IsAny<Query<User>>())).Returns(Task.FromResult(trueFilter));
 
             var id = Guid.NewGuid();
             var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object);

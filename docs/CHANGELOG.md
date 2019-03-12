@@ -1,5 +1,9 @@
 #Futur release
 ## Breaking changes
+ - **Modification**: `IRightExpressionsHelper.GetFilter` -> `IRightExpressionsHelper.GetFilterAsync`
+ - **Modification**: `ReadOnlyRepository.ApplyRights` -> `ReadOnlyRepository.ApplyRightsAsync`
+# 3.1.0
+## Breaking changes
  - **Modification**: On GET requests, Ef tracker is desactivated.
 ## New features
  - **Added**: ``ReadOnlyMappedWebController``. Allow the use of DTO on the Web layer.
