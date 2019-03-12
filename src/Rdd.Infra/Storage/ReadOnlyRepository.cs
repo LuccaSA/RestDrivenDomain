@@ -23,24 +23,24 @@ namespace Rdd.Infra.Storage
             RightExpressionsHelper = rightExpressionsHelper;
         }
 
-        public virtual async Task<int> CountAsync(Query<TEntity> query)
+        public virtual Task<int> CountAsync(Query<TEntity> query)
         {
             IQueryable<TEntity> entities = Set();
 
             if (query.Options.ChecksRights)
             {
-                entities = await ApplyRightsAsync(entities, query);
+                entities = ApplyRights(entities, query);
             }
 
             entities = ApplyFilters(entities, query);
 
-            return await CountEntitiesAsync(entities);
+            return CountEntitiesAsync(entities);
         }
 
         protected virtual Task<int> CountEntitiesAsync(IQueryable<TEntity> entities)
             => StorageService.CountAsync(entities);
 
-        public virtual async Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
+        public virtual Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
         {
             IQueryable<TEntity> entities = Set();
 
@@ -48,7 +48,7 @@ namespace Rdd.Infra.Storage
 
             if (query.Options.ChecksRights)
             {
-                entities = await ApplyRightsAsync(entities, query);
+                entities = ApplyRights(entities, query);
             }
 
             entities = ApplyFilters(entities, query);
@@ -61,7 +61,7 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyIncludes(entities, query);
 
-            return await StorageService.EnumerateEntitiesAsync(entities);
+            return StorageService.EnumerateEntitiesAsync(entities);
         }
 
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
@@ -69,26 +69,25 @@ namespace Rdd.Infra.Storage
             return Task.FromResult(entities);
         }
 
-        public async Task<bool> AnyAsync(Query<TEntity> query)
+        public Task<bool> AnyAsync(Query<TEntity> query)
         {
             IQueryable<TEntity> entities = Set();
 
             if (query.Options.ChecksRights)
             {
-                entities = await ApplyRightsAsync(entities, query);
+                entities = ApplyRights(entities, query);
             }
 
             entities = ApplyFilters(entities, query);
 
-            return await StorageService.AnyAsync(entities);
+            return StorageService.AnyAsync(entities);
         }
 
         protected virtual IQueryable<TEntity> Set() => StorageService.Set<TEntity>();
 
-        protected virtual async Task<IQueryable<TEntity>> ApplyRightsAsync(IQueryable<TEntity> entities, Query<TEntity> query)
+        protected virtual IQueryable<TEntity> ApplyRights(IQueryable<TEntity> entities, Query<TEntity> query)
         {
-            var filter = await RightExpressionsHelper.GetFilterAsync(query);
-            return entities.Where(filter);
+            return entities.Where(RightExpressionsHelper.GetFilter(query));
         }
 
         protected virtual IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> entities, Query<TEntity> query)
