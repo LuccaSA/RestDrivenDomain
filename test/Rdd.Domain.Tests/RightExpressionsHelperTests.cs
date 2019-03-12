@@ -1,5 +1,6 @@
 ﻿using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Domain.Tests
@@ -7,12 +8,12 @@ namespace Rdd.Domain.Tests
     public class RightExpressionsHelperTests
     {
         [Fact]
-        public void RightExpressionsHelper()
+        public async Task RightExpressionsHelper()
         {
-            var filter = new OpenRightExpressionsHelper<User>().GetFilter(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
+            var filter = await new OpenRightExpressionsHelper<User>().GetFilterAsync(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
             Assert.True(filter.Compile()(null));
 
-            filter = new ClosedRightExpressionsHelper<User>().GetFilter(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
+            filter = await new ClosedRightExpressionsHelper<User>().GetFilterAsync(new Domain.Models.Querying.Query<User> { Verb = Helpers.HttpVerbs.Get });
             Assert.False(filter.Compile()(null));
         }
     }
