@@ -1,4 +1,5 @@
 #Futur release
+# 3.2.0
 ## Breaking changes
  - **Modification**: `IRightExpressionsHelper.GetFilter` -> `IRightExpressionsHelper.GetFilterAsync`
  - **Modification**: `ReadOnlyRepository.ApplyRights` -> `ReadOnlyRepository.ApplyRightsAsync`
