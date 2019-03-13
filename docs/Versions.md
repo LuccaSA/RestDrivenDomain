@@ -20,9 +20,11 @@ Here is the agreed upon list of bug fixes that may lead to breaking changes in a
 - API behaviour modification in extremely unordinary usages. If an API's behaviour is altered for extremely unordinary usages as a result of new functionality or a bug fix, this could be done in a MINOR version.
 
 
-Otherwise, the following modifications should **NEVER** happend on a MINOR version:
- - Modifying the arguments of an API
+Otherwise, the following modifications should **NEVER** happen on a MINOR version:
+ - Modifying the arguments (name or type) of an API -> Except typos
  - Modifying the name of an API -> Except typos
  - Modifying the returned type of an API -> Except Sync->Async
  - Modifying the behaviour of an API -> Except bug fixes and extremely unordinary usages
  - Removing an API -> Except dangerous with safe equivalent alternatives
+
+ In any case, changes in the philosophy of an API should be reflected in a MAJOR version.
