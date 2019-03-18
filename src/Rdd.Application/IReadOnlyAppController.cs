@@ -1,6 +1,7 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Models.Querying;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Application
@@ -9,7 +10,7 @@ namespace Rdd.Application
         where TEntity : class, IEntityBase<TKey>
         where TKey : IEquatable<TKey>
     {
-        Task<ISelection<TEntity>> GetAsync(Query<TEntity> query);
-        Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query);
+        Task<ISelection<TEntity>> GetAsync(Query<TEntity> query, CancellationToken cancellationToken = default);
+        Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query, CancellationToken cancellationToken = default);
     }
 }

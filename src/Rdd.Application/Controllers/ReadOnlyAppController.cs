@@ -1,6 +1,7 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Models.Querying;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Application.Controllers
@@ -27,9 +28,9 @@ namespace Rdd.Application.Controllers
             Collection = collection;
         }
 
-        public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query) => Collection.GetAsync(query);
+        public virtual Task<ISelection<TEntity>> GetAsync(Query<TEntity> query, CancellationToken cancellationToken = default) => Collection.GetAsync(query, cancellationToken);
 
-        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query) => Collection.GetByIdAsync(id, query);
+        public virtual Task<TEntity> GetByIdAsync(TKey id, Query<TEntity> query, CancellationToken cancellationToken = default) => Collection.GetByIdAsync(id, query, cancellationToken);
 
 
     }

@@ -176,16 +176,16 @@ namespace Rdd.Web.Tests.Services
 
         class ControllerPipo : IAppController<Hierarchy, int>
         {
-            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created) => throw new NotImplementedException();
+            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-            public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
-            public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();
-            public Task<ISelection<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<Hierarchy> GetByIdAsync(int id, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<Hierarchy> UpdateByIdAsync(int id, ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> UpdateByIdsAsync(IDictionary<int, ICandidate<Hierarchy, int>> candidatesByIds, Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task DeleteByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<ISelection<Hierarchy>> GetAsync(Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<Hierarchy> GetByIdAsync(int id, Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<Hierarchy> UpdateByIdAsync(int id, ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> UpdateByIdsAsync(IDictionary<int, ICandidate<Hierarchy, int>> candidatesByIds, Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         }
 
         [Fact]

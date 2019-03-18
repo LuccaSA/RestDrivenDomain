@@ -2,6 +2,7 @@
 using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Application.Controllers
@@ -29,56 +30,56 @@ namespace Rdd.Application.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
+        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query, CancellationToken cancellationToken = default)
         {
             var result = await Collection.CreateAsync(candidate, query);
-            await SaveChangesAsync();
+            await SaveChangesAsync(cancellationToken);
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query, CancellationToken cancellationToken = default)
         {
             var result = await Collection.CreateAsync(candidates, query);
-            await SaveChangesAsync();
+            await SaveChangesAsync(cancellationToken);
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             var result = await Collection.CreateAsync(entities);
-            await SaveChangesAsync();
+            await SaveChangesAsync(cancellationToken);
             return result;
         }
 
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
+        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query, CancellationToken cancellationToken = default)
         {
-            var result = await Collection.UpdateByIdAsync(id, candidate, query);
-            await SaveChangesAsync();
+            var result = await Collection.UpdateByIdAsync(id, candidate, query, cancellationToken);
+            await SaveChangesAsync(cancellationToken);
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query, CancellationToken cancellationToken = default)
         {
-            var result = await Collection.UpdateByIdsAsync(candidatesByIds, query);
-            await SaveChangesAsync();
+            var result = await Collection.UpdateByIdsAsync(candidatesByIds, query, cancellationToken);
+            await SaveChangesAsync(cancellationToken);
             return result;
         }
 
-        public virtual async Task DeleteByIdAsync(TKey id)
+        public virtual async Task DeleteByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            await Collection.DeleteByIdAsync(id);
-            await SaveChangesAsync();
+            await Collection.DeleteByIdAsync(id, cancellationToken);
+            await SaveChangesAsync(cancellationToken);
         }
 
-        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
+        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
         {
-            await Collection.DeleteByIdsAsync(ids);
-            await SaveChangesAsync();
+            await Collection.DeleteByIdsAsync(ids, cancellationToken);
+            await SaveChangesAsync(cancellationToken);
         }
          
-        protected virtual async Task SaveChangesAsync()
+        protected virtual async Task SaveChangesAsync(CancellationToken cancellationToken)
         {
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }
