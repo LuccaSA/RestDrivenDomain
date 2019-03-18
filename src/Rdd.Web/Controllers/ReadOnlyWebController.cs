@@ -49,7 +49,7 @@ namespace Rdd.Web.Controllers
 
             Query<TEntity> query = QueryParser.Parse(HttpContext.Request, true);
 
-            ISelection<TEntity> selection = await AppController.GetAsync(query);
+            ISelection<TEntity> selection = await AppController.GetAsync(query, HttpContext.RequestAborted);
 
             return new RddJsonResult<TEntity>(selection, query.Fields);
         }
@@ -64,7 +64,7 @@ namespace Rdd.Web.Controllers
 
             Query<TEntity> query = QueryParser.Parse(HttpContext.Request, true);
 
-            TEntity entity = await AppController.GetByIdAsync(id, query);
+            TEntity entity = await AppController.GetByIdAsync(id, query, HttpContext.RequestAborted);
 
             if (entity == null)
             {

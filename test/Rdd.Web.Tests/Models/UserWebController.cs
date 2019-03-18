@@ -20,7 +20,7 @@ namespace Rdd.Web.Tests.Models
             var query = new Query<IUser>();
             query.Options.ChecksRights = false; //Don't care about rights check
 
-            return (await AppController.GetAsync(query)).Items;
+            return (await AppController.GetAsync(query, HttpContext?.RequestAborted ?? default)).Items;
         }
     }
 }

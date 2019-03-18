@@ -47,7 +47,7 @@ namespace Rdd.Web.Controllers
             Query<TEntity> query = QueryParser.Parse(HttpContext.Request, false);
             var candidate = await CandidateParser.ParseAsync<TEntity, TKey>(HttpContext.Request);
 
-            TEntity entity = await AppController.CreateAsync(candidate, query);
+            TEntity entity = await AppController.CreateAsync(candidate, query, HttpContext.RequestAborted);
 
             return new RddJsonResult<TEntity>(entity, query.Fields);
         }
@@ -63,7 +63,7 @@ namespace Rdd.Web.Controllers
             Query<TEntity> query = QueryParser.Parse(HttpContext.Request, false);
             var candidate = await CandidateParser.ParseAsync<TEntity, TKey>(HttpContext.Request);
 
-            TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query);
+            TEntity entity = await AppController.UpdateByIdAsync(id, candidate, query, HttpContext.RequestAborted);
 
             if (entity == null)
             {
@@ -91,7 +91,7 @@ namespace Rdd.Web.Controllers
 
             var candidatesByIds = candidates.ToDictionary(c => c.Id);
 
-            var entities = (await AppController.UpdateByIdsAsync(candidatesByIds, query)).ToList();
+            var entities = (await AppController.UpdateByIdsAsync(candidatesByIds, query, HttpContext.RequestAborted)).ToList();
 
             return new RddJsonResult<TEntity>(new Selection<TEntity>(entities, entities.Count), query.Fields);
         }
@@ -104,7 +104,7 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            await AppController.DeleteByIdAsync(id);
+            await AppController.DeleteByIdAsync(id, HttpContext.RequestAborted);
 
             return Ok();
         }
@@ -124,7 +124,7 @@ namespace Rdd.Web.Controllers
                 return BadRequest("To delete a collection of entities, provide an array of objets with an 'id' property");
             }
 
-            await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id));
+            await AppController.DeleteByIdsAsync(candidates.Select(c => c.Id), HttpContext.RequestAborted);
 
             return Ok();
         }
