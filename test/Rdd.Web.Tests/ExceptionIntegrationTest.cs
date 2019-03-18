@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -41,6 +42,16 @@ namespace Rdd.Web.Tests
             var response = await _client.GetAsync("/unknownRoute/");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task CancellationTokenTest()
+        {
+            SetupServer();
+
+            var tokenSource = new CancellationTokenSource(2000);
+            var response = await _client.GetAsync("/Users/RequestAbortion", tokenSource.Token);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Theory]
