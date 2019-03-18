@@ -2,6 +2,7 @@
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Domain.Tests.Models
@@ -11,7 +12,7 @@ namespace Rdd.Domain.Tests.Models
         public UsersCollectionWithHardcodedGetById(IRepository<User> repository, IPatcherProvider patcherProvider, IInstanciator<User> instanciator)
             : base(repository, patcherProvider, instanciator) { }
 
-        public override Task<User> GetByIdAsync(Guid id, Query<User> query)
+        public override Task<User> GetByIdAsync(Guid id, Query<User> query, CancellationToken cancellationToken = default)
         {
             //Only for get, because PUT will always make a GetById( ) to retrieve the entity to update
             if (query.Verb == Helpers.HttpVerbs.Get)

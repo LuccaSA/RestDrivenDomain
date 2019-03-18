@@ -4,6 +4,7 @@ using Rdd.Domain.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Domain.Models
@@ -84,7 +85,7 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null, CancellationToken cancellationToken = default)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
@@ -97,7 +98,7 @@ namespace Rdd.Domain.Models
             return await UpdateAsync(entity, candidate, query);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null, CancellationToken cancellationToken = default)
         {
             query = query ?? new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
@@ -119,7 +120,7 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task DeleteByIdAsync(TKey id)
+        public virtual async Task DeleteByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
             var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
             if (entity != null)
@@ -128,7 +129,7 @@ namespace Rdd.Domain.Models
             }
         }
 
-        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
+        public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
         {
             var expQuery = new Query<TEntity>(e => ids.Contains(e.Id)) { Verb = HttpVerbs.Delete };
 
