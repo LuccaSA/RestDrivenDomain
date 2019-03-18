@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
@@ -103,7 +104,7 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public Task SaveChangesAsync() => Task.CompletedTask;
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 
         public void Dispose()
         {

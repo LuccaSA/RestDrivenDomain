@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
@@ -20,7 +21,7 @@ namespace Rdd.Infra.Storage
             _saveEventProcessors = (saveEventProcessors ?? Enumerable.Empty<ISaveEventProcessor>()).ToList();
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -35,7 +36,7 @@ namespace Rdd.Infra.Storage
                     }
                 }
 
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(cancellationToken);
 
                 foreach (var savedEvent in processed)
                 {

@@ -4,6 +4,7 @@ using Rdd.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
@@ -17,11 +18,11 @@ namespace Rdd.Infra.Storage
             _dbContext = dbContext;
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException ex)
             {
