@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -85,10 +86,10 @@ namespace Rdd.Web.Tests.Services
         {
             public void Add(Hierarchy entity) => throw new NotImplementedException();
             public void AddRange(IEnumerable<Hierarchy> entities) => throw new NotImplementedException();
-            public Task<bool> AnyAsync(Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<int> CountAsync(Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<bool> AnyAsync(Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+            public Task<int> CountAsync(Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
             public void DiscardChanges(Hierarchy entity) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> GetAsync(Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> GetAsync(Query<Hierarchy> query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> PrepareAsync(IEnumerable<Hierarchy> entities, Query<Hierarchy> query) => throw new NotImplementedException();
             public void Remove(Hierarchy entity) => throw new NotImplementedException();
         }

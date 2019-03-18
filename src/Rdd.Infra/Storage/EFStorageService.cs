@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Threading;
 
 namespace Rdd.Infra.Storage
 {
@@ -23,7 +24,7 @@ namespace Rdd.Infra.Storage
         }
 
         //https://expertcodeblog.wordpress.com/2018/02/19/net-core-2-0-resolve-error-the-source-iqueryable-doesnt-implement-iasyncenumerable/
-        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class
         {
             if (entities == null)
@@ -31,20 +32,20 @@ namespace Rdd.Infra.Storage
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            return EnumerateInternalAsync(entities);
+            return EnumerateInternalAsync(entities, cancellationToken);
         }
 
-        private async Task<IEnumerable<TEntity>> EnumerateInternalAsync<TEntity>(IQueryable<TEntity> entities)
+        private async Task<IEnumerable<TEntity>> EnumerateInternalAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken)
         {
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
                 return entities.ToList();
             }
 
-            return await entities.ToListAsync();
+            return await entities.ToListAsync(cancellationToken);
         }
 
-        public virtual Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default)
              where TEntity : class
         {
             if (entities == null)
@@ -52,10 +53,10 @@ namespace Rdd.Infra.Storage
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            return CountInternalAsync(entities);
+            return CountInternalAsync(entities, cancellationToken);
         }
 
-        public virtual Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> entities) 
+        public virtual Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default) 
             where TEntity : class
         {
             if (entities == null)
@@ -63,17 +64,17 @@ namespace Rdd.Infra.Storage
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            return entities.AnyAsync();
+            return entities.AnyAsync(cancellationToken);
         }
 
-        private async Task<int> CountInternalAsync<TEntity>(IQueryable<TEntity> entities)
+        private async Task<int> CountInternalAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken)
         {
             if (!(entities is IAsyncEnumerable<TEntity>))
             {
                 return entities.Count();
             }
 
-            return await entities.CountAsync();
+            return await entities.CountAsync(cancellationToken);
         }
 
         public virtual void Add<TEntity>(TEntity entity)
@@ -124,9 +125,9 @@ namespace Rdd.Infra.Storage
             }
         }
 
-        public virtual Task<int> ExecuteScriptAsync(string script)
+        public virtual Task<int> ExecuteScriptAsync(string script, CancellationToken cancellationToken = default)
         {
-            return DbContext.Database.ExecuteSqlCommandAsync(script);
+            return DbContext.Database.ExecuteSqlCommandAsync(script, cancellationToken);
         }
     }
 }

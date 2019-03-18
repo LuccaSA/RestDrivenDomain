@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +48,7 @@ namespace Rdd.Web.Tests
         public async Task HttpCodeExceptionOption(Exception exception, HttpStatusCode expected)
         {
             var repo = new Mock<IRepository<ExchangeRate2>>();
-            repo.Setup(r => r.GetAsync(It.IsAny<Query<ExchangeRate2>>()))
+            repo.Setup(r => r.GetAsync(It.IsAny<Query<ExchangeRate2>>(), It.IsAny<CancellationToken>()))
                 .Throws(exception);
 
             SetupServer(service =>

@@ -5,6 +5,7 @@ using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
@@ -23,7 +24,7 @@ namespace Rdd.Infra.Storage
             RightExpressionsHelper = rightExpressionsHelper;
         }
 
-        public virtual async Task<int> CountAsync(Query<TEntity> query)
+        public virtual async Task<int> CountAsync(Query<TEntity> query, CancellationToken cancellationToken = default)
         {
             IQueryable<TEntity> entities = Set();
 
@@ -34,13 +35,13 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyFilters(entities, query);
 
-            return await CountEntitiesAsync(entities);
+            return await CountEntitiesAsync(entities, cancellationToken);
         }
 
-        protected virtual Task<int> CountEntitiesAsync(IQueryable<TEntity> entities)
+        protected virtual Task<int> CountEntitiesAsync(IQueryable<TEntity> entities, CancellationToken cancellationToken)
             => StorageService.CountAsync(entities);
 
-        public virtual async Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query)
+        public virtual async Task<IEnumerable<TEntity>> GetAsync(Query<TEntity> query, CancellationToken cancellationToken = default)
         {
             IQueryable<TEntity> entities = Set();
 
@@ -61,7 +62,7 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyIncludes(entities, query);
 
-            return await StorageService.EnumerateEntitiesAsync(entities);
+            return await StorageService.EnumerateEntitiesAsync(entities, cancellationToken);
         }
 
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
@@ -69,7 +70,7 @@ namespace Rdd.Infra.Storage
             return Task.FromResult(entities);
         }
 
-        public async Task<bool> AnyAsync(Query<TEntity> query)
+        public async Task<bool> AnyAsync(Query<TEntity> query, CancellationToken cancellationToken = default)
         {
             IQueryable<TEntity> entities = Set();
 
@@ -80,7 +81,7 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyFilters(entities, query);
 
-            return await StorageService.AnyAsync(entities);
+            return await StorageService.AnyAsync(entities, cancellationToken);
         }
 
         protected virtual IQueryable<TEntity> Set() => StorageService.Set<TEntity>();

@@ -48,19 +48,20 @@ namespace Rdd.Infra.Storage
             return Cache[typeof(TEntity)].Cast<TEntity>().AsQueryable();
         }
 
-        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<IEnumerable<TEntity>> EnumerateEntitiesAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class
         {
             return Task.FromResult(entities.ToList() as IEnumerable<TEntity>);
         }
 
-        public virtual Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities)
+        public virtual Task<int> CountAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default)
              where TEntity : class
         {
             return Task.FromResult(entities.Count());
         }
 
-        public Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> entities) where TEntity : class
+        public Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class
         {
             return Task.FromResult(entities.Any());
         }
