@@ -192,9 +192,9 @@ namespace Rdd.Domain.Tests
         }
 
         [Fact]
-        public void Collection_on_hierarchy_fails()
+        public async Task Collection_on_hierarchy_fails()
         {
-            Assert.ThrowsAsync<BadRequestException>(async () =>
+            await Assert.ThrowsAsync<BadRequestException>(async () =>
             {
                 var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
                 var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
