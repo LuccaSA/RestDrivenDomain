@@ -123,11 +123,11 @@ namespace Rdd.Web.Helpers
             }
             return app;
         }
+    }
 
-        public enum RddCompatibilityVersion
-        {
-            Version_3_2 = 1,
-            Version_3_3,
-        }
+    public enum RddCompatibilityVersion
+    {
+        Version_3_2 = 1,
+        Version_3_3,
     }
 }
