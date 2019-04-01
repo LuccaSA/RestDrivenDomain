@@ -127,7 +127,7 @@ namespace Rdd.Web.Helpers
 
     public enum RddCompatibilityVersion
     {
-        Version_3_2 = 1,
+        Version_3_2,
         Version_3_3,
     }
 }
