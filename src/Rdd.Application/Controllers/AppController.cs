@@ -1,7 +1,9 @@
 ﻿using Rdd.Domain;
+using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rdd.Application.Controllers
@@ -29,32 +31,23 @@ namespace Rdd.Application.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
+        public async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var result = await Collection.CreateAsync(candidate, query);
-            await SaveChangesAsync();
-            return result;
+            var results = await CreateAsync(candidate.Yield(), query);
+            return results.First();
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
-            var result = await Collection.CreateAsync(candidates, query);
+            var result = await Collection.CreateAsync(candidates);
             await SaveChangesAsync();
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
+        public async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
-            var result = await Collection.CreateAsync(entities);
-            await SaveChangesAsync();
-            return result;
-        }
-
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
-        {
-            var result = await Collection.UpdateByIdAsync(id, candidate, query);
-            await SaveChangesAsync();
-            return result;
+            var results = await UpdateByIdsAsync(new Dictionary<TKey, ICandidate<TEntity, TKey>> { { id, candidate } }, query);
+            return results.First();
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query)
@@ -64,10 +57,9 @@ namespace Rdd.Application.Controllers
             return result;
         }
 
-        public virtual async Task DeleteByIdAsync(TKey id)
+        public Task DeleteByIdAsync(TKey id)
         {
-            await Collection.DeleteByIdAsync(id);
-            await SaveChangesAsync();
+            return DeleteByIdsAsync(id.Yield());
         }
 
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)

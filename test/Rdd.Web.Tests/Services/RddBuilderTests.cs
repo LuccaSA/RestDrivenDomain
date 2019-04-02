@@ -128,8 +128,8 @@ namespace Rdd.Web.Tests.Services
         {
             public Task<bool> AnyAsync(Query<Hierarchy> query) => throw new NotImplementedException();
 
-            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query = null) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query = null) => throw new NotImplementedException();
+            public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created) => throw new NotImplementedException();
 
             public Task DeleteByIdAsync(int id) => throw new NotImplementedException();

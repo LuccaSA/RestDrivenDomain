@@ -1,4 +1,5 @@
 ﻿using Rdd.Domain;
+using Rdd.Domain.Helpers;
 using Rdd.Domain.Rights;
 using System.Collections.Generic;
 
@@ -10,9 +11,9 @@ namespace Rdd.Infra.Storage
         public Repository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
             : base(storageService, rightExpressionsHelper) { }
 
-        public virtual void Add(TEntity entity)
+        public void Add(TEntity entity)
         {
-            StorageService.Add(entity);
+            StorageService.AddRange(entity.Yield());
         }
 
         public virtual void AddRange(IEnumerable<TEntity> entities)

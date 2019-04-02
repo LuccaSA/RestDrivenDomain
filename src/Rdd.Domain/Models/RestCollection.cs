@@ -25,44 +25,15 @@ namespace Rdd.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate)
         {
-            TEntity entity = Instanciator.InstanciateNew(candidate);
-
-            entity = Patcher.Patch(entity, candidate.JsonValue);
-
-            ForgeEntity(entity);
-
-            if (await ValidateOrDiscardAsync(entity))
-            {
-                Repository.Add(entity);
-                return entity;
-            }
-
-            return null;
+            var result = await (CreateAsync(candidate.Yield()));
+            return result.First();
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        public Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates)
         {
-            var result = new List<TEntity>();
-
-            foreach (var candidate in candidates)
-            {
-                TEntity entity = Instanciator.InstanciateNew(candidate);
-
-                entity = Patcher.Patch(entity, candidate.JsonValue);
-
-                ForgeEntity(entity);
-
-                if (await ValidateOrDiscardAsync(entity))
-                {
-                    result.Add(entity);
-                }
-            }
-
-            Repository.AddRange(result);
-
-            return result;
+            return CreateAsync(Patch(candidates));
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
@@ -84,17 +55,10 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
-            query = query ?? new Query<TEntity>();
-            query.Verb = HttpVerbs.Put;
-
-            TEntity entity = await GetByIdAsync(id, query);
-            if (entity == null)
-            {
-                return null;
-            }
-            return await UpdateAsync(entity, candidate, query);
+            var result = await UpdateByIdsAsync(new Dictionary<TKey, ICandidate<TEntity, TKey>> { { id, candidate } });
+            return result.First();
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
@@ -119,13 +83,9 @@ namespace Rdd.Domain.Models
             return result;
         }
 
-        public virtual async Task DeleteByIdAsync(TKey id)
+        public Task DeleteByIdAsync(TKey id)
         {
-            var entity = await GetByIdAsync(id, new Query<TEntity> { Verb = HttpVerbs.Delete });
-            if (entity != null)
-            {
-                Repository.Remove(entity);
-            }
+            return DeleteByIdsAsync(id.Yield());
         }
 
         public virtual async Task DeleteByIdsAsync(IEnumerable<TKey> ids)
@@ -172,6 +132,17 @@ namespace Rdd.Domain.Models
         /// you can do it by overriding the Clone() method and MemberWiseClone individual sub-properties
         /// </summary>
         protected virtual Task OnAfterUpdateEntity(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query) => Task.CompletedTask;
+
+        protected IEnumerable<TEntity> Patch(IEnumerable<ICandidate<TEntity, TKey>> candidates)
+        {
+            var result = new HashSet<TEntity>();
+            foreach (var candidate in candidates)
+            {
+                TEntity entity = Instanciator.InstanciateNew(candidate);
+                result.Add(Patcher.Patch(entity, candidate.JsonValue));
+            }
+            return result;
+        }
 
         private async Task<TEntity> UpdateAsync(TEntity entity, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {

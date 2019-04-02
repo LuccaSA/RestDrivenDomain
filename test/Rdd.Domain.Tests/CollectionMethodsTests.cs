@@ -76,11 +76,8 @@ namespace Rdd.Domain.Tests
         public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsNotOverridenAndEntityHasAParameterlessConstructor()
         {
             var users = new UsersCollection(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
-            var query = new Query<User>();
-            query.Options.ChecksRights = false;
-
             var candidate = _parser.Parse<User, Guid>($@"{{ ""id"": ""{Guid.NewGuid()}"" }}");
-            await users.CreateAsync(candidate, query);
+            await users.CreateAsync(candidate);
         }
 
         private class InstanciatorImplementation : IInstanciator<UserWithParameters>
@@ -99,11 +96,8 @@ namespace Rdd.Domain.Tests
         {
             var repo = new Repository<UserWithParameters>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<UserWithParameters>());
             var users = new UsersCollectionWithParameters(repo, _fixture.PatcherProvider, new InstanciatorImplementation());
-            var query = new Query<UserWithParameters>();
-            query.Options.ChecksRights = false;
-
             var candidate = _parser.Parse<UserWithParameters, int>(@"{ ""id"": 3, ""name"": ""John"" }");
-            var result = await users.CreateAsync(candidate, query);
+            var result = await users.CreateAsync(candidate);
             Assert.Equal(3, result.Id);
             Assert.Equal("John", result.Name);
         }
