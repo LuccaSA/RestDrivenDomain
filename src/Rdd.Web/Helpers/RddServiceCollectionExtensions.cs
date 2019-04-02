@@ -113,13 +113,21 @@ namespace Rdd.Web.Helpers
         /// <summary>
         /// Register Rdd middleware in the pipeline request BEFORE UseMVC
         /// </summary>
-        /// <param name="app"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseRdd(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRdd(this IApplicationBuilder app, RddCompatibilityVersion rddCompatibilityVersion = RddCompatibilityVersion.Version_3_2)
         {
-            return app
-                .UseMiddleware<EnableRequestRewindMiddleware>()
-                .UseMiddleware<HttpStatusCodeExceptionMiddleware>();
+
+            app.UseMiddleware<EnableRequestRewindMiddleware>();
+            if (rddCompatibilityVersion < RddCompatibilityVersion.Version_3_3)
+            {
+                app.UseMiddleware<HttpStatusCodeExceptionMiddleware>();
+            }
+            return app;
         }
+    }
+
+    public enum RddCompatibilityVersion
+    {
+        Version_3_2,
+        Version_3_3,
     }
 }
