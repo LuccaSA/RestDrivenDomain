@@ -1,4 +1,16 @@
 #Futur release
+ - **Modification**: `AppController.CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)` -> not overridable anymore
+ - **Removed**: `AppController.CreateAsync(IEnumerable<TEntity> entities)`
+ - **Modification**: `AppController.UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query)` -> not overridable anymore
+ - **Modification**: `AppController.DeleteByIdAsync(TKey id)` -> not overridable anymore
+ - **Modification**: `RestCollection.Add(TEntity entity)` -> not overridable anymore 
+ - **Modification**: `RestCollection.CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)` -> removing unused query parameter and not overridable anymore
+ - **Modification**: `RestCollection.CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)` -> removing unused query parameter and not overridable anymore
+ - **Modification**: `RestCollection.UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)` -> removing unused query parameter and not overridable anymore
+ - **Modification**: `RestCollection.DeleteByIdAsync(TKey id)` -> not overridable anymore
+ - **Modification**: `Repository.Add(TEntity entity)` -> not overridable anymore
+ 
+ 
 # 3.2.0
 ## Breaking changes
  - **Modification**: `IRightExpressionsHelper.GetFilter` -> `IRightExpressionsHelper.GetFilterAsync`
