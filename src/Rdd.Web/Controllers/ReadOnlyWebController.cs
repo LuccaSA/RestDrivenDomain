@@ -62,7 +62,7 @@ namespace Rdd.Web.Controllers
                 return new StatusCodeResult(StatusCodes.Status405MethodNotAllowed);
             }
 
-            Query<TEntity> query = QueryParser.Parse(HttpContext.Request, true);
+            Query<TEntity> query = QueryParser.Parse(HttpContext.Request, false);
 
             TEntity entity = await AppController.GetByIdAsync(id, query);
 
