@@ -26,13 +26,18 @@ namespace Rdd.Web.Tests.Serialization
     {
         protected static readonly DateTime GeneratedAt = new DateTime(2000, 01, 01, 0, 0, 0, DateTimeKind.Utc);
 
-        protected Task<string> SerializeAsync<T>(ISelection<T> selection, IExpressionTree fields)
+        protected Task<string> SerializeAsync<T>(ISelection<T> selection, IExpressionTree<T> fields)
+           where T : class
+        {
+            return SerializeCorrectedFieldsAsync(new RddJsonResult<T>(selection, fields));
+        }
+        protected Task<string> SerializeAsync<T>(IEnumerable<T> selection, IExpressionTree<T> fields)
            where T : class
         {
             return SerializeCorrectedFieldsAsync(new RddJsonResult<T>(selection, fields));
         }
 
-        protected Task<string> SerializeAsync<T>(T data, IExpressionTree fields)
+        protected Task<string> SerializeAsync<T>(T data, IExpressionTree<T> fields)
             where T : class
         {
             return SerializeCorrectedFieldsAsync(new RddJsonResult<T>(data, fields));
@@ -136,7 +141,7 @@ namespace Rdd.Web.Tests.Serialization
         public async Task DicoScenario1()
         {
             var obj1 = new Dictionary<string, int> { { "lol", 1 } };
-            var fields = new ExpressionTree();
+            var fields = new ExpressionTree<Dictionary<string, int>>();
 
             var json = await SerializeAsync(obj1, fields);
             Assert.Equal(ExpectedInput(@"{""lol"":1}"), json);
