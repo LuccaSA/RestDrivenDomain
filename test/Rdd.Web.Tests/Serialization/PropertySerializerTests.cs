@@ -26,7 +26,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new Domain.Tests.Models.Super();
             var entity2 = new Domain.Tests.Models.SuperSuper();
-            var fields = new ExpressionParser().ParseTree<Domain.Tests.Models.Super>("");
+            var fields = new ExpressionParser().ParseTree<Domain.Tests.Models.Hierarchy>("");
 
             var json = await SerializeAsync(entity, fields);
             Assert.Contains("superProperty", json);
@@ -177,7 +177,7 @@ namespace Rdd.Web.Tests.Serialization
                 new KeyValuePair<int, string>(3, "trois"),
             };
 
-            var json = await SerializeAsync(values, new ExpressionTree());
+            var json = await SerializeAsync(values, new ExpressionTree<List<KeyValuePair<int, string>>>());
 
             Assert.Equal(ExpectedInput(@"[{""key"":2,""value"":""deux""},{""key"":3,""value"":""trois""}]"), json);
         }

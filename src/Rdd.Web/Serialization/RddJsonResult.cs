@@ -11,6 +11,7 @@ using Rdd.Web.Models;
 using Rdd.Web.Serialization.Providers;
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -32,13 +33,19 @@ namespace Rdd.Web.Serialization
     {
         public IExpressionTree Fields { get; private set; }
 
-        public RddJsonResult(T value, IExpressionTree fields)
+        public RddJsonResult(T value, IExpressionTree<T> fields)
             : base(value)
         {
             Fields = fields;
         }
 
-        public RddJsonResult(ISelection<T> value, IExpressionTree fields)
+        public RddJsonResult(IEnumerable<T> value, IExpressionTree<T> fields)
+            : base(value)
+        {
+            Fields = fields;
+        }
+
+        public RddJsonResult(ISelection<T> value, IExpressionTree<T> fields)
             : base(value)
         {
             Fields = fields;
