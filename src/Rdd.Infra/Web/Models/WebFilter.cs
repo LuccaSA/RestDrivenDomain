@@ -1,6 +1,5 @@
 ﻿using Rdd.Domain.Helpers.Expressions;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Rdd.Infra.Web.Models
 {

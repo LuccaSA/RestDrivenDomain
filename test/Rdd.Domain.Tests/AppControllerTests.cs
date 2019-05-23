@@ -128,6 +128,45 @@ namespace Rdd.Domain.Tests
         }
 
         [Fact]
+        public async Task CreateAsyncShouldNotCallGetByIdsOnTheCollection()
+        {
+            var users = new UsersCollectionWithHardcodedGetById(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);
+            var controller = new UsersAppController(_fixture.InMemoryStorage, users);
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+
+            var result = (await controller.CreateAsync(new List<User> { new User { Id = id1 }, new User { Id = id2 } })).ToList();
+
+            Assert.Equal(id1, result[0].Id);
+            Assert.Equal(id2, result[1].Id);
+        }
+
+        [Fact]
+        public async Task CreateAsyncCollectionShouldFailedIfForbidden()
+        {
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+            var controller = new UsersAppController(_fixture.InMemoryStorage, users);
+
+            await Assert.ThrowsAsync<ForbiddenException>(() => controller.CreateAsync(new List<User> { new User { Id = Guid.NewGuid() }, new User { Id = Guid.NewGuid() } }));
+        }
+
+        [Fact]
+        public async Task CreateAsyncCollectionShouldWorkIfForbiddenButExplicitelyAllowed()
+        {
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
+            var controller = new UsersAppController(_fixture.InMemoryStorage, users);
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+
+            var result = (await controller.CreateAsync(new List<User> { new User { Id = id1 }, new User { Id = id2 } }, false)).ToList();
+
+            Assert.Equal(id1, result[0].Id);
+            Assert.Equal(id2, result[1].Id);
+        }
+
+        [Fact]
         public async Task PutShouldNotCallGetByIdOnTheCollection()
         {
             var users = new UsersCollectionWithHardcodedGetById(_fixture.UsersRepo, _fixture.PatcherProvider, _fixture.Instanciator);

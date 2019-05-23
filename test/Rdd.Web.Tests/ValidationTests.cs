@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rdd.Domain;
-using Rdd.Domain.Json;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;

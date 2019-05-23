@@ -104,10 +104,5 @@ namespace Rdd.Infra.Storage
         }
 
         public Task SaveChangesAsync() => Task.CompletedTask;
-
-        public void Dispose()
-        {
-            //not applicable
-        }
     }
 }

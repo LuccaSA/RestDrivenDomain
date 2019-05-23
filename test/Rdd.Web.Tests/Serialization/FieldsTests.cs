@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
-using Rdd.Domain.Exceptions;
 
 namespace Rdd.Web.Tests.Serialization
 {

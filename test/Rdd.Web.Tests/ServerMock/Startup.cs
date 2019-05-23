@@ -9,7 +9,6 @@ using Rdd.Domain.Rights;
 using Rdd.Web.AutoMapper;
 using Rdd.Web.Helpers;
 using Rdd.Web.Tests.Models;
-using System;
 
 namespace Rdd.Web.Tests.ServerMock
 {
