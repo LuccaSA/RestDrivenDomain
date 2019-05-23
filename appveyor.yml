@@ -37,7 +37,6 @@ cache:
   - '%LocalAppData%\NuGet\v3-cache -> **\*.csproj, appveyor.yml'
 
 install:
-  - choco install dotnetcore-sdk --version 2.2.105
   - ps: wget "https://raw.githubusercontent.com/rducom/ALM/master/build/ComputeVersion.ps1" -outfile "ComputeVersion.ps1"
   - ps: . .\ComputeVersion.ps1
   - ps: $version = Compute "src\Rdd.Web\Rdd.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
