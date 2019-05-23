@@ -1,6 +1,7 @@
 ﻿using Rdd.Domain.Helpers;
 using Rdd.Domain.Helpers.Reflection;
 using Rdd.Domain.Models;
+using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Patchers;
 using Rdd.Domain.Tests;
 using Rdd.Domain.Tests.Models;
@@ -31,7 +32,7 @@ namespace Rdd.Web.Tests
                 var repo = new UsersRepository(storage, _fixture.RightsService);
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.Id).ToList();
-                repo.AddRange(users);
+                await repo.AddRangeAsync(users, new Query<User> { Verb = HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 var request = HttpVerbs.Get.NewRequest(("mail", "aaa3@example.com"));

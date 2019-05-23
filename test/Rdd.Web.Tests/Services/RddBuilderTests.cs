@@ -83,8 +83,8 @@ namespace Rdd.Web.Tests.Services
 
         class RepoPipo : IRepository<Hierarchy>
         {
-            public void Add(Hierarchy entity) => throw new NotImplementedException();
-            public void AddRange(IEnumerable<Hierarchy> entities) => throw new NotImplementedException();
+            public Task AddAsync(Hierarchy entity, Query<Hierarchy> query) => throw new NotImplementedException();
+            public Task AddRangeAsync(IEnumerable<Hierarchy> entities, Query<Hierarchy> query) => throw new NotImplementedException();
             public Task<bool> AnyAsync(Query<Hierarchy> query) => throw new NotImplementedException();
             public Task<int> CountAsync(Query<Hierarchy> query) => throw new NotImplementedException();
             public void DiscardChanges(Hierarchy entity) => throw new NotImplementedException();
@@ -130,7 +130,7 @@ namespace Rdd.Web.Tests.Services
 
             public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query = null) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query = null) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created, bool checkRights = true) => throw new NotImplementedException();
 
             public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
             public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();
@@ -177,7 +177,7 @@ namespace Rdd.Web.Tests.Services
         {
             public Task<Hierarchy> CreateAsync(ICandidate<Hierarchy, int> candidate, Query<Hierarchy> query) => throw new NotImplementedException();
             public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<ICandidate<Hierarchy, int>> candidates, Query<Hierarchy> query) => throw new NotImplementedException();
-            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created) => throw new NotImplementedException();
+            public Task<IEnumerable<Hierarchy>> CreateAsync(IEnumerable<Hierarchy> created, bool checkRights = true) => throw new NotImplementedException();
 
             public Task DeleteByIdAsync(int id) => throw new NotImplementedException();
             public Task DeleteByIdsAsync(IEnumerable<int> ids) => throw new NotImplementedException();

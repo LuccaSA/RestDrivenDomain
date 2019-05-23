@@ -201,19 +201,19 @@ namespace Rdd.Domain.Tests
                 var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper), instanciator);
 
                 var candidate = _parser.Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
-                await collection.CreateAsync(candidate);
+                await collection.CreateAsync(candidate, new Query<Hierarchy> { Verb = Helpers.HttpVerbs.Post });
             });
         }
 
         [Fact]
         public async Task BaseClass_Collection_on_hierarchy_works()
         {
-            var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
+            var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<Hierarchy>());
             var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
             var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper, new InheritanceConfiguration()), instanciator);
 
             var candidate = _parser.Parse<Hierarchy, int>(@"{ ""type"":""super"", ""superProperty"": ""lol"" }");
-            await collection.CreateAsync(candidate);
+            await collection.CreateAsync(candidate, new Query<Hierarchy> { Verb = Helpers.HttpVerbs.Post });
         }
     }
 }
