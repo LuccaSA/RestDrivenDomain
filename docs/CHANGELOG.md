@@ -16,7 +16,7 @@ A security fix broke some apis.
 
 ### Bug fixs
 
-- Filters on sub queries works prpperly i.e. `?users.id=1` now properly generates `.Users.Any(u => u.Id == 1)`.
+- Filters on sub queries works properly i.e. `?users.id=1` now generates `.Users.Any(u => u.Id == 1)`.
 
 ### Enhancements
 

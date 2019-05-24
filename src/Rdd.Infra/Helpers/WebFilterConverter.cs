@@ -20,7 +20,7 @@ namespace Rdd.Infra.Helpers
         protected static readonly HashSet<Type> KnownTypesEvaluatedClientSideWithHashCode
             = new HashSet<Type> { typeof(MailAddress) };
 
-        protected static readonly MethodInfo AnyMethod = typeof(Enumerable).GetMethods().First(mi => mi.Name == nameof(Enumerable.Any) && mi.GetParameters().Length == 2);
+        protected static readonly MethodInfo AnyMethod = typeof(Enumerable).GetMethods().First(m => m.Name == nameof(Enumerable.Any) && m.GetParameters().Length == 2);
 
         protected WebFilterConverter() { }
     }
