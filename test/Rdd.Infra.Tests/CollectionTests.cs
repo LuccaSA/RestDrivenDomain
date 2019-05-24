@@ -30,7 +30,7 @@ namespace Rdd.Infra.Tests
                 var repo = new UsersRepository(storage, _fixture.RightsService);
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.Id).ToList();
-                repo.AddRange(users);
+                await repo.AddRangeAsync(users, new Query<User>{Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 var sequence = users.Select(i => i.Id).ToList();
@@ -52,7 +52,7 @@ namespace Rdd.Infra.Tests
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var users = User.GetManyRandomUsers(20).OrderBy(u => u.FriendId).ThenBy(u => u.Id).ToList();
-                repo.AddRange(users);
+                await repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 var sequence = users.Select(i => i.Id).ToList();
@@ -75,7 +75,7 @@ namespace Rdd.Infra.Tests
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var users = User.GetManyRandomUsers(20).ToList();
-                repo.AddRange(users);
+                await repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 storage.RemoveRange(users);
@@ -100,7 +100,7 @@ namespace Rdd.Infra.Tests
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var user = User.GetManyRandomUsers(1).First();
-                repo.Add(user);
+                await repo.AddAsync(user, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 //Act
@@ -123,7 +123,7 @@ namespace Rdd.Infra.Tests
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var user = User.GetManyRandomUsers(1).First();
-                repo.Add(user);
+                await repo.AddAsync(user, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 //Act
@@ -148,7 +148,7 @@ namespace Rdd.Infra.Tests
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var user = User.GetManyRandomUsers(1).First();
-                repo.Add(user);
+                await repo.AddAsync(user, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 
@@ -181,14 +181,14 @@ namespace Rdd.Infra.Tests
                 var collection = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
 
                 var users = User.GetManyRandomUsers(3).ToList();
-                repo.AddRange(users);
+                await repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 users[0].Name = "new value";
                 repo.Remove(users[2]);
 
                 var newUser = new User();
-                repo.Add(newUser);
+                await repo.AddAsync(newUser, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
 
                 storage.DiscardChanges<User>(null);//does not fail
                 storage.DiscardChanges(users[0]);//modified
@@ -220,7 +220,7 @@ namespace Rdd.Infra.Tests
                 await unitOfWork.SaveChangesAsync();
 
                 var users = User.GetManyRandomUsers(1, dpts).ToList();
-                repo.AddRange(users);
+                await repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
                 using (var newContext = GetContext(false))

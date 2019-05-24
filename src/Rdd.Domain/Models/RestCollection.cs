@@ -25,7 +25,7 @@ namespace Rdd.Domain.Models
             Instanciator = instanciator;
         }
 
-        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
+        public virtual async Task<TEntity> CreateAsync(ICandidate<TEntity, TKey> candidate, Query<TEntity> query)
         {
             TEntity entity = Instanciator.InstanciateNew(candidate);
 
@@ -35,14 +35,14 @@ namespace Rdd.Domain.Models
 
             if (await ValidateOrDiscardAsync(entity))
             {
-                Repository.Add(entity);
+                await Repository.AddAsync(entity, query);
                 return entity;
             }
 
             return null;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query = null)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<ICandidate<TEntity, TKey>> candidates, Query<TEntity> query)
         {
             var result = new List<TEntity>();
 
@@ -60,12 +60,11 @@ namespace Rdd.Domain.Models
                 }
             }
 
-            Repository.AddRange(result);
-
+            await Repository.AddRangeAsync(result, query);
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities, bool checkRights = true)
         {
             var result = new List<TEntity>();
 
@@ -79,8 +78,7 @@ namespace Rdd.Domain.Models
                 }
             }
 
-            Repository.AddRange(result);
-
+            await Repository.AddRangeAsync(result, new Query<TEntity> { Verb = HttpVerbs.Post, Options = new Options { ChecksRights = checkRights } });
             return result;
         }
 

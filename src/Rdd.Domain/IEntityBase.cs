@@ -6,5 +6,5 @@
         string Url { get; }
     }
 
-    public interface IEntityBase<TKey> : IEntityBase, IPrimaryKey<TKey> { }
+    public interface IEntityBase<out TKey> : IEntityBase, IPrimaryKey<TKey> { }
 }

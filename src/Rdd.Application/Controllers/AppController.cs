@@ -43,9 +43,9 @@ namespace Rdd.Application.Controllers
             return result;
         }
 
-        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities)
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(IEnumerable<TEntity> entities, bool checkRights = true)
         {
-            var result = await Collection.CreateAsync(entities);
+            var result = await Collection.CreateAsync(entities, checkRights);
             await SaveChangesAsync();
             return result;
         }

@@ -1,5 +1,4 @@
 ﻿using Rdd.Domain.Exceptions;
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;

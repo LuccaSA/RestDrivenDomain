@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
 using Rdd.Domain;
+using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers;
 using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
@@ -47,9 +48,16 @@ namespace Rdd.Web.Controllers
             Query<TEntity> query = QueryParser.Parse(HttpContext.Request, false);
             var candidate = await CandidateParser.ParseAsync<TEntity, TKey>(HttpContext.Request);
 
-            TEntity entity = await AppController.CreateAsync(candidate, query);
+            try
+            {
+                TEntity entity = await AppController.CreateAsync(candidate, query);
 
-            return new RddJsonResult<TEntity>(entity, query.Fields);
+                return new RddJsonResult<TEntity>(entity, query.Fields);
+            }
+            catch (ForbiddenException e)
+            {
+                return Forbid(e.Message);
+            }
         }
 
         [HttpPut("{id}")]

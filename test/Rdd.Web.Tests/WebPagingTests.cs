@@ -30,7 +30,7 @@ namespace Rdd.Web.Tests
         public async void Default_Paging_should_be_0_to_10()
         {
             IEnumerable<User> users = User.GetManyRandomUsers(20);
-            _repo.AddRange(users);
+            await _repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
             await _storage.SaveChangesAsync();
 
             var query = new Query<User>();
@@ -49,7 +49,7 @@ namespace Rdd.Web.Tests
             await Assert.ThrowsAsync<BadRequestException>(async () =>
             {
                 IEnumerable<User> users = User.GetManyRandomUsers(2000);
-                _repo.AddRange(users);
+                await _repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await _storage.SaveChangesAsync();
 
                 var query = new Query<User> { Page = new Page(0, 1001, 1000) };

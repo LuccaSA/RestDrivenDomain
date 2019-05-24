@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using NExtends.Primitives.DateTimes;
 using Rdd.Domain.Exceptions;
@@ -10,7 +9,6 @@ using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
 using Rdd.Infra.Web.Models;
-using Rdd.Web.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -8,7 +8,7 @@ namespace Rdd.Domain
         IEnumerable<object> GetItems();
     }
 
-    public interface ISelection<TEntity> : ISelection
+    public interface ISelection<out TEntity> : ISelection
         where TEntity : class
     {
         IEnumerable<TEntity> Items { get; }

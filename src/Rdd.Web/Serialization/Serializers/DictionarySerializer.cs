@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
 using System;

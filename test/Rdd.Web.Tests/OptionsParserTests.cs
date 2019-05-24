@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Rdd.Domain.Helpers;
+﻿using Rdd.Domain.Helpers;
 using Rdd.Web.Tests.Models;
 using Xunit;
 

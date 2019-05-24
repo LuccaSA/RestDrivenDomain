@@ -29,8 +29,8 @@ namespace Rdd.Domain.Tests
             var storage = new InMemoryStorageService();
             var repo = new OpenRepository<ConcreteClassThree>(storage, rightsService);
 
-            repo.Add(new ConcreteClassThree());
-            repo.Add(new ConcreteClassThree());
+            await repo.AddAsync(new ConcreteClassThree(), new Query<ConcreteClassThree> { Verb = Helpers.HttpVerbs.Post });
+            await repo.AddAsync(new ConcreteClassThree(), new Query<ConcreteClassThree> { Verb = Helpers.HttpVerbs.Post });
 
             var collection = new ConcreteClassThreeCollection(repo);
 
@@ -46,9 +46,9 @@ namespace Rdd.Domain.Tests
             var storage = new InMemoryStorageService();
             var repo = new OpenRepository<AbstractClass>(storage, rightsService);
 
-            repo.Add(new ConcreteClassOne());
-            repo.Add(new ConcreteClassOne());
-            repo.Add(new ConcreteClassTwo());
+            await repo.AddAsync(new ConcreteClassOne(), new Query<AbstractClass> { Verb = Helpers.HttpVerbs.Post });
+            await repo.AddAsync(new ConcreteClassOne(), new Query<AbstractClass> { Verb = Helpers.HttpVerbs.Post });
+            await repo.AddAsync(new ConcreteClassTwo(), new Query<AbstractClass> { Verb = Helpers.HttpVerbs.Post });
 
             var collection = new AbstractClassCollection(repo);
 
