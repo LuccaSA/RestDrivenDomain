@@ -14,6 +14,10 @@ A security fix broke some apis.
 - **Modification** : `RestCollection.CreateAsync` query parameter is not optional anymore.
 - **Modification** : `WebController.PostAsync` returns a 403 if the operation was forbidden
 
+### Bug fixs
+
+- Filters on sub queries works prpperly i.e. `?users.id=1` now properly generates `.Users.Any(u => u.Id == 1)`.
+
 ### Enhancements
 
 - CI now uses Appveyor cache for faster build time
