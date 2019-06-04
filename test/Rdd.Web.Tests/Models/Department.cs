@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace Rdd.Web.Tests.Models
-{
-    
+{    
     public enum Test { A = 0, B = 10 }
+
     public class Department : EntityBase<int>
     {
         public ICollection<User> Users { get; set; }

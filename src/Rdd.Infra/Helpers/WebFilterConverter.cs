@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Mail;
+using System.Reflection;
 
 namespace Rdd.Infra.Helpers
 {
@@ -18,6 +19,8 @@ namespace Rdd.Infra.Helpers
 
         protected static readonly HashSet<Type> KnownTypesEvaluatedClientSideWithHashCode
             = new HashSet<Type> { typeof(MailAddress) };
+
+        protected static readonly MethodInfo AnyMethod = typeof(Enumerable).GetMethods().First(m => m.Name == nameof(Enumerable.Any) && m.GetParameters().Length == 2);
 
         protected WebFilterConverter() { }
     }
@@ -71,11 +74,10 @@ namespace Rdd.Infra.Helpers
         {
             if (values.Count == 1 && !KnownTypesEvaluatedClientSideWithHashCode.Contains(leftExpression.Type))
             {
-                
                 return Expression.Equal(leftExpression, values[0].ExtractTypedExpression(leftExpression.Type));
             }
             else
-            { 
+            {
                 return Expression.Call(typeof(Enumerable), "Contains", new[] { leftExpression.Type }, values.ExtractTypedExpression(typeof(IEnumerable<>).MakeGenericType(leftExpression.Type)), leftExpression);
             }
         }
@@ -150,23 +152,23 @@ namespace Rdd.Infra.Helpers
                 }
                 else
                 {
-                    var day = value.Value.Day.ExtractExpression();
-                    var month = value.Value.Month.ExtractExpression();
-                    var valueExpression = Expression.Property(leftExpression, "Value");
-                    var dayExpression = Expression.Equal(day, Expression.Property(valueExpression, "Day"));
-                    var monthExpression = Expression.Equal(month, Expression.Property(valueExpression, "Month"));
-                    var anniversaryExpression = Expression.AndAlso(dayExpression, monthExpression);
+                    Expression day = value.Value.Day.ExtractExpression();
+                    Expression month = value.Value.Month.ExtractExpression();
+                    MemberExpression valueExpression = Expression.Property(leftExpression, "Value");
+                    BinaryExpression dayExpression = Expression.Equal(day, Expression.Property(valueExpression, "Day"));
+                    BinaryExpression monthExpression = Expression.Equal(month, Expression.Property(valueExpression, "Month"));
+                    BinaryExpression anniversaryExpression = Expression.AndAlso(dayExpression, monthExpression);
 
-                    var hasValueExpression = Expression.Property(leftExpression, "HasValue");
+                    MemberExpression hasValueExpression = Expression.Property(leftExpression, "HasValue");
                     return Expression.AndAlso(hasValueExpression, anniversaryExpression);
                 }
             }
             else
             {
-                var day = value.Value.Day.ExtractExpression();
-                var month = value.Value.Month.ExtractExpression();
-                var dayExpression = Expression.Equal(day, Expression.Property(leftExpression, "Day"));
-                var monthExpression = Expression.Equal(month, Expression.Property(leftExpression, "Month"));
+                Expression day = value.Value.Day.ExtractExpression();
+                Expression month = value.Value.Month.ExtractExpression();
+                BinaryExpression dayExpression = Expression.Equal(day, Expression.Property(leftExpression, "Day"));
+                BinaryExpression monthExpression = Expression.Equal(month, Expression.Property(leftExpression, "Month"));
                 return Expression.AndAlso(dayExpression, monthExpression);
             }
         }
@@ -174,28 +176,28 @@ namespace Rdd.Infra.Helpers
         public Expression<Func<TEntity, bool>> Between(IExpression field, IList values) => OrFactory<Period>(value => BuildLambda(Between, field, value), values);
         protected virtual Expression Between(Expression leftExpression, Period value)
         {
-            var expressionRightSince = value.Start.ExtractExpression();
-            var expressionRightUntil = value.End.ExtractExpression();
-            var sinceExpression = Expression.GreaterThanOrEqual(leftExpression, expressionRightSince);
-            var untilExpression = Expression.LessThanOrEqual(leftExpression, expressionRightUntil);
+            Expression expressionRightSince = value.Start.ExtractExpression();
+            Expression expressionRightUntil = value.End.ExtractExpression();
+            BinaryExpression sinceExpression = Expression.GreaterThanOrEqual(leftExpression, expressionRightSince);
+            BinaryExpression untilExpression = Expression.LessThanOrEqual(leftExpression, expressionRightUntil);
             return Expression.AndAlso(sinceExpression, untilExpression);
         }
 
         public Expression<Func<TEntity, bool>> Starts(IExpression field, IList values) => OrFactory<string>(value => BuildLambda(Starts, field, value), values);
         protected virtual Expression Starts(Expression leftExpression, string value)
         {
-            var startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
-            var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-            
+            MethodInfo startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+            MethodInfo toLower = typeof(string).GetMethod("ToLower", new Type[] { });
+
             return Expression.Call(Expression.Call(leftExpression, toLower), startsWith, value.ToLower().ExtractExpression());
         }
 
         public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(Like, field, value.ToString()), values);
         protected virtual Expression Like(Expression leftExpression, string value)
         {
-            var contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-            var toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-            var toString = typeof(object).GetMethod("ToString", new Type[] { });
+            MethodInfo contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            MethodInfo toLower = typeof(string).GetMethod("ToLower", new Type[] { });
+            MethodInfo toString = typeof(object).GetMethod("ToString", new Type[] { });
 
             return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, value.ToLower().ExtractExpression());
         }
@@ -203,9 +205,23 @@ namespace Rdd.Infra.Helpers
         protected Expression<Func<TEntity, bool>> BuildLambda<TValue>(Func<Expression, TValue, Expression> builder, IExpression field, TValue value)
         {
             var fieldLambda = field.ToLambdaExpression();
-            var expression = builder(fieldLambda.Body, value);
-            var parameter = fieldLambda.Parameters[0];
-            return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
+            Type fieldLambdaType = fieldLambda.Body.Type;
+
+            Expression body;
+            if (fieldLambdaType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(fieldLambdaType) && fieldLambdaType.GenericTypeArguments.Length > 0)
+            {
+                Type genericType = fieldLambdaType.GenericTypeArguments[0];
+                ParameterExpression subParam = Expression.Parameter(genericType);
+                LambdaExpression predicate = Expression.Lambda(typeof(Func<,>).MakeGenericType(genericType, typeof(bool)), builder(subParam, value), subParam);
+
+                body = Expression.Call(AnyMethod.MakeGenericMethod(genericType), fieldLambda.Body, predicate);
+            }
+            else
+            {
+                body = builder(fieldLambda.Body, value);
+            }
+
+            return Expression.Lambda<Func<TEntity, bool>>(body, fieldLambda.Parameters[0]);
         }
     }
 }

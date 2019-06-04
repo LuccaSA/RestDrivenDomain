@@ -128,6 +128,20 @@ namespace Rdd.Web.Tests
             Assert.Equal(users[0], goodUser);
         }
 
+        [Fact]
+        public void EqualsFilterOnCollection()
+        {
+            var builder = new WebFilterConverter<User>();
+            var goodUser = new User { Users = new List<User> { new User { Id = 20 }, new User { Id = 21 } } };
+            var badUser = new User { Users = new List<User> { new User { Id = 30 }, new User { Id = 31 } } };
+
+            var filter = new WebFilter<User>(new ExpressionParser().Parse<User>("users.id"), WebFilterOperand.Equals, new List<int> { 20 });
+            var expression = builder.ToExpression(filter);
+            var users = new List<User> { goodUser, badUser }.AsQueryable().Where(expression).ToList();
+            Assert.Single(users);
+            Assert.Equal(users[0], goodUser);
+        }
+
         [Theory]
         [InlineData(2)]
         [InlineData(1, 2)]
