@@ -21,7 +21,7 @@ namespace Rdd.Domain.Helpers.Expressions.Equality
             unchecked
             {
                 var hash = 17;
-                hash = hash * 23 + prop.GetHashCode();
+                hash = (hash * 23) + prop.GetHashCode();
                 return hash;
             }
         }
@@ -30,7 +30,7 @@ namespace Rdd.Domain.Helpers.Expressions.Equality
         {
             unchecked
             {
-                return props.Where(prop => prop != null).Aggregate(17, (current, prop) => current * 23 + prop.GetHashCode());
+                return props.Where(prop => prop != null).Aggregate(17, (current, prop) => (current * 23) + prop.GetHashCode());
             }
         }
     }

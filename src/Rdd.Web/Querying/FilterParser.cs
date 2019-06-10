@@ -5,7 +5,6 @@ using Microsoft.Extensions.Primitives;
 using NExtends.Primitives.DateTimes;
 using Rdd.Domain.Exceptions;
 using Rdd.Domain.Helpers.Expressions;
-using Rdd.Domain.Models;
 using Rdd.Domain.Models.Querying;
 using Rdd.Infra.Helpers;
 using Rdd.Infra.Web.Models;
@@ -13,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Period = Rdd.Domain.Models.Period;
 
 namespace Rdd.Web.Querying
 {
