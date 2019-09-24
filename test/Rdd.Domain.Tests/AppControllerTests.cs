@@ -17,7 +17,7 @@ namespace Rdd.Domain.Tests
 {
     public class AppControllerTests : IClassFixture<DefaultFixture>
     {
-        private DefaultFixture _fixture;
+        private readonly DefaultFixture _fixture;
         private readonly ICandidateParser _parser;
 
         private class OptionsAccessor : IOptions<MvcJsonOptions>
