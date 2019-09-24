@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Serialization;
+using Rdd.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -62,7 +63,7 @@ namespace Rdd.Domain.Helpers.Reflection
         {
             if (!_propertiesByType.ContainsKey(type))
             {
-                _propertiesByType[type] = type.GetProperties();
+                _propertiesByType[type] = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             }
 
             return _propertiesByType[type];
@@ -72,6 +73,10 @@ namespace Rdd.Domain.Helpers.Reflection
         {
             if (!_providersByProperty.ContainsKey(property))
             {
+                if (!property.GetGetMethod()?.IsPublic ?? true)
+                {
+                    throw new BadRequestException($"Reading the property {property.Name} on type {property.DeclaringType.Name} is not available.");
+                }
                 _providersByProperty[property] = new ExpressionValueProvider(property);
             }
 
@@ -82,6 +87,10 @@ namespace Rdd.Domain.Helpers.Reflection
         {
             if (!_providersByProperty.ContainsKey(property))
             {
+                if (!property.GetSetMethod()?.IsPublic ?? true)
+                {
+                    throw new BadRequestException($"Setting the property {property.Name} on type {property.DeclaringType.Name} is not available.");
+                }
                 _providersByProperty[property] = new ExpressionValueProvider(property);
             }
 

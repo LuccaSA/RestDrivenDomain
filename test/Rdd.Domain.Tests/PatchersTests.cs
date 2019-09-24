@@ -20,10 +20,24 @@ namespace Rdd.Domain.Tests
         private class ToPatch
         {
             public CustomFields CustomFields { get; set; }
+            public Dictionary<int, int> InternalIntDico { internal get; set; }
             public Dictionary<int, int> IntDico { get; set; }
             public Dictionary<int, int?> IntNullableDico { get; set; }
             public Dictionary<int, string> StringDico { get; set; }
             public Dictionary<string, string> KeyStringValueStringDico { get; set; }
+
+            public static int PublicStatic { get; set; }
+
+            internal int Internal { get; set; }
+            protected int Protected { get; set; }
+            protected internal int ProtectedInternal { get; set; }
+            private int Private { get; set; }
+
+            public int PublicGetterNoSetter { get; }
+            public int PublicGetterInternalSetter { get; internal set; }
+            public int PublicGetterProtectedSetter { get; protected set; }
+            public int PublicGetterProtectedInternalSetter { get; protected internal set; }
+            public int PublicGetterPrivateSetter { get; private set; }
 
             public TestEnum DaysId { get; set; }
             public EnumClient<TestEnum> Days
@@ -37,7 +51,7 @@ namespace Rdd.Domain.Tests
             public int[] ArrayOfInt { get; set; }
         }
 
-        private IServiceProvider ServiceProvider;
+        private readonly IServiceProvider ServiceProvider;
         private IPatcherProvider PatcherProvider => ServiceProvider.GetService<IPatcherProvider>();
         private IReflectionHelper ReflectionHelper => ServiceProvider.GetService<IReflectionHelper>();
 
@@ -63,6 +77,37 @@ namespace Rdd.Domain.Tests
             var json = new JsonParser().Parse(@"{ ""url"": ""http://www.example.org"" }");
 
             Assert.Throws<BadRequestException>(() => patcher.Patch(new EntityBase<int>(), json));
+        }
+
+        [Theory]
+        [InlineData("PublicStatic")]
+        [InlineData("Internal")]
+        [InlineData("Protected")]
+        [InlineData("ProtectedInternal")]
+        [InlineData("Private")]
+        [InlineData("PublicGetterNoSetter")]
+        [InlineData("PublicGetterInternalSetter")]
+        [InlineData("PublicGetterProtectedSetter")]
+        [InlineData("PublicGetterProtectedInternalSetter")]
+        [InlineData("PublicGetterPrivateSetter")]
+        public void PatchEntityHelperShouldFailOnNonPublicInstanceProperties(string prop)
+        {
+            var input = @"{" + prop + ": 1 }";
+            var json = new JsonParser().Parse(input);
+            var newPatched = new ToPatch();
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
+
+            Assert.Throws<BadRequestException>(() => patcher.Patch(newPatched, json));
+        }
+
+        [Fact]
+        public void PatchEntityHelperShouldFailOnNonPublicGetterProperties()
+        {
+            var input = @"{internalintDico: { 1: 1, 2: 3 }}";
+            var json = new JsonParser().Parse(input);
+            var newPatched = new ToPatch();
+            IPatcher patcher = new ObjectPatcher(PatcherProvider, ReflectionHelper);
+            Assert.Throws<BadRequestException>(() => patcher.Patch(newPatched, json));
         }
 
         [Fact]
