@@ -1,9 +1,12 @@
 ﻿using Rdd.Domain;
 using Rdd.Domain.Exceptions;
+using Rdd.Domain.Helpers;
 using Rdd.Domain.Models.Querying;
 using Rdd.Domain.Rights;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Rdd.Infra.Storage
@@ -16,9 +19,15 @@ namespace Rdd.Infra.Storage
 
         public virtual async Task AddAsync(TEntity entity, Query<TEntity> query)
         {
-            if (query.Options.ChecksRights && !(await RightExpressionsHelper.GetFilterAsync(query)).Compile()(entity))
+            if (query.Options.ChecksRights)
             {
-                throw new ForbiddenException("You do not have the rights to create the posted entity");
+                var filter = await RightExpressionsHelper.GetFilterAsync(query);
+                await EnsureEntitiesAreLoaded(entity.Yield(), query, filter);
+                var rightFilter = filter.Compile();
+                if (!rightFilter(entity))
+                {
+                    throw new ForbiddenException("You do not have the rights to create the posted entity");
+                }
             }
 
             StorageService.Add(entity);
@@ -28,7 +37,9 @@ namespace Rdd.Infra.Storage
         {
             if (query.Options.ChecksRights)
             {
-                var rightFilter = (await RightExpressionsHelper.GetFilterAsync(query)).Compile();
+                var filter = await RightExpressionsHelper.GetFilterAsync(query);
+                await EnsureEntitiesAreLoaded(entities, query, filter);
+                var rightFilter = filter.Compile();
                 if (!entities.All(rightFilter))
                 {
                     throw new ForbiddenException("You do not have the rights to create one of the posted entity");
@@ -37,6 +48,9 @@ namespace Rdd.Infra.Storage
 
             StorageService.AddRange(entities);
         }
+
+        protected virtual Task EnsureEntitiesAreLoaded(IEnumerable<TEntity> entities, Query<TEntity> query, Expression<Func<TEntity, bool>> filter)
+            => Task.CompletedTask;
 
         public virtual void Remove(TEntity entity)
         {
