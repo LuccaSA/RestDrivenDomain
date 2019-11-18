@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Rdd.Application;
 using Rdd.Web.Controllers;
 using Rdd.Web.Serialization.UrlProviders;
 using Rdd.Web.Tests.Models;
@@ -18,7 +20,7 @@ namespace Rdd.Web.Tests.Serialization
     [Collection("automapper")]
     public class UrlProviderTests
     {
-        private HttpContextAccessor httpContextAccessor;
+        private readonly HttpContextAccessor httpContextAccessor;
 
         public UrlProviderTests()
         {
@@ -30,7 +32,10 @@ namespace Rdd.Web.Tests.Serialization
             httpContextAccessor.HttpContext.Request.Host = new HostString("mon.domain.com");
         }
 
-        public IActionDescriptorCollectionProvider GetProvider(string template)
+        private IActionDescriptorCollectionProvider GetProvider<TController>(string template)
+            where TController : ControllerBase => GetProvider(typeof(TController), template);
+
+        private IActionDescriptorCollectionProvider GetProvider(Type type, string template)
         {
             var mock = new Mock<IActionDescriptorCollectionProvider>();
             mock.Setup(a => a.ActionDescriptors).Returns(new ActionDescriptorCollection(new List<ActionDescriptor>
@@ -38,23 +43,26 @@ namespace Rdd.Web.Tests.Serialization
                 new ControllerActionDescriptor
                 {
                     ActionName = "GetByIdAsync",
-                    ControllerTypeInfo = typeof(ReadOnlyWebController<User, int>).GetTypeInfo(),
+                    ControllerTypeInfo = type.GetTypeInfo(),
                     AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo { Template = template }
                 }
             }, 1));
 
             return mock.Object;
         }
-
-        [Fact]
-        public void GetEntityUrl_should_return_valid_url()
+        [Theory]
+        [InlineData(typeof(ReadOnlyWebController<User, int>))]
+        [InlineData(typeof(ReadOnlyWebController<IReadOnlyAppController<User, int>, User, int>))]
+        [InlineData(typeof(WebController<User, int>))]
+        [InlineData(typeof(WebController<IAppController<User, int>, User, int>))]
+        public void GetEntityUrl_should_return_valid_url(Type type)
         {
             var entity = new User
             {
                 Id = 1
             };
 
-            var urlProvider = new UrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
+            var urlProvider = new UrlProvider(GetProvider(type, "api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/users/1", result.ToString());
@@ -68,7 +76,7 @@ namespace Rdd.Web.Tests.Serialization
                 Id = 1
             };
 
-            var urlProvider = new UrlProvider(GetProvider("api/users/{userId}"), httpContextAccessor);
+            var urlProvider = new UrlProvider(GetProvider<ReadOnlyWebController<User, int>>("api/users/{userId}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/users/1", result.ToString());
@@ -79,7 +87,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new UserTest();
 
-            var urlProvider = new UrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
+            var urlProvider = new UrlProvider(GetProvider<ReadOnlyWebController<User, int>>("api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/api/users/10", result.ToString());
@@ -90,7 +98,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new UserTest();
 
-            var urlProvider = new UserTestUrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
+            var urlProvider = new UserTestUrlProvider(GetProvider<ReadOnlyWebController<User, int>>("api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Equal("https://mon.domain.com/specific/url/10", result.ToString());
@@ -101,7 +109,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             var entity = new Department();
 
-            var urlProvider = new UserTestUrlProvider(GetProvider("api/users/{id}"), httpContextAccessor);
+            var urlProvider = new UserTestUrlProvider(GetProvider<ReadOnlyWebController<User, int>>("api/users/{id}"), httpContextAccessor);
             var result = urlProvider.GetEntityApiUri(entity);
 
             Assert.Null(result);
