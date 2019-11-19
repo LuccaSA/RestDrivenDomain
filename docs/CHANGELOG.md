@@ -1,5 +1,19 @@
 # Change Log
 
+## 3.4.1
+
+### Bug fixs
+
+- ``UrlProvider`` works on `ReadOnlyWebController<,,>`.
+
+## 3.4.0
+
+Dependencies have been updated.
+
+### Bug fixs
+
+- Patcher no longer works on internal, readonly or static properties.
+
 ## 3.3.0
 
 A security fix broke some apis.
