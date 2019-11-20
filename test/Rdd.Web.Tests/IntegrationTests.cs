@@ -14,7 +14,7 @@ namespace Rdd.Web.Tests
 {
     public class IntegrationTests : DatabaseTest, IClassFixture<DefaultFixture>
     {
-        private DefaultFixture _fixture;
+        private readonly DefaultFixture _fixture;
 
         public IntegrationTests(DefaultFixture fixture)
         {

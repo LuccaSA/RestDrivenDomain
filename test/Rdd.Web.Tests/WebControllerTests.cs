@@ -26,7 +26,7 @@ namespace Rdd.Web.Tests
 
             var controller = new UserWebController(appController, QueryParserHelper.GetQueryParser<IUser>());
 
-            var results = await controller.GetEnumerableAsync(); //Simplified equivalent to GetAsync()
+            var results = await controller.GetEnumerable(); //Simplified equivalent to Get()
 
             Assert.Equal(2, results.Count());
         }

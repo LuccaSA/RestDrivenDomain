@@ -9,7 +9,7 @@ namespace Rdd.Web.Serialization.Serializers
 {
     public class CultureInfoSerializer : ObjectSerializer
     {
-        private static HashSet<string> _allowedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "id", "name", "code" };
+        private static readonly HashSet<string> _allowedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "id", "name", "code" };
 
         public CultureInfoSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
             : base(serializerProvider, namingStrategy) { }

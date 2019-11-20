@@ -38,7 +38,7 @@ namespace Rdd.Web.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> PostAsync()
+        public virtual async Task<IActionResult> Post()
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Post))
             {
@@ -61,7 +61,7 @@ namespace Rdd.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public virtual async Task<IActionResult> PutByIdAsync(TKey id)
+        public virtual async Task<IActionResult> PutById(TKey id)
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
             {
@@ -82,7 +82,7 @@ namespace Rdd.Web.Controllers
         }
 
         [HttpPut]
-        public virtual async Task<IActionResult> PutAsync()
+        public virtual async Task<IActionResult> Put()
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Put))
             {
@@ -105,7 +105,7 @@ namespace Rdd.Web.Controllers
         }
 
         [HttpDelete("{id}")]
-        public virtual async Task<IActionResult> DeleteByIdAsync(TKey id)
+        public virtual async Task<IActionResult> DeleteById(TKey id)
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
             {
@@ -118,7 +118,7 @@ namespace Rdd.Web.Controllers
         }
 
         [HttpDelete]
-        public virtual async Task<IActionResult> DeleteAsync()
+        public virtual async Task<IActionResult> Delete()
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Delete))
             {

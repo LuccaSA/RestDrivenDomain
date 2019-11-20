@@ -1,5 +1,4 @@
-﻿using NExtends.Primitives.Generics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +16,7 @@ namespace Rdd.Domain.Json
 
         public override object GetContent()
         {
-            return Content.Select(e => e == null ? null : e.GetContent()).ToArray();
+            return Content.Select(e => e?.GetContent()).ToArray();
         }
 
         public override HashSet<string> GetPaths()

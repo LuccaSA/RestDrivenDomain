@@ -19,7 +19,7 @@ namespace Rdd.Web.Querying
         private readonly IJsonParser _jsonParser;
         private readonly JsonSerializer _serializer;
 
-        public CandidateParser(IJsonParser jsonParser, IOptions<MvcJsonOptions> jsonOptions)
+        public CandidateParser(IJsonParser jsonParser, IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _jsonParser = jsonParser ?? throw new ArgumentNullException(nameof(jsonParser));
             _serializer = JsonSerializer.Create(jsonOptions?.Value.SerializerSettings ?? throw new ArgumentNullException(nameof(jsonOptions)));
@@ -41,13 +41,11 @@ namespace Rdd.Web.Querying
             where TEntity : class, IPrimaryKey<TKey>
         {
             var token = JToken.Parse(content);
-            switch (token)
+            return token switch
             {
-                case JArray array:
-                    return array.Select(e => new Candidate<TEntity, TKey>(e, _jsonParser.Parse(e) as JsonObject, e.ToObject<TEntity>(_serializer)));
-                default:
-                    return new List<ICandidate<TEntity, TKey>> { new Candidate<TEntity, TKey>(token, _jsonParser.Parse(token) as JsonObject, token.ToObject<TEntity>(_serializer)) };
-            }
+                JArray array => array.Select(e => new Candidate<TEntity, TKey>(e, _jsonParser.Parse(e) as JsonObject, e.ToObject<TEntity>(_serializer))),
+                _ => new List<ICandidate<TEntity, TKey>> { new Candidate<TEntity, TKey>(token, _jsonParser.Parse(token) as JsonObject, token.ToObject<TEntity>(_serializer)) },
+            };
         }
 
         protected virtual async Task<string> GetContentAsync(HttpRequest request)

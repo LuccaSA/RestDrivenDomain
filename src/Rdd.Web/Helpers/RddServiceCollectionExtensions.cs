@@ -99,7 +99,7 @@ namespace Rdd.Web.Helpers
 
         private static RddBuilder ApplyRddSetupOptions(this RddBuilder rddBuilder)
         {
-            rddBuilder.Services.PostConfigure<MvcJsonOptions>(o =>
+            rddBuilder.Services.PostConfigure<MvcNewtonsoftJsonOptions>(o =>
             {
                 foreach (JsonConverter converter in rddBuilder.JsonConverters)
                 {

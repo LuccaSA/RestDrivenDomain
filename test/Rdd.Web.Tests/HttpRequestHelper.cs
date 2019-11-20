@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Rdd.Domain.Helpers;
+using System;
+using System.Linq;
 
 namespace Rdd.Web.Tests
 {
@@ -31,8 +30,13 @@ namespace Rdd.Web.Tests
                 default:
                     throw new ArgumentOutOfRangeException(nameof(httpVerb), httpVerb, null);
             }
-            
+
+#if NETCOREAPP2_2
+            httpContext.Request.Query = new Microsoft.AspNetCore.Http.Internal.QueryCollection(values.ToDictionary(i => i.Item1, i => (StringValues)i.Item2));
+#endif
+#if NETCOREAPP3_0
             httpContext.Request.Query = new QueryCollection(values.ToDictionary(i => i.Item1, i => (StringValues)i.Item2));
+#endif
             return httpContext.Request;
         }
     }

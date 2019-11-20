@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -59,9 +58,7 @@ namespace Rdd.Web.Serialization
             }
 
             var response = context.HttpContext.Response;
-
-            ResponseContentTypeHelper.ResolveContentTypeAndEncoding(ContentType, response.ContentType, RddJsonResult.DefaultContentType,
-                out var resolvedContentType, out var resolvedContentTypeEncoding);
+            ResolveContentTypeAndEncoding(ContentType, response.ContentType, RddJsonResult.DefaultContentType, out var resolvedContentType, out var resolvedContentTypeEncoding);
 
             response.ContentType = resolvedContentType;
 
@@ -110,6 +107,55 @@ namespace Rdd.Web.Serialization
             // buffers. This is better than just letting dispose handle it (which would result in a synchronous write).
             await writer.FlushAsync();
 
+        }
+
+        private static void ResolveContentTypeAndEncoding(string actionResultContentType, string httpResponseContentType, string defaultContentType, out string resolvedContentType, out Encoding resolvedContentTypeEncoding)
+        {
+            var defaultContentTypeEncoding = MediaType.GetEncoding(defaultContentType);
+
+            // 1. User sets the ContentType property on the action result
+            if (actionResultContentType != null)
+            {
+                resolvedContentType = actionResultContentType;
+                var actionResultEncoding = MediaType.GetEncoding(actionResultContentType);
+                resolvedContentTypeEncoding = actionResultEncoding ?? defaultContentTypeEncoding;
+                return;
+            }
+
+            // 2. User sets the ContentType property on the http response directly
+            if (!string.IsNullOrEmpty(httpResponseContentType))
+            {
+                var mediaTypeEncoding = MediaType.GetEncoding(httpResponseContentType);
+                if (mediaTypeEncoding != null)
+                {
+                    resolvedContentType = httpResponseContentType;
+                    resolvedContentTypeEncoding = mediaTypeEncoding;
+                }
+                else
+                {
+                    resolvedContentType = httpResponseContentType;
+                    resolvedContentTypeEncoding = defaultContentTypeEncoding;
+                }
+
+                return;
+            }
+
+            // 3. Fall-back to the default content type
+            resolvedContentType = defaultContentType;
+            resolvedContentTypeEncoding = defaultContentTypeEncoding;
+        }
+
+        internal class JsonArrayPool<TShared> : IArrayPool<TShared>
+        {
+            private readonly ArrayPool<TShared> _inner;
+
+            public JsonArrayPool(ArrayPool<TShared> inner)
+            {
+                _inner = inner;
+            }
+
+            public TShared[] Rent(int minimumLength) => _inner.Rent(minimumLength);
+            public void Return(TShared[] array) => _inner.Return(array);
         }
     }
 }

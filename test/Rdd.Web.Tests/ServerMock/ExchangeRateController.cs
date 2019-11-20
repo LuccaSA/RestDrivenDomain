@@ -44,12 +44,13 @@ namespace Rdd.Web.Tests.ServerMock
         protected override HttpVerbs AllowedHttpVerbs => ConfigurableAllowedHttpVerbs;
 
         [HttpPost("creation")]//testing route override
-        public override Task<IActionResult> PostAsync()
-            => base.PostAsync();
+        public override Task<IActionResult> Post()
+            => base.Post();
 
         [HttpGet("customRoute")]
         public void GetWithParams([FromQuery]int pipo, int pipo2)
         {
+            var parameters = new[] { pipo, pipo2 };
             QueryParser.Parse(HttpContext.Request, ControllerContext.ActionDescriptor, true);
         }
     }

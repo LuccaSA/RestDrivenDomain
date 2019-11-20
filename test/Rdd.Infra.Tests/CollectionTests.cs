@@ -104,7 +104,7 @@ namespace Rdd.Infra.Tests
                 await unitOfWork.SaveChangesAsync();
 
                 //Act
-                var exist = (await collection.AnyAsync(new Query<User>(u => u.Id == user.Id)));
+                var exist = await collection.AnyAsync(new Query<User>(u => u.Id == user.Id));
 
                 //Assert
                 Assert.True(exist);
@@ -129,7 +129,7 @@ namespace Rdd.Infra.Tests
                 //Act
                 var query = new Query<User>(u => u.Id == user.Id);
                 query.Options.ChecksRights = true;
-                var exist = (await collection.AnyAsync(query));
+                var exist = await collection.AnyAsync(query);
 
                 //Assert
                 Assert.True(exist);
@@ -153,7 +153,7 @@ namespace Rdd.Infra.Tests
 
                 
                 //Act
-                var exist = (await collection.AnyAsync(new Query<User>(u => Guid.NewGuid() == user.Id)));
+                var exist = await collection.AnyAsync(new Query<User>(u => Guid.NewGuid() == user.Id));
 
                 //Assert
                 Assert.False(exist);
@@ -223,7 +223,7 @@ namespace Rdd.Infra.Tests
                 await repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
                 await unitOfWork.SaveChangesAsync();
 
-                using (var newContext = GetContext(false))
+                using (var newContext = GetContext())
                 {
                     var newStorage = new EFStorageService(newContext);
                     var newRepo = new UsersRepository(newStorage, _fixture.RightsService);

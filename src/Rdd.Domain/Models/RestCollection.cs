@@ -84,7 +84,7 @@ namespace Rdd.Domain.Models
 
         public virtual async Task<TEntity> UpdateByIdAsync(TKey id, ICandidate<TEntity, TKey> candidate, Query<TEntity> query = null)
         {
-            query = query ?? new Query<TEntity>();
+            query ??= new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
 
             TEntity entity = await GetByIdAsync(id, query);
@@ -97,7 +97,7 @@ namespace Rdd.Domain.Models
 
         public virtual async Task<IEnumerable<TEntity>> UpdateByIdsAsync(IDictionary<TKey, ICandidate<TEntity, TKey>> candidatesByIds, Query<TEntity> query = null)
         {
-            query = query ?? new Query<TEntity>();
+            query ??= new Query<TEntity>();
             query.Verb = HttpVerbs.Put;
 
             var result = new HashSet<TEntity>();

@@ -26,13 +26,13 @@ namespace Rdd.Domain.Tests
         private readonly DefaultFixture _fixture;
         private readonly ICandidateParser _parser;
 
-        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        private class OptionsAccessor : IOptions<MvcNewtonsoftJsonOptions>
         {
-            public MvcJsonOptions Value { get; }
+            public MvcNewtonsoftJsonOptions Value { get; }
 
             public OptionsAccessor()
             {
-                Value = new MvcJsonOptions();
+                Value = new MvcNewtonsoftJsonOptions();
                 Value.SerializerSettings.Converters = new List<JsonConverter>
                 {
                     new BaseClassJsonConverter<Hierarchy>(new InheritanceConfiguration())

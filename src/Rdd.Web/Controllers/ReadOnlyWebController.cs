@@ -40,7 +40,7 @@ namespace Rdd.Web.Controllers
         protected virtual HttpVerbs AllowedHttpVerbs => HttpVerbs.None;
 
         [HttpGet]
-        public virtual async Task<IActionResult> GetAsync()
+        public virtual async Task<IActionResult> Get()
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {
@@ -55,7 +55,7 @@ namespace Rdd.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<IActionResult> GetByIdAsync(TKey id)
+        public virtual async Task<IActionResult> GetById(TKey id)
         {
             if (!AllowedHttpVerbs.HasFlag(HttpVerbs.Get))
             {

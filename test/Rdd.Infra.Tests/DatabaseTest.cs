@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Rdd.Domain.Tests.Models;
 using System;
 using System.Runtime.InteropServices;
@@ -11,11 +10,11 @@ namespace Rdd.Infra.Tests
     public class DatabaseTest
     {
         protected string DbName { get; private set; }
-        protected virtual DbContext GetContext(bool allowClientEvaluation)
+        protected virtual DbContext GetContext()
         {
-            return new DataContext(GetOptions(allowClientEvaluation));
+            return new DataContext(GetOptions());
         }
-        protected virtual DbContextOptions<DataContext> GetOptions(bool allowClientEvaluation)
+        protected virtual DbContextOptions<DataContext> GetOptions()
         {
             DbContextOptionsBuilder<DataContext> builder;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -36,18 +35,14 @@ namespace Rdd.Infra.Tests
                 throw new NotImplementedException();
             }
 
-            if (!allowClientEvaluation)
-            {
-                builder.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
-            }
             return builder.Options;
         }
 
-        public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code, bool allowClientEvaluation = false)
+        public async Task RunCodeInsideIsolatedDatabaseAsync(Func<DbContext, Task> code)
         {
             DbName = Guid.NewGuid().ToString();
 
-            using (var context = GetContext(allowClientEvaluation))
+            using (var context = GetContext())
             {
                 try
                 {

@@ -21,16 +21,17 @@ namespace Rdd.Web.Tests
 {
     public class AutomapperFixture
     {
+        public IMapper Mapper { get; private set; }
         public AutomapperFixture()
         {
-            Mapper.Initialize(cfg =>
-                cfg.AddExpressionMapping()
+            var config = new MapperConfiguration(c => c.AddExpressionMapping()
                 .CreateMap<Cat, DTOCat>(MemberList.Destination)
                         .ForMember(dest => dest.NickName, opts => opts.MapFrom(sour => sour.Name))
                         .ForMember(dest => dest.Id, opts => opts.MapFrom(sour => sour.Id))
                         .ForMember(dest => dest.Age, opts => opts.MapFrom(sour => sour.Age))
-                    .ReverseMap()
-            );
+                    .ReverseMap());
+
+            Mapper = config.CreateMapper();//https://docs.automapper.org/en/latest/Setup.html
         }
     }
 
@@ -42,20 +43,20 @@ namespace Rdd.Web.Tests
     [Collection("automapper")]
     public class RddObjectsMapperTests
     {
-        AutomapperFixture fixture;
+        readonly AutomapperFixture _fixture;
 
         public RddObjectsMapperTests(AutomapperFixture fixture)
         {
-            this.fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact]
         public void MapperObviousTests()
         {
-            Assert.Throws<ArgumentNullException>(() => new RddObjectsMapper<DTOCat, Cat>(null, Mapper.Instance));
+            Assert.Throws<ArgumentNullException>(() => new RddObjectsMapper<DTOCat, Cat>(null, _fixture.Mapper));
             Assert.Throws<ArgumentNullException>(() => new RddObjectsMapper<DTOCat, Cat>(new ExpressionParser(), null));
 
-            var mapper = new RddObjectsMapper<DTOCat, Cat>(new ExpressionParser(), Mapper.Instance);
+            var mapper = new RddObjectsMapper<DTOCat, Cat>(new ExpressionParser(), _fixture.Mapper);
             Assert.Null(mapper.Map((Query<DTOCat>)null));
             Assert.Null(mapper.Map((ISelection<Cat>)null));
             Assert.Null(mapper.Map((Cat)null));
@@ -64,7 +65,7 @@ namespace Rdd.Web.Tests
         [Fact]
         public void MapperTests()
         {
-            var mapper = new RddObjectsMapper<DTOCat, Cat>(new ExpressionParser(), Mapper.Instance);
+            var mapper = new RddObjectsMapper<DTOCat, Cat>(new ExpressionParser(), _fixture.Mapper);
             var cat = new Cat
             {
                 Age = 22,

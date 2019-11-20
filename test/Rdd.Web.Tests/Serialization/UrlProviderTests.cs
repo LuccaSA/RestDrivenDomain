@@ -42,7 +42,7 @@ namespace Rdd.Web.Tests.Serialization
             {
                 new ControllerActionDescriptor
                 {
-                    ActionName = "GetByIdAsync",
+                    ActionName = "GetById",
                     ControllerTypeInfo = type.GetTypeInfo(),
                     AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo { Template = template }
                 }

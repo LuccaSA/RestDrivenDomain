@@ -219,7 +219,7 @@ namespace Rdd.Web.Tests.Serialization
 
             var selection = new Selection<Obj1>(new List<Obj1> { obj1 }, 1);
             var fields = new ExpressionParser().ParseTree<Obj1>("obj2s[id,name]");
-            var json = await SerializeAsync<Obj1>(selection, fields);
+            var json = await SerializeAsync(selection, fields);
 
             Assert.Equal(ExpectedInput(@"{""items"":[{""obj2s"":[{""id"":1,""name"":""1""},{""id"":2,""name"":""2""}]}]}"), json);
         }
@@ -228,7 +228,7 @@ namespace Rdd.Web.Tests.Serialization
     public class Obj1 : IEntityBase<int>
     {
         public int Id { get; set; }
-        public String Name { get; set; }
+        public string Name { get; set; }
         public string Url { get; }
         public Obj2 Obj2 { get; set; }
 
@@ -244,8 +244,8 @@ namespace Rdd.Web.Tests.Serialization
 
     public class Obj2 : Obj1
     {
-        public String Something { get; set; }
-        public String Else { get; set; }
+        public string Something { get; set; }
+        public string Else { get; set; }
         public Obj3 Obj3 { get; set; }
     }
 

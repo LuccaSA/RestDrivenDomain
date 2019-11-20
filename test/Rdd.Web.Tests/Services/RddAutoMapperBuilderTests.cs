@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.AutoMapper;
@@ -13,11 +12,11 @@ namespace Rdd.Web.Tests.Services
     [Collection("automapper")]
     public class RddAutoMapperBuilderTests
     {
-        private readonly AutomapperFixture fixture;
+        private readonly AutomapperFixture _fixture;
 
         public RddAutoMapperBuilderTests(AutomapperFixture fixture)
         {
-            this.fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact]
@@ -25,11 +24,11 @@ namespace Rdd.Web.Tests.Services
         {
             var services = new ServiceCollection();
             new RddBuilder(services).AddAutoMapper();
+            services.AddSingleton(_fixture.Mapper);
             services.TryAddSingleton<IExpressionParser, ExpressionParser>();
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetRequiredService<IRddObjectsMapper<DTOCat, Cat>>());
-            Assert.NotNull(provider.GetRequiredService<IMapper>());
         }
     }
 }

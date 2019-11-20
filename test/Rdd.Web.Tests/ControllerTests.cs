@@ -20,9 +20,9 @@ namespace Rdd.Web.Tests
             var appController = new Mock<IAppController<ExchangeRate2, int>>();
             appController.Setup(a => a.CreateAsync(It.IsAny<ICandidate<ExchangeRate2, int>>(), It.IsAny<Query<ExchangeRate2>>())).ThrowsAsync(new ForbiddenException(""));
             var controller = new ExchangeRate2Controller(appController.Object, new Mock<ICandidateParser>().Object, new Mock<IQueryParser<ExchangeRate2>>().Object);
-            controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext { HttpContext = new DefaultHttpContext() };
+            controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
-            var result = await controller.PostAsync();
+            var result = await controller.Post();
             Assert.IsType<ForbidResult>(result);
         }
     }

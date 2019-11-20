@@ -40,12 +40,12 @@ namespace Rdd.Domain.Helpers.Expressions
         public override string ToString()
         {
             var start = Node?.ToString();
-            switch (Children.Count)
+            return Children.Count switch
             {
-                case 0: return start;
-                case 1: return string.Join(".", new[] { start, Children[0].ToString() }.Where(e => !string.IsNullOrEmpty(e)));
-                default: return start + "[" + string.Join(",", Children.Select(c => c.ToString())) + "]";
-            }
+                0 => start,
+                1 => string.Join(".", new[] { start, Children[0].ToString() }.Where(e => !string.IsNullOrEmpty(e))),
+                _ => start + "[" + string.Join(",", Children.Select(c => c.ToString())) + "]",
+            };
         }
 
         public virtual bool Equals(IExpressionTree other)

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 
 namespace Rdd.Web.Helpers
 {
@@ -15,7 +14,7 @@ namespace Rdd.Web.Helpers
 
         public async Task Invoke(HttpContext context)
         {
-            context.Request.EnableRewind();
+            context.Request.EnableBuffering();
             await _next(context);
         }
     }

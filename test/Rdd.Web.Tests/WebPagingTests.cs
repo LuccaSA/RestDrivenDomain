@@ -13,10 +13,10 @@ namespace Rdd.Web.Tests
 {
     public class WebPaginggTests : IClassFixture<DefaultFixture>
     {
-        private DefaultFixture _fixture;
-        private InMemoryStorageService _storage;
-        private OpenRepository<User> _repo;
-        private UsersCollection _collection;
+        private readonly DefaultFixture _fixture;
+        private readonly InMemoryStorageService _storage;
+        private readonly OpenRepository<User> _repo;
+        private readonly UsersCollection _collection;
 
         public WebPaginggTests(DefaultFixture fixture)
         {
@@ -33,8 +33,10 @@ namespace Rdd.Web.Tests
             await _repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
             await _storage.SaveChangesAsync();
 
-            var query = new Query<User>();
-            query.Page = new Page(0, 10, int.MaxValue);
+            var query = new Query<User>
+            {
+                Page = new Page(0, 10, int.MaxValue)
+            };
             ISelection<User> result = await _collection.GetAsync(query);
 
             Assert.Equal(0, query.Page.Offset);
