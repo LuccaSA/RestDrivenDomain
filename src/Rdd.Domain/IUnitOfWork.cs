@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Rdd.Application
+namespace Rdd.Domain
 {
     public interface IUnitOfWork
     {

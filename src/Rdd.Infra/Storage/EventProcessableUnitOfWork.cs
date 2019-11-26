@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rdd.Application;
 using Rdd.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Rdd.Domain;
 
 namespace Rdd.Infra.Storage
 {
