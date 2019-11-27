@@ -56,7 +56,7 @@ namespace Rdd.Web.Tests
                 service.Configure<ExceptionHttpStatusCodeOption>(options => options.StatusCodeMapping = e => e switch
                 {
                     TestException _ => HttpStatusCode.Ambiguous,
-                    _ => null,
+                    _ => (HttpStatusCode?)null,
                 });
             });
             var response = await _client.GetAsync("/OpenExchangeRates/");
