@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rdd.Domain.Helpers;
 
 namespace Rdd.Web.Querying
 {
@@ -44,7 +45,7 @@ namespace Rdd.Web.Querying
             return token switch
             {
                 JArray array => array.Select(e => new Candidate<TEntity, TKey>(e, _jsonParser.Parse(e) as JsonObject, e.ToObject<TEntity>(_serializer))),
-                _ => new List<ICandidate<TEntity, TKey>> { new Candidate<TEntity, TKey>(token, _jsonParser.Parse(token) as JsonObject, token.ToObject<TEntity>(_serializer)) },
+                _ => new Candidate<TEntity, TKey>(token, _jsonParser.Parse(token) as JsonObject, token.ToObject<TEntity>(_serializer)).Yield(),
             };
         }
 

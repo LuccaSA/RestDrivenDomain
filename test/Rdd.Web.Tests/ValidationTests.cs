@@ -30,7 +30,7 @@ namespace Rdd.Web.Tests
                 .AddRdd<ExchangeRateDbContext>()
                 .WithDefaultRights(RightDefaultMode.Open);
 
-            services.AddDbContext<ExchangeRateDbContext>((service, options) => options.UseInMemoryDatabase("validation_3_0"));
+            services.AddDbContext<ExchangeRateDbContext>((service, options) => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
             services.AddScoped(typeof(IRestCollection<,>), collectionType);
             var provider = services.BuildServiceProvider();

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore;
+﻿using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +37,12 @@ namespace Rdd.Web.Tests.ServerMock
                     rdd.PagingMaximumLimit = 4242;
                 })
                 .WithDefaultRights(RightDefaultMode.Open)
-                .AddAutoMapper();
+                .AddAutoMapper(c => c.AddExpressionMapping()
+                    .CreateMap<Cat, DTOCat>(MemberList.Destination)
+                    .ForMember(dest => dest.NickName, opts => opts.MapFrom(sour => sour.Name))
+                    .ForMember(dest => dest.Id, opts => opts.MapFrom(sour => sour.Id))
+                    .ForMember(dest => dest.Age, opts => opts.MapFrom(sour => sour.Age))
+                    .ReverseMap());
 
             SetupMvc(services);
 
@@ -44,7 +51,7 @@ namespace Rdd.Web.Tests.ServerMock
 
         protected virtual void SetupMvc(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContext dbContext)
@@ -106,9 +113,7 @@ namespace Rdd.Web.Tests.ServerMock
 
         protected override void SetupMvc(IServiceCollection services)
         {
-            services
-                .AddMvc(options => options.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddControllers();
         }
     }
 }

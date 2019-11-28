@@ -29,7 +29,7 @@ namespace Rdd.Infra.Storage
                     ArgumentException ae => ae,
                     SqlException se => se.Number switch
                     {
-                        2627 => new TechnicalException(se.Message),
+                        2627 => new TechnicalException(se.Message) as Exception,
                         _ => se,
                     },
                     _ => ex.InnerException ?? ex,

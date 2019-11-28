@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading;
+using Microsoft.AspNetCore.Mvc;
 using Rdd.Application;
 using Rdd.Domain.Helpers;
 using Rdd.Web.Controllers;
@@ -34,14 +35,15 @@ namespace Rdd.Web.Tests.ServerMock
     [Route("ExchangeRates")]
     public class ExchangeRateController : WebController<ExchangeRate, int>
     {
-        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser)
+        private readonly ForceVerb _httpVerbs;
+
+        public ExchangeRateController(IAppController<ExchangeRate, int> appController, ICandidateParser candidateParser, IQueryParser<ExchangeRate> queryParser, ForceVerb httpVerbs)
             : base(appController, candidateParser, queryParser)
         {
+            _httpVerbs = httpVerbs;
         }
-
-        //for route testing
-        public static HttpVerbs ConfigurableAllowedHttpVerbs = HttpVerbs.Get | HttpVerbs.Post | HttpVerbs.Put;
-        protected override HttpVerbs AllowedHttpVerbs => ConfigurableAllowedHttpVerbs;
+        
+        protected override HttpVerbs AllowedHttpVerbs => _httpVerbs.HttpVerbs;
 
         [HttpPost("creation")]//testing route override
         public override Task<IActionResult> Post()
@@ -66,5 +68,10 @@ namespace Rdd.Web.Tests.ServerMock
             : base(appController, queryParser, mapper)
         {
         }
+    }
+
+    public class ForceVerb
+    {
+        public HttpVerbs HttpVerbs { get; set; }
     }
 }
