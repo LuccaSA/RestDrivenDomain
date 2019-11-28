@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NETCOREAPP3_0
 using Microsoft.Extensions.Hosting;
-#endif
 using Rdd.Domain.Rights;
 using Rdd.Web.AutoMapper;
 using Rdd.Web.Helpers;
@@ -27,13 +25,8 @@ namespace Rdd.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ExchangeRateDbContext>((service, options) =>
-#if NETCOREAPP2_2
-                options.UseInMemoryDatabase("Add_writes_to_database_2_2"));
-#endif
-#if NETCOREAPP3_0
-                options.UseInMemoryDatabase("Add_writes_to_database_3_0"));
-#endif
+            services.AddDbContext<ExchangeRateDbContext>((service, options) =>options.UseInMemoryDatabase("Add_writes_to_database_3_0"));
+
 
             services
                 .AddRdd<ExchangeRateDbContext>(rdd =>
@@ -54,12 +47,7 @@ namespace Rdd.Web.Tests.ServerMock
             services.AddMvc();
         }
 
-#if NETCOREAPP2_2
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, DbContext dbContext)
-#endif
-#if NETCOREAPP3_0
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContext dbContext)
-#endif
         {
             if (env.IsDevelopment())
             {
@@ -93,19 +81,11 @@ namespace Rdd.Web.Tests.ServerMock
 
             app.UseRdd();
 
-#if NETCOREAPP2_2
-            app.UseMvc(routes => routes.MapRoute(
-                name: "default_route",
-                template: "{controller}/{action}/{id?}",
-                defaults: new { controller = "Ping", action = "Status" }));
-#endif
-#if NETCOREAPP3_0
             app.UseRouting();
             app.UseEndpoints(b =>
             {
                 b.MapControllers();
             });
-#endif
         }
     }
 

@@ -19,13 +19,8 @@ namespace Rdd.Web.Tests
         public async Task GenerateMultipleQueries()
         {
             var services = new ServiceCollection();
-            services.AddDbContext<UselessDbContext>((service, options) =>
-#if NETCOREAPP2_2
-                options.UseInMemoryDatabase("leaktest_2_2"));
-#endif
-#if NETCOREAPP3_0
-                options.UseInMemoryDatabase("leaktest_3_0"));
-#endif
+            services.AddDbContext<UselessDbContext>((service, options) => options.UseInMemoryDatabase("leaktest_3_0"));
+
 
             var provider = services.BuildServiceProvider();
 

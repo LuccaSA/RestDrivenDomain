@@ -20,33 +20,18 @@ namespace Rdd.Web.Tests
 {
     public class BeforeAfterSaveChangesValidation
     {
-#if NETCOREAPP2_2
-        private class OptionsAccessor : IOptions<MvcJsonOptions>
-        {
-            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
-            public MvcJsonOptions Value => JsonOptions;
-        }
-#endif
-#if NETCOREAPP3_0
         private class OptionsAccessor : IOptions<MvcNewtonsoftJsonOptions>
         {
             public static MvcNewtonsoftJsonOptions JsonOptions = new MvcNewtonsoftJsonOptions();
             public MvcNewtonsoftJsonOptions Value => JsonOptions;
         }
-#endif
 
         [Fact]
         public async Task MultipleImplementations()
         {
             var services = new ServiceCollection();
 
-            services.AddDbContext<ExchangeRateDbContext>((service, options) =>
-#if NETCOREAPP2_2
-                options.UseInMemoryDatabase("BeforeAfterSave_2_2"));
-#endif
-#if NETCOREAPP3_0
-                options.UseInMemoryDatabase("BeforeAfterSave_3_0"));
-#endif
+            services.AddDbContext<ExchangeRateDbContext>((service, options) => options.UseInMemoryDatabase("BeforeAfterSave_3_0"));
 
             services.AddRdd<ExchangeRateDbContext>(rdd =>
                 {
