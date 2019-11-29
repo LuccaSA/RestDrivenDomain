@@ -42,7 +42,7 @@ install:
   - ps: $version = Compute "src\Rdd.Web\Rdd.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
   - ps: Update-AppveyorBuild -Version $version.Semver
   - dotnet tool install --global dotnet-sonarscanner
-  - choco install opencover.portable codecov
+  - choco install codecov
 
 before_build:
 - dotnet restore
@@ -57,9 +57,9 @@ build_script:
 - ps: dotnet build Rdd.sln -c Debug -v minimal
 
 test_script:
-- OpenCover.Console.exe -returntargetcode -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:DebugType=full -c Debug Rdd.sln" -filter:"+[Rdd*]* -[*Tests*]*" -excludebyattribute:"*.ExcludeFromCodeCoverage*" -output:coverage-opencover.xml
+- dotnet test Rdd.sln /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,opencover\" /p:MergeWith=${APPVEYOR_BUILD_FOLDER}\coverage.json /p:CoverletOutput=${APPVEYOR_BUILD_FOLDER}\
 - dotnet sonarscanner end /d:"sonar.login=%SONAR_TOKEN%"
-- codecov -f coverage-opencover.xml
+- codecov -f coverage.opencover.xml
 
 after_test:
 - ps: dotnet pack src\Rdd.Domain\Rdd.Domain.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o artifacts
