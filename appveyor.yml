@@ -62,11 +62,11 @@ test_script:
 - codecov -f coverage-opencover.xml
 
 after_test:
-- ps: dotnet pack src\Rdd.Domain\Rdd.Domain.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\Rdd.Infra\Rdd.Infra.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\Rdd.Application\Rdd.Application.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\Rdd.Web\Rdd.Web.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
-- ps: dotnet pack src\RDD.Web.AutoMapper\RDD.Web.AutoMapper.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o ..\..\artifacts
+- ps: dotnet pack src\Rdd.Domain\Rdd.Domain.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o artifacts
+- ps: dotnet pack src\Rdd.Infra\Rdd.Infra.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o artifacts
+- ps: dotnet pack src\Rdd.Application\Rdd.Application.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o artifacts
+- ps: dotnet pack src\Rdd.Web\Rdd.Web.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o artifacts
+- ps: dotnet pack src\RDD.Web.AutoMapper\RDD.Web.AutoMapper.csproj --include-symbols -p:SymbolPackageFormat=snupkg /p:$("VersionPrefix="+$version.Prefix+";VersionSuffix="+$version.Suffix) /p:Configuration=Release /p:PackageVersion=$env:APPVEYOR_BUILD_VERSION -o artifacts
 - echo Starting Myget publish
 - ps: if($env:deploy_unstable -eq "true") { foreach ($nuget in Get-ChildItem -Path .\artifacts\* -Include *.nupkg) { nuget push $nuget $env:MYGET_TOKEN -Source https://www.myget.org/F/lucca/api/v2/package -SymbolSource https://www.myget.org/F/lucca/symbols/api/v2/package -SymbolApiKey $env:MYGET_TOKEN } }
 
