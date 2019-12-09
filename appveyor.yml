@@ -41,9 +41,9 @@ install:
   - ps: . .\ComputeVersion.ps1
   - ps: $version = Compute "src\Rdd.Web\Rdd.Web.csproj" $env:APPVEYOR_BUILD_NUMBER $env:APPVEYOR_REPO_TAG $env:APPVEYOR_PULL_REQUEST_NUMBER
   - ps: Update-AppveyorBuild -Version $version.Semver
+  - choco install dotnetcore-sdk --version=3.1.100
   - dotnet tool install --global dotnet-sonarscanner
   - choco install codecov
-  - choco install dotnetcore-sdk --version=3.1.100
 
 before_build:
 - dotnet restore
