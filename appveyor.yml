@@ -58,7 +58,7 @@ build_script:
 - ps: dotnet build Rdd.sln -c Debug -v minimal
 
 test_script:
-- dotnet test Rdd.sln /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,opencover\" /p:MergeWith=${APPVEYOR_BUILD_FOLDER}\coverage.json /p:CoverletOutput=${APPVEYOR_BUILD_FOLDER}\
+- dotnet test Rdd.sln /p:CollectCoverage=true
 - dotnet sonarscanner end /d:"sonar.login=%SONAR_TOKEN%"
 - codecov -f ${APPVEYOR_BUILD_FOLDER}\coverage.opencover.xml
 
