@@ -32,6 +32,47 @@ namespace Rdd.Web.Tests
             Assert.Throws<QueryBuilderException>(() => builder.Like(filter.Expression, Enumerable.Range(0, 100000).ToList()));
         }
 
+        [Theory]
+        [InlineData("abc", true)]
+        [InlineData("aBc", true)]
+        [InlineData("AbCdE", true)]
+        [InlineData("eeeeeabc", true)]
+        [InlineData(null, false)]
+        [InlineData("", false)]
+        [InlineData("ab", false)]
+        [InlineData("aedzbffc", false)]
+        public void LikeOnNullableString(string name, bool result)
+        {
+            var pattern = "abc";
+            var builder = new WebFilterConverter<User>();
+            var user = new User { Name = name };
+
+            var filter = new WebFilter<User>(PropertyExpression<User>.New(u => u.Name), WebFilterOperand.Like, new List<string> { pattern });
+            var expression = builder.ToExpression(filter);
+            var compiled = expression.Compile();
+            Assert.Equal(result, compiled.Invoke(user));
+        }
+
+        [Theory]
+        [InlineData("2019-01-01", true)]
+        [InlineData(null, false)]
+        [InlineData("2029-01-01", false)]
+        public void LikeOnNullableDate(string date, bool result)
+        {
+            var pattern = "2019";
+            var user = new User();
+            if (DateTime.TryParse(date, out var parsedDate))
+            {
+                user.BirthDay = parsedDate;
+            }
+            var builder = new WebFilterConverter<User>();
+
+            var filter = new WebFilter<User>(PropertyExpression<User>.New(u => u.BirthDay), WebFilterOperand.Like, new List<string> { pattern });
+            var expression = builder.ToExpression(filter);
+            var compiled = expression.Compile();
+            Assert.Equal(result, compiled.Invoke(user));
+        }
+
         [Fact]
         public void Anniversary()
         {

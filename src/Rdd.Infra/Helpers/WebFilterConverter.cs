@@ -1,4 +1,5 @@
-﻿using NExtends.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using NExtends.Expressions;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Domain.Models;
 using Rdd.Infra.Exceptions;
@@ -195,11 +196,29 @@ namespace Rdd.Infra.Helpers
         public Expression<Func<TEntity, bool>> Like(IExpression field, IList values) => OrFactory<object>(value => BuildLambda(Like, field, value.ToString()), values);
         protected virtual Expression Like(Expression leftExpression, string value)
         {
-            MethodInfo contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-            MethodInfo toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-            MethodInfo toString = typeof(object).GetMethod("ToString", new Type[] { });
+            if (leftExpression.Type == typeof(string))
+            {
+                MethodInfo efLike = typeof(DbFunctionsExtensions).GetMethod(nameof(DbFunctionsExtensions.Like), new[] { typeof(DbFunctions), typeof(string), typeof(string) });
+                var pattern = ("%" + value + "%").ExtractExpression();
+                return Expression.Call(null, efLike, EF.Functions.ExtractExpression(), leftExpression, pattern);
+            }
+            else
+            {
+                MethodInfo contains = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) });
+                MethodInfo toLower = typeof(string).GetMethod(nameof(string.ToLower), new Type[] { });
+                MethodInfo toString = typeof(object).GetMethod(nameof(object.ToString), new Type[] { });
 
-            return Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, value.ToLower().ExtractExpression());
+                var pseudoLike = Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, value.ToLower().ExtractExpression());
+                if (Nullable.GetUnderlyingType(leftExpression.Type) != null)
+                {
+                    var isNotNull = Expression.NotEqual(leftExpression, Expression.Constant(null, leftExpression.Type));
+                    return Expression.And(isNotNull, pseudoLike);
+                }
+                else
+                {
+                    return pseudoLike;
+                }
+            }
         }
 
         protected Expression<Func<TEntity, bool>> BuildLambda<TValue>(Func<Expression, TValue, Expression> builder, IExpression field, TValue value)
