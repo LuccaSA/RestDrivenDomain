@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,16 +12,18 @@ using Rdd.Web.Helpers;
 using Rdd.Web.Querying;
 using Rdd.Web.Tests.Models;
 using Rdd.Web.Tests.ServerMock;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests
 {
     public class BeforeAfterSaveChangesValidation
     {
-        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        private class OptionsAccessor : IOptions<MvcNewtonsoftJsonOptions>
         {
-            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
-            public MvcJsonOptions Value => JsonOptions;
+            public static MvcNewtonsoftJsonOptions JsonOptions = new MvcNewtonsoftJsonOptions();
+            public MvcNewtonsoftJsonOptions Value => JsonOptions;
         }
 
         [Fact]
@@ -30,7 +31,8 @@ namespace Rdd.Web.Tests
         {
             var services = new ServiceCollection();
 
-            services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase("BeforeAfterSave"); });
+            services.AddDbContext<ExchangeRateDbContext>((service, options) => options.UseInMemoryDatabase("BeforeAfterSave_3_0"));
+
             services.AddRdd<ExchangeRateDbContext>(rdd =>
                 {
                     rdd.PagingLimit = 10;

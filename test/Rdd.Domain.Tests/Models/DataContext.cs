@@ -23,8 +23,7 @@ namespace Rdd.Domain.Tests.Models
             modelBuilder.Entity<ConcreteClassThree>();
 
             modelBuilder.Entity<AbstractClass>();
-            
-            modelBuilder.Entity<User>().Ignore(u => u.Mail);
+
             modelBuilder.Entity<User>().Ignore(u => u.TwitterUri);
 
             modelBuilder.Entity<UserWithParameters>().Ignore(u => u.Mail);

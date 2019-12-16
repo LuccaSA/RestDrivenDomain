@@ -53,18 +53,10 @@ namespace Rdd.Web.Tests
             SetupServer(service =>
             {
                 service.AddScoped(_ => repo.Object);
-                service.Configure<ExceptionHttpStatusCodeOption>(options =>
+                service.Configure<ExceptionHttpStatusCodeOption>(options => options.StatusCodeMapping = e => e switch
                 {
-                    options.StatusCodeMapping = e =>
-                    {
-                        switch (e)
-                        {
-                            case TestException _:
-                                return HttpStatusCode.Ambiguous;
-                            default:
-                                return null;
-                        }
-                    };
+                    TestException _ => HttpStatusCode.Ambiguous,
+                    _ => (HttpStatusCode?)null,
                 });
             });
             var response = await _client.GetAsync("/OpenExchangeRates/");

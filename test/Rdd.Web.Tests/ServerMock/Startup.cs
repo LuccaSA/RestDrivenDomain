@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore;
+﻿using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Rdd.Domain.Rights;
 using Rdd.Web.AutoMapper;
 using Rdd.Web.Helpers;
@@ -24,7 +27,8 @@ namespace Rdd.Web.Tests.ServerMock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ExchangeRateDbContext>((service, options) => { options.UseInMemoryDatabase(databaseName: "Add_writes_to_database"); });
+            services.AddDbContext<ExchangeRateDbContext>((service, options) =>options.UseInMemoryDatabase("Add_writes_to_database_3_0"));
+
 
             services
                 .AddRdd<ExchangeRateDbContext>(rdd =>
@@ -33,7 +37,12 @@ namespace Rdd.Web.Tests.ServerMock
                     rdd.PagingMaximumLimit = 4242;
                 })
                 .WithDefaultRights(RightDefaultMode.Open)
-                .AddAutoMapper();
+                .AddAutoMapper(c => c.AddExpressionMapping()
+                    .CreateMap<Cat, DTOCat>(MemberList.Destination)
+                    .ForMember(dest => dest.NickName, opts => opts.MapFrom(sour => sour.Name))
+                    .ForMember(dest => dest.Id, opts => opts.MapFrom(sour => sour.Id))
+                    .ForMember(dest => dest.Age, opts => opts.MapFrom(sour => sour.Age))
+                    .ReverseMap());
 
             SetupMvc(services);
 
@@ -42,11 +51,10 @@ namespace Rdd.Web.Tests.ServerMock
 
         protected virtual void SetupMvc(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, DbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -80,12 +88,10 @@ namespace Rdd.Web.Tests.ServerMock
 
             app.UseRdd();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+            app.UseEndpoints(b =>
             {
-                routes.MapRoute(
-                    name: "default_route",
-                    template: "{controller}/{action}/{id?}",
-                    defaults: new { controller = "Ping", action = "Status" });
+                b.MapControllers();
             });
         }
     }
@@ -107,9 +113,7 @@ namespace Rdd.Web.Tests.ServerMock
 
         protected override void SetupMvc(IServiceCollection services)
         {
-            services
-                .AddMvc(options => options.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
         }
     }
 }

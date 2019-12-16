@@ -6,12 +6,16 @@ namespace Rdd.Domain.Tests.Models
 {
     public class User : IEntityBase<Guid>
     {
+        private MailAddress _mail;
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
+        public string Mail
+        {
+            get => _mail?.ToString();
+            set { _mail = string.IsNullOrEmpty(value) ? null : new MailAddress(value); }
+        }
 
-        public string MailString { get; set; }
-        public MailAddress Mail { get => string.IsNullOrEmpty(MailString) ? null : new MailAddress(MailString); set => MailString = value?.ToString(); }
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
         public Department Department { get; set; }
@@ -32,7 +36,7 @@ namespace Rdd.Domain.Tests.Models
                     Name = $"John Doe {i}",
                     FriendId = i % 2 == 0 ? (Guid?)null : Guid.NewGuid(),
                     DepartmentId = departments.Count == 0 ? (int?)null : departments[random.Next(0, departments.Count)].Id,
-                    MailString = $"aaa{i}@example.com"
+                    Mail = $"aaa{i}@example.com"
                 });
             }
 

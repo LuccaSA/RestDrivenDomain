@@ -31,7 +31,9 @@ namespace Rdd.Domain.Tests
             internal int Internal { get; set; }
             protected int Protected { get; set; }
             protected internal int ProtectedInternal { get; set; }
+#pragma warning disable IDE0051 // Pseudo used by patcher
             private int Private { get; set; }
+#pragma warning restore IDE0051
 
             public int PublicGetterNoSetter { get; }
             public int PublicGetterInternalSetter { get; internal set; }

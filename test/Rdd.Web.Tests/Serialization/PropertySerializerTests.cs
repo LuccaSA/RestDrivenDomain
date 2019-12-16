@@ -11,7 +11,7 @@ namespace Rdd.Web.Tests.Serialization
     public partial class FieldsTests
     {
         [Fact]
-        public async Task should_serialize_url_properly()
+        public async Task Should_serialize_url_properly()
         {
             var entity = new User { Id = 1 };
             var fields = new ExpressionParser().ParseTree<User>("url");

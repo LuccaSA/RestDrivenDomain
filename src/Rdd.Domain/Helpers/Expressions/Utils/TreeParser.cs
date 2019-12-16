@@ -79,7 +79,7 @@ namespace Rdd.Domain.Helpers.Expressions.Utils
         {
             if (currentIndex - offset > 0)
             {
-                var currentSegment = input.Substring(offset, currentIndex - offset);
+                var currentSegment = input[offset..currentIndex];
                 var newCurrentTree = currentTrees.Peek().Children.FirstOrDefault(c => currentSegment.Equals(c.Node, StringComparison.OrdinalIgnoreCase));
 
                 if (newCurrentTree == null)

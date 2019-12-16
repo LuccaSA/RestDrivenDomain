@@ -15,7 +15,7 @@ namespace Rdd.Web.Tests.Models
             : base(appController, queryParser) { }
 
         //This method only intend is to check that IUser constraint on ReadOnlyWebController is sufficient and working
-        public async Task<IEnumerable<IUser>> GetEnumerableAsync()
+        public async Task<IEnumerable<IUser>> GetEnumerable()
         {
             var query = new Query<IUser>();
             query.Options.ChecksRights = false; //Don't care about rights check

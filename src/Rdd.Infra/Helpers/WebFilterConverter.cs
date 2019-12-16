@@ -30,26 +30,23 @@ namespace Rdd.Infra.Helpers
     {
         public Expression<Func<TEntity, bool>> ToExpression(IEnumerable<WebFilter<TEntity>> filters) => filters.Select(ToExpression).AndAggregation();
 
-        public Expression<Func<TEntity, bool>> ToExpression(WebFilter<TEntity> filter)
+        public Expression<Func<TEntity, bool>> ToExpression(WebFilter<TEntity> filter) => filter.Operand switch
         {
-            switch (filter.Operand)
-            {
-                case WebFilterOperand.Equals: return Equals(filter.Expression, filter.Values);
-                case WebFilterOperand.NotEqual: return NotEqual(filter.Expression, filter.Values);
-                case WebFilterOperand.Starts: return Starts(filter.Expression, filter.Values);
-                case WebFilterOperand.Like: return Like(filter.Expression, filter.Values);
-                case WebFilterOperand.Between: return Between(filter.Expression, filter.Values);
-                case WebFilterOperand.Since: return Since(filter.Expression, filter.Values);
-                case WebFilterOperand.Until: return Until(filter.Expression, filter.Values);
-                case WebFilterOperand.Anniversary: return Anniversary(filter.Expression, filter.Values);
-                case WebFilterOperand.GreaterThan: return GreaterThan(filter.Expression, filter.Values);
-                case WebFilterOperand.GreaterThanOrEqual: return GreaterThanOrEqual(filter.Expression, filter.Values);
-                case WebFilterOperand.LessThan: return LessThan(filter.Expression, filter.Values);
-                case WebFilterOperand.LessThanOrEqual: return LessThanOrEqual(filter.Expression, filter.Values);
-                case WebFilterOperand.ContainsAll: return ContainsAll(filter.Expression, filter.Values);
-                default: throw new NotImplementedException($"Unhandled operand : {filter.Operand}");
-            }
-        }
+            WebFilterOperand.Equals => Equals(filter.Expression, filter.Values),
+            WebFilterOperand.NotEqual => NotEqual(filter.Expression, filter.Values),
+            WebFilterOperand.Starts => Starts(filter.Expression, filter.Values),
+            WebFilterOperand.Like => Like(filter.Expression, filter.Values),
+            WebFilterOperand.Between => Between(filter.Expression, filter.Values),
+            WebFilterOperand.Since => Since(filter.Expression, filter.Values),
+            WebFilterOperand.Until => Until(filter.Expression, filter.Values),
+            WebFilterOperand.Anniversary => Anniversary(filter.Expression, filter.Values),
+            WebFilterOperand.GreaterThan => GreaterThan(filter.Expression, filter.Values),
+            WebFilterOperand.GreaterThanOrEqual => GreaterThanOrEqual(filter.Expression, filter.Values),
+            WebFilterOperand.LessThan => LessThan(filter.Expression, filter.Values),
+            WebFilterOperand.LessThanOrEqual => LessThanOrEqual(filter.Expression, filter.Values),
+            WebFilterOperand.ContainsAll => ContainsAll(filter.Expression, filter.Values),
+            _ => throw new NotImplementedException($"Unhandled operand : {filter.Operand}"),
+        };
 
         protected Expression<Func<TEntity, bool>> OrFactory<TProp>(Func<TProp, Expression<Func<TEntity, bool>>> filter, IList values)
         {

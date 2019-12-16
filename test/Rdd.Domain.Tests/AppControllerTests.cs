@@ -20,10 +20,10 @@ namespace Rdd.Domain.Tests
         private readonly DefaultFixture _fixture;
         private readonly ICandidateParser _parser;
 
-        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        private class OptionsAccessor : IOptions<MvcNewtonsoftJsonOptions>
         {
-            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
-            public MvcJsonOptions Value => JsonOptions;
+            public static MvcNewtonsoftJsonOptions JsonOptions = new MvcNewtonsoftJsonOptions();
+            public MvcNewtonsoftJsonOptions Value => JsonOptions;
         }
 
         public AppControllerTests(DefaultFixture fixture)

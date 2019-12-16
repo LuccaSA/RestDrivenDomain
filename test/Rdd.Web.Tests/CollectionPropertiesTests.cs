@@ -9,10 +9,10 @@ namespace Rdd.Web.Tests
 {
     public class CollectionPropertiesTests : IClassFixture<DefaultFixture>
     {
-        private DefaultFixture _fixture;
-        private InMemoryStorageService _storage;
-        private OpenRepository<User> _repo;
-        private UsersCollection _collection;
+        private readonly DefaultFixture _fixture;
+        private readonly InMemoryStorageService _storage;
+        private readonly OpenRepository<User> _repo;
+        private readonly UsersCollection _collection;
 
         public CollectionPropertiesTests(DefaultFixture fixture)
         {

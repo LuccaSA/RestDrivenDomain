@@ -14,7 +14,7 @@ namespace Rdd.Web.Tests
 {
     public class IntegrationTests : DatabaseTest, IClassFixture<DefaultFixture>
     {
-        private DefaultFixture _fixture;
+        private readonly DefaultFixture _fixture;
 
         public IntegrationTests(DefaultFixture fixture)
         {
@@ -41,7 +41,7 @@ namespace Rdd.Web.Tests
 
                 Assert.Single(result);
                 Assert.Equal("John Doe 3", result.FirstOrDefault().Name);
-            }, true);
+            });
         }
 
         //ce test vérifie que la manière dont est convertie les filtres menant à un left join + test de nullité de clé fonctionne jusque dans EF
@@ -69,7 +69,7 @@ namespace Rdd.Web.Tests
                 var result = (await collection.GetAsync(query)).Items;
 
                 Assert.Single(result);
-            }, true);
+            });
         }
     }
 }

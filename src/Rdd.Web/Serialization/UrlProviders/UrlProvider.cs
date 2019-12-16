@@ -7,12 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Routing;
 
 namespace Rdd.Web.Serialization.UrlProviders
 {
     public class UrlProvider : IUrlProvider
     {
-        private const string ActionName = nameof(ReadOnlyWebController<IEntityBase<int>, int>.GetByIdAsync);
+        private const string ActionName = nameof(ReadOnlyWebController<IEntityBase<int>, int>.GetById);
 
         private static readonly Regex Template = new Regex(@"{\w+}");
 

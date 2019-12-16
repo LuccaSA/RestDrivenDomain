@@ -20,10 +20,10 @@ namespace Rdd.Web.Tests
 {
     public class CandidateTests
     {
-        private class OptionsAccessor : IOptions<MvcJsonOptions>
+        private class OptionsAccessor : IOptions<MvcNewtonsoftJsonOptions>
         {
-            public static MvcJsonOptions JsonOptions = new MvcJsonOptions();
-            public MvcJsonOptions Value => JsonOptions;
+            public static MvcNewtonsoftJsonOptions JsonOptions = new MvcNewtonsoftJsonOptions();
+            public MvcNewtonsoftJsonOptions Value => JsonOptions;
         }
 
         private readonly ICandidateParser _parser = new CandidateParser(new JsonParser(), new OptionsAccessor());

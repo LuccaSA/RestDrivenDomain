@@ -1,5 +1,4 @@
-﻿using NExtends.Primitives.Generics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,8 +12,10 @@ namespace Rdd.Domain.Json
 
         public JsonObject(string key, IJsonElement element)
         {
-            Content = new Dictionary<string, IJsonElement>(StringComparer.OrdinalIgnoreCase);
-            Content[key] = element;
+            Content = new Dictionary<string, IJsonElement>(StringComparer.OrdinalIgnoreCase)
+            {
+                [key] = element
+            };
         }
 
         public JsonObject(Dictionary<string, string> data) : this(data.ToDictionary(kvp => kvp.Key, kvp => (IJsonElement)new JsonValue { Content = kvp.Value }, StringComparer.OrdinalIgnoreCase)) { }

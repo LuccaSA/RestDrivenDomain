@@ -7,7 +7,14 @@ namespace Rdd.Domain.Tests.Models
 {
     public class UserWithParameters : EntityBase<int>
     {
-        public MailAddress Mail { get; set; }
+        private MailAddress _mail;
+
+        public string Mail
+        {
+            get => _mail?.ToString();
+            set { _mail = string.IsNullOrEmpty(value) ? null : new MailAddress(value); }
+        }
+
         public Uri TwitterUri { get; set; }
         public decimal Salary { get; set; }
 

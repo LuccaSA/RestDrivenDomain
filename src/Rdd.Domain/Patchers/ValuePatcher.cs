@@ -17,10 +17,10 @@ namespace Rdd.Domain.Patchers
 
         object IPatcher.PatchValue(object patchedObject, Type expectedType, IJsonElement json)
         {
-            return PatchValue(patchedObject, expectedType, json as JsonValue);
+            return PatchValue(expectedType, json as JsonValue);
         }
 
-        public object PatchValue(object patchedObject, Type expectedType, JsonValue json)
+        public object PatchValue(Type expectedType, JsonValue json)
         {
             if (json == null || json.Content == null)
             {

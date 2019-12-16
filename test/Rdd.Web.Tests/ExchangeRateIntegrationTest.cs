@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.TestHost;
+﻿using System;
+using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using Rdd.Web.Tests.ServerMock;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Rdd.Domain.Helpers;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -12,123 +16,139 @@ namespace Rdd.Web.Tests
     [Collection("automapper")]
     public class ExchangeRateIntegrationTest
     {
-        private readonly HttpClient _client;
-        private readonly TestServer _server;
+        private IWebHostBuilder _host;
 
         public ExchangeRateIntegrationTest()
         {
-            var host = HostBuilder.FromStartup<Startup>();
-            host.ConfigureServices(c => { });
-            _server = new TestServer(host);
-            _client = _server.CreateClient();
+            _host = HostBuilder.FromStartup<Startup>();
+        }
+
+        private HttpClient CreateClient(Func<IServiceProvider, ForceVerb> allowed)
+        {
+            _host.ConfigureServices(services =>
+            {
+                services.AddScoped(allowed);
+            });
+            var server = new TestServer(_host);
+            return server.CreateClient();
         }
 
         [Fact]
         public async Task GetOkAsync()
         {
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
-            var response = await _client.GetAsync("/ExchangeRates/");
+            HttpVerbs verb = HttpVerbs.Get;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
+            var response = await client.GetAsync("/ExchangeRates/");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.GetAsync("/ExchangeRates/");
+            verb = HttpVerbs.None;
+            response = await client.GetAsync("/ExchangeRates/");
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
         public async Task PutOkAsync()
         {
+            HttpVerbs verb = HttpVerbs.Put;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
             var serialized = JsonConvert.SerializeObject(new { Id = 3, Name = "putted" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
-
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;
-            var response = await _client.PutAsync("/ExchangeRates/", content);
+             
+            var response = await client.PutAsync("/ExchangeRates/", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.PutAsync("/ExchangeRates/", content);
+            verb = HttpVerbs.None;
+            response = await client.PutAsync("/ExchangeRates/", content);
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
         public async Task PostOkAsync()
         {
+            HttpVerbs verb = HttpVerbs.Post;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
             var serialized = JsonConvert.SerializeObject(new { Name = "posted" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Post;
-            var response = await _client.PostAsync("/ExchangeRates/", content);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); //basic route not found
+            verb = HttpVerbs.Post;
+            var response = await client.PostAsync("/ExchangeRates/", content);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode); //basic route not found
 
-            response = await _client.PostAsync("/ExchangeRates/creation", content);
+            response = await client.PostAsync("/ExchangeRates/creation", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode); //overriden route found
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.PostAsync("/ExchangeRates/creation", content);
+            verb = HttpVerbs.None;
+            response = await client.PostAsync("/ExchangeRates/creation", content);
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
         public async Task DeleteOkAsync()
         {
+            HttpVerbs verb = HttpVerbs.None;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
             var serialized = JsonConvert.SerializeObject(new ExchangeRate { Id = 4 });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRates/") { Content = content });
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRates/") { Content = content });
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
-            response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRates/") { Content = content });
+            verb = HttpVerbs.Delete;
+            response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/ExchangeRates/") { Content = content });
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task GetByIdOkAsync()
         {
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
-            var response = await _client.GetAsync("/ExchangeRates/23");
+            HttpVerbs verb = HttpVerbs.Get;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
+            var response = await client.GetAsync("/ExchangeRates/23");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var response404 = await _client.GetAsync("/ExchangeRates/2300");
+            var response404 = await client.GetAsync("/ExchangeRates/2300");
             Assert.Equal(HttpStatusCode.NotFound, response404.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.GetAsync("/ExchangeRates/23");
+            verb = HttpVerbs.None;
+            response = await client.GetAsync("/ExchangeRates/23");
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
         public async Task IgnoredAndBadFilters()
         {
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Get;
-            var response = await _client.GetAsync("/ExchangeRates/customRoute?pipo=12&pipo2=23");
+            HttpVerbs verb = HttpVerbs.Get;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb }); 
+            var response = await client.GetAsync("/ExchangeRates/customRoute?pipo=12&pipo2=23");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task PutByIdOkAsync()
         {
-            var serialized = JsonConvert.SerializeObject(new  { Id = 5, Name = "putted2" });
+            HttpVerbs verb = HttpVerbs.Put;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
+            var serialized = JsonConvert.SerializeObject(new { Id = 5, Name = "putted2" });
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Put;
-            var response = await _client.PutAsync("/ExchangeRates/5", content);
+            var response = await client.PutAsync("/ExchangeRates/5", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            response = await _client.PutAsync("/ExchangeRates/5", content);
+            verb = HttpVerbs.None;
+            response = await client.PutAsync("/ExchangeRates/5", content);
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Fact]
         public async Task DeleteByIdOkAsync()
         {
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.None;
-            var response = await _client.DeleteAsync("/ExchangeRates/7");
+            HttpVerbs verb = HttpVerbs.None;
+            var client = CreateClient(s => new ForceVerb { HttpVerbs = verb });
+
+            var response = await client.DeleteAsync("/ExchangeRates/7");
             Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
-            ExchangeRateController.ConfigurableAllowedHttpVerbs = Domain.Helpers.HttpVerbs.Delete;
-            response = await _client.DeleteAsync("/ExchangeRates/7");
+            verb = HttpVerbs.Delete;
+            response = await client.DeleteAsync("/ExchangeRates/7");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }

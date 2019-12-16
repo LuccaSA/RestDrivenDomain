@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Rdd.Domain.Exceptions;
 using System;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using Rdd.Domain;
 
@@ -24,17 +24,16 @@ namespace Rdd.Infra.Storage
             }
             catch (DbUpdateException ex)
             {
-                switch (ex.InnerException?.InnerException)
+                throw (ex.InnerException?.InnerException) switch
                 {
-                    case ArgumentException ae: throw ae;
-                    case SqlException se:
-                        switch (se.Number)
-                        {
-                            case 2627: throw new TechnicalException(se.Message);
-                            default: throw se;
-                        }
-                    default: throw ex.InnerException ?? ex;
-                }
+                    ArgumentException ae => ae,
+                    SqlException se => se.Number switch
+                    {
+                        2627 => new TechnicalException(se.Message) as Exception,
+                        _ => se,
+                    },
+                    _ => ex.InnerException ?? ex,
+                };
             }
         }
     }
