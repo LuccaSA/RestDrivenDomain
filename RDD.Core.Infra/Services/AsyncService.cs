@@ -8,38 +8,36 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 
 namespace RDD.Infra.Services
 {
-	public class AsyncService : IAsyncService
-	{
+    public class AsyncService : IAsyncService
+    {
         public static AsyncLocal<IWebContext> WebContextAccessor { get; } = new AsyncLocal<IWebContext>();
 
-		public void ContinueAsync(Action action)
-		{
-			var items = Resolver.Current().Resolve<IWebContext>().Items;
+        public void ContinueAsync(Action action)
+        {
+            var items = Resolver.Current().Resolve<IWebContext>().Items;
             WebContextAccessor.Value = new InMemoryWebContext(items);
 
-			Task.Factory.StartNew(() =>
-			{
-				action();
-			});
-		}
+            HostingEnvironment.QueueBackgroundWorkItem(c => action());
+        }
 
-		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action)
-		{
-			RunInParallel(entities, new ParallelOptions(), action);
-		}
+        public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action)
+        {
+            RunInParallel(entities, new ParallelOptions(), action);
+        }
 
-		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
-		{
-			var items = Resolver.Current().Resolve<IWebContext>().Items;
+        public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
+        {
+            var items = Resolver.Current().Resolve<IWebContext>().Items;
             WebContextAccessor.Value = new InMemoryWebContext(items);
 
-			Parallel.ForEach<TEntity>(entities, options, (entity) =>
-			{
-				action(entity);
-			});
-		}
-	}
+            Parallel.ForEach<TEntity>(entities, options, (entity) =>
+            {
+                action(entity);
+            });
+        }
+    }
 }
