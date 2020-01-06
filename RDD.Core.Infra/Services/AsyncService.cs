@@ -13,17 +13,15 @@ namespace RDD.Infra.Services
 {
 	public class AsyncService : IAsyncService
 	{
-		public static ConcurrentDictionary<int, IWebContext> ThreadedContexts = new ConcurrentDictionary<int, IWebContext>();
+        public static AsyncLocal<IWebContext> WebContextAccessor { get; } = new AsyncLocal<IWebContext>();
 
 		public void ContinueAsync(Action action)
 		{
 			var items = Resolver.Current().Resolve<IWebContext>().Items;
-			var context = new InMemoryWebContext(items);
+            WebContextAccessor.Value = new InMemoryWebContext(items);
 
 			Task.Factory.StartNew(() =>
 			{
-				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, context, (key, value) => value);
-
 				action();
 			});
 		}
@@ -36,12 +34,10 @@ namespace RDD.Infra.Services
 		public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
 		{
 			var items = Resolver.Current().Resolve<IWebContext>().Items;
-			var context = new InMemoryWebContext(items);
+            WebContextAccessor.Value = new InMemoryWebContext(items);
 
 			Parallel.ForEach<TEntity>(entities, options, (entity) =>
 			{
-				AsyncService.ThreadedContexts.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, context, (key, value) => value);
-
 				action(entity);
 			});
 		}

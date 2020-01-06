@@ -30,7 +30,7 @@ namespace RDD.Infra.BootStrappers
 				}
 				else
 				{
-					result = AsyncService.ThreadedContexts[Thread.CurrentThread.ManagedThreadId];
+					result = AsyncService.WebContextAccessor.Value;
 				}
 
 				return result;
