@@ -54,13 +54,6 @@ namespace RDD.Infra.Contexts
 
 		public void Dispose()
 		{
-			var threadID = Thread.CurrentThread.ManagedThreadId;
-			if (AsyncService.ThreadedContexts.ContainsKey(threadID))
-			{
-				IWebContext context;
-
-				AsyncService.ThreadedContexts.TryRemove(threadID, out context);
-			}
 		}
 	}
 }
