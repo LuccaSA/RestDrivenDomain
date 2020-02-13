@@ -100,7 +100,7 @@ namespace Rdd.Web.Serialization
                 jsonWriter.CloseOutput = false;
                 jsonWriter.AutoCompleteOnClose = false;
 
-                services.GetRequiredService<ISerializerProvider>().WriteJson(jsonWriter, Value, Fields);
+                await services.GetRequiredService<ISerializerProvider>().WriteJsonAsync(jsonWriter, Value, Fields);
             }
 
             // Perf: call FlushAsync to call WriteAsync on the stream with any content left in the TextWriter's

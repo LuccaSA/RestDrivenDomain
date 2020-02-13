@@ -2,6 +2,7 @@
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace Rdd.Web.Serialization.Serializers
 {
@@ -14,21 +15,21 @@ namespace Rdd.Web.Serialization.Serializers
             SerializerProvider = serializerProvider;
         }
 
-        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        public virtual Task WriteJsonAsync(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
-            WriteJson(writer, (IEnumerable)entity, fields);
+            return WriteJsonAsync(writer, (IEnumerable)entity, fields);
         }
 
-        protected virtual void WriteJson(JsonTextWriter writer, IEnumerable entities, IExpressionTree fields)
+        protected async virtual Task WriteJsonAsync(JsonTextWriter writer, IEnumerable entities, IExpressionTree fields)
         {
-            writer.WriteStartArray();
+            await writer.WriteStartArrayAsync();
 
             foreach (object entity in entities)
             {
-                SerializerProvider.ResolveSerializer(entity).WriteJson(writer, entity, fields);
+                await SerializerProvider.ResolveSerializer(entity).WriteJsonAsync(writer, entity, fields);
             }
 
-            writer.WriteEndArray();
+            await writer.WriteEndArrayAsync();
         }
     }
 }

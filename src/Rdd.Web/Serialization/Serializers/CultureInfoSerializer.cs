@@ -4,6 +4,7 @@ using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Serialization.Providers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rdd.Web.Serialization.Serializers
 {
@@ -14,12 +15,13 @@ namespace Rdd.Web.Serialization.Serializers
         public CultureInfoSerializer(ISerializerProvider serializerProvider, NamingStrategy namingStrategy)
             : base(serializerProvider, namingStrategy) { }
 
-        protected override void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyExpression property)
+        protected override Task SerializePropertyAsync(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyExpression property)
         {
             if (_allowedProperties.Contains(property.Name))
             {
-                base.SerializeProperty(writer, entity, fields, property);
+                return base.SerializePropertyAsync(writer, entity, fields, property);
             }
+            return Task.CompletedTask;
         }
     }
 }
