@@ -13,6 +13,8 @@ namespace Rdd.Domain.Tests.Models
 
         public string Type { get; }
 
+        public long Value { get; set; }
+
         public int Id { get; set; }
 
         public Hierarchy Clone() => this;
@@ -25,6 +27,7 @@ namespace Rdd.Domain.Tests.Models
     public class Super : Hierarchy
     {
         public string SuperProperty { get; set; }
+        public long Value2 { get; set; }
     }
 
     public class SuperSuper : Super

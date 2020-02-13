@@ -154,7 +154,14 @@ namespace Rdd.Domain.Helpers.Expressions
             }
             else
             {
-                return type.GetProperty(name, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var property = type.GetProperty(name, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                
+                //Ef needs the property coming from the declaring type
+                if (property != null && property.ReflectedType != property.DeclaringType)
+                {
+                    property = property.DeclaringType.GetProperty(name, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                }
+                return property;
             }
         }
     }
