@@ -5,6 +5,7 @@ using Rdd.Web.Serialization.Providers;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Rdd.Web.Serialization.Serializers
 {
@@ -21,16 +22,16 @@ namespace Rdd.Web.Serialization.Serializers
             DefaultFields = new ConcurrentDictionary<Type, IExpressionTree>();
         }
 
-        public virtual void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        public virtual async Task WriteJsonAsync(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
-            writer.WriteStartObject();
+            await writer.WriteStartObjectAsync();
 
             foreach (var subSelector in CorrectFields(entity, fields).Children)
             {
-                SerializeProperty(writer, entity, subSelector);
+                await SerializePropertyAsync(writer, entity, subSelector);
             }
 
-            writer.WriteEndObject();
+            await writer.WriteEndObjectAsync();
         }
 
         protected virtual IExpressionTree CorrectFields(object entity, IExpressionTree fields)
@@ -43,20 +44,20 @@ namespace Rdd.Web.Serialization.Serializers
             return fields;
         }
 
-        protected virtual void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields)
+        protected virtual Task SerializePropertyAsync(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
-            SerializeProperty(writer, entity, fields, fields.Node as PropertyExpression);
+            return SerializePropertyAsync(writer, entity, fields, fields.Node as PropertyExpression);
         }
 
-        protected virtual void SerializeProperty(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyExpression property)
+        protected virtual Task SerializePropertyAsync(JsonTextWriter writer, object entity, IExpressionTree fields, PropertyExpression property)
         {
-            WriteKvp(writer, GetKey(entity, fields, property), GetRawValue(entity, fields, property), fields, property);
+            return WriteKvpAsync(writer, GetKey(entity, fields, property), GetRawValue(entity, fields, property), fields, property);
         }
 
-        protected virtual void WriteKvp(JsonTextWriter writer, string key, object value, IExpressionTree fields, PropertyExpression property)
+        protected virtual async Task WriteKvpAsync(JsonTextWriter writer, string key, object value, IExpressionTree fields, PropertyExpression property)
         {
-            writer.WritePropertyName(key, true);
-            SerializerProvider.ResolveSerializer(value).WriteJson(writer, value, fields);
+            await writer.WritePropertyNameAsync(key, true);
+            await SerializerProvider.ResolveSerializer(value).WriteJsonAsync(writer, value, fields);
         }
 
         protected virtual string GetKey(object entity, IExpressionTree fields, PropertyExpression property)

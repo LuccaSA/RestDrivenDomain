@@ -4,6 +4,7 @@ using Rdd.Domain.Helpers.Expressions;
 using Rdd.Web.Models;
 using Rdd.Web.Serialization.Providers;
 using System;
+using System.Threading.Tasks;
 
 namespace Rdd.Web.Serialization.Serializers
 {
@@ -18,27 +19,27 @@ namespace Rdd.Web.Serialization.Serializers
             NamingStrategy = namingStrategy ?? throw new ArgumentNullException(nameof(namingStrategy));
         }
 
-        public void WriteJson(JsonTextWriter writer, object entity, IExpressionTree fields)
+        public async Task WriteJsonAsync(JsonTextWriter writer, object entity, IExpressionTree fields)
         {
             var content = entity as Metadata;
 
-            writer.WriteStartObject();
+            await writer.WriteStartObjectAsync();
             {
-                writer.WritePropertyName(GetKey(nameof(Metadata.Header)), true);
-                writer.WriteStartObject();
+                await writer.WritePropertyNameAsync(GetKey(nameof(Metadata.Header)), true);
+                await writer.WriteStartObjectAsync();
                 {
-                    writer.WritePropertyName(GetKey(nameof(MetadataHeader.Generated)), true);
-                    writer.WriteValue(DateTime.SpecifyKind(content.Header.Generated, DateTimeKind.Unspecified));
+                    await writer.WritePropertyNameAsync(GetKey(nameof(MetadataHeader.Generated)), true);
+                    await writer.WriteValueAsync(DateTime.SpecifyKind(content.Header.Generated, DateTimeKind.Unspecified));
 
-                    writer.WritePropertyName(GetKey(nameof(MetadataHeader.Principal)), true);
-                    writer.WriteValue(content.Header.Principal);
+                    await writer.WritePropertyNameAsync(GetKey(nameof(MetadataHeader.Principal)), true);
+                    await writer.WriteValueAsync(content.Header.Principal);
                 }
-                writer.WriteEndObject();
+                await writer.WriteEndObjectAsync();
 
-                writer.WritePropertyName(GetKey(nameof(Metadata.Data)), true);
-                SerializerProvider.ResolveSerializer(content.Data).WriteJson(writer, content.Data, fields);
+                await writer.WritePropertyNameAsync(GetKey(nameof(Metadata.Data)), true);
+                await SerializerProvider.ResolveSerializer(content.Data).WriteJsonAsync(writer, content.Data, fields);
             }
-            writer.WriteEndObject();
+            await writer.WriteEndObjectAsync();
         }
 
         protected string GetKey(string key) => NamingStrategy.GetPropertyName(key, false);
