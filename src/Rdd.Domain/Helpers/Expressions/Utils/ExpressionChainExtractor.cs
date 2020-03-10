@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Rdd.Domain.Helpers.Expressions.Utils
 {
@@ -70,6 +71,12 @@ namespace Rdd.Domain.Helpers.Expressions.Utils
         {
             var parameter = Expression.Parameter(node.Expression.Type);
             var propertyExpression = Expression.PropertyOrField(parameter, node.Member.Name);
+            //Ef needs the property coming from the declaring type
+            if (propertyExpression.Member.ReflectedType != propertyExpression.Member.DeclaringType)
+            {
+                var property = propertyExpression.Member.DeclaringType.GetProperty(node.Member.Name, BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                propertyExpression = Expression.Property(parameter, property);
+            }
             var lambda = Expression.Lambda(propertyExpression, parameter);
 
             if (typeof(IEnumerable).IsAssignableFrom(node.Expression.Type) && node.Expression.Type != typeof(string))

@@ -100,7 +100,8 @@ namespace Rdd.Domain.Helpers.Expressions
             if (typeof(IDictionary).IsAssignableFrom(classType))
             {
                 var dictionaryKey = Expression.Constant(member);
-                var itemsExpression = Expression.Property(parameter, "Item", dictionaryKey);
+                var itemProperty = GetPropertyInfo(classType, "Item");
+                var itemsExpression = Expression.Property(parameter, itemProperty, dictionaryKey);
 
                 return new ItemExpression { LambdaExpression = Expression.Lambda(itemsExpression, parameter) };
             }

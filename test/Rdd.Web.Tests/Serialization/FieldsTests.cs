@@ -223,6 +223,17 @@ namespace Rdd.Web.Tests.Serialization
 
             Assert.Equal(ExpectedInput(@"{""items"":[{""obj2s"":[{""id"":1,""name"":""1""},{""id"":2,""name"":""2""}]}]}"), json);
         }
+
+        [Fact]
+        public void FieldsContainsOnHierarchy()
+        {
+            var tree = new ExpressionParser().ParseTree<Super>("value,value2,baseproperty,superproperty");
+
+            Assert.True(tree.Contains(s => s.SuperProperty));
+            Assert.True(tree.Contains(s => s.Value2));
+            Assert.True(tree.Contains(s => s.Value));
+            Assert.True(tree.Contains(s => s.BaseProperty));
+        }
     }
 
     public class Obj1 : IEntityBase<int>
