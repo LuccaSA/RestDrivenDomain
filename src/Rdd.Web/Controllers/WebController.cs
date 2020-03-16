@@ -54,9 +54,9 @@ namespace Rdd.Web.Controllers
 
                 return new RddJsonResult<TEntity>(entity, query.Fields);
             }
-            catch (ForbiddenException e)
+            catch (ForbiddenException)
             {
-                return Forbid(e.Message);
+                return Forbid();
             }
         }
 
