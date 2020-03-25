@@ -1,4 +1,4 @@
-﻿using RDD.Domain;
+using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Contexts;
 using System;
@@ -26,13 +26,24 @@ namespace RDD.Infra.Services
 
         public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, Action<TEntity> action)
         {
-            RunInParallel(entities, new ParallelOptions(), action);
+            RunInParallel(entities, new ParallelOptions(), action, new List<string>());
         }
 
         public void RunInParallel<TEntity>(IEnumerable<TEntity> entities, ParallelOptions options, Action<TEntity> action)
         {
+            RunInParallel(entities, options, action, new List<string>());
+        }
+
+        public void RunInParallel<TEntity>
+        (
+            IEnumerable<TEntity> entities,
+            ParallelOptions options,
+            Action<TEntity> action,
+            IReadOnlyCollection<string> persistedInjectionTokens
+        )
+        {
             var items = Resolver.Current().Resolve<IWebContext>().Items;
-            WebContextAccessor.Value = new InMemoryWebContext(items);
+            WebContextAccessor.Value = new InMemoryWebContext(items,persistedInjectionTokens);
 
             Parallel.ForEach<TEntity>(entities, options, (entity) =>
             {

@@ -1,4 +1,4 @@
-﻿using RDD.Domain;
+using RDD.Domain;
 using RDD.Domain.Contexts;
 using RDD.Infra.Services;
 using System;
@@ -22,13 +22,22 @@ namespace RDD.Infra.Contexts
 			_items = new Dictionary<string, object>();
 		}
 
-		public InMemoryWebContext(IDictionary items)
+		public InMemoryWebContext(IDictionary items) : this(items, new List<string>())
+		{ }
+
+		public InMemoryWebContext(IDictionary items, IReadOnlyCollection<string> persistedInjectionTokens)
 		{
-			_items = new Dictionary<string, object>()
+			_items = new Dictionary<string, object>();
+
+			var mandatoryInjectionTokens = new List<string> { "executionContext", "repoProvider"};
+			var injectionTokens = mandatoryInjectionTokens
+				.Union(persistedInjectionTokens)
+				.Distinct();
+
+			foreach (var injectionToken in injectionTokens)
 			{
-				{ "executionContext", items["executionContext"]},
-				{ "repoProvider", items["repoProvider"]}
-			};
+				_items.Add(injectionToken, items[injectionToken]);
+			}
 		}
 
 		public Uri Url { get { throw new NotImplementedException(); } }
