@@ -71,6 +71,8 @@ namespace Rdd.Web.Helpers
             services.TryAddSingleton<IOrderByParser, OrderByParser>();
             services.TryAddSingleton(typeof(IQueryParser<>), typeof(QueryParser<>));
             services.TryAddSingleton<IIncludeApplicator, IncludeApplicator>();
+            services.TryAddSingleton(typeof(ITypeFilterParser<>), typeof(TypeFilterParser<>));
+
             //scoped services
             services.TryAddScoped<DbContext>(p => p.GetRequiredService<TDbContext>());
             services.TryAddScoped<IStorageService, EFStorageService>();

@@ -16,14 +16,16 @@ namespace Rdd.Web.Querying
         private readonly IFilterParser _filterParser;
         private readonly IFieldsParser _fieldsParser;
         private readonly IOrderByParser _orderByParser;
+        private readonly ITypeFilterParser<TEntity> _typeFilterParser;
 
-        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser)
+        public QueryParser(IWebFilterConverter<TEntity> webFilterConverter, IPagingParser pagingParser, IFilterParser filterParser, IFieldsParser fieldsParser, IOrderByParser orderByParser, ITypeFilterParser<TEntity> typeFilterParser)
         {
             _webFilterConverter = webFilterConverter ?? throw new ArgumentNullException(nameof(webFilterConverter));
             _pagingParser = pagingParser ?? throw new ArgumentNullException(nameof(pagingParser));
             _filterParser = filterParser ?? throw new ArgumentNullException(nameof(filterParser));
             _fieldsParser = fieldsParser ?? throw new ArgumentNullException(nameof(fieldsParser));
             _orderByParser = orderByParser ?? throw new ArgumentNullException(nameof(orderByParser));
+            _typeFilterParser = typeFilterParser ?? throw new ArgumentNullException(nameof(typeFilterParser));
         }
 
         public virtual Query<TEntity> Parse(HttpRequest request, bool isCollectionCall)
@@ -38,7 +40,10 @@ namespace Rdd.Web.Querying
                  _pagingParser.Parse(request),
                  _filterParser.Parse(request, action, _webFilterConverter),
                 GetVerb(request)
-            );
+            )
+            {
+                TypeFilter = _typeFilterParser.Parse(request)
+            };
 
             if (query.Fields.Contains((ISelection c) => c.Count))
             {

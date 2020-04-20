@@ -60,7 +60,13 @@ namespace Rdd.Web.Querying
         public Filter<TEntity> Parse<TEntity>(HttpRequest request, ActionDescriptor action, IWebFilterConverter<TEntity> webFilterConverter)
             where TEntity : class
         {
-            var keyValuePairs = request.Query.Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && !Reserved.IsKeyword(kv.Key));
+            var filters = SelectKeys<TEntity>(request, action).Select(kv => Parse<TEntity>(kv.Key, kv.Value));
+            return webFilterConverter.ToExpression(filters);
+        }
+
+        protected virtual IEnumerable<KeyValuePair<string, StringValues>> SelectKeys<TEntity>(HttpRequest request, ActionDescriptor action)
+        {
+            var result = request.Query.Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && !Reserved.IsKeyword(kv.Key));
 
             if (action != null)
             {
@@ -69,11 +75,9 @@ namespace Rdd.Web.Querying
                     .Select(p => p.Name)
                     .ToHashSet();
 
-                keyValuePairs = keyValuePairs.Where(kvp => !queryActionParameters.Contains(kvp.Key));
+                result = result.Where(kvp => !queryActionParameters.Contains(kvp.Key));
             }
-
-            var filters = keyValuePairs.Select(kv => Parse<TEntity>(kv.Key, kv.Value));
-            return webFilterConverter.ToExpression(filters);
+            return result;
         }
 
         protected virtual WebFilterOperand ExtractFilterOperand(List<string> parts)

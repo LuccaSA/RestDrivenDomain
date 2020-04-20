@@ -11,7 +11,10 @@ namespace Rdd.Domain.Models.Querying
     {
         public HttpVerbs Verb { get; set; }
         public IExpressionTree<TEntity> Fields { get; set; }
+
         public Filter<TEntity> Filter { get; set; }
+        public TypeFilter<TEntity> TypeFilter { get; set; }
+
         public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
         public Options Options { get; set; }

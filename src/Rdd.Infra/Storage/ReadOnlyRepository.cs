@@ -62,6 +62,9 @@ namespace Rdd.Infra.Storage
 
             entities = ApplyIncludes(entities, query);
 
+            //last as to allow for type conditional includes
+            entities = ApplyTypeFilter(entities, query);
+
             return await StorageService.EnumerateEntitiesAsync(entities);
         }
 
@@ -99,6 +102,15 @@ namespace Rdd.Infra.Storage
                 return entities;
             }
             return entities.Where(query.Filter.Expression);
+        }
+
+        protected virtual IQueryable<TEntity> ApplyTypeFilter(IQueryable<TEntity> entities, Query<TEntity> query)
+        {
+            if (query.TypeFilter != null)
+            {
+                return query.TypeFilter.Apply(entities);
+            }
+            return entities;
         }
 
         protected virtual IQueryable<TEntity> ApplyOrderBys(IQueryable<TEntity> entities, Query<TEntity> query)
