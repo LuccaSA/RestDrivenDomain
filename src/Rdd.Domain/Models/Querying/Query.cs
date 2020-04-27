@@ -15,7 +15,7 @@ namespace Rdd.Domain.Models.Querying
         public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
         public Options Options { get; set; }
-
+       
         public Query()
         {
             Verb = HttpVerbs.Get;

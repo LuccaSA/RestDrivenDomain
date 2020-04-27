@@ -6,6 +6,7 @@ using Rdd.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace Rdd.Infra.Storage
 {
@@ -122,9 +123,20 @@ namespace Rdd.Infra.Storage
                 return entities;
             }
 
-            foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+            if (query.Options.OptimizeIncludes)
             {
-                entities = entities.Include(prop.Name);
+                QueryIncludeOptimizedManager.AllowIncludeSubPath = true;
+                foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+                {
+                    entities = entities.IncludeOptimizedByPath(prop.Name);
+                }
+            }
+            else
+            {
+                foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
+                {
+                    entities = entities.Include(prop.Name);
+                }
             }
 
             return entities;
