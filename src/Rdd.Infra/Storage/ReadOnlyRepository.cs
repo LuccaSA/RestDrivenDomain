@@ -123,7 +123,7 @@ namespace Rdd.Infra.Storage
                 return entities;
             }
 
-            if (query.OptimizeIncludes)
+            if (query.Options.OptimizeIncludes)
             {
                 QueryIncludeOptimizedManager.AllowIncludeSubPath = true;
                 foreach (var prop in query.Fields.Intersection(IncludeWhiteList))

@@ -15,14 +15,7 @@ namespace Rdd.Domain.Models.Querying
         public List<OrderBy<TEntity>> OrderBys { get; set; }
         public Page Page { get; set; }
         public Options Options { get; set; }
-        
-        /// <summary>
-        /// Warning : use only in case of multiple includes, and by testing the behavior before and after enabling this.
-        /// This property can lead to under-perform in some cases, so use it with caution
-        /// https://entityframework-plus.net/query-include-optimized
-        /// </summary>
-        public bool OptimizeIncludes { get; set; }
-
+       
         public Query()
         {
             Verb = HttpVerbs.Get;
