@@ -50,7 +50,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task PostShouldFailedIfForbidden()
         {
-            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User> { Verb = Helpers.HttpVerbs.Post };
@@ -63,7 +63,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task PostShouldWorkIfForbiddenButExplicitelyAllowed()
         {
-            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User> { Verb = Helpers.HttpVerbs.Post };
@@ -96,7 +96,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task PostOnCollectionShouldFailedIfForbidden()
         {
-            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User> { Verb = Helpers.HttpVerbs.Post };
@@ -111,7 +111,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task PostOnCollectionShouldWorkIfForbiddenButExplicitelyAllowed()
         {
-            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var query = new Query<User>();
@@ -144,7 +144,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task CreateAsyncCollectionShouldFailedIfForbidden()
         {
-            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
 
@@ -154,7 +154,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task CreateAsyncCollectionShouldWorkIfForbiddenButExplicitelyAllowed()
         {
-            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>());
+            var repo = new Repository<User>(_fixture.InMemoryStorage, new ClosedRightExpressionsHelper<User>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithHardcodedGetById(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var controller = new UsersAppController(_fixture.InMemoryStorage, users);
             var id1 = Guid.NewGuid();

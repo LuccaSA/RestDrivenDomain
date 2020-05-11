@@ -6,7 +6,6 @@ using Rdd.Domain.Rights;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Z.EntityFramework.Plus;
 
 namespace Rdd.Infra.Storage
 {
@@ -15,13 +14,14 @@ namespace Rdd.Infra.Storage
     {
         protected IStorageService StorageService { get; set; }
         protected IRightExpressionsHelper<TEntity> RightExpressionsHelper { get; set; }
-
         protected virtual IExpressionTree IncludeWhiteList { get; }
+        private readonly IIncludeApplicator _includeApplicator;
 
-        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper)
+        public ReadOnlyRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightExpressionsHelper, IIncludeApplicator includeApplicator)
         {
             StorageService = storageService;
             RightExpressionsHelper = rightExpressionsHelper;
+            _includeApplicator = includeApplicator;
         }
 
         public virtual async Task<int> CountAsync(Query<TEntity> query)
@@ -116,31 +116,8 @@ namespace Rdd.Infra.Storage
             return entities.Skip(query.Page.Offset).Take(query.Page.Limit);
         }
 
-        protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query)
-        {
-            if (IncludeWhiteList == null || query.Fields == null)
-            {
-                return entities;
-            }
-
-            if (query.Options.OptimizeIncludes)
-            {
-                QueryIncludeOptimizedManager.AllowIncludeSubPath = true;
-                foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
-                {
-                    entities = entities.IncludeOptimizedByPath(prop.Name);
-                }
-            }
-            else
-            {
-                foreach (var prop in query.Fields.Intersection(IncludeWhiteList))
-                {
-                    entities = entities.Include(prop.Name);
-                }
-            }
-
-            return entities;
-        }
+        protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> entities, Query<TEntity> query) 
+            => _includeApplicator.ApplyIncludes<TEntity>(entities, query, IncludeWhiteList);
 
         protected virtual IQueryable<TEntity> ApplyDataTracking(IQueryable<TEntity> entities, Query<TEntity> query)
         {

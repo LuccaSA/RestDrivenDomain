@@ -1,4 +1,6 @@
-﻿namespace Rdd.Domain.Models.Querying
+﻿using System.Collections.Generic;
+
+namespace Rdd.Domain.Models.Querying
 {
     public class Options
     {
@@ -10,12 +12,7 @@
 
         public bool NeedsDataTracking { get; set; }
 
-        /// <summary>
-        /// Warning : use only in case of multiple includes, and by testing the behavior before and after enabling this.
-        /// This property can lead to under-perform in some cases, so use it with caution
-        /// https://entityframework-plus.net/query-include-optimized
-        /// </summary>
-        public bool OptimizeIncludes { get; set; }
+        public Dictionary<string,object> CustomOptions { get; set; }
 
         public Options()
         {

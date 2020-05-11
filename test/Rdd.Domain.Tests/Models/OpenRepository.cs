@@ -10,7 +10,7 @@ namespace Rdd.Domain.Tests.Models
         where TEntity : class
     {
         public OpenRepository(IStorageService storageService, IRightExpressionsHelper<TEntity> rightsService)
-        : base(storageService, rightsService) { }
+        : base(storageService, rightsService, new IncludeApplicator()) { }
 
         protected override async Task<IQueryable<TEntity>> ApplyRightsAsync(IQueryable<TEntity> entities, Query<TEntity> query)
         {
