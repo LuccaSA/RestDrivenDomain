@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Domain", "src\Rdd.Domain\Rdd.Domain.csproj", "{64D838DB-55D3-4F2E-8EDB-CF1866B3939B}"
 EndProject
@@ -25,6 +25,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Web.Tests", "test\Rdd.Web.Tests\Rdd.Web.Tests.csproj", "{D4493283-1C57-48C9-BA9D-4C7862A40424}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RDD.Web.AutoMapper", "src\RDD.Web.AutoMapper\RDD.Web.AutoMapper.csproj", "{D3FD8EE1-EDF0-48D9-86E8-FC2BE1D6CB6C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rdd.Z.EntityFramework", "src\Rdd.Z.EntityFramework\Rdd.Z.EntityFramework.csproj", "{0269E680-7BB8-4441-AF99-943F3DB8CCF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,10 @@ Global
 		{D3FD8EE1-EDF0-48D9-86E8-FC2BE1D6CB6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3FD8EE1-EDF0-48D9-86E8-FC2BE1D6CB6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3FD8EE1-EDF0-48D9-86E8-FC2BE1D6CB6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0269E680-7BB8-4441-AF99-943F3DB8CCF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0269E680-7BB8-4441-AF99-943F3DB8CCF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0269E680-7BB8-4441-AF99-943F3DB8CCF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0269E680-7BB8-4441-AF99-943F3DB8CCF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

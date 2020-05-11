@@ -62,7 +62,7 @@ namespace Rdd.Domain.Tests
             rightService.Setup(s => s.GetFilterAsync(It.IsAny<Query<User>>())).Returns(Task.FromResult(trueFilter));
 
             var id = Guid.NewGuid();
-            var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object);
+            var repo = new Repository<User>(_fixture.InMemoryStorage, rightService.Object,_fixture.IncludeApplicator);
             var users = new UsersCollection(repo, _fixture.PatcherProvider, _fixture.Instanciator);
             var app = new UsersAppController(_fixture.InMemoryStorage, users);
             var candidate1 = _parser.Parse<User, Guid>($@"{{ ""id"": ""{id}"" }}");
@@ -97,7 +97,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task Post_SHOULD_work_WHEN_InstantiateEntityIsOverridenAndEntityHasParametersInConstructor()
         {
-            var repo = new Repository<UserWithParameters>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<UserWithParameters>());
+            var repo = new Repository<UserWithParameters>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<UserWithParameters>(), _fixture.IncludeApplicator);
             var users = new UsersCollectionWithParameters(repo, _fixture.PatcherProvider, new InstanciatorImplementation());
             var query = new Query<UserWithParameters>();
             query.Options.ChecksRights = false;
@@ -196,7 +196,7 @@ namespace Rdd.Domain.Tests
         {
             await Assert.ThrowsAsync<BadRequestException>(async () =>
             {
-                var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object);
+                var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new Mock<IRightExpressionsHelper<Hierarchy>>().Object, _fixture.IncludeApplicator);
                 var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
                 var collection = new RestCollection<Hierarchy, int>(repo, new ObjectPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper), instanciator);
 
@@ -208,7 +208,7 @@ namespace Rdd.Domain.Tests
         [Fact]
         public async Task BaseClass_Collection_on_hierarchy_works()
         {
-            var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<Hierarchy>());
+            var repo = new Repository<Hierarchy>(_fixture.InMemoryStorage, new OpenRightExpressionsHelper<Hierarchy>(), _fixture.IncludeApplicator);
             var instanciator = new BaseClassInstanciator<Hierarchy>(new InheritanceConfiguration());
             var collection = new RestCollection<Hierarchy, int>(repo, new BaseClassPatcher<Hierarchy>(_fixture.PatcherProvider, _fixture.ReflectionHelper, new InheritanceConfiguration()), instanciator);
 

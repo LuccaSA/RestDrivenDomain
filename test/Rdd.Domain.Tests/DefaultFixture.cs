@@ -19,7 +19,7 @@ namespace Rdd.Domain.Tests
         public IInstanciator<User> Instanciator { get; private set; }
         public InMemoryStorageService InMemoryStorage { get; private set; }
         public IRepository<User> UsersRepo { get; private set; }
-
+        public IIncludeApplicator IncludeApplicator { get; }
         public DefaultFixture()
         {
             var services = new ServiceCollection();
@@ -31,13 +31,14 @@ namespace Rdd.Domain.Tests
             services.TryAddSingleton<ValuePatcher>();
             services.TryAddSingleton<DynamicPatcher>();
             services.TryAddSingleton<ObjectPatcher>();
-
+            services.TryAddSingleton<IIncludeApplicator, IncludeApplicator>();
             ServiceProvider = services.BuildServiceProvider();
 
             RightsService = new OpenRightExpressionsHelper<User>();
             Instanciator = new DefaultInstanciator<User>();
             InMemoryStorage = new InMemoryStorageService();
-            UsersRepo = new Repository<User>(InMemoryStorage, RightsService);
+            IncludeApplicator = ServiceProvider.GetRequiredService<IIncludeApplicator>();
+            UsersRepo = new Repository<User>(InMemoryStorage, RightsService, IncludeApplicator);
         }
 
         public void Dispose() { }
