@@ -11,7 +11,7 @@ namespace Rdd.Domain.Helpers.Expressions
 
         public IndexExpression IndexExpression => LambdaExpression?.Body as IndexExpression;
         public PropertyInfo Property => IndexExpression?.Indexer;
-        public string Name => (IndexExpression?.Arguments[0] as ConstantExpression)?.Value.ToString();
+        public string Name { get; set; }
 
         public Type ResultType => Property.PropertyType;
 
