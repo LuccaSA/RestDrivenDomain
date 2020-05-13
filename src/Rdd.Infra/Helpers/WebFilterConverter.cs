@@ -208,7 +208,7 @@ namespace Rdd.Infra.Helpers
                 var pseudoLike = Expression.Call(Expression.Call(Expression.Call(leftExpression, toString), toLower), contains, value.ToLower().ExtractExpression());
                 if (Nullable.GetUnderlyingType(leftExpression.Type) != null)
                 {
-                    var isNotNull = Expression.NotEqual(leftExpression, Expression.Constant(null, leftExpression.Type));
+                    var isNotNull = Expression.NotEqual(leftExpression, ((object)null).ExtractTypedExpression(leftExpression.Type));
                     return Expression.And(isNotNull, pseudoLike);
                 }
                 else
