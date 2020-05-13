@@ -8,16 +8,6 @@ namespace Rdd.Infra.Helpers
     {
         public static Expression ExtractExpression<T>(this T value)
         {
-            if (typeof(T) == typeof(object))
-            {
-                throw new NotSupportedException("Only use typed values");
-            }
-
-            if (value == null)
-            {
-                return Expression.Constant(null, typeof(T));
-            }
-
             return ((Expression<Func<T>>)(() => value)).Body;
         }
 
