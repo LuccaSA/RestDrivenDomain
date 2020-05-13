@@ -13,7 +13,7 @@ namespace Rdd.Web.Tests
             where T : class
         {
             var opt = Options.Create(rddOptions ?? new RddOptions());
-            return new QueryParser<T>(new WebFilterConverter<T>(), new PagingParser(opt), new FilterParser(new StringConverter(), new ExpressionParser()), new FieldsParser(new ExpressionParser()), new OrderByParser(new ExpressionParser()));
+            return new QueryParser<T>(new WebFilterConverter<T>(), new PagingParser(opt), new FilterParser(new StringConverter(), new ExpressionParser()), new FieldsParser(new ExpressionParser()), new OrderByParser(new ExpressionParser()), new TypeFilterParser<T>());
         }
     }
 }
