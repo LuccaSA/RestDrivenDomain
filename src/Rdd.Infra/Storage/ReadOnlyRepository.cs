@@ -65,8 +65,13 @@ namespace Rdd.Infra.Storage
             //last as to allow for type conditional includes
             entities = ApplyTypeFilter(entities, query);
 
+            // Entry point to prefetch data before enumeration
+            entities = await BeforeEnumerateAsync(entities, query);
+
             return await StorageService.EnumerateEntitiesAsync(entities);
         }
+
+        protected virtual Task<IQueryable<TEntity>> BeforeEnumerateAsync(IQueryable<TEntity> entities, Query<TEntity> query) => Task.FromResult(entities);
 
         public virtual Task<IEnumerable<TEntity>> PrepareAsync(IEnumerable<TEntity> entities, Query<TEntity> query)
         {
