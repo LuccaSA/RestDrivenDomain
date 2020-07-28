@@ -50,7 +50,7 @@ namespace Rdd.Web.Serialization
             Fields = fields;
         }
 
-        public override Task ExecuteResultAsync(ActionContext context)
+        public override async Task ExecuteResultAsync(ActionContext context)
         {
             if (context == null)
             {
@@ -70,7 +70,7 @@ namespace Rdd.Web.Serialization
             var services = context.HttpContext.RequestServices;
             using (var writer = services.GetRequiredService<IHttpResponseStreamWriterFactory>().CreateWriter(response.Body, resolvedContentTypeEncoding))
             {
-                return WriteResult(services, writer, DateTime.Now);
+                await WriteResult(services, writer, DateTime.Now);
             }
         }
 
