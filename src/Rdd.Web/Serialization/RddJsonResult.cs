@@ -70,7 +70,7 @@ namespace Rdd.Web.Serialization
             var services = context.HttpContext.RequestServices;
             using (var writer = services.GetRequiredService<IHttpResponseStreamWriterFactory>().CreateWriter(response.Body, resolvedContentTypeEncoding))
             {
-                await WriteResult(services, writer, DateTime.Now);
+                await WriteResultAsync(services, writer, DateTime.Now);
             }
         }
 
@@ -90,7 +90,7 @@ namespace Rdd.Web.Serialization
             return name.Value;
         }
 
-        internal async Task WriteResult(IServiceProvider services, TextWriter writer, DateTime generatedAt)
+        internal async Task WriteResultAsync(IServiceProvider services, TextWriter writer, DateTime generatedAt)
         {
             Value = new Metadata(Value, GetPrincipalName(services), generatedAt);
 

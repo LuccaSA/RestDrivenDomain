@@ -83,7 +83,7 @@ namespace Rdd.Web.Tests.Serialization
         {
             using (var writer = new StringWriter())
             {
-                await result.WriteResult(GetServices(), writer, GeneratedAt);
+                await result.WriteResultAsync(GetServices(), writer, GeneratedAt);
 
                 return writer.ToString();
             }
