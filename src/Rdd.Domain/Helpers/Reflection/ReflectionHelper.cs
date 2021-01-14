@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Serialization;
 using Rdd.Domain.Exceptions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
@@ -50,51 +51,36 @@ namespace Rdd.Domain.Helpers.Reflection
             typeof(string)
         };
 
-        private readonly Dictionary<Type, PropertyInfo[]> _propertiesByType;
-        private readonly Dictionary<PropertyInfo, ExpressionValueProvider> _providersByProperty;
-
-        public ReflectionHelper()
-        {
-            _propertiesByType = new Dictionary<Type, PropertyInfo[]>();
-            _providersByProperty = new Dictionary<PropertyInfo, ExpressionValueProvider>();
-        }
+        private readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertiesByType = new ConcurrentDictionary<Type, PropertyInfo[]>();
+        private readonly ConcurrentDictionary<PropertyInfo, ExpressionValueProvider> _providersByProperty = new ConcurrentDictionary<PropertyInfo, ExpressionValueProvider>();
 
         public virtual IReadOnlyCollection<PropertyInfo> GetProperties(Type type)
         {
-            if (!_propertiesByType.ContainsKey(type))
-            {
-                _propertiesByType[type] = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            }
-
-            return _propertiesByType[type];
+            return _propertiesByType.GetOrAdd(type, t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance));
         }
 
         public virtual object GetValue(object target, PropertyInfo property)
         {
-            if (!_providersByProperty.ContainsKey(property))
+            return _providersByProperty.GetOrAdd(property, p =>
             {
-                if (!property.GetGetMethod()?.IsPublic ?? true)
+                if (!p.GetGetMethod()?.IsPublic ?? true)
                 {
-                    throw new BadRequestException($"Reading the property {property.Name} on type {property.DeclaringType.Name} is not available.");
+                    throw new BadRequestException($"Reading the property {p.Name} on type {p.DeclaringType.Name} is not available.");
                 }
-                _providersByProperty[property] = new ExpressionValueProvider(property);
-            }
-
-            return _providersByProperty[property].GetValue(target);
+                return new ExpressionValueProvider(p);
+            }).GetValue(target);
         }
 
         public virtual void SetValue(object target, PropertyInfo property, object value)
         {
-            if (!_providersByProperty.ContainsKey(property))
-            {
-                if (!property.GetSetMethod()?.IsPublic ?? true)
-                {
-                    throw new BadRequestException($"Setting the property {property.Name} on type {property.DeclaringType.Name} is not available.");
-                }
-                _providersByProperty[property] = new ExpressionValueProvider(property);
-            }
-
-            _providersByProperty[property].SetValue(target, value);
+            _providersByProperty.GetOrAdd(property, p =>
+             {
+                 if (!p.GetSetMethod()?.IsPublic ?? true)
+                 {
+                     throw new BadRequestException($"Setting the property {p.Name} on type {p.DeclaringType.Name} is not available.");
+                 }
+                 return new ExpressionValueProvider(p);
+             }).SetValue(target, value);
         }
 
         public virtual bool IsPseudoValue(Type type)
