@@ -1,0 +1,80 @@
+name: .NET Core
+on:
+  push:
+    tags:
+      - '**'
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: git fetch --prune --unshallow
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.9
+      with:
+          versionSpec: '5.6.8'
+
+    - name: Use GitVersion
+      id: gitversion # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v0.9.9
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '11.0.x'
+        java-package: jre
+        architecture: x64
+        
+    - name: Setup SonarScanner
+      run: dotnet tool install --tool-path tools dotnet-sonarscanner
+
+    - name: Setup ReportGenerator
+      run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+    - name: SonarScanner begin
+      run: tools/dotnet-sonarscanner begin /k:"RestDrivenDomain" /o:"lucca" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url="https://sonarcloud.io/" /d:sonar.coverageReportPaths="./sonarCoverage/SonarQube.xml"
+
+    - name: Test
+      run: dotnet test Rdd.sln --configuration Release /p:CollectCoverage=true --collect:"XPlat Code Coverage" --settings coverlet.runsettings --results-directory:./coverage
+      env:
+        AZ_SAS_TOKEN: ${{ secrets.AZ_SAS_TOKEN }}
+        AZ_URL: ${{ secrets.AZ_URL }}
+        AZ_CONTAINER: ${{ secrets.AZ_CONTAINER }}
+
+    - name: Merge coverages
+      run: reportgenerator -reports:./coverage/*/*.xml -targetdir:./sonarCoverage -reporttypes:SonarQube
+
+    - name: SonarScanner end
+      run: tools/dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pack dotnet tool
+      run: |
+        dotnet pack src\Rdd.Domain\Rdd.Domain.csproj --configuration Release -o artifacts -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        dotnet pack src\Rdd.Infra\Rdd.Infra.csproj --configuration Release -o artifacts -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        dotnet pack src\Rdd.Application\Rdd.Application.csproj --configuration Release -o artifacts -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        dotnet pack src\Rdd.Web\Rdd.Web.csproj --configuration Release -o artifacts -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        dotnet pack src\RDD.Web.AutoMapper\RDD.Web.AutoMapper.csproj --configuration Release -o artifacts -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        dotnet pack src\Rdd.Z.EntityFramework\Rdd.Z.EntityFramework.csproj --configuration Release -o artifacts -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+
+    - name: Nuget prerelease push
+      run: dotnet nuget push "artifacts/**/*.nupkg" --skip-duplicate --source https://nuget.pkg.github.com/LuccaSA/index.json -k ${{ secrets.GH_PACKAGE_TOKEN }}
+      env:
+        PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+          
+    - name: Nuget org push
+      if: startsWith(github.ref, 'refs/tags/')
+      run: dotnet nuget push "artifacts/**/*.nupkg" --skip-duplicate --source https://api.nuget.org/v3/index.json -k ${{ secrets.GLOBAL_NUGET_PUBLISH }}
+      env:
+        NUGET_PUBLISH: ${{ secrets.NUGET_PUBLISH }}
