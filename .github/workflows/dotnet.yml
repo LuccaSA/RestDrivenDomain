@@ -55,7 +55,8 @@ jobs:
     - name: SonarScanner end
       run: tools/dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+				SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Pack dotnet tool
       run: |
