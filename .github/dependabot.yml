@@ -13,3 +13,5 @@ updates:
     versions: ">= 5.0.0"
   - dependency-name: "Microsoft.EntityFrameworkCore.*"
     versions: ">= 5.0.0"
+  - dependency-name: "Z.EntityFramework.Plus.*"
+    versions: ">= 5.0.0"
