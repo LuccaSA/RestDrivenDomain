@@ -43,13 +43,11 @@ jobs:
 
     - name: SonarScanner begin
       run: tools/dotnet-sonarscanner begin /k:"RestDrivenDomain" /o:"lucca" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url="https://sonarcloud.io/" /d:sonar.coverageReportPaths="./sonarCoverage/SonarQube.xml"
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Test
       run: dotnet test Rdd.sln --configuration Release /p:CollectCoverage=true --collect:"XPlat Code Coverage" --settings coverlet.runsettings --results-directory:./coverage
-      env:
-        AZ_SAS_TOKEN: ${{ secrets.AZ_SAS_TOKEN }}
-        AZ_URL: ${{ secrets.AZ_URL }}
-        AZ_CONTAINER: ${{ secrets.AZ_CONTAINER }}
 
     - name: Merge coverages
       run: reportgenerator -reports:./coverage/*/*.xml -targetdir:./sonarCoverage -reporttypes:SonarQube
@@ -58,6 +56,7 @@ jobs:
       run: tools/dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Pack dotnet tool
       run: |
