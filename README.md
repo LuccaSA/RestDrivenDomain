@@ -1,7 +1,6 @@
 # Rest Driven Domain
 
-[![Build status](https://ci.appveyor.com/api/projects/status/edtq86puuj8qma2h?svg=true)](https://ci.appveyor.com/project/LuccaIntegration/restdrivendomain)
-[![codecov](https://codecov.io/gh/LuccaSA/RestDrivenDomain/branch/master/graph/badge.svg)](https://codecov.io/gh/LuccaSA/RestDrivenDomain)
+[![Build status](https://github.com/LuccaSA/RestDrivenDomain/actions/workflows/dotnet.yml/badge.svg?branch=master)
 [![Sonarcloud coverage](https://sonarcloud.io/api/project_badges/measure?project=RestDrivenDomain&metric=coverage)](https://sonarcloud.io/dashboard?id=RestDrivenDomain)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=RestDrivenDomain&metric=alert_status)](https://sonarcloud.io/dashboard?id=RestDrivenDomain)
 [![Sonarcloud Debt](https://sonarcloud.io/api/project_badges/measure?project=RestDrivenDomain&metric=sqale_index)](https://sonarcloud.io/dashboard?id=RestDrivenDomain)
