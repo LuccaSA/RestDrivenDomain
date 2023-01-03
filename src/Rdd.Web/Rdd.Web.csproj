@@ -1,20 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ProjectGuid>{35EB26DD-BF14-4B20-A644-9E566F51EA76}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="3.1.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.17" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.17" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.12" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Rdd.Application\Rdd.Application.csproj" />
     <ProjectReference Include="..\Rdd.Domain\Rdd.Domain.csproj" />
     <ProjectReference Include="..\Rdd.Infra\Rdd.Infra.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
   </ItemGroup> 
 </Project>

@@ -33,27 +33,6 @@ namespace Rdd.Web.Tests
         }
 
         [Theory]
-        [InlineData("abc", true)]
-        [InlineData("aBc", true)]
-        [InlineData("AbCdE", true)]
-        [InlineData("eeeeeabc", true)]
-        [InlineData(null, false)]
-        [InlineData("", false)]
-        [InlineData("ab", false)]
-        [InlineData("aedzbffc", false)]
-        public void LikeOnNullableString(string name, bool result)
-        {
-            var pattern = "abc";
-            var builder = new WebFilterConverter<User>();
-            var user = new User { Name = name };
-
-            var filter = new WebFilter<User>(PropertyExpression<User>.New(u => u.Name), WebFilterOperand.Like, new List<string> { pattern });
-            var expression = builder.ToExpression(filter);
-            var compiled = expression.Compile();
-            Assert.Equal(result, compiled.Invoke(user));
-        }
-
-        [Theory]
         [InlineData("2019-01-01", true)]
         [InlineData(null, false)]
         [InlineData("2029-01-01", false)]

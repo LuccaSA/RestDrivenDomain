@@ -1,23 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ProjectGuid>{D4493283-1C57-48C9-BA9D-4C7862A40424}</ProjectGuid>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="3.1.0" PrivateAssets="none" />
-    <PackageReference Include="coverlet.collector" Version="3.0.3">
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.17" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.17" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.12" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="Moq" Version="4.18.3" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -29,6 +29,10 @@
     <ProjectReference Include="..\..\src\Rdd.Web\Rdd.Web.csproj" />
     <ProjectReference Include="..\Rdd.Domain.Tests\Rdd.Domain.Tests.csproj" />
     <ProjectReference Include="..\Rdd.Infra.Tests\Rdd.Infra.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
   </ItemGroup>
 
 </Project>

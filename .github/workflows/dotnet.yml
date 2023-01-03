@@ -18,16 +18,16 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.x'
+        dotnet-version: '6.0.x'
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.9
+      uses: gittools/actions/gitversion/setup@v0.9.15
       with:
-          versionSpec: '5.6.8'
+          versionSpec: '5.x.x'
 
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.9
+      uses: gittools/actions/gitversion/execute@v0.9.15
 
     - uses: actions/setup-java@v1
       with:

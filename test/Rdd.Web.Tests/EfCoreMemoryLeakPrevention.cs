@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -46,9 +47,8 @@ namespace Rdd.Web.Tests
             var efServiceProviders = ServiceProviderCache.Instance;
 
             var efConfigs = typeof(ServiceProviderCache).GetField("_configurations", BindingFlags.NonPublic | BindingFlags.Instance);
-            var localServiceProvider = efConfigs.GetValue(efServiceProviders) as ConcurrentDictionary<long, (IServiceProvider ServiceProvider, IDictionary<string, string> DebugInfo)>;
-
-            var localCache = localServiceProvider.Values.First().ServiceProvider.GetService<ICompiledQueryCache>() as CompiledQueryCache;
+            var localServiceProvider = efConfigs.GetValue(efServiceProviders) as ConcurrentDictionary<IDbContextOptions, ValueTuple<IServiceProvider, IDictionary<string, string>>>;
+            var localCache = localServiceProvider.Values.First().Item1.GetService<ICompiledQueryCache>() as CompiledQueryCache;
             var cacheProperty = typeof(CompiledQueryCache).GetField("_memoryCache", BindingFlags.NonPublic | BindingFlags.Instance);
             var cache = cacheProperty.GetValue(localCache) as MemoryCache;
 #pragma warning restore EF1001 // Internal EF Core API usage.
