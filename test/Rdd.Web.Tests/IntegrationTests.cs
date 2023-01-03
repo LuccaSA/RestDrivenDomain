@@ -71,5 +71,43 @@ namespace Rdd.Web.Tests
                 Assert.Single(result);
             });
         }
+
+        //on ne peut tester le like qu'à travers une bdd
+        [Theory]
+        [InlineData("abc", true)]
+        [InlineData("aBc", true)]
+        [InlineData("AbCdE", true)]
+        [InlineData("eeeeeabc", true)]
+        [InlineData(null, false)]
+        [InlineData("", false)]
+        [InlineData("ab", false)]
+        [InlineData("aedzbffc", false)]
+        public async void LikeOperatorShouldWork(string name, bool hasAny)
+        {
+            await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
+            {
+                var unitOfWork = new UnitOfWork(context);
+                context.Add(new Parent { OptionalChild = new OptionalChild { Name = name } });
+                await unitOfWork.SaveChangesAsync();
+
+                var request = HttpVerbs.Get.NewRequest((nameof(Parent.OptionalChild) + "." + nameof(OptionalChild.Name), "like,abc"));
+                var query = QueryParserHelper.GetQueryParser<Parent>().Parse(request, true);
+
+                var storage = new EFStorageService(context);
+                var repo = new OpenRepository<Parent>(storage, null);
+                var collection = new RestCollection<Parent, int>(repo, new ObjectPatcher<Parent>(_fixture.PatcherProvider, new ReflectionHelper()), new DefaultInstanciator<Parent>());
+                var result = (await collection.GetAsync(query)).Items;
+
+                if (hasAny)
+                {
+                    Assert.Single(result);
+                }
+                else
+                {
+                    Assert.Empty(result);
+                }
+
+            });
+        }
     }
 }
