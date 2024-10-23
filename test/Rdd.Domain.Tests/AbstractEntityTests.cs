@@ -4,6 +4,7 @@ using Rdd.Domain.Rights;
 using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Domain.Tests
@@ -23,7 +24,7 @@ namespace Rdd.Domain.Tests
     public class AbstractEntityTests
     {
         [Fact]
-        public async void NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
+        public async Task NonAbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
             var rightsService = new OpenRightExpressionsHelper<ConcreteClassThree>();
             var storage = new InMemoryStorageService();
@@ -40,7 +41,7 @@ namespace Rdd.Domain.Tests
         }
 
         [Fact]
-        public async void AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
+        public async Task AbstractCollection_SHOULD_return_all_entities_WHEN_GetAll_is_called()
         {
             var rightsService = new OpenRightExpressionsHelper<AbstractClass>();
             var storage = new InMemoryStorageService();

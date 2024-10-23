@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.Serialization;
 
 namespace Rdd.Domain.Exceptions
 {
@@ -9,11 +8,6 @@ namespace Rdd.Domain.Exceptions
     {
         public ForbiddenException(string message)
             : base(message)
-        {
-        }
-
-        private ForbiddenException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 

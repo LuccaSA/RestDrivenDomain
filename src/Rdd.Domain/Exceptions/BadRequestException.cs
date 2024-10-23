@@ -17,11 +17,6 @@ namespace Rdd.Domain.Exceptions
         {
         }
 
-        protected BadRequestException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
         public override HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
     }
 }

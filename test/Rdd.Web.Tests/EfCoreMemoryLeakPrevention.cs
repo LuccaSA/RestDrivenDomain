@@ -55,8 +55,10 @@ namespace Rdd.Web.Tests
 
             int cachedQueryCount = 0;
 
-            var entriesProperty = typeof(MemoryCache).GetProperty("EntriesCollection", BindingFlags.NonPublic | BindingFlags.Instance);
-            var entries = entriesProperty.GetValue(cache) as ICollection;// as ConcurrentDictionary<object, ICacheEntry>;
+            var coherentStateProperty = typeof(MemoryCache).GetField("_coherentState", BindingFlags.NonPublic | BindingFlags.Instance);
+            var state = coherentStateProperty.GetValue(cache);
+            var entriesProperty = coherentStateProperty.FieldType.GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance);
+            var entries = entriesProperty.GetValue(state) as ICollection;// as ConcurrentDictionary<object, ICacheEntry>;
             var items = new List<string>();
             if (entries != null)
             {

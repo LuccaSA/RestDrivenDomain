@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.Serialization;
 
 namespace Rdd.Domain.Exceptions
 {
@@ -21,17 +20,6 @@ namespace Rdd.Domain.Exceptions
         {
         }
 
-        private TechnicalException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
         public HttpStatusCode StatusCode => HttpStatusCode.InternalServerError;
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue(nameof(StatusCode), StatusCode);
-        }
     }
 }

@@ -8,6 +8,7 @@ using Rdd.Domain.Tests.Models;
 using Rdd.Infra.Storage;
 using Rdd.Infra.Tests;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rdd.Web.Tests
@@ -23,7 +24,7 @@ namespace Rdd.Web.Tests
 
         //ce test vérifie que la manière dont est convertie les filtres sur les mailsaddress fonctionne jusque dans EF
         [Fact]
-        public async void MailAdressFiltersShouldWork()
+        public async Task MailAdressFiltersShouldWork()
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
@@ -51,7 +52,7 @@ namespace Rdd.Web.Tests
         [InlineData(nameof(Parent.OptionalChild) + "." + nameof(OptionalChild.Name), "notequal,null")]
         [InlineData(nameof(Parent.OptionalChild) + "." + nameof(OptionalChild.Name), "null")]
         [InlineData(nameof(Parent.OptionalChild) + "." + nameof(OptionalChild.Name), "value")]
-        public async void LeftJoinShouldWork(string key, string value)
+        public async Task LeftJoinShouldWork(string key, string value)
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
@@ -82,7 +83,7 @@ namespace Rdd.Web.Tests
         [InlineData("", false)]
         [InlineData("ab", false)]
         [InlineData("aedzbffc", false)]
-        public async void LikeOperatorShouldWork(string name, bool hasAny)
+        public async Task LikeOperatorShouldWork(string name, bool hasAny)
         {
             await RunCodeInsideIsolatedDatabaseAsync(async (context) =>
             {
