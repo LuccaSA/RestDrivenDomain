@@ -4,6 +4,7 @@ using Rdd.Infra.Storage;
 using System.Linq;
 using Rdd.Domain.Models.Querying;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Rdd.Web.Tests
 {
@@ -23,7 +24,7 @@ namespace Rdd.Web.Tests
         }
 
         [Fact]
-        public async void Count_of_collection_should_tell_10_when_10_entities()
+        public async Task Count_of_collection_should_tell_10_when_10_entities()
         {
             var users = User.GetManyRandomUsers(10);
             await _repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
@@ -33,7 +34,7 @@ namespace Rdd.Web.Tests
         }
 
         [Fact]
-        public async void Count_of_collection_should_tell_100_when_100_entities()
+        public async Task Count_of_collection_should_tell_100_when_100_entities()
         {
             var users = User.GetManyRandomUsers(100);
             await _repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });
@@ -43,7 +44,7 @@ namespace Rdd.Web.Tests
         }
 
         [Fact]
-        public async void Count_of_collection_should_tell_10000_when_10000_entities()
+        public async Task Count_of_collection_should_tell_10000_when_10000_entities()
         {
             var users = User.GetManyRandomUsers(10000);
             await _repo.AddRangeAsync(users, new Query<User> { Verb = Domain.Helpers.HttpVerbs.Post });

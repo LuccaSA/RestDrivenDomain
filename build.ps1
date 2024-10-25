@@ -17,4 +17,5 @@ param(
     dotnet pack .\Application\Rdd.Application\Rdd.Application.csproj --configuration Debug $propack -o $nuget_path
     dotnet pack .\Web\Rdd.Web\Rdd.Web.csproj --configuration Debug $propack -o $nuget_path
     dotnet pack .\Web\Rdd.Web.AutoMapper\RDD.Web.AutoMapper.csproj --configuration Debug $propack -o $nuget_path
+    dotnet pack .\Web\Rdd.Z.EntityFramework\Rdd.Z.EntityFramework.csproj --configuration Debug $propack -o $nuget_path
  
