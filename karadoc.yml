@@ -1,0 +1,10 @@
+apiVersion: karadoc.lucca.tech/v1
+kind: Component
+metadata:
+  name: restdrivendomain
+  displayName: RestDrivenDomain
+spec:
+  owner: group:product-tech
+  system: system:r-d
+  type: Backend
+  repository: LuccaSA/RestDrivenDomain
